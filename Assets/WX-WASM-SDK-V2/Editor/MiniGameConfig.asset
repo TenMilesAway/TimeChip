@@ -15,7 +15,7 @@ MonoBehaviour:
   ProjectConf:
     projectName: 
     Appid: 
-    CDN: 
+    CDN: https://gamecomb-gamedevelop-test.oss-cn-hangzhou.aliyuncs.com/zll
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
