@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "com.ivanmurzak.unity.mcp": "0.82.3",
     "com.qq.weixin.minigame": "https://gitee.com/wechat-minigame/minigame-tuanjie-transform-sdk.git",
+    "com.unity.addressables": "1.22.3",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.rider": "3.0.36",
@@ -41,8 +43,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "com.ivanmurzak.unity.mcp": "0.82.3"
+    "com.unity.modules.xr": "1.0.0"
   },
   "scopedRegistries": [
     {
