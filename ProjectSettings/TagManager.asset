@@ -41,3 +41,42 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Bottom
+    uniqueID: 1878281977
+    locked: 0
+  - name: Bottom+
+    uniqueID: 2760134291
+    locked: 0
+  - name: Bottom++
+    uniqueID: 2001581749
+    locked: 0
+  - name: Mid
+    uniqueID: 3609964599
+    locked: 0
+  - name: Mid+
+    uniqueID: 2664772047
+    locked: 0
+  - name: Mid++
+    uniqueID: 3405133419
+    locked: 0
+  - name: High
+    uniqueID: 224099881
+    locked: 0
+  - name: High+
+    uniqueID: 548550607
+    locked: 0
+  - name: High++
+    uniqueID: 2531988559
+    locked: 0
+  - name: Super
+    uniqueID: 2217568375
+    locked: 0
+  - name: Super+
+    uniqueID: 2693082505
+    locked: 0
+  - name: Super++
+    uniqueID: 4049732623
+    locked: 0
+  - name: System
+    uniqueID: 3953735055
+    locked: 0

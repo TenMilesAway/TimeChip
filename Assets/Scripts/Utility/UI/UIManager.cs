@@ -1,18 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
-/// UI ²ã¼¶
+/// ä¸ºå…¼å®¹ OpenPanel æ¥å£è€Œä¿ç•™çš„ UI å±‚çº§æšä¸¾
 /// </summary>
 public enum UILayer
-{ 
+{
     Bot,
     Mid,
     Top,
@@ -20,136 +17,99 @@ public enum UILayer
 }
 
 /// <summary>
-/// UI ¹ÜÀíÆ÷
+/// UI ç®¡ç†å™¨ï¼Œæ‰€æœ‰æ‰“å¼€çš„é¢æ¿å‡æŒ‚è½½åœ¨ Launcher/UI Root ä¸‹
 /// </summary>
 public class UIManager : Singleton<UIManager>
 {
-    private Dictionary<string, UIBasePanel> _panelDic = new Dictionary<string, UIBasePanel>();        // µ±Ç°´ò¿ªµÄÃæ°å
-    private Dictionary<string, UIBasePanel> _blockingWindows = new Dictionary<string, UIBasePanel>(); // ×è¶Ï½»»¥µÄÃæ°å
-    private List<string> _loadingPanels = new List<string>();                                         // ÕıÔÚ¼ÓÔØµÄÃæ°å
+    private const string UIRootPath = "Canvas/UI Root";
 
-    private const string _canvasPath = "Assets/ArtRes/Canvas/Prefabs/Canvas.prefab";
-    private const string _eventSystemPath = "Assets/ArtRes/Canvas/Prefabs/EventSystem.prefab";
-    private const float _waitDestoryTime = 20f;
+    private readonly Dictionary<string, UIBasePanel> _panelDic = new Dictionary<string, UIBasePanel>();
+    private readonly Dictionary<string, UIBasePanel> _blockingWindows = new Dictionary<string, UIBasePanel>();
+    private readonly List<string> _loadingPanels = new List<string>();
 
-    private Transform _bot;
-    private Transform _mid;
-    private Transform _top;
-    private Transform _system;
-
-    private GameObject _canvasPrefab;
-    private GameObject _eventSystemPrefab;
-
-    public RectTransform _canvas;
+    private RectTransform _uiRoot;
 
     /// <summary>
-    /// ³õÊ¼»¯ Canvas ºÍ EventSystem
+    /// åˆå§‹åŒ– Launcher UI Root å¼•ç”¨
     /// </summary>
-    public async Task Init()
+    public Task Init()
     {
-        // ³õÊ¼»¯Ãæ°å
-        AsyncOperationHandle canvasHandle = Addressables.LoadAssetAsync<GameObject>(_canvasPath);
-        await canvasHandle.Task;
-        _canvasPrefab = canvasHandle.Result as GameObject;
-        GameObject _canvasGO = GameObject.Instantiate(_canvasPrefab);
-        _canvas = _canvasGO.transform as RectTransform;
-        GameObject.DontDestroyOnLoad(_canvasGO);
-            
-        // ³õÊ¼»¯ÊÂ¼şÏµÍ³
-        AsyncOperationHandle eventSystemHandle = Addressables.LoadAssetAsync<GameObject>(_eventSystemPath);
-        await eventSystemHandle.Task;
-        _eventSystemPrefab = eventSystemHandle.Result as GameObject;
-        GameObject _eventSystemGO = GameObject.Instantiate(_eventSystemPrefab);
-        GameObject.DontDestroyOnLoad(_eventSystemGO);
-
-        // ¸÷²ã
-        _bot = _canvas.Find("Bot");
-        _mid = _canvas.Find("Mid");
-        _top = _canvas.Find("Top");
-        _system = _canvas.Find("System");
+        TryGetUIRoot();
+        return Task.CompletedTask;
     }
 
     /// <summary>
-    /// ´ò¿ª UI Ãæ°å (Ä¿Ç°Î´×ß¶¨Ê±Âß¼­, ºóĞøĞŞ¸Ä)
+    /// åœ¨ Launcher/UI Root ä¸‹æ‰“å¼€ UI é¢æ¿ï¼Œlayer å‚æ•°ä»…ä¸ºå…¼å®¹ç°æœ‰æ¥å£è€Œä¿ç•™
     /// </summary>
-    /// <param name="panelName">AA Â·¾¶</param>
-    /// <param name="layer">UI ²ã¼¶</param>
-    /// <param name="param">Í¸´«²ÎÊı</param>
-    /// <param name="action">»Øµ÷º¯Êı</param>
-    /// <returns></returns>
     public async void OpenPanel(string panelName, UILayer layer = UILayer.Mid, OpenUIParam param = null, Action action = null)
     {
-        // Èç¹û´ËÃæ°åÕıÔÚ¼ÓÔØ
-        if (_loadingPanels.Contains(panelName)) return;
+        if (_loadingPanels.Contains(panelName) || !TryGetUIRoot())
+        {
+            return;
+        }
 
         _loadingPanels.Add(panelName);
 
-        // Èç¹û×ÖµäÖĞ´æÔÚ´ËÃæ°å
-        if (_panelDic.ContainsKey(panelName))
+        if (_panelDic.TryGetValue(panelName, out UIBasePanel panel))
         {
-            UIBasePanel panel = _panelDic[panelName];
-
             GetPanelCompletedLogic(panelName, panel, param, action);
-
             return;
         }
 
         GameObject panelGO = await UnityObjectPoolFactory.GetInstance().GetItem<GameObject>(panelName, GetInstance().ToString());
 
-        // ÉèÖÃ¸¸¶ÔÏó, ÉèÖÃÏà¶ÔÎ»ÖÃºÍ´óĞ¡
-        switch (layer)
+        if (!TryGetUIRoot())
         {
-            case UILayer.Bot:
-                panelGO.transform.SetParent(_bot);
-                break;
-            case UILayer.Mid:
-                panelGO.transform.SetParent(_mid);
-                break;
-            case UILayer.Top:
-                panelGO.transform.SetParent(_top);
-                break;
-            case UILayer.System:
-                panelGO.transform.SetParent(_system);
-                break;
+            _loadingPanels.Remove(panelName);
+            UnityObjectPoolFactory.GetInstance().PutItem(panelName, panelGO);
+            return;
         }
-        panelGO.transform.localPosition = Vector3.zero;
-        panelGO.transform.localScale = Vector3.one;
-        (panelGO.transform as RectTransform).offsetMax = Vector2.zero;
-        (panelGO.transform as RectTransform).offsetMin = Vector2.zero;
+
+        panelGO.transform.SetParent(_uiRoot, false);
+        RectTransform panelTransform = panelGO.transform as RectTransform;
+        panelTransform.offsetMax = Vector2.zero;
+        panelTransform.offsetMin = Vector2.zero;
 
         UIBasePanel panelComponent = panelGO.GetComponent<UIBasePanel>();
-
         GetPanelCompletedLogic(panelName, panelComponent, param, action);
-
         _panelDic.Add(panelName, panelComponent);
     }
 
-    /// <summary>
-    /// ´¦Àí»ñÈ¡Ãæ°åºóµÄ´ò¿ªÂß¼­
-    /// </summary>
+    private bool TryGetUIRoot()
+    {
+        if (_uiRoot != null) return true;
+
+        GameObject uiRootObject = GameObject.Find(UIRootPath);
+        if (uiRootObject == null)
+        {
+            Debug.LogError($"UI Root was not found at '{UIRootPath}'.");
+            return false;
+        }
+
+        _uiRoot = uiRootObject.transform as RectTransform;
+        return _uiRoot != null;
+    }
+
     private void GetPanelCompletedLogic(string panelName, UIBasePanel panel, OpenUIParam param, Action action)
     {
         panel.OnInit(param);
 
-        if (panel._isBlockingWindow && !_blockingWindows.ContainsKey(panelName)) _blockingWindows.Add(panelName, panel);
+        if (panel._isBlockingWindow && !_blockingWindows.ContainsKey(panelName))
+        {
+            _blockingWindows.Add(panelName, panel);
+        }
 
         panel.OnShow();
-
-        if (action != null) action();
-
+        action?.Invoke();
         _loadingPanels.Remove(panelName);
     }
 
     public UIBasePanel GetOpeningPanel(string panelName)
     {
         _panelDic.TryGetValue(panelName, out UIBasePanel panel);
-
         return panel;
     }
 
-    /// <summary>
-    /// ¹Ø±ÕÃæ°å
-    /// </summary>
     public void ClosePanel(string panelName)
     {
         if (_blockingWindows.ContainsKey(panelName))
@@ -165,9 +125,6 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    /// <summary>
-    /// ¹Ø±Õ²¢Ïú»ÙÃæ°å
-    /// </summary>
     public void ClosePanelAndDestory(string panelName)
     {
         if (_blockingWindows.ContainsKey(panelName))
@@ -183,62 +140,51 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    /// <summary>
-    /// ¿Ø¼şÌí¼Ó×Ô¶¨ÒåÊÂ¼ş¼àÌı
-    /// </summary>
-    /// <param name="control">¿Ø¼ş¶ÔÏó</param>
-    /// <param name="type">ÊÂ¼şÀàĞÍ</param>
-    /// <param name="callback">ÊÂ¼şµÄÏìÓ¦º¯Êı</param>
     public void AddCustomEventListener(UIBehaviour control, EventTriggerType type, UnityAction<BaseEventData> callback)
     {
         EventTrigger trigger = control.GetComponent<EventTrigger>();
-        if (trigger == null) trigger = control.gameObject.AddComponent<EventTrigger>();
+        if (trigger == null)
+        {
+            trigger = control.gameObject.AddComponent<EventTrigger>();
+        }
 
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = type;
         entry.callback.AddListener(callback);
-
         trigger.triggers.Add(entry);
     }
 
-    /// <summary>
-    /// ¿Ø¼şÉ¾³ı×Ô¶¨ÒåÊÂ¼ş¼àÌı
-    /// </summary>
-    /// <param name="control">¿Ø¼ş¶ÔÏó</param>
-    /// <param name="type">ÊÂ¼şÀàĞÍ</param>
-    /// <param name="callback">ÊÂ¼şµÄÏìÓ¦º¯Êı</param>
     public void RemoveCustomEventListener(UIBehaviour control, EventTriggerType type, UnityAction<BaseEventData> callback)
     {
         EventTrigger trigger = control.GetComponent<EventTrigger>();
-        if (trigger == null || trigger.triggers == null) return;
+        if (trigger == null || trigger.triggers == null)
+        {
+            return;
+        }
 
-        // ±éÀú²éÕÒÖ¸¶¨ÀàĞÍµÄÊÂ¼ş
         for (int i = trigger.triggers.Count - 1; i >= 0; i--)
         {
             EventTrigger.Entry entry = trigger.triggers[i];
-            if (entry.eventID == type)
+            if (entry.eventID != type)
             {
-                // ÒÆ³ıÖ¸¶¨»Øµ÷
-                entry.callback.RemoveListener(callback);
+                continue;
+            }
 
-                if (entry.callback.GetPersistentEventCount() == 0)
-                {
-                    trigger.triggers.RemoveAt(i);
-                }
+            entry.callback.RemoveListener(callback);
+            if (entry.callback.GetPersistentEventCount() == 0)
+            {
+                trigger.triggers.RemoveAt(i);
             }
         }
 
-        // Èç¹ûÃ»ÓĞÊÂ¼şÁË£¬ÒÆ³ı×é¼ş
         if (trigger.triggers.Count == 0)
         {
-            // Î´À´ĞèÒª¿¼ÂÇĞÔÄÜÏûºÄ
             GameObject.Destroy(trigger);
         }
     }
 
     public bool hasBlockingWindow()
     {
-        if (_blockingWindows.Count != 0) return true;
-        else return false;
+        return _blockingWindows.Count != 0;
     }
 }
