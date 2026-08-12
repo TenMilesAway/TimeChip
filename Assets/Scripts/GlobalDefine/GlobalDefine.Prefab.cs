@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class GlobalDefine
 {
+    // View
     public const string MainMenuView = "Assets/Art/MainMenu/Prefab/MainMenuView.prefab";
     public const string LotteryView = "Assets/Art/Lottery/Prefab/LotteryView.prefab";
+    public const string CommonRewardPanel = "Assets/Art/Common/Prefab/CommonRewardPanel.prefab";
+
+    // Item
+    public const string CommonRewardItem = "Assets/Art/Common/Prefab/CommonRewardItem.prefab";
 }

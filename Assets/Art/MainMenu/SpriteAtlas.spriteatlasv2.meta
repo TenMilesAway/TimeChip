@@ -21,7 +21,7 @@ SpriteAtlasImporter:
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 41
-    crunchedCompression: 1
+    crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -32,8 +32,8 @@ SpriteAtlasImporter:
     padding: 4
     blockOffset: 1
     allowAlphaSplitting: 0
-    enableRotation: 1
-    enableTightPacking: 1
+    enableRotation: 0
+    enableTightPacking: 0
     enableAlphaDilation: 0
   secondaryTextureSettings: {}
   variantMultiplier: 1
