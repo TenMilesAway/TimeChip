@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1000,
+    "name": "灵晶微体",
+    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换少量灵晶币。",
+    "price": 50,
+    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem2]"
+  },
+  {
+    "id": 1001,
+    "name": "灵晶体",
+    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换中量灵晶币。",
+    "price": 500,
+    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem3]"
+  },
+  {
+    "id": 1002,
+    "name": "灵晶完全体",
+    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换大量灵晶币。",
+    "price": 2000,
+    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem4]"
+  }
+]

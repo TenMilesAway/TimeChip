@@ -1,4 +1,6 @@
+using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +15,7 @@ public class Launcher : SingletonMono<Launcher>
 
     private LauncherProcess process = LauncherProcess.None;
     private bool isInitializingData;
+    private const string TableDataDirectory = "TableDatas";
 
     protected override void Awake()
     {
@@ -115,8 +118,28 @@ public class Launcher : SingletonMono<Launcher>
 
     private Task LoadRequiredDataAsync()
     {
-        // 后续在此添加数据、资源和网络初始化任务
+        LoadItemTable();
+
+        // 后续在此添加其他数据、资源和网络初始化任务
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 加载 Item 配置表并输出所有记录
+    /// </summary>
+    private void LoadItemTable()
+    {
+        string tableDataPath = Path.Combine(Application.dataPath, TableDataDirectory);
+        cfg.Tables tables = new cfg.Tables(fileName =>
+        {
+            string filePath = Path.Combine(tableDataPath, $"{fileName}.json");
+            return JArray.Parse(File.ReadAllText(filePath));
+        });
+
+        foreach (cfg.Item item in tables.ItemTable.DataList)
+        {
+            Debug.Log($"[Item] Id={item.Id}, Name={item.Name}, Desc={item.Desc}, Price={item.Price}, Icon={item.Icon}");
+        }
     }
 
     private void OpenMainMenu()
