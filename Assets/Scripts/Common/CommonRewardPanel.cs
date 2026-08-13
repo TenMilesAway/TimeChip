@@ -5,14 +5,14 @@ using UnityEngine.UI;
 
 public class CommonRewardPanel : UIBasePanel
 {
-    [SerializeField] private Button _closeButton;
-    [SerializeField] private Transform _commonRewardItemParent;
-    [SerializeField] private GameObject _textTip;
-    [SerializeField, Min(0f)] private float _itemDisplayInterval = 0.35f;
+    [SerializeField] private Button _closeButton;                           // 关闭按钮
+    [SerializeField] private Transform _commonRewardItemParent;             // 通用奖励物品父物体
+    [SerializeField] private GameObject _textTip;                           // 提示文本
+    [SerializeField, Min(0f)] private float _itemDisplayInterval = 0.35f;   // 奖励物品显示间隔
 
-    private readonly List<CommonRewardItem> _rewardItems = new List<CommonRewardItem>();
+    private readonly List<CommonRewardItem> _rewardItems = new List<CommonRewardItem>(); // 奖励物品
 
-    private int _presentationVersion;
+    private int _presentationVersion; // 当前展示版本号，用于处理异步加载和展示的顺序问题
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class CommonRewardPanel : UIBasePanel
 
         if (!(param?.data is List<CommonRewardItemData> rewardDataList))
         {
-            Debug.LogError("CommonRewardPanel requires a List<CommonRewardItemData> in OpenUIParam.data.");
+            Debug.LogError("CommonRewardPanel 需要 List<CommonRewardItemData> 数据");
             FinishPresentation();
             return;
         }
@@ -61,6 +61,9 @@ public class CommonRewardPanel : UIBasePanel
         return GlobalDefine.CommonRewardPanel;
     }
 
+    /// <summary>
+    /// 异步加载奖励物品
+    /// </summary>
     private async void InitializeRewardsAsync(List<CommonRewardItemData> rewardDataList, int presentationVersion)
     {
         string resourceTag = GetInstanceID().ToString();
@@ -72,12 +75,13 @@ public class CommonRewardPanel : UIBasePanel
 
             if (itemConfig == null)
             {
-                Debug.LogError($"Reward item config was not found: itemId[{rewardData.itemId}].");
+                Debug.LogError($"奖励物品配置不存在: [{rewardData.itemId}]");
                 continue;
             }
 
             GameObject rewardItemObject = await UnityObjectPoolFactory.GetInstance().GetItem<GameObject>(GlobalDefine.CommonRewardItem, resourceTag);
 
+            // 如果不是当前版本的展示框
             if (!IsCurrentPresentation(presentationVersion))
             {
                 UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.CommonRewardItem, rewardItemObject);
@@ -97,7 +101,7 @@ public class CommonRewardPanel : UIBasePanel
 
             if (icon == null)
             {
-                Debug.LogError($"Reward icon could not be loaded: itemId[{rewardData.itemId}], key[{itemConfig.Icon}].");
+                Debug.LogError($"奖励 icon 加载失败: [{rewardData.itemId}], [{itemConfig.Icon}].");
                 UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.CommonRewardItem, rewardItemObject);
                 continue;
             }
@@ -113,6 +117,9 @@ public class CommonRewardPanel : UIBasePanel
         }
     }
 
+    /// <summary>
+    /// 播放奖品逐个展示动画
+    /// </summary>
     private void PlayRewardItemSequence(int presentationVersion)
     {
         if (_rewardItems.Count == 0)
@@ -139,6 +146,9 @@ public class CommonRewardPanel : UIBasePanel
         });
     }
 
+    /// <summary>
+    /// 重置展示奖品
+    /// </summary>
     private void ResetPresentation()
     {
         _presentationVersion++;
@@ -148,17 +158,26 @@ public class CommonRewardPanel : UIBasePanel
         _closeButton.interactable = false;
     }
 
+    /// <summary>
+    /// 结束展示奖品
+    /// </summary>
     private void FinishPresentation()
     {
         _textTip.SetActive(true);
         _closeButton.interactable = true;
     }
 
+    /// <summary>
+    /// 判断是否为当前展示版本
+    /// </summary>
     private bool IsCurrentPresentation(int presentationVersion)
     {
         return presentationVersion == _presentationVersion && isActiveAndEnabled;
     }
 
+    /// <summary>
+    /// 清除奖励物品
+    /// </summary>
     private void ClearRewardItems()
     {
         for (int i = 0; i < _rewardItems.Count; i++)

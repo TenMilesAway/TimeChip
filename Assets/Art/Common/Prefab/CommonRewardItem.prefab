@@ -261,6 +261,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fef639916f3d147869b42cc7cea52a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rewardIcon: {fileID: 9162383848263893379}
+  _rewardCountText: {fileID: 1235376628973217529}
 --- !u!114 &2842669297673529475
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,17 +3,14 @@ using UnityEngine.UI;
 
 public class CommonRewardItem : MonoBehaviour
 {
+    [SerializeField] private Image _rewardIcon;
+    [SerializeField] private Text _rewardCountText;
+
     private const float RewardScaleDivisor = 10000f;
 
-    private Image _rewardIcon;
-    private Text _rewardCountText;
-
-    private void Awake()
-    {
-        _rewardIcon = transform.Find("Reward").GetComponent<Image>();
-        _rewardCountText = transform.Find("Reward Num").GetComponent<Text>();
-    }
-
+    /// <summary>
+    /// 设置奖励数据
+    /// </summary>
     public void SetData(Sprite icon, int count, int rewardScale)
     {
         _rewardIcon.sprite = icon;

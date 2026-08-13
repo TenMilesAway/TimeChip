@@ -7,24 +7,24 @@ using UnityEngine.UI;
 
 public class LotteryView : UIBasePanel
 {
-    private const int LotteryPoolId = 1;
-    private const float LotteryDuration = 1f;
-
     [Header("Animation")]
     [FormerlySerializedAs("lotteryBox")]
-    [SerializeField] private RectTransform _lotteryBox;
+    [SerializeField] private RectTransform _lotteryBox;     // 抽奖盒子
     [FormerlySerializedAs("bubbles")]
-    [SerializeField] private RectTransform[] _bubbles;
+    [SerializeField] private RectTransform[] _bubbles;      // 气泡
     [FormerlySerializedAs("lotteryButton")]
-    [SerializeField] private Button _lotteryButton;
+    [SerializeField] private Button _lotteryButton;         // 抽奖按钮
 
-    private Vector3 _lotteryBoxScale;
-    private Vector2[] _bubblePositions;
-    private Vector3[] _bubbleScales;
-    private float _lotteryBoxRotation;
-    private bool _hasCachedAnimationState;
-    private bool _hasRegisteredButtonListener;
-    private bool _isLotteryInProgress;
+    private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
+    private Vector2[] _bubblePositions;                     // 气泡位置
+    private Vector3[] _bubbleScales;                        // 气泡缩放
+    private float _lotteryBoxRotation;                      // 奖池盒子旋转
+    private bool _hasCachedAnimationState;                  // 是否缓存动画状态
+    private bool _hasRegisteredButtonListener;              // 是否注册按钮监听
+    private bool _isLotteryInProgress;                      // 是否正在抽奖
+
+    private const int LotteryPoolId = 1;                    // 奖池 ID
+    private const float LotteryDuration = 1f;               // 奖池抽奖间隔
 
     protected override void InitHandle(OpenUIParam param)
     {
