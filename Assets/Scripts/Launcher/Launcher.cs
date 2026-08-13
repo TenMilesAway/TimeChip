@@ -15,7 +15,6 @@ public class Launcher : SingletonMono<Launcher>
 
     private LauncherProcess process = LauncherProcess.None;
     private bool isInitializingData;
-    private const string TableDataDirectory = "TableDatas";
 
     protected override void Awake()
     {
@@ -118,28 +117,14 @@ public class Launcher : SingletonMono<Launcher>
 
     private Task LoadRequiredDataAsync()
     {
-        LoadItemTable();
+        DataTableMananger.GetInstance().Init();
+        foreach (cfg.Item item in DataTableMananger.GetInstance().Tables.ItemTable.DataList)
+        {
+            Debug.Log(item.ToString());
+        }
 
         // 后续在此添加其他数据、资源和网络初始化任务
         return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// 加载 Item 配置表并输出所有记录
-    /// </summary>
-    private void LoadItemTable()
-    {
-        string tableDataPath = Path.Combine(Application.dataPath, TableDataDirectory);
-        cfg.Tables tables = new cfg.Tables(fileName =>
-        {
-            string filePath = Path.Combine(tableDataPath, $"{fileName}.json");
-            return JArray.Parse(File.ReadAllText(filePath));
-        });
-
-        foreach (cfg.Item item in tables.ItemTable.DataList)
-        {
-            Debug.Log($"[Item] Id={item.Id}, Name={item.Name}, Desc={item.Desc}, Price={item.Price}, Icon={item.Icon}");
-        }
     }
 
     private void OpenMainMenu()
