@@ -17,17 +17,23 @@ public partial class Tables
     /// 道具配置
     /// </summary>
     public ItemTable ItemTable {get; }
+    /// <summary>
+    /// 抽奖池配置
+    /// </summary>
+    public LotteryTable LotteryTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
     {
         ItemTable = new ItemTable(loader("item"));
+        LotteryTable = new LotteryTable(loader("lottery"));
         ResolveRef();
     }
     
      private void ResolveRef()
     {
         ItemTable.ResolveRef(this);
+        LotteryTable.ResolveRef(this);
     }
 }
 

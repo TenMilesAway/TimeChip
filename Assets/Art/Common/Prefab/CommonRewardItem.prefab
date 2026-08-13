@@ -181,6 +181,8 @@ GameObject:
   - component: {fileID: 8851310606144010607}
   - component: {fileID: 3873722038987481169}
   - component: {fileID: 7461944662264196541}
+  - component: {fileID: 8078836478744162650}
+  - component: {fileID: 2842669297673529475}
   m_Layer: 5
   m_Name: CommonRewardItem
   m_TagString: Untagged
@@ -247,3 +249,30 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8078836478744162650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127111288891236149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fef639916f3d147869b42cc7cea52a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2842669297673529475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127111288891236149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67e73a6a044632c4799135c34fa66394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overshootScale: 1.15
+  _popDuration: 0.2
+  _settleDuration: 0.12

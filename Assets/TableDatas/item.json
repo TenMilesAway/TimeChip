@@ -1,23 +1,44 @@
 [
   {
     "id": 1000,
-    "name": "灵晶微体",
-    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换少量灵晶币。",
-    "price": 50,
-    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem2]"
+    "name": "模拟币",
+    "desc": "一枚金灿灿的模拟币，可以用来购物",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_simulation_coin]",
+    "rewardScale": 2500
   },
   {
     "id": 1001,
-    "name": "灵晶体",
-    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换中量灵晶币。",
-    "price": 500,
-    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem3]"
+    "name": "一堆模拟币",
+    "desc": "几枚金灿灿的模拟币，可以用来购物",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_coin_stack]",
+    "rewardScale": 4000
   },
   {
-    "id": 1002,
-    "name": "灵晶完全体",
-    "desc": "菱形晶体内部闪耀着变幻莫测的色彩，可以兑换大量灵晶币。",
-    "price": 2000,
-    "icon": "Assets/UI/Items/Items.spriteatlas[SpriteItem4]"
+    "id": 2000,
+    "name": "家具折扣券",
+    "desc": "家具折扣券~",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_furniture_coupon]",
+    "rewardScale": 3200
+  },
+  {
+    "id": 3000,
+    "name": "神秘礼盒",
+    "desc": "神秘礼盒~",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_gift_box]",
+    "rewardScale": 4200
+  },
+  {
+    "id": 4000,
+    "name": "IT技能证书",
+    "desc": "IT技能证书~",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_ability_certificate]",
+    "rewardScale": 3600
+  },
+  {
+    "id": 4001,
+    "name": "维修技能证书",
+    "desc": "维修技能证书~",
+    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_ability_certificate]",
+    "rewardScale": 3600
   }
 ]

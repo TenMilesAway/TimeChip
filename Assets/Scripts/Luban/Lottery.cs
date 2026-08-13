@@ -15,24 +15,23 @@ using Newtonsoft.Json.Linq;
 namespace cfg
 {
 /// <summary>
-/// 道具配置
+/// 抽奖池配置
 /// </summary>
 
-public sealed partial class Item : Luban.BeanBase
+public sealed partial class Lottery : Luban.BeanBase
 {
-    public Item(JToken _buf) 
+    public Lottery(JToken _buf) 
     {
         JObject _obj = _buf as JObject;
         Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
-        Icon = (string)_obj.GetValue("icon");
-        RewardScale = (int)_obj.GetValue("rewardScale");
+        Rewards = (string)_obj.GetValue("rewards");
     }
 
-    public static Item DeserializeItem(JToken _buf)
+    public static Lottery DeserializeLottery(JToken _buf)
     {
-        return new Item(_buf);
+        return new Lottery(_buf);
     }
 
     /// <summary>
@@ -48,16 +47,12 @@ public sealed partial class Item : Luban.BeanBase
     /// </summary>
     public readonly string Desc;
     /// <summary>
-    /// 图片路径
+    /// 奖励配置
     /// </summary>
-    public readonly string Icon;
-    /// <summary>
-    /// 奖励面板下的缩放
-    /// </summary>
-    public readonly int RewardScale;
+    public readonly string Rewards;
 
 
-    public const int __ID__ = 2289459;
+    public const int __ID__ = 2019323689;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -70,8 +65,7 @@ public sealed partial class Item : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
-        + "icon:" + Icon + ","
-        + "rewardScale:" + RewardScale + ","
+        + "rewards:" + Rewards + ","
         + "}";
     }
 }

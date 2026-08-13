@@ -21,9 +21,9 @@ public class DataTableMananger : Singleton<DataTableMananger>
     {
         string tableDataPath = Path.Combine(Application.dataPath, TableDataDirectory);
 
-        _tables = new cfg.Tables(fileName =>
+        _tables = new cfg.Tables(_fileName =>
         {
-            string filePath = Path.Combine(tableDataPath, $"{fileName}.json");
+            string filePath = Path.Combine(tableDataPath, $"{_fileName}.json");
             return JArray.Parse(File.ReadAllText(filePath));
         });
     }

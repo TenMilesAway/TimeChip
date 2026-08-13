@@ -358,9 +358,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bae046de29fa3dd44a520d4571ee78d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startButton: {fileID: 1053011410}
-  menuRoot: {fileID: 1656568748}
-  loadingRoot: {fileID: 1145158635}
+  _startButton: {fileID: 1053011410}
+  _menuRoot: {fileID: 1656568748}
+  _loadingRoot: {fileID: 1145158635}
 --- !u!1 &366578004
 GameObject:
   m_ObjectHideFlags: 0

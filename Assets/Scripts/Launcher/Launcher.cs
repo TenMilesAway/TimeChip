@@ -9,12 +9,12 @@ using UnityEngine.UI;
 /// </summary>
 public class Launcher : SingletonMono<Launcher>
 {
-    [SerializeField] private Button startButton;
-    [SerializeField] private GameObject menuRoot;
-    [SerializeField] private GameObject loadingRoot;
+    [SerializeField] private Button _startButton;                 // 开始按钮
+    [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
+    [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
 
-    private LauncherProcess process = LauncherProcess.None;
-    private bool isInitializingData;
+    private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
+    private bool _isInitializingData;                             // 是否正在初始化数据
 
     protected override void Awake()
     {
@@ -24,18 +24,18 @@ public class Launcher : SingletonMono<Launcher>
 
     private void Start()
     {
-        loadingRoot.SetActive(false);
-        startButton.onClick.AddListener(BeginLaunch);
+        _loadingRoot.SetActive(false);
+        _startButton.onClick.AddListener(BeginLaunch);
     }
 
     private void OnDestroy()
     {
-        startButton.onClick.RemoveListener(BeginLaunch);
+        _startButton.onClick.RemoveListener(BeginLaunch);
     }
 
     private void Update()
     {
-        switch (process)
+        switch (_process)
         {
             case LauncherProcess.PreloadBegin:
                 SetProcessState(LauncherProcess.PreloadIng);
@@ -68,7 +68,7 @@ public class Launcher : SingletonMono<Launcher>
                 SetProcessState(LauncherProcess.InitDataIng);
                 break;
             case LauncherProcess.InitDataIng:
-                if (!isInitializingData)
+                if (!_isInitializingData)
                 {
                     InitializeDataAsync();
                 }
@@ -84,7 +84,7 @@ public class Launcher : SingletonMono<Launcher>
                 SetProcessState(LauncherProcess.SwitchSceneEnd);
                 break;
             case LauncherProcess.SwitchSceneEnd:
-                loadingRoot.SetActive(false);
+                _loadingRoot.SetActive(false);
                 gameObject.SetActive(false);
                 SetProcessState(LauncherProcess.None);
                 break;
@@ -93,25 +93,25 @@ public class Launcher : SingletonMono<Launcher>
 
     private void BeginLaunch()
     {
-        if (process != LauncherProcess.None)
+        if (_process != LauncherProcess.None)
         {
             return;
         }
 
-        menuRoot.SetActive(false);
-        loadingRoot.SetActive(true);
+        _menuRoot.SetActive(false);
+        _loadingRoot.SetActive(true);
         SetProcessState(LauncherProcess.PreloadBegin);
     }
 
     private async void InitializeDataAsync()
     {
-        isInitializingData = true;
+        _isInitializingData = true;
 
         // 先让加载界面完成一帧渲染，再执行后续异步加载任务
         await Task.Yield();
         await LoadRequiredDataAsync();
 
-        isInitializingData = false;
+        _isInitializingData = false;
         SetProcessState(LauncherProcess.InitDataEnd);
     }
 
@@ -161,7 +161,7 @@ public class Launcher : SingletonMono<Launcher>
     /// </summary>
     private void SetProcessState(LauncherProcess state)
     {
-        process = state;
+        _process = state;
     }
 }
 
