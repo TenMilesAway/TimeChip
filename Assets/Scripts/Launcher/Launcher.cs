@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using TimeChip.Save;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,12 +10,19 @@ using UnityEngine.UI;
 /// </summary>
 public class Launcher : SingletonMono<Launcher>
 {
-    [SerializeField] private Button _startButton;                 // 开始按钮
+    /// <summary>
+    /// 唯一玩家存档使用的固定槽位编号
+    /// </summary>
+    private const int PlayerSaveSlotId = 0;
+
+    [SerializeField] private Button _newGameButton;               // 新游戏按钮
+    [SerializeField] private Button _loadSaveButton;              // 读取存档按钮
     [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
+    private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
 
     protected override void Awake()
     {
@@ -25,12 +33,30 @@ public class Launcher : SingletonMono<Launcher>
     private void Start()
     {
         _loadingRoot.SetActive(false);
-        _startButton.onClick.AddListener(BeginLaunch);
+        if (_newGameButton == null || _loadSaveButton == null)
+        {
+            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏按钮和读取存档按钮。", this);
+            return;
+        }
+
+        _newGameButton.onClick.AddListener(CreateNewGame);
+        _loadSaveButton.onClick.AddListener(LoadSavedGame);
+        _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
 
     private void OnDestroy()
     {
-        _startButton.onClick.RemoveListener(BeginLaunch);
+        if (_newGameButton != null)
+        {
+            _newGameButton.onClick.RemoveListener(CreateNewGame);
+        }
+
+        if (_loadSaveButton != null)
+        {
+            _loadSaveButton.onClick.RemoveListener(LoadSavedGame);
+        }
+
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
     }
 
     private void Update()
@@ -91,13 +117,58 @@ public class Launcher : SingletonMono<Launcher>
         }
     }
 
-    private void BeginLaunch()
+    /// <summary>
+    /// 创建默认玩家数据并覆盖唯一存档后开始游戏
+    /// </summary>
+    private void CreateNewGame()
     {
         if (_process != LauncherProcess.None)
         {
             return;
         }
 
+        _gameSaveData = CreateDefaultGameSaveData();
+        SaveGameData();
+        BeginLaunch(_gameSaveData);
+    }
+
+    /// <summary>
+    /// 读取唯一存档并使用其中的玩家数据开始游戏
+    /// </summary>
+    private void LoadSavedGame()
+    {
+        if (_process != LauncherProcess.None)
+        {
+            return;
+        }
+
+        if (!PlayerPrefsSaveSystem.TryLoad(
+                PlayerSaveSlotId,
+                out GameSaveData saveData,
+                out int schemaVersion))
+        {
+            Debug.LogWarning("未找到可读取的玩家存档。", this);
+            _loadSaveButton.interactable = false;
+            return;
+        }
+
+        if (saveData.playerInfo == null)
+        {
+            Debug.LogWarning("玩家存档缺少玩家数据，无法读取。", this);
+            return;
+        }
+
+        _gameSaveData = saveData;
+        BeginLaunch(_gameSaveData);
+    }
+
+    /// <summary>
+    /// 使用指定存档初始化玩家数据并进入加载流程
+    /// </summary>
+    /// <param name="saveData">要用于本次游戏的存档数据</param>
+    private void BeginLaunch(GameSaveData saveData)
+    {
+        InitializePlayerInfo(saveData);
         _menuRoot.SetActive(false);
         _loadingRoot.SetActive(true);
         SetProcessState(LauncherProcess.PreloadBegin);
@@ -130,7 +201,71 @@ public class Launcher : SingletonMono<Launcher>
     private void OpenMainMenu()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.MainMenuView);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.LotteryView);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
+    }
+
+    /// <summary>
+    /// 使用存档中的玩家数据初始化玩家数据管理器并启用自动保存
+    /// </summary>
+    /// <param name="saveData">包含玩家数据的当前存档</param>
+    private void InitializePlayerInfo(GameSaveData saveData)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.PlayerInfoChanged -= SaveCurrentPlayerInfo;
+        playerInfoManager.Init(saveData.playerInfo);
+        playerInfoManager.PlayerInfoChanged += SaveCurrentPlayerInfo;
+    }
+
+    /// <summary>
+    /// 创建新游戏所需的默认存档数据
+    /// </summary>
+    /// <returns>包含默认玩家状态的新存档</returns>
+    private static GameSaveData CreateDefaultGameSaveData()
+    {
+        return new GameSaveData
+        {
+            playerInfo = CreateDefaultPlayerInfoData()
+        };
+    }
+
+    /// <summary>
+    /// 创建新游戏所需的默认玩家状态
+    /// </summary>
+    /// <returns>年龄 22 岁、1 月且拥有初始货币与健康值的玩家数据</returns>
+    private static PlayerInfoData CreateDefaultPlayerInfoData()
+    {
+        return new PlayerInfoData
+        {
+            currentAge = 22,
+            currentMonth = 1,
+            health = 100,
+            maxHealth = 100,
+            simulationCoins = 500,
+            timeCoins = 10,
+            workedThisTurn = false
+        };
+    }
+
+    /// <summary>
+    /// 将管理器中的最新玩家数据写入唯一存档
+    /// </summary>
+    /// <param name="playerInfoManager">触发数据变化的玩家数据管理器</param>
+    private void SaveCurrentPlayerInfo(PlayerInfoManager playerInfoManager)
+    {
+        _gameSaveData.playerInfo = playerInfoManager.GetSnapshot();
+        SaveGameData();
+    }
+
+    /// <summary>
+    /// 保存当前唯一游戏存档
+    /// </summary>
+    private void SaveGameData()
+    {
+        PlayerPrefsSaveSystem.Save(
+            PlayerSaveSlotId,
+            "玩家存档",
+            _gameSaveData,
+            GameSaveData.CurrentSchemaVersion);
     }
 
     /// <summary>

@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 9072158556365078779}
   - component: {fileID: 6647228475949367407}
   - component: {fileID: 6502808194880385213}
+  - component: {fileID: 3661211200165599758}
   m_Layer: 5
   m_Name: Furniture Title
   m_TagString: Untagged
@@ -611,10 +612,24 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 7503561610736530013}
+  m_TargetGraphic: {fileID: 6647228475949367407}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3661211200165599758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5304770148744992596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb98613a74307d48bd848a302147bd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverScale: 1.1
+  _duration: 0.15
 --- !u!1 &5620056922878484728
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,6 +642,7 @@ GameObject:
   - component: {fileID: 7663076133338769655}
   - component: {fileID: 7503561610736530013}
   - component: {fileID: 3025033739506808880}
+  - component: {fileID: 7923131863903461032}
   m_Layer: 5
   m_Name: Store Title
   m_TagString: Untagged
@@ -736,6 +752,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7923131863903461032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5620056922878484728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb98613a74307d48bd848a302147bd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverScale: 1.1
+  _duration: 0.15
 --- !u!1 &6632107995797114195
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,6 +857,7 @@ GameObject:
   - component: {fileID: 5218458912901312275}
   - component: {fileID: 5825921228458251835}
   - component: {fileID: 7661431233258023411}
+  - component: {fileID: 3359181871831628206}
   m_Layer: 5
   m_Name: Community Title
   m_TagString: Untagged
@@ -932,10 +963,24 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 7503561610736530013}
+  m_TargetGraphic: {fileID: 5825921228458251835}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3359181871831628206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7395959655611687926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb98613a74307d48bd848a302147bd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverScale: 1.1
+  _duration: 0.15
 --- !u!1 &7537866980703056815
 GameObject:
   m_ObjectHideFlags: 0
@@ -1118,6 +1163,7 @@ GameObject:
   - component: {fileID: 6596428824540086711}
   - component: {fileID: 1034058391789398541}
   - component: {fileID: 7881164513933189371}
+  - component: {fileID: 1709875913149038932}
   m_Layer: 5
   m_Name: Work Title
   m_TagString: Untagged
@@ -1223,10 +1269,24 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 7503561610736530013}
+  m_TargetGraphic: {fileID: 1034058391789398541}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1709875913149038932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8053763777566287728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb98613a74307d48bd848a302147bd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverScale: 1.1
+  _duration: 0.15
 --- !u!1 &8107786395854398994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,6 +1299,7 @@ GameObject:
   - component: {fileID: 7024725312191965624}
   - component: {fileID: 7849996767384150011}
   - component: {fileID: 12699611634720750}
+  - component: {fileID: 859459865003835001}
   m_Layer: 5
   m_Name: Clinic Title
   m_TagString: Untagged
@@ -1344,10 +1405,24 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 7503561610736530013}
+  m_TargetGraphic: {fileID: 7849996767384150011}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &859459865003835001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8107786395854398994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb98613a74307d48bd848a302147bd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverScale: 1.1
+  _duration: 0.15
 --- !u!1 &8149024705600158563
 GameObject:
   m_ObjectHideFlags: 0

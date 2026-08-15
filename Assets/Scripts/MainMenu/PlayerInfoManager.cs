@@ -1,0 +1,245 @@
+using System;
+using UnityEngine;
+
+/// <summary>
+/// 玩家当前状态的数据模型，用于初始化、存档和生成只读快照
+/// </summary>
+[Serializable]
+public sealed class PlayerInfoData
+{
+    /// <summary>玩家的当前年龄</summary>
+    public int currentAge = 18;
+
+    /// <summary>当前年份中的月份, 取值范围为 1 至 12</summary>
+    public int currentMonth = 1;
+
+    /// <summary>玩家的当前健康值</summary>
+    public int health = 100;
+
+    /// <summary>玩家的最大健康值</summary>
+    public int maxHealth = 100;
+
+    /// <summary>玩家持有的模拟币数量</summary>
+    public int simulationCoins;
+
+    /// <summary>玩家持有的时间币数量</summary>
+    public int timeCoins;
+
+    /// <summary>标识玩家在当前回合是否已经打工</summary>
+    public bool workedThisTurn;
+}
+
+/// <summary>
+/// 玩家数据的单例管理器，是游戏逻辑与 UI 获取玩家状态的统一入口
+/// </summary>
+public class PlayerInfoManager : Singleton<PlayerInfoManager>
+{
+    /// <summary>每年的月份数量</summary>
+    private const int MonthsPerYear = 12;
+
+    /// <summary>当前由管理器维护的玩家数据</summary>
+    private PlayerInfoData _data = new PlayerInfoData();
+
+    /// <summary>获取玩家当前年龄</summary>
+    public int CurrentAge { get { return _data.currentAge; } }
+
+    /// <summary>获取当前月份, 范围为 1 至 12</summary>
+    public int CurrentMonth { get { return _data.currentMonth; } }
+
+    /// <summary>获取玩家当前健康值</summary>
+    public int Health { get { return _data.health; } }
+
+    /// <summary>获取玩家最大健康值</summary>
+    public int MaxHealth { get { return _data.maxHealth; } }
+
+    /// <summary>获取玩家当前持有的模拟币数量</summary>
+    public int SimulationCoins { get { return _data.simulationCoins; } }
+
+    /// <summary>获取玩家当前持有的时间币数量</summary>
+    public int TimeCoins { get { return _data.timeCoins; } }
+
+    /// <summary>获取玩家在本回合是否已经打工</summary>
+    public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
+
+    /// <summary>玩家数据发生变化时触发, UI 可订阅此事件刷新界面</summary>
+    public event Action<PlayerInfoManager> PlayerInfoChanged;
+
+    /// <summary>回合推进完成时触发, 其他系统可订阅此事件执行回合状态重置</summary>
+    public event Action TurnAdvanced;
+
+    /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
+    /// <param name="initialData">用于初始化的数据, 会复制以防止外部直接修改内部状态</param>
+    public void Init(PlayerInfoData initialData = null)
+    {
+        _data = initialData == null ? new PlayerInfoData() : CreateCopy(initialData);
+        NormalizeData();
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取独立的数据快照, 修改返回对象不会影响内部数据</summary>
+    /// <returns>当前玩家数据的副本</returns>
+    public PlayerInfoData GetSnapshot()
+    {
+        return CreateCopy(_data);
+    }
+
+    /// <summary>设置玩家年龄, 年龄不能小于零</summary>
+    /// <param name="age">要设置的年龄</param>
+    public void SetCurrentAge(int age)
+    {
+        SetValue(ref _data.currentAge, Mathf.Max(0, age));
+    }
+
+    /// <summary>设置当前月份, 输入值会限制在 1 至 12 之间</summary>
+    /// <param name="month">要设置的月份</param>
+    public void SetCurrentMonth(int month)
+    {
+        SetValue(ref _data.currentMonth, Mathf.Clamp(month, 1, MonthsPerYear));
+    }
+
+    /// <summary>设置最大健康值, 并同步限制当前健康值不超过新的上限</summary>
+    /// <param name="maxHealth">要设置的最大健康值, 最小为 1</param>
+    public void SetMaxHealth(int maxHealth)
+    {
+        maxHealth = Mathf.Max(1, maxHealth);
+        if (_data.maxHealth == maxHealth && _data.health <= maxHealth)
+        {
+            return;
+        }
+
+        _data.maxHealth = maxHealth;
+        _data.health = Mathf.Clamp(_data.health, 0, _data.maxHealth);
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>按指定数值增减健康值, 结果限制在零与最大健康值之间</summary>
+    /// <param name="amount">健康值变化量, 正数增加, 负数减少</param>
+    public void ChangeHealth(int amount)
+    {
+        SetValue(ref _data.health, Mathf.Clamp(_data.health + amount, 0, _data.maxHealth));
+    }
+
+    /// <summary>按指定数值增减模拟币, 模拟币不会低于零</summary>
+    /// <param name="amount">模拟币变化量, 正数增加, 负数减少</param>
+    public void AddSimulationCoins(int amount)
+    {
+        SetValue(ref _data.simulationCoins, Mathf.Max(0, _data.simulationCoins + amount));
+    }
+
+    /// <summary>尝试消耗指定数量的模拟币</summary>
+    /// <param name="amount">要消耗的模拟币数量, 必须为非负数</param>
+    /// <returns>模拟币充足且成功扣除时返回 true, 否则返回 false</returns>
+    public bool TrySpendSimulationCoins(int amount)
+    {
+        return TrySpendCoins(ref _data.simulationCoins, amount);
+    }
+
+    /// <summary>按指定数值增减时间币, 时间币不会低于零</summary>
+    /// <param name="amount">时间币变化量, 正数增加, 负数减少</param>
+    public void AddTimeCoins(int amount)
+    {
+        SetValue(ref _data.timeCoins, Mathf.Max(0, _data.timeCoins + amount));
+    }
+
+    /// <summary>尝试消耗指定数量的时间币</summary>
+    /// <param name="amount">要消耗的时间币数量, 必须为非负数</param>
+    /// <returns>时间币充足且成功扣除时返回 true, 否则返回 false</returns>
+    public bool TrySpendTimeCoins(int amount)
+    {
+        return TrySpendCoins(ref _data.timeCoins, amount);
+    }
+
+    /// <summary>将本回合打工状态标记为已完成; 同一回合不能重复打工</summary>
+    /// <returns>首次成功标记时返回 true, 已经打工时返回 false</returns>
+    public bool TryMarkWorkedThisTurn()
+    {
+        if (_data.workedThisTurn)
+        {
+            return false;
+        }
+
+        _data.workedThisTurn = true;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    /// <summary>推进至下一回合, 重置本回合状态并更新月份; 跨年时年龄增加一岁</summary>
+    public void AdvanceTurn()
+    {
+        _data.workedThisTurn = false;
+        _data.currentMonth++;
+
+        if (_data.currentMonth > MonthsPerYear)
+        {
+            _data.currentMonth = 1;
+            _data.currentAge++;
+        }
+
+        TurnAdvanced?.Invoke();
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>当整数值发生变化时写入新值并通知订阅者</summary>
+    /// <param name="target">要更新的目标数值</param>
+    /// <param name="value">更新后的数值</param>
+    private void SetValue(ref int target, int value)
+    {
+        if (target == value)
+        {
+            return;
+        }
+
+        target = value;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>尝试从指定货币余额中扣除数值</summary>
+    /// <param name="coins">要扣除的货币余额</param>
+    /// <param name="amount">要扣除的数量</param>
+    /// <returns>扣除成功时返回 true, 否则返回 false</returns>
+    private bool TrySpendCoins(ref int coins, int amount)
+    {
+        if (amount < 0 || coins < amount)
+        {
+            return false;
+        }
+
+        coins -= amount;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    /// <summary>修正初始化数据中的无效值, 确保内部状态始终处于合法范围</summary>
+    private void NormalizeData()
+    {
+        _data.currentAge = Mathf.Max(0, _data.currentAge);
+        _data.currentMonth = Mathf.Clamp(_data.currentMonth, 1, MonthsPerYear);
+        _data.maxHealth = Mathf.Max(1, _data.maxHealth);
+        _data.health = Mathf.Clamp(_data.health, 0, _data.maxHealth);
+        _data.simulationCoins = Mathf.Max(0, _data.simulationCoins);
+        _data.timeCoins = Mathf.Max(0, _data.timeCoins);
+    }
+
+    /// <summary>通知所有订阅者玩家数据已更新</summary>
+    private void NotifyPlayerInfoChanged()
+    {
+        PlayerInfoChanged?.Invoke(this);
+    }
+
+    /// <summary>创建玩家数据的独立副本</summary>
+    /// <param name="source">要复制的源数据</param>
+    /// <returns>与源数据内容相同的新对象</returns>
+    private static PlayerInfoData CreateCopy(PlayerInfoData source)
+    {
+        return new PlayerInfoData
+        {
+            currentAge = source.currentAge,
+            currentMonth = source.currentMonth,
+            health = source.health,
+            maxHealth = source.maxHealth,
+            simulationCoins = source.simulationCoins,
+            timeCoins = source.timeCoins,
+            workedThisTurn = source.workedThisTurn
+        };
+    }
+}

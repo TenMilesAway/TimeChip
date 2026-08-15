@@ -9,7 +9,7 @@ namespace TimeChip.Save
         /// <summary>
         /// 当前存档数据结构的版本号, 用于后续存档兼容与迁移
         /// </summary>
-        public const int CurrentSchemaVersion = 1;
+        public const int CurrentSchemaVersion = 2;
 
         /// <summary>
         /// 本存档累计的游戏时长, 单位为秒
@@ -20,6 +20,11 @@ namespace TimeChip.Save
         /// 玩家基础数据
         /// </summary>
         public PlayerData player = new PlayerData();
+
+        /// <summary>
+        /// 玩家当前的游戏状态数据
+        /// </summary>
+        public PlayerInfoData playerInfo = new PlayerInfoData();
 
         /// <summary>
         /// 游戏流程与关卡进度数据
