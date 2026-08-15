@@ -9,6 +9,8 @@ public class CommonRewardPanel : UIBasePanel
     [SerializeField] private Transform _commonRewardItemParent;             // 通用奖励物品父物体
     [SerializeField] private GameObject _textTip;                           // 提示文本
     [SerializeField, Min(0f)] private float _itemDisplayInterval = 0.35f;   // 奖励物品显示间隔
+    [SerializeField, Min(1)] private int _simulationCoinIconCount = 8;      // 模拟币飞行图标数量
+    [SerializeField] private bool _waitForFirstCoinArrival = true;          // 是否等待首枚图标抵达后入账
 
     private readonly List<CommonRewardItem> _rewardItems = new List<CommonRewardItem>(); // 奖励物品
 
@@ -107,7 +109,7 @@ public class CommonRewardPanel : UIBasePanel
             }
 
             CommonRewardItem rewardItem = rewardItemObject.GetComponent<CommonRewardItem>();
-            rewardItem.SetData(icon, rewardData.itemCount, itemConfig.RewardScale);
+            rewardItem.SetData(rewardData.itemId, icon, rewardData.itemCount, itemConfig.RewardScale);
             _rewardItems.Add(rewardItem);
         }
 
@@ -190,6 +192,84 @@ public class CommonRewardPanel : UIBasePanel
 
     private void ClosePanel()
     {
+        PlaySimulationCoinFlyAnimations();
         UIManager.GetInstance().ClosePanel(GetPanelName());
+    }
+
+    /// <summary>
+    /// 将模拟币奖励从奖励图标飞往主界面货币文本，并在首枚图标抵达时入账
+    /// </summary>
+    private void PlaySimulationCoinFlyAnimations()
+    {
+        MainMenuView mainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (mainMenuView == null)
+        {
+            GrantSimulationCoinRewardsImmediately();
+            return;
+        }
+
+        for (int i = 0; i < _rewardItems.Count; i++)
+        {
+            CommonRewardItem rewardItem = _rewardItems[i];
+            int simulationCoinAmount = GetSimulationCoinAmount(rewardItem.ItemId, rewardItem.Count);
+            if (simulationCoinAmount <= 0)
+            {
+                continue;
+            }
+
+            if (!CurrencyFlyAnimation.Play(
+                    rewardItem.IconTransform,
+                    mainMenuView.SimulationCoinIcon.rectTransform,
+                    mainMenuView.SimulationCoinIcon.sprite,
+                    _simulationCoinIconCount,
+                    _waitForFirstCoinArrival,
+                    () => AddSimulationCoins(mainMenuView, simulationCoinAmount)))
+            {
+                AddSimulationCoins(mainMenuView, simulationCoinAmount);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 在无法播放特效时直接发放所有模拟币奖励
+    /// </summary>
+    private void GrantSimulationCoinRewardsImmediately()
+    {
+        for (int i = 0; i < _rewardItems.Count; i++)
+        {
+            int simulationCoinAmount = GetSimulationCoinAmount(_rewardItems[i].ItemId, _rewardItems[i].Count);
+            if (simulationCoinAmount > 0)
+            {
+                PlayerInfoManager.GetInstance().AddSimulationCoins(simulationCoinAmount);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 将模拟币写入玩家数据, 并平滑更新主界面的显示数值
+    /// </summary>
+    private static void AddSimulationCoins(MainMenuView mainMenuView, int amount)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int currentAmount = playerInfoManager.SimulationCoins;
+        playerInfoManager.AddSimulationCoins(amount);
+        mainMenuView.PlaySimulationCoinCountAnimation(currentAmount, currentAmount + amount);
+    }
+
+    /// <summary>
+    /// 计算模拟币奖励兑换后的数量
+    /// </summary>
+    private static int GetSimulationCoinAmount(int itemId, int itemCount)
+    {
+        switch (itemId)
+        {
+            case 1000:
+                return itemCount * 100;
+            case 1001:
+                return itemCount * 1000;
+            default:
+                return 0;
+        }
     }
 }

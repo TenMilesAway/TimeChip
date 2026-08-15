@@ -969,6 +969,7 @@ MonoBehaviour:
   - {fileID: 7702965035179890453}
   - {fileID: 3171859697776193502}
   lotteryButton: {fileID: 6166591189480609307}
+  _timeCoinText: {fileID: 1412927927000202791}
 --- !u!222 &42969280150569989
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ public class LotteryView : UIBasePanel
     [SerializeField] private RectTransform[] _bubbles;      // 气泡
     [FormerlySerializedAs("lotteryButton")]
     [SerializeField] private Button _lotteryButton;         // 抽奖按钮
+    [SerializeField] private Text _timeCoinText;            // 剩余时间币文本
 
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
     private Vector2[] _bubblePositions;                     // 气泡位置
@@ -25,6 +26,11 @@ public class LotteryView : UIBasePanel
 
     private const int LotteryPoolId = 1;                    // 奖池 ID
     private const float LotteryDuration = 1f;               // 奖池抽奖间隔
+    private const int LotteryTimeCoinCost = 1;              // 单次抽奖消耗的时间币
+    private const int SmallSimulationCoinItemId = 1000;     // 兑换 100 模拟币的奖励 ID
+    private const int LargeSimulationCoinItemId = 1001;     // 兑换 1000 模拟币的奖励 ID
+    private const int SmallSimulationCoinValue = 100;       // 小额兑换值
+    private const int LargeSimulationCoinValue = 1000;      // 大额兑换值
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -38,6 +44,11 @@ public class LotteryView : UIBasePanel
         CacheAnimationState();
         RestoreAnimationState();
         RegisterButtonListener();
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.PlayerInfoChanged -= RefreshTimeCoins;
+        playerInfoManager.PlayerInfoChanged += RefreshTimeCoins;
+        RefreshTimeCoins(playerInfoManager);
     }
 
     protected override void HideHandle()
@@ -47,6 +58,7 @@ public class LotteryView : UIBasePanel
         _isLotteryInProgress = false;
         DOTween.Kill(this);
         RestoreAnimationState();
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshTimeCoins;
 
         if (_lotteryButton != null)
         {
@@ -63,6 +75,7 @@ public class LotteryView : UIBasePanel
             _lotteryButton.onClick.RemoveListener(StartLottery);
         }
 
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshTimeCoins;
         base.OnDestroy();
     }
 
@@ -82,6 +95,13 @@ public class LotteryView : UIBasePanel
     private void StartLottery()
     {
         if (_isLotteryInProgress) return;
+
+        if (!PlayerInfoManager.GetInstance().TrySpendTimeCoins(LotteryTimeCoinCost))
+        {
+            Debug.LogWarning("时间币不足, 无法抽奖", this);
+            CommonTipView.Show("时间币不足");
+            return;
+        }
 
         _isLotteryInProgress = true;
         _lotteryButton.interactable = false;
@@ -106,10 +126,35 @@ public class LotteryView : UIBasePanel
 
         if (!TryDrawReward(out CommonRewardItemData reward)) return;
 
+        ApplyReward(reward);
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
         {
             data = new List<CommonRewardItemData> { reward }
         });
+    }
+
+    private static void ApplyReward(CommonRewardItemData reward)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        switch (reward.itemId)
+        {
+            case SmallSimulationCoinItemId:
+            case LargeSimulationCoinItemId:
+                break;
+            default:
+                playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 将玩家当前持有的时间币数量显示在抽奖界面
+    /// </summary>
+    /// <param name="playerInfoManager">提供最新玩家数据的管理器</param>
+    private void RefreshTimeCoins(PlayerInfoManager playerInfoManager)
+    {
+        _timeCoinText.text = $"剩余时间币数量：{playerInfoManager.TimeCoins}";
     }
 
     private bool TryDrawReward(out CommonRewardItemData reward)
@@ -119,20 +164,17 @@ public class LotteryView : UIBasePanel
         cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable.GetOrDefault(LotteryPoolId);
         if (lotteryConfig == null)
         {
-            Debug.LogError($"Lottery pool config was not found: id[{LotteryPoolId}].");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(lotteryConfig.Rewards))
         {
-            Debug.LogError($"Lottery pool has no rewards: id[{LotteryPoolId}].");
             return false;
         }
 
         List<LotteryReward> rewards = ParseRewards(lotteryConfig.Rewards);
         if (rewards.Count == 0)
         {
-            Debug.LogError($"Lottery pool has no valid rewards: id[{LotteryPoolId}].");
             return false;
         }
 
@@ -179,7 +221,6 @@ public class LotteryView : UIBasePanel
                 !int.TryParse(values[2], out int weight) ||
                 itemId <= 0 || itemCount <= 0 || weight <= 0)
             {
-                Debug.LogError($"Invalid lottery reward entry: [{rewardEntries[i]}].");
                 continue;
             }
 

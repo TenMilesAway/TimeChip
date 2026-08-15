@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -27,6 +28,22 @@ public sealed class PlayerInfoData
 
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
+
+    /// <summary>玩家拥有的可叠加道具列表</summary>
+    public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
+}
+
+/// <summary>
+/// 玩家背包中的单种道具及其数量
+/// </summary>
+[Serializable]
+public sealed class PlayerInventoryItem
+{
+    /// <summary>道具的配置 ID</summary>
+    public int itemId;
+
+    /// <summary>玩家持有该道具的数量</summary>
+    public int amount;
 }
 
 /// <summary>
@@ -149,6 +166,59 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return TrySpendCoins(ref _data.timeCoins, amount);
     }
 
+    /// <summary>向背包添加道具; 相同道具会自动叠加数量</summary>
+    /// <param name="itemId">要添加的道具 ID, 必须大于零</param>
+    /// <param name="amount">要添加的数量, 必须大于零</param>
+    public void AddItem(int itemId, int amount)
+    {
+        if (itemId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(itemId));
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        for (int i = 0; i < _data.inventory.Count; i++)
+        {
+            PlayerInventoryItem item = _data.inventory[i];
+            if (item.itemId != itemId)
+            {
+                continue;
+            }
+
+            item.amount += amount;
+            NotifyPlayerInfoChanged();
+            return;
+        }
+
+        _data.inventory.Add(new PlayerInventoryItem
+        {
+            itemId = itemId,
+            amount = amount
+        });
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取背包中指定道具的持有数量。</summary>
+    /// <param name="itemId">要查询的道具 ID。</param>
+    /// <returns>指定道具的持有数量，未拥有时返回零。</returns>
+    public int GetItemCount(int itemId)
+    {
+        for (int i = 0; i < _data.inventory.Count; i++)
+        {
+            PlayerInventoryItem item = _data.inventory[i];
+            if (item.itemId == itemId)
+            {
+                return item.amount;
+            }
+        }
+
+        return 0;
+    }
+
     /// <summary>将本回合打工状态标记为已完成; 同一回合不能重复打工</summary>
     /// <returns>首次成功标记时返回 true, 已经打工时返回 false</returns>
     public bool TryMarkWorkedThisTurn()
@@ -218,6 +288,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.health = Mathf.Clamp(_data.health, 0, _data.maxHealth);
         _data.simulationCoins = Mathf.Max(0, _data.simulationCoins);
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
+        if (_data.inventory == null)
+        {
+            _data.inventory = new List<PlayerInventoryItem>();
+        }
+
+        _data.inventory.RemoveAll(item => item == null || item.itemId <= 0 || item.amount <= 0);
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -239,7 +315,37 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             maxHealth = source.maxHealth,
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
-            workedThisTurn = source.workedThisTurn
+            workedThisTurn = source.workedThisTurn,
+            inventory = CreateInventoryCopy(source.inventory)
         };
+    }
+
+    /// <summary>创建背包数据的深拷贝, 避免快照被外部修改</summary>
+    /// <param name="source">要复制的源背包列表</param>
+    /// <returns>与源背包内容相同的新列表</returns>
+    private static List<PlayerInventoryItem> CreateInventoryCopy(List<PlayerInventoryItem> source)
+    {
+        List<PlayerInventoryItem> copy = new List<PlayerInventoryItem>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerInventoryItem item = source[i];
+            if (item == null)
+            {
+                continue;
+            }
+
+            copy.Add(new PlayerInventoryItem
+            {
+                itemId = item.itemId,
+                amount = item.amount
+            });
+        }
+
+        return copy;
     }
 }

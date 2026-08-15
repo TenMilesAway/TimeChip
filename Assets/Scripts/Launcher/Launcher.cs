@@ -27,6 +27,7 @@ public class Launcher : SingletonMono<Launcher>
     protected override void Awake()
     {
         base.Awake();
+
         InitializeGameManager();
     }
 
@@ -35,7 +36,7 @@ public class Launcher : SingletonMono<Launcher>
         _loadingRoot.SetActive(false);
         if (_newGameButton == null || _loadSaveButton == null)
         {
-            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏按钮和读取存档按钮。", this);
+            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏按钮和读取存档按钮", this);
             return;
         }
 
@@ -174,6 +175,9 @@ public class Launcher : SingletonMono<Launcher>
         SetProcessState(LauncherProcess.PreloadBegin);
     }
 
+    /// <summary>
+    /// 异步初始化数据
+    /// </summary>
     private async void InitializeDataAsync()
     {
         _isInitializingData = true;
@@ -186,22 +190,24 @@ public class Launcher : SingletonMono<Launcher>
         SetProcessState(LauncherProcess.InitDataEnd);
     }
 
+    /// <summary>
+    /// 加载数据
+    /// </summary>
     private Task LoadRequiredDataAsync()
     {
         DataTableMananger.GetInstance().Init();
-        foreach (cfg.Item item in DataTableMananger.GetInstance().Tables.ItemTable.DataList)
-        {
-            Debug.Log(item.ToString());
-        }
 
-        // 后续在此添加其他数据、资源和网络初始化任务
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// 打开主界面及其他面板
+    /// </summary>
     private void OpenMainMenu()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.MainMenuView);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonTipView);
     }
 
     /// <summary>
@@ -231,7 +237,6 @@ public class Launcher : SingletonMono<Launcher>
     /// <summary>
     /// 创建新游戏所需的默认玩家状态
     /// </summary>
-    /// <returns>年龄 22 岁、1 月且拥有初始货币与健康值的玩家数据</returns>
     private static PlayerInfoData CreateDefaultPlayerInfoData()
     {
         return new PlayerInfoData
