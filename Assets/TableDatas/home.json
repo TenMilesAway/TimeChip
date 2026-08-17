@@ -1,0 +1,554 @@
+[
+  {
+    "id": 1000,
+    "name": "玄关座椅",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "玄关椅子",
+    "unlockId": 0
+  },
+  {
+    "id": 1001,
+    "name": "玄关鞋柜",
+    "price": 1000,
+    "satisfaction": 2,
+    "desc": "玄关柜子",
+    "unlockId": 0
+  },
+  {
+    "id": 2000,
+    "name": "游戏电脑",
+    "price": 1600,
+    "satisfaction": 4,
+    "desc": "游戏屋电脑",
+    "unlockId": 0
+  },
+  {
+    "id": 2001,
+    "name": "电竞椅",
+    "price": 520,
+    "satisfaction": 1,
+    "desc": "游戏屋椅子",
+    "unlockId": 2000
+  },
+  {
+    "id": 2002,
+    "name": "照明灯1",
+    "price": 280,
+    "satisfaction": 0.5,
+    "desc": "游戏屋电脑旁灯",
+    "unlockId": 2000
+  },
+  {
+    "id": 2003,
+    "name": "地毯",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "游戏屋地毯",
+    "unlockId": 0
+  },
+  {
+    "id": 2004,
+    "name": "游戏机",
+    "price": 1125,
+    "satisfaction": 2.5,
+    "desc": "游戏屋游戏机",
+    "unlockId": 0
+  },
+  {
+    "id": 2005,
+    "name": "收纳柜",
+    "price": 800,
+    "satisfaction": 1.5,
+    "desc": "游戏屋游戏机旁柜子",
+    "unlockId": 0
+  },
+  {
+    "id": 2006,
+    "name": "懒人沙发",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "游戏屋游戏机旁小窝",
+    "unlockId": 0
+  },
+  {
+    "id": 2007,
+    "name": "置物柜",
+    "price": 1000,
+    "satisfaction": 2,
+    "desc": "游戏屋柜子",
+    "unlockId": 0
+  },
+  {
+    "id": 2008,
+    "name": "照明灯2",
+    "price": 280,
+    "satisfaction": 0.5,
+    "desc": "游戏屋柜子旁灯",
+    "unlockId": 2007
+  },
+  {
+    "id": 2009,
+    "name": "储物箱",
+    "price": 800,
+    "satisfaction": 1.5,
+    "desc": "游戏屋柜子旁储物箱",
+    "unlockId": 0
+  },
+  {
+    "id": 3000,
+    "name": "防滑地毯",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "洗手间地毯",
+    "unlockId": 0
+  },
+  {
+    "id": 3001,
+    "name": "绿植",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "洗手间植物",
+    "unlockId": 0
+  },
+  {
+    "id": 3002,
+    "name": "马桶",
+    "price": 1300,
+    "satisfaction": 3,
+    "desc": "洗手间马桶",
+    "unlockId": 0
+  },
+  {
+    "id": 3003,
+    "name": "浴缸",
+    "price": 1100,
+    "satisfaction": 2.5,
+    "desc": "洗手间浴缸",
+    "unlockId": 0
+  },
+  {
+    "id": 3004,
+    "name": "置物桌1",
+    "price": 800,
+    "satisfaction": 1.5,
+    "desc": "洗手间浴缸旁桌子",
+    "unlockId": 3003
+  },
+  {
+    "id": 3005,
+    "name": "衣篓",
+    "price": 600,
+    "satisfaction": 1,
+    "desc": "洗手间脏衣篓",
+    "unlockId": 0
+  },
+  {
+    "id": 3006,
+    "name": "洗手台",
+    "price": 1200,
+    "satisfaction": 3,
+    "desc": "洗手间洗手台",
+    "unlockId": 0
+  },
+  {
+    "id": 3007,
+    "name": "毛巾架",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "洗手间毛巾架",
+    "unlockId": 0
+  },
+  {
+    "id": 3008,
+    "name": "置物桌2",
+    "price": 600,
+    "satisfaction": 1,
+    "desc": "洗手间洗手台旁桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 4000,
+    "name": "地毯",
+    "price": 600,
+    "satisfaction": 1,
+    "desc": "厨房地毯",
+    "unlockId": 0
+  },
+  {
+    "id": 4001,
+    "name": "冰箱",
+    "price": 1200,
+    "satisfaction": 3,
+    "desc": "厨房冰箱",
+    "unlockId": 0
+  },
+  {
+    "id": 4002,
+    "name": "橱柜套装",
+    "price": 800,
+    "satisfaction": 1.5,
+    "desc": "厨房橱柜",
+    "unlockId": 0
+  },
+  {
+    "id": 4003,
+    "name": "厨具",
+    "price": 1100,
+    "satisfaction": 2,
+    "desc": "厨房厨具",
+    "unlockId": 4002
+  },
+  {
+    "id": 4004,
+    "name": "灶台",
+    "price": 1200,
+    "satisfaction": 3,
+    "desc": "厨房灶台",
+    "unlockId": 0
+  },
+  {
+    "id": 4005,
+    "name": "水槽",
+    "price": 800,
+    "satisfaction": 2,
+    "desc": "厨房水槽",
+    "unlockId": 0
+  },
+  {
+    "id": 5000,
+    "name": "地毯",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "客厅地毯 1",
+    "unlockId": 0
+  },
+  {
+    "id": 5001,
+    "name": "中央地毯",
+    "price": 1180,
+    "satisfaction": 2,
+    "desc": "客厅地毯 2",
+    "unlockId": 0
+  },
+  {
+    "id": 5002,
+    "name": "三人沙发",
+    "price": 1250,
+    "satisfaction": 2.5,
+    "desc": "客厅沙发",
+    "unlockId": 0
+  },
+  {
+    "id": 5003,
+    "name": "照明灯1",
+    "price": 280,
+    "satisfaction": 0.5,
+    "desc": "客厅沙发旁灯",
+    "unlockId": 0
+  },
+  {
+    "id": 5004,
+    "name": "置物小桌",
+    "price": 850,
+    "satisfaction": 1.5,
+    "desc": "客厅沙发旁小桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 5005,
+    "name": "茶几",
+    "price": 1280,
+    "satisfaction": 3,
+    "desc": "客厅沙发旁桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 5006,
+    "name": "收纳柜",
+    "price": 1800,
+    "satisfaction": 3,
+    "desc": "客厅沙发旁收纳柜",
+    "unlockId": 0
+  },
+  {
+    "id": 5007,
+    "name": "电视",
+    "price": 1280,
+    "satisfaction": 3,
+    "desc": "客厅电视",
+    "unlockId": 0
+  },
+  {
+    "id": 5008,
+    "name": "照明灯2",
+    "price": 280,
+    "satisfaction": 0.5,
+    "desc": "客厅电视旁灯",
+    "unlockId": 0
+  },
+  {
+    "id": 5009,
+    "name": "餐桌",
+    "price": 900,
+    "satisfaction": 2,
+    "desc": "客厅餐桌",
+    "unlockId": 0
+  },
+  {
+    "id": 5010,
+    "name": "绿植1",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "客厅餐桌植物",
+    "unlockId": 0
+  },
+  {
+    "id": 5011,
+    "name": "绿植2",
+    "price": 1100,
+    "satisfaction": 2,
+    "desc": "客厅植物",
+    "unlockId": 0
+  },
+  {
+    "id": 6000,
+    "name": "绿植",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "卧室植物",
+    "unlockId": 0
+  },
+  {
+    "id": 6001,
+    "name": "双人床",
+    "price": 1000,
+    "satisfaction": 2.5,
+    "desc": "卧室床",
+    "unlockId": 0
+  },
+  {
+    "id": 6002,
+    "name": "床头柜",
+    "price": 1000,
+    "satisfaction": 2,
+    "desc": "卧室床头柜",
+    "unlockId": 0
+  },
+  {
+    "id": 6003,
+    "name": "床头灯",
+    "price": 560,
+    "satisfaction": 1,
+    "desc": "卧室床头灯",
+    "unlockId": 6002
+  },
+  {
+    "id": 6004,
+    "name": "衣柜",
+    "price": 675,
+    "satisfaction": 1.5,
+    "desc": "卧室衣柜",
+    "unlockId": 0
+  },
+  {
+    "id": 6005,
+    "name": "置物桌",
+    "price": 600,
+    "satisfaction": 1,
+    "desc": "卧室衣柜旁桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 6006,
+    "name": "梳妆台",
+    "price": 1050,
+    "satisfaction": 2,
+    "desc": "卧室梳妆台",
+    "unlockId": 0
+  },
+  {
+    "id": 6007,
+    "name": "照明灯",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "卧室梳妆台旁灯",
+    "unlockId": 0
+  },
+  {
+    "id": 6008,
+    "name": "柜子",
+    "price": 1200,
+    "satisfaction": 2,
+    "desc": "卧室梳妆台旁桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 7000,
+    "name": "单人床",
+    "price": 800,
+    "satisfaction": 2,
+    "desc": "卧室 2 床",
+    "unlockId": 0
+  },
+  {
+    "id": 7001,
+    "name": "床头柜",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "卧室 2 床头柜",
+    "unlockId": 0
+  },
+  {
+    "id": 7002,
+    "name": "兔子灯",
+    "price": 480,
+    "satisfaction": 1,
+    "desc": "卧室 2 床头灯",
+    "unlockId": 0
+  },
+  {
+    "id": 7003,
+    "name": "衣柜",
+    "price": 675,
+    "satisfaction": 1.5,
+    "desc": "卧室 2 衣柜",
+    "unlockId": 0
+  },
+  {
+    "id": 7004,
+    "name": "懒人沙发",
+    "price": 520,
+    "satisfaction": 1,
+    "desc": "卧室 2 椅子",
+    "unlockId": 0
+  },
+  {
+    "id": 7005,
+    "name": "储物箱",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "卧室 2 储物箱 1",
+    "unlockId": 0
+  },
+  {
+    "id": 7006,
+    "name": "储物架",
+    "price": 275,
+    "satisfaction": 0.5,
+    "desc": "卧室 2 储物箱 2",
+    "unlockId": 0
+  },
+  {
+    "id": 7007,
+    "name": "学习桌",
+    "price": 750,
+    "satisfaction": 1.5,
+    "desc": "卧室 2 桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 8000,
+    "name": "地毯",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "阳台地毯",
+    "unlockId": 0
+  },
+  {
+    "id": 8001,
+    "name": "水壶",
+    "price": 200,
+    "satisfaction": 0.5,
+    "desc": "阳台水壶",
+    "unlockId": 0
+  },
+  {
+    "id": 8002,
+    "name": "绿植1",
+    "price": 480,
+    "satisfaction": 1,
+    "desc": "阳台植物 1",
+    "unlockId": 0
+  },
+  {
+    "id": 8003,
+    "name": "绿植2",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "阳台植物 2",
+    "unlockId": 0
+  },
+  {
+    "id": 8004,
+    "name": "绿植3",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "阳台植物 3",
+    "unlockId": 0
+  },
+  {
+    "id": 8005,
+    "name": "绿植4",
+    "price": 300,
+    "satisfaction": 0.5,
+    "desc": "阳台植物 4",
+    "unlockId": 0
+  },
+  {
+    "id": 8006,
+    "name": "晾衣架1",
+    "price": 200,
+    "satisfaction": 0.5,
+    "desc": "阳台晾衣架 1",
+    "unlockId": 0
+  },
+  {
+    "id": 8007,
+    "name": "晾衣架2",
+    "price": 495,
+    "satisfaction": 1,
+    "desc": "阳台晾衣架 2",
+    "unlockId": 0
+  },
+  {
+    "id": 8008,
+    "name": "储物箱",
+    "price": 500,
+    "satisfaction": 1,
+    "desc": "阳台储物箱",
+    "unlockId": 0
+  },
+  {
+    "id": 8009,
+    "name": "置物桌",
+    "price": 250,
+    "satisfaction": 0.5,
+    "desc": "阳台左侧桌子",
+    "unlockId": 0
+  },
+  {
+    "id": 8010,
+    "name": "藤椅",
+    "price": 600,
+    "satisfaction": 1,
+    "desc": "阳台左侧椅子 1",
+    "unlockId": 0
+  },
+  {
+    "id": 8011,
+    "name": "双人沙发",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "阳台左侧椅子 2",
+    "unlockId": 0
+  },
+  {
+    "id": 8012,
+    "name": "小茶几",
+    "price": 550,
+    "satisfaction": 1,
+    "desc": "阳台桌子",
+    "unlockId": 0
+  }
+]

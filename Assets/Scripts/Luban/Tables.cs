@@ -21,12 +21,17 @@ public partial class Tables
     /// 抽奖池配置
     /// </summary>
     public LotteryTable LotteryTable {get; }
+    /// <summary>
+    /// 家具配置
+    /// </summary>
+    public HomeTable HomeTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
     {
         ItemTable = new ItemTable(loader("item"));
         LotteryTable = new LotteryTable(loader("lottery"));
+        HomeTable = new HomeTable(loader("home"));
         ResolveRef();
     }
     
@@ -34,6 +39,7 @@ public partial class Tables
     {
         ItemTable.ResolveRef(this);
         LotteryTable.ResolveRef(this);
+        HomeTable.ResolveRef(this);
     }
 }
 

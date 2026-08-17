@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: RemoteHome
+  m_EditorClassIdentifier: 
+  m_GroupName: RemoteHome
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f18fd7949b37a9d4d985b6b98d891919
+  m_SerializeEntries:
+  - m_GUID: 295e65c5082a9fc4e883c2baea8e3cfb
+    m_Address: Assets/Art/Home/Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 351c04e266687be4b8e9635d57fc1801
+    m_Address: Assets/Art/Home/SpriteAtlasBedroom.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4582af74c199d45468d0f97e7256a753
+    m_Address: Assets/Art/Home/SpriteAtlasKitchen.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bf8a6fc0eb400b45ac2598fba2b69d7
+    m_Address: Assets/Art/Home/SpritesBig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 907c4b00a765ebd4382ea1d0006d8d93
+    m_Address: Assets/Art/Home/SpriteAtlasWashroom.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4474ffc079426e438148ccdc4b1e97b
+    m_Address: Assets/Art/Home/SpriteAtlasBalcony.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b32725cdeca725949a62f6270dc5da3c
+    m_Address: Assets/Art/Home/SpriteAtlasBedroom2.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb777ff55b072644794282e8e8c5f1e5
+    m_Address: Assets/Art/Home/SpriteAtlasLivingroom.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb86157ec037d444e9dba14df7eb1e52
+    m_Address: Assets/Art/Home/SpriteAtlasGame.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 22a1ab09003813940b819aee16619a6d, type: 2}
+    - {fileID: 11400000, guid: cc8aee94aed0d9541906b4cdbc25f696, type: 2}
