@@ -153,6 +153,9 @@ public class MainMenuView : UIBasePanel
             case MainContentPage.Lottery:
                 panelName = GlobalDefine.LotteryView;
                 return true;
+            case MainContentPage.Home:
+                panelName = GlobalDefine.HomeView;
+                return true;
             default:
                 panelName = null;
                 return false;

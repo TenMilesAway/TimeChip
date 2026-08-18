@@ -4314,6 +4314,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4665146771972663165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 782622217226037568}
+  m_Layer: 5
+  m_Name: Component Desk 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &782622217226037568
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4665146771972663165}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2529003728822566665}
+  - {fileID: 1606059292648273741}
+  m_Father: {fileID: 2070598033626034533}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 208.3, y: -482.9}
+  m_SizeDelta: {x: 33, y: 28.200012}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4728497785349245393
 GameObject:
   m_ObjectHideFlags: 0
@@ -4757,16 +4794,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5103172079124864199}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.049999997, y: 0.049999997, z: 0.049999997}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2070598033626034533}
+  m_Father: {fileID: 782622217226037568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 215.50002, y: -478.99994}
+  m_AnchoredPosition: {x: 7.1999664, y: 3.9000244}
   m_SizeDelta: {x: 275, y: 235}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &889533810824621281
@@ -4907,16 +4944,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5156287378806862478}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.12, y: 0.12, z: 0.12}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2070598033626034533}
+  m_Father: {fileID: 782622217226037568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 208.3, y: -482.9}
+  m_AnchoredPosition: {x: 0.000015258789, y: 0}
   m_SizeDelta: {x: 275, y: 235}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5594832207182976391
@@ -5130,75 +5167,145 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isBlockingWindow: 1
-  _hallwayChairs: {fileID: 1441355416529976873}
-  _hallwayTable: {fileID: 6914021261619945892}
-  _gameComputer: {fileID: 8256063083275070169}
-  _gameComputerChair: {fileID: 8153459383381271970}
-  _gameComputerLight: {fileID: 607839780729011710}
-  _gameCarpet: {fileID: 104825858325983393}
-  _gameMachine: {fileID: 4005755535412923625}
-  _gameTable1: {fileID: 5133605904601513594}
-  _gameBed: {fileID: 8185355532337511845}
-  _gameTable2: {fileID: 3712996695583532700}
-  _gameTable2Light: {fileID: 7039372497321502974}
-  _gameTable2StorageBox: {fileID: 926683826972443090}
-  _washCarpet: {fileID: 3732408616399584558}
-  _washPlant: {fileID: 2367645620885541739}
-  _washToilet: {fileID: 1099852911827895923}
-  _washBathtub: {fileID: 2845381617984857825}
-  _washBathtubDesk: {fileID: 5156287378806862478}
-  _washClotheBusket: {fileID: 3115147124711146378}
-  _washBasin: {fileID: 448945388009310116}
-  _washTowel: {fileID: 4048006427417812253}
-  _washBasinDesk: {fileID: 7709161009624209677}
-  _kitchenCarpet: {fileID: 3930962474103631093}
-  _kitchenFridge: {fileID: 3625942061829599442}
-  _kitchenTables: {fileID: 9008289042581647169}
-  _kitchenTableware: {fileID: 950964952526977213}
-  _kitchenHearth: {fileID: 4004600387780437130}
-  _kitchenBasin: {fileID: 6268603953086823566}
-  _livingCarpet1: {fileID: 1973857670238172270}
-  _livingCarpet2: {fileID: 2541225496354392779}
-  _livingSofa: {fileID: 4652879742693135573}
-  _livingSofaLight: {fileID: 5576002474717100359}
-  _livingSofaLittleDesk: {fileID: 1839126038645026630}
-  _livingSofaDesk: {fileID: 6195081716744352186}
-  _livingSofaTable: {fileID: 6760550170455404495}
-  _livingTV: {fileID: 458775590799493390}
-  _livingTVLight: {fileID: 762032880981830539}
-  _livingDiningTable: {fileID: 5947692049947895411}
-  _livingDiningTablePlant: {fileID: 2258406566561222237}
-  _livingPlant: {fileID: 9126195308256097648}
-  _bedroomPlant: {fileID: 8002620154002396854}
-  _bedroomBed: {fileID: 4038752064041342187}
-  _bedroomBesideTables: {fileID: 2172988426533301364}
-  _bedroomBesideLights: {fileID: 5394067189443504228}
-  _bedroomCloset: {fileID: 8970333912582851887}
-  _bedroomClosetTable: {fileID: 6442541536640399698}
-  _bedroomDressingTable: {fileID: 8691835415231624354}
-  _bedroomDressingLight: {fileID: 9041049331559498061}
-  _bedroomDesk: {fileID: 2066311372834498888}
-  _bedroom2Bed: {fileID: 8358779954325244636}
-  _bedroom2BesideTable: {fileID: 1206001360835592285}
-  _bedroom2BesideLight: {fileID: 1943928585809437979}
-  _bedroom2Closet: {fileID: 2082694966929862160}
-  _bedroom2Sofa: {fileID: 7042673408616982878}
-  _bedroom2StorageBox1: {fileID: 5102783990669346791}
-  _bedroom2StorageBox2: {fileID: 1069757061052488249}
-  _bedroom2Desk: {fileID: 3798263679245366238}
-  _balconyCarpet: {fileID: 8510347033628783597}
-  _balconyKettle: {fileID: 4737974492678136280}
-  _balconyPlant1: {fileID: 3518639966540906255}
-  _balconyPlant2: {fileID: 6664742423359581621}
-  _balconyPlant3: {fileID: 180207951988632401}
-  _balconyPlant4: {fileID: 8190128208180204518}
-  _balconyClotheHanger1: {fileID: 371749821994850580}
-  _balconyClotheHanger2: {fileID: 4573462753966972607}
-  _balconyStorageBox: {fileID: 3279367783744509495}
-  _balconyLeftDesk: {fileID: 6427876806285864582}
-  _balconyChair1: {fileID: 4454093289539172601}
-  _balconyChair2: {fileID: 8455029543014437765}
-  _balconyDesk: {fileID: 4919522793185077904}
+  _furnitureBindings:
+  - homeId: 1000
+    furniture: {fileID: 1441355416529976873}
+  - homeId: 1001
+    furniture: {fileID: 6914021261619945892}
+  - homeId: 2000
+    furniture: {fileID: 8256063083275070169}
+  - homeId: 2001
+    furniture: {fileID: 8153459383381271970}
+  - homeId: 2002
+    furniture: {fileID: 607839780729011710}
+  - homeId: 2003
+    furniture: {fileID: 104825858325983393}
+  - homeId: 2004
+    furniture: {fileID: 4005755535412923625}
+  - homeId: 2005
+    furniture: {fileID: 5133605904601513594}
+  - homeId: 2006
+    furniture: {fileID: 8185355532337511845}
+  - homeId: 2007
+    furniture: {fileID: 3712996695583532700}
+  - homeId: 2008
+    furniture: {fileID: 7039372497321502974}
+  - homeId: 2009
+    furniture: {fileID: 926683826972443090}
+  - homeId: 3000
+    furniture: {fileID: 3732408616399584558}
+  - homeId: 3001
+    furniture: {fileID: 2367645620885541739}
+  - homeId: 3002
+    furniture: {fileID: 1099852911827895923}
+  - homeId: 3003
+    furniture: {fileID: 2845381617984857825}
+  - homeId: 3004
+    furniture: {fileID: 4665146771972663165}
+  - homeId: 3005
+    furniture: {fileID: 3115147124711146378}
+  - homeId: 3006
+    furniture: {fileID: 448945388009310116}
+  - homeId: 3007
+    furniture: {fileID: 4048006427417812253}
+  - homeId: 3008
+    furniture: {fileID: 7709161009624209677}
+  - homeId: 4000
+    furniture: {fileID: 3930962474103631093}
+  - homeId: 4001
+    furniture: {fileID: 3625942061829599442}
+  - homeId: 4002
+    furniture: {fileID: 9008289042581647169}
+  - homeId: 4003
+    furniture: {fileID: 950964952526977213}
+  - homeId: 4004
+    furniture: {fileID: 4004600387780437130}
+  - homeId: 4005
+    furniture: {fileID: 6268603953086823566}
+  - homeId: 5000
+    furniture: {fileID: 1973857670238172270}
+  - homeId: 5001
+    furniture: {fileID: 2541225496354392779}
+  - homeId: 5002
+    furniture: {fileID: 4652879742693135573}
+  - homeId: 5003
+    furniture: {fileID: 5576002474717100359}
+  - homeId: 5004
+    furniture: {fileID: 1839126038645026630}
+  - homeId: 5005
+    furniture: {fileID: 6195081716744352186}
+  - homeId: 5006
+    furniture: {fileID: 6760550170455404495}
+  - homeId: 5007
+    furniture: {fileID: 458775590799493390}
+  - homeId: 5008
+    furniture: {fileID: 762032880981830539}
+  - homeId: 5009
+    furniture: {fileID: 5947692049947895411}
+  - homeId: 5010
+    furniture: {fileID: 2258406566561222237}
+  - homeId: 5011
+    furniture: {fileID: 9126195308256097648}
+  - homeId: 6000
+    furniture: {fileID: 8002620154002396854}
+  - homeId: 6001
+    furniture: {fileID: 4038752064041342187}
+  - homeId: 6002
+    furniture: {fileID: 2172988426533301364}
+  - homeId: 6003
+    furniture: {fileID: 5394067189443504228}
+  - homeId: 6004
+    furniture: {fileID: 8970333912582851887}
+  - homeId: 6005
+    furniture: {fileID: 6442541536640399698}
+  - homeId: 6006
+    furniture: {fileID: 8691835415231624354}
+  - homeId: 6007
+    furniture: {fileID: 9041049331559498061}
+  - homeId: 6008
+    furniture: {fileID: 2066311372834498888}
+  - homeId: 7000
+    furniture: {fileID: 8358779954325244636}
+  - homeId: 7001
+    furniture: {fileID: 1206001360835592285}
+  - homeId: 7002
+    furniture: {fileID: 1943928585809437979}
+  - homeId: 7003
+    furniture: {fileID: 2082694966929862160}
+  - homeId: 7004
+    furniture: {fileID: 7042673408616982878}
+  - homeId: 7005
+    furniture: {fileID: 5102783990669346791}
+  - homeId: 7006
+    furniture: {fileID: 1069757061052488249}
+  - homeId: 7007
+    furniture: {fileID: 3798263679245366238}
+  - homeId: 8000
+    furniture: {fileID: 8510347033628783597}
+  - homeId: 8001
+    furniture: {fileID: 4737974492678136280}
+  - homeId: 8002
+    furniture: {fileID: 3518639966540906255}
+  - homeId: 8003
+    furniture: {fileID: 6664742423359581621}
+  - homeId: 8004
+    furniture: {fileID: 180207951988632401}
+  - homeId: 8005
+    furniture: {fileID: 8190128208180204518}
+  - homeId: 8006
+    furniture: {fileID: 371749821994850580}
+  - homeId: 8007
+    furniture: {fileID: 4573462753966972607}
+  - homeId: 8008
+    furniture: {fileID: 3279367783744509495}
+  - homeId: 8009
+    furniture: {fileID: 6427876806285864582}
+  - homeId: 8010
+    furniture: {fileID: 4454093289539172601}
+  - homeId: 8011
+    furniture: {fileID: 8455029543014437765}
+  - homeId: 8012
+    furniture: {fileID: 4919522793185077904}
 --- !u!223 &5771287308702411211
 Canvas:
   m_ObjectHideFlags: 0
@@ -5219,7 +5326,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1630195249
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &168080764853047495
@@ -7382,8 +7489,7 @@ RectTransform:
   - {fileID: 2277157993461933249}
   - {fileID: 2553330175901665372}
   - {fileID: 9222118728989569597}
-  - {fileID: 2529003728822566665}
-  - {fileID: 1606059292648273741}
+  - {fileID: 782622217226037568}
   - {fileID: 2542844586451681506}
   - {fileID: 465113352615114692}
   m_Father: {fileID: 729606338714697101}

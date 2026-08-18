@@ -81,13 +81,20 @@ public class HomeItemDetail : UIBasePanel
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (!playerInfoManager.TrySpendSimulationCoins(purchaseCost))
         {
-            Debug.LogError($"模拟币不足，无法购买家具: [{_homeConfig.Id}]。");
+            CommonTipView.Show($"模拟币不足，无法购买家具: [{_homeConfig.Name}]");
             return;
         }
 
+        string suffix = "";
+
         if (_prerequisiteConfig != null)
         {
+            suffix = $"[{_homeConfig.Name}] 和 [{_prerequisiteConfig.Name}]";
             playerInfoManager.UnlockHome(_prerequisiteConfig.Id);
+        }
+        else
+        {
+            suffix = $"[{_homeConfig.Name}]";
         }
 
         playerInfoManager.UnlockHome(_homeConfig.Id);
@@ -95,6 +102,8 @@ public class HomeItemDetail : UIBasePanel
         _imageTip.SetActive(false);
         _priceText.text = $"-{_homeConfig.Price}";
         _purchaseButton.interactable = false;
+        OnClose();
+        CommonTipView.Show($"购买成功，获得家具: {suffix}");
     }
 
     /// <summary>

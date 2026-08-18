@@ -245,7 +245,7 @@ public class Launcher : SingletonMono<Launcher>
             currentMonth = 1,
             health = 100,
             maxHealth = 100,
-            simulationCoins = 500,
+            simulationCoins = 2000,
             timeCoins = 10,
             workedThisTurn = false
         };
