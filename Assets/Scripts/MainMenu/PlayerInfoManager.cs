@@ -31,6 +31,9 @@ public sealed class PlayerInfoData
 
     /// <summary>玩家拥有的可叠加道具列表</summary>
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
+
+    /// <summary>玩家已解锁的家具配置 ID 列表</summary>
+    public List<int> unlockedHomeIds = new List<int>();
 }
 
 /// <summary>
@@ -219,6 +222,30 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return 0;
     }
 
+    /// <summary>判断指定家具是否已解锁</summary>
+    public bool IsHomeUnlocked(int homeId)
+    {
+        return homeId > 0 && _data.unlockedHomeIds.Contains(homeId);
+    }
+
+    /// <summary>解锁指定家具; 已解锁时不重复通知</summary>
+    public bool UnlockHome(int homeId)
+    {
+        if (homeId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(homeId));
+        }
+
+        if (_data.unlockedHomeIds.Contains(homeId))
+        {
+            return false;
+        }
+
+        _data.unlockedHomeIds.Add(homeId);
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
     /// <summary>将本回合打工状态标记为已完成; 同一回合不能重复打工</summary>
     /// <returns>首次成功标记时返回 true, 已经打工时返回 false</returns>
     public bool TryMarkWorkedThisTurn()
@@ -294,6 +321,21 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         _data.inventory.RemoveAll(item => item == null || item.itemId <= 0 || item.amount <= 0);
+
+        if (_data.unlockedHomeIds == null)
+        {
+            _data.unlockedHomeIds = new List<int>();
+        }
+
+        _data.unlockedHomeIds.RemoveAll(homeId => homeId <= 0);
+        _data.unlockedHomeIds.Sort();
+        for (int i = _data.unlockedHomeIds.Count - 1; i > 0; i--)
+        {
+            if (_data.unlockedHomeIds[i] == _data.unlockedHomeIds[i - 1])
+            {
+                _data.unlockedHomeIds.RemoveAt(i);
+            }
+        }
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -316,7 +358,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
             workedThisTurn = source.workedThisTurn,
-            inventory = CreateInventoryCopy(source.inventory)
+            inventory = CreateInventoryCopy(source.inventory),
+            unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds)
         };
     }
 
@@ -347,5 +390,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         return copy;
+    }
+
+    /// <summary>复制已解锁家具 ID 列表, 避免快照修改内部数据</summary>
+    private static List<int> CreateHomeIdCopy(List<int> source)
+    {
+        return source == null ? new List<int>() : new List<int>(source);
     }
 }

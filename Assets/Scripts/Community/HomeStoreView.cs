@@ -45,6 +45,7 @@ public class HomeStoreView : UIBasePanel
 
         _previousPageButton.onClick.AddListener(ShowPreviousPage);
         _nextPageButton.onClick.AddListener(ShowNextPage);
+        PlayerInfoManager.GetInstance().PlayerInfoChanged += OnPlayerInfoChanged;
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -81,6 +82,7 @@ public class HomeStoreView : UIBasePanel
             _nextPageButton.onClick.RemoveListener(ShowNextPage);
         }
 
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnPlayerInfoChanged;
         base.OnDestroy();
     }
 
@@ -256,6 +258,17 @@ public class HomeStoreView : UIBasePanel
         }
 
         _homeItems.Clear();
+    }
+
+    /// <summary>
+    /// 玩家购买家具后刷新当前页的购买与锁定状态
+    /// </summary>
+    private void OnPlayerInfoChanged(PlayerInfoManager playerInfoManager)
+    {
+        for (int i = 0; i < _homeItems.Count; i++)
+        {
+            _homeItems[i].RefreshPurchaseState();
+        }
     }
 
     public override string GetPanelName()

@@ -13,6 +13,7 @@ public class GlobalDefine
     public const string CommonTipView = "Assets/Art/Common/Prefab/CommonTipView.prefab";
     public const string HomeView = "Assets/Art/Home/Prefab/HomeView.prefab";
     public const string HomeStoreView = "Assets/Art/Community/Prefab/HomeStoreView.prefab";
+    public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";
 
     // Item
     public const string CommonRewardItem = "Assets/Art/Common/Prefab/CommonRewardItem.prefab";
