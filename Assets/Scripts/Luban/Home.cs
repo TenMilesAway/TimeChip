@@ -29,6 +29,8 @@ public sealed partial class Home : Luban.BeanBase
         Satisfaction = (float)_obj.GetValue("satisfaction");
         Desc = (string)_obj.GetValue("desc");
         UnlockId = (int)_obj.GetValue("unlockId");
+        HomeStoreScale = (int)_obj.GetValue("homeStoreScale");
+        Sprite = (string)_obj.GetValue("sprite");
     }
 
     public static Home DeserializeHome(JToken _buf)
@@ -60,6 +62,14 @@ public sealed partial class Home : Luban.BeanBase
     /// 解锁的前提 id
     /// </summary>
     public readonly int UnlockId;
+    /// <summary>
+    /// 家具店下的缩放
+    /// </summary>
+    public readonly int HomeStoreScale;
+    /// <summary>
+    /// 图集路径
+    /// </summary>
+    public readonly string Sprite;
 
 
     public const int __ID__ = 2255103;
@@ -78,6 +88,8 @@ public sealed partial class Home : Luban.BeanBase
         + "satisfaction:" + Satisfaction + ","
         + "desc:" + Desc + ","
         + "unlockId:" + UnlockId + ","
+        + "homeStoreScale:" + HomeStoreScale + ","
+        + "sprite:" + Sprite + ","
         + "}";
     }
 }
