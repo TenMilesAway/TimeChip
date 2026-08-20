@@ -25,10 +25,6 @@ public partial class Tables
     /// 家具配置
     /// </summary>
     public HomeTable HomeTable {get; }
-    /// <summary>
-    /// ????
-    /// </summary>
-    public MissionTable MissionTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -36,7 +32,6 @@ public partial class Tables
         ItemTable = new ItemTable(loader("item"));
         LotteryTable = new LotteryTable(loader("lottery"));
         HomeTable = new HomeTable(loader("home"));
-        MissionTable = new MissionTable(loader("mission"));
         ResolveRef();
     }
     
@@ -45,7 +40,6 @@ public partial class Tables
         ItemTable.ResolveRef(this);
         LotteryTable.ResolveRef(this);
         HomeTable.ResolveRef(this);
-        MissionTable.ResolveRef(this);
     }
 }
 

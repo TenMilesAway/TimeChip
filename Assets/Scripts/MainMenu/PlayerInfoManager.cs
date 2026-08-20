@@ -87,9 +87,6 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>回合推进完成时触发, 其他系统可订阅此事件执行回合状态重置</summary>
     public event Action TurnAdvanced;
 
-    /// <summary>成功消耗时间币时触发, 参数为本次消耗量</summary>
-    public event Action<int> TimeCoinsSpent;
-
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
     /// <param name="initialData">用于初始化的数据, 会复制以防止外部直接修改内部状态</param>
     public void Init(PlayerInfoData initialData = null)
@@ -169,13 +166,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <returns>时间币充足且成功扣除时返回 true, 否则返回 false</returns>
     public bool TrySpendTimeCoins(int amount)
     {
-        if (!TrySpendCoins(ref _data.timeCoins, amount))
-        {
-            return false;
-        }
-
-        TimeCoinsSpent?.Invoke(amount);
-        return true;
+        return TrySpendCoins(ref _data.timeCoins, amount);
     }
 
     /// <summary>向背包添加道具; 相同道具会自动叠加数量</summary>

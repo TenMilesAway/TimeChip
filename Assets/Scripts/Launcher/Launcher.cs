@@ -196,7 +196,6 @@ public class Launcher : SingletonMono<Launcher>
     private Task LoadRequiredDataAsync()
     {
         DataTableMananger.GetInstance().Init();
-        MissionRuntimeService.GetInstance().Init();
 
         return Task.CompletedTask;
     }
