@@ -22,6 +22,7 @@ public class Launcher : SingletonMono<Launcher>
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
+    private bool _isNewGame;                                     // 本次启动是否来自新建存档
     private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
 
     protected override void Awake()
@@ -29,6 +30,7 @@ public class Launcher : SingletonMono<Launcher>
         base.Awake();
 
         InitializeGameManager();
+        MissionAPI.GameOverRequested += ReturnToStartMenu;
     }
 
     private void Start()
@@ -58,6 +60,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
+        MissionAPI.GameOverRequested -= ReturnToStartMenu;
     }
 
     private void Update()
@@ -197,6 +200,8 @@ public class Launcher : SingletonMono<Launcher>
     private Task LoadRequiredDataAsync()
     {
         DataTableMananger.GetInstance().Init();
+        MissionAPI.Initialize(PlayerInfoManager.GetInstance(), _isNewGame);
+        _isNewGame = false;
 
         return Task.CompletedTask;
     }
@@ -222,16 +227,7 @@ public class Launcher : SingletonMono<Launcher>
         playerInfoManager.PlayerInfoChanged -= SaveCurrentPlayerInfo;
         playerInfoManager.Init(saveData.playerInfo);
         playerInfoManager.PlayerInfoChanged += SaveCurrentPlayerInfo;
-        MissionAPI.Initialize(playerInfoManager);
-
-        if (isNewGame)
-        {
-            MissionAPI.StartMission(MissionProtoManager.GetInstance().CreateCoinProto());
-        }
-
-        // TODO:
-        // 2. 新建一个 MissionProtoManager 管理原型 (已完成)
-        // 3. 与 Luban 读表结合，通过配表实现一系列的任务配置
+        _isNewGame = isNewGame;
     }
 
     /// <summary>
@@ -283,6 +279,25 @@ public class Launcher : SingletonMono<Launcher>
             "玩家存档",
             _gameSaveData,
             GameSaveData.CurrentSchemaVersion);
+    }
+
+    /// <summary>任务失败要求重新开始时清除存档并回到启动菜单。</summary>
+    private void ReturnToStartMenu()
+    {
+        PlayerPrefsSaveSystem.Delete(PlayerSaveSlotId);
+        _gameSaveData = null;
+        _isInitializingData = false;
+        _isNewGame = false;
+        SetProcessState(LauncherProcess.None);
+
+        UIManager.GetInstance().ClosePanel(GlobalDefine.MainMenuView);
+        UIManager.GetInstance().ClosePanel(GlobalDefine.CommunityView);
+        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonTipView);
+
+        gameObject.SetActive(true);
+        _loadingRoot.SetActive(false);
+        _menuRoot.SetActive(true);
+        _loadSaveButton.interactable = false;
     }
 
     /// <summary>

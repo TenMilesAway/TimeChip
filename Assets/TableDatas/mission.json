@@ -17,10 +17,70 @@
     "desc": "你的基础生命过低",
     "message": "Health",
     "icon": "",
-    "condition": "40",
+    "condition": "healthBelow:40",
     "target": "60",
     "reward": "",
     "deadline": "6",
+    "failure": "gameover"
+  },
+  {
+    "id": 1001,
+    "name": "月度开销",
+    "desc": "在二月前获得一笔模拟币",
+    "message": "Coin",
+    "icon": "",
+    "condition": "date:22,2",
+    "target": "300",
+    "reward": "100,0",
+    "deadline": "22,4",
+    "failure": "gameover"
+  },
+  {
+    "id": 1002,
+    "name": "短期收入",
+    "desc": "在三个月内获得模拟币",
+    "message": "Coin",
+    "icon": "",
+    "condition": "date:22,2",
+    "target": "50",
+    "reward": "50,0",
+    "deadline": "3",
+    "failure": "gameover"
+  },
+  {
+    "id": 1003,
+    "name": "进阶理财",
+    "desc": "完成月度开销后继续积累模拟币",
+    "message": "Coin",
+    "icon": "",
+    "condition": "mission:1001",
+    "target": "200",
+    "reward": "0,1",
+    "deadline": "4",
+    "failure": "gameover"
+  },
+  {
+    "id": 2001,
+    "name": "恢复状态",
+    "desc": "生命值过低后恢复至安全值",
+    "message": "Health",
+    "icon": "",
+    "condition": "healthBelow:70",
+    "target": "85",
+    "reward": "0,0,10",
+    "deadline": "22,10",
+    "failure": "gameover"
+  },
+  {
+    "id": 2002,
+    "name": "紧急治疗",
+    "desc": "生命值严重不足后尽快恢复",
+    "message": "Health",
+    "icon": "",
+    "condition": "healthBelow:50",
+    "target": "70",
+    "reward": "300,0",
+    "deadline": "2",
     "failure": "gameover"
   }
 ]

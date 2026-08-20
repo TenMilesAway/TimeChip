@@ -9,6 +9,11 @@ public class MissionRequireHealth : MissionRequire<MissionMessage>
     [SerializeField] private string args;
     [SerializeField] private int count;
 
+    public MissionRequireHealth(int count)
+    {
+        this.count = count;
+    }
+
     public class Handle : MissionRequireHandle<MissionMessage>, IMissionProgressHandle
     {
         private readonly MissionRequireHealth require;
@@ -24,12 +29,8 @@ public class MissionRequireHealth : MissionRequire<MissionMessage>
 
         protected override bool UseMessage(MissionMessage message)
         {
-            count += message.amount;
-            if (count >= require.count)
-            {
-                return true;
-            }
-            return false;
+            count = message.amount;
+            return count >= require.count;
         }
     }
 

@@ -38,6 +38,9 @@ public sealed class PlayerInfoData
 
     /// <summary>玩家当前进行中的任务及其条件进度</summary>
     public List<PlayerMissionData> activeMissions = new List<PlayerMissionData>();
+
+    /// <summary>玩家已经完成的任务 ID</summary>
+    public List<string> completedMissionIds = new List<string>();
 }
 
 /// <summary>
@@ -51,6 +54,18 @@ public sealed class PlayerMissionData
 
     /// <summary>按任务条件定义顺序保存的完成进度</summary>
     public List<int> requirementProgress = new List<int>();
+
+    /// <summary>任务开始时的年龄</summary>
+    public int startedAge;
+
+    /// <summary>任务开始时的月份</summary>
+    public int startedMonth;
+
+    /// <summary>任务截止时的年龄，零表示没有截止日期</summary>
+    public int deadlineAge;
+
+    /// <summary>任务截止时的月份，零表示没有截止日期</summary>
+    public int deadlineMonth;
 }
 
 /// <summary>
@@ -129,6 +144,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
+    /// <summary>更新已完成任务记录。</summary>
+    public void SetCompletedMissionIds(List<string> missionIds)
+    {
+        _data.completedMissionIds = CreateMissionIdCopy(missionIds);
+        NotifyPlayerInfoChanged();
+    }
+
     /// <summary>设置玩家年龄, 年龄不能小于零</summary>
     /// <param name="age">要设置的年龄</param>
     public void SetCurrentAge(int age)
@@ -162,7 +184,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <param name="amount">健康值变化量, 正数增加, 负数减少</param>
     public void ChangeHealth(int amount)
     {
-        SetValue(ref _data.health, Mathf.Clamp(_data.health + amount, 0, _data.maxHealth));
+        int health = Mathf.Clamp(_data.health + amount, 0, _data.maxHealth);
+        if (_data.health == health)
+        {
+            return;
+        }
+
+        _data.health = health;
+        NotifyPlayerInfoChanged();
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.Health, _data.health));
     }
 
     /// <summary>按指定数值增减模拟币, 模拟币不会低于零</summary>
@@ -170,7 +200,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public void AddSimulationCoins(int amount)
     {
         SetValue(ref _data.simulationCoins, Mathf.Max(0, _data.simulationCoins + amount));
-        MissionAPI.Broadcast(new MissionMessage(MissionEventType.Coin, amount));
+        if (amount > 0)
+        {
+            MissionAPI.Broadcast(new MissionMessage(MissionEventType.Coin, amount));
+        }
     }
 
     /// <summary>尝试消耗指定数量的模拟币</summary>
@@ -387,7 +420,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             workedThisTurn = source.workedThisTurn,
             inventory = CreateInventoryCopy(source.inventory),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
-            activeMissions = CreateMissionCopy(source.activeMissions)
+            activeMissions = CreateMissionCopy(source.activeMissions),
+            completedMissionIds = CreateMissionIdCopy(source.completedMissionIds)
         };
     }
 
@@ -448,8 +482,33 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 missionId = mission.missionId,
                 requirementProgress = mission.requirementProgress == null
                     ? new List<int>()
-                    : new List<int>(mission.requirementProgress)
+                    : new List<int>(mission.requirementProgress),
+                startedAge = mission.startedAge,
+                startedMonth = mission.startedMonth,
+                deadlineAge = mission.deadlineAge,
+                deadlineMonth = mission.deadlineMonth
             });
+        }
+
+        return copy;
+    }
+
+    /// <summary>复制已完成任务 ID，过滤空值与重复项。</summary>
+    private static List<string> CreateMissionIdCopy(List<string> source)
+    {
+        List<string> copy = new List<string>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            string missionId = source[i];
+            if (!string.IsNullOrEmpty(missionId) && !copy.Contains(missionId))
+            {
+                copy.Add(missionId);
+            }
         }
 
         return copy;
