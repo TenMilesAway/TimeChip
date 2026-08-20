@@ -130,7 +130,7 @@ public class Launcher : SingletonMono<Launcher>
 
         _gameSaveData = CreateDefaultGameSaveData();
         SaveGameData();
-        BeginLaunch(_gameSaveData);
+        BeginLaunch(_gameSaveData, true);
     }
 
     /// <summary>
@@ -160,16 +160,17 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _gameSaveData = saveData;
-        BeginLaunch(_gameSaveData);
+        BeginLaunch(_gameSaveData, false);
     }
 
     /// <summary>
     /// 使用指定存档初始化玩家数据并进入加载流程
     /// </summary>
     /// <param name="saveData">要用于本次游戏的存档数据</param>
-    private void BeginLaunch(GameSaveData saveData)
+    /// <param name="isNewGame">是否由本次操作新建存档</param>
+    private void BeginLaunch(GameSaveData saveData, bool isNewGame)
     {
-        InitializePlayerInfo(saveData);
+        InitializePlayerInfo(saveData, isNewGame);
         _menuRoot.SetActive(false);
         _loadingRoot.SetActive(true);
         SetProcessState(LauncherProcess.PreloadBegin);
@@ -214,18 +215,23 @@ public class Launcher : SingletonMono<Launcher>
     /// 使用存档中的玩家数据初始化玩家数据管理器并启用自动保存
     /// </summary>
     /// <param name="saveData">包含玩家数据的当前存档</param>
-    private void InitializePlayerInfo(GameSaveData saveData)
+    /// <param name="isNewGame">是否由本次操作新建存档</param>
+    private void InitializePlayerInfo(GameSaveData saveData, bool isNewGame)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         playerInfoManager.PlayerInfoChanged -= SaveCurrentPlayerInfo;
         playerInfoManager.Init(saveData.playerInfo);
         playerInfoManager.PlayerInfoChanged += SaveCurrentPlayerInfo;
         MissionAPI.Initialize(playerInfoManager);
+
+        if (isNewGame)
+        {
+            MissionAPI.StartMission(MissionProtoManager.GetInstance().CreateCoinProto());
+        }
+
         // TODO:
-        // 1. 用户仅在新建存档时开始初始任务
-        // 2. 新建一个 MissionProtoManager 管理原型
-        // 3. 与读表结合，通过配表实现一系列的任务配置
-        MissionAPI.StartMission(PlayerInfoManager.GetInstance().CreateCoinProto());
+        // 2. 新建一个 MissionProtoManager 管理原型 (已完成)
+        // 3. 与 Luban 读表结合，通过配表实现一系列的任务配置
     }
 
     /// <summary>

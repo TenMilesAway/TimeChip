@@ -14,7 +14,7 @@ public class MissionRequireCoin : MissionRequire<MissionMessage>
         this.count = count;
     }
 
-    public class Handle : MissionRequireHandle<MissionMessage>
+    public class Handle : MissionRequireHandle<MissionMessage>, IMissionProgressHandle
     {
         private readonly MissionRequireCoin require;
         private int count;
@@ -23,6 +23,9 @@ public class MissionRequireCoin : MissionRequire<MissionMessage>
         {
             this.require = require;
         }
+
+        public int CurrentCount { get { return count; } }
+        public int TargetCount { get { return require.count; } }
 
         protected override bool UseMessage(MissionMessage message)
         {

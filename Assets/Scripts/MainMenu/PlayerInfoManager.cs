@@ -35,6 +35,22 @@ public sealed class PlayerInfoData
 
     /// <summary>玩家已解锁的家具配置 ID 列表</summary>
     public List<int> unlockedHomeIds = new List<int>();
+
+    /// <summary>玩家当前进行中的任务及其条件进度</summary>
+    public List<PlayerMissionData> activeMissions = new List<PlayerMissionData>();
+}
+
+/// <summary>
+/// 玩家当前进行中的单个任务存档数据
+/// </summary>
+[Serializable]
+public sealed class PlayerMissionData
+{
+    /// <summary>任务原型的唯一标识</summary>
+    public string missionId;
+
+    /// <summary>按任务条件定义顺序保存的完成进度</summary>
+    public List<int> requirementProgress = new List<int>();
 }
 
 /// <summary>
@@ -101,6 +117,16 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public PlayerInfoData GetSnapshot()
     {
         return CreateCopy(_data);
+    }
+
+    /// <summary>
+    /// 更新当前进行中的任务存档数据
+    /// </summary>
+    /// <param name="missions">需要保存的任务状态</param>
+    public void SetActiveMissions(List<PlayerMissionData> missions)
+    {
+        _data.activeMissions = CreateMissionCopy(missions);
+        NotifyPlayerInfoChanged();
     }
 
     /// <summary>设置玩家年龄, 年龄不能小于零</summary>
@@ -360,7 +386,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             timeCoins = source.timeCoins,
             workedThisTurn = source.workedThisTurn,
             inventory = CreateInventoryCopy(source.inventory),
-            unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds)
+            unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
+            activeMissions = CreateMissionCopy(source.activeMissions)
         };
     }
 
@@ -399,20 +426,32 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return source == null ? new List<int>() : new List<int>(source);
     }
 
-    #region 任务相关
-    public MissionPrototype<MissionMessage> CreateCoinProto()
+    /// <summary>复制任务存档数据, 避免快照修改内部任务进度</summary>
+    private static List<PlayerMissionData> CreateMissionCopy(List<PlayerMissionData> source)
     {
-        var missionRequire = new MissionRequireCoin(1001);
-        var missionReward = new MissionRewardCommon
+        List<PlayerMissionData> copy = new List<PlayerMissionData>();
+        if (source == null)
         {
-            simulationCoinAmount = 505,
-            timeCoinAmount = 1,
-        };
-        var requires = new MissionRequire<MissionMessage>[] { missionRequire };
-        var rewards = new MissionReward[] { missionReward };
-        // 这里的 "Coin" 应该是 ID, 后续可以用表中的 ID 代替
-        var missionProto = new MissionPrototype<MissionMessage>("Coin", requires, rewards);
-        return missionProto;
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerMissionData mission = source[i];
+            if (mission == null || string.IsNullOrEmpty(mission.missionId))
+            {
+                continue;
+            }
+
+            copy.Add(new PlayerMissionData
+            {
+                missionId = mission.missionId,
+                requirementProgress = mission.requirementProgress == null
+                    ? new List<int>()
+                    : new List<int>(mission.requirementProgress)
+            });
+        }
+
+        return copy;
     }
-    #endregion
 }
