@@ -61,6 +61,8 @@ MonoBehaviour:
   _commonRewardItemParent: {fileID: 1684944769624840978}
   _textTip: {fileID: 5682434526538362458}
   _itemDisplayInterval: 0.35
+  _simulationCoinIconCount: 8
+  _waitForFirstCoinArrival: 1
 --- !u!222 &5254607679141563171
 CanvasRenderer:
   m_ObjectHideFlags: 0

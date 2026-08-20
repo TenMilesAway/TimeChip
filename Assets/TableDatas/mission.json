@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1000,
+    "name": "初出茅庐",
+    "desc": "尝试在城市中立足吧",
+    "message": "Coin",
+    "icon": "",
+    "condition": "",
+    "target": "10000",
+    "reward": "2000,1",
+    "deadline": "22,6",
+    "failure": "gameover"
+  },
+  {
+    "id": 2000,
+    "name": "生病啦",
+    "desc": "你的基础生命过低",
+    "message": "Health",
+    "icon": "",
+    "condition": "40",
+    "target": "60",
+    "reward": "",
+    "deadline": "6",
+    "failure": "gameover"
+  }
+]

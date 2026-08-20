@@ -188,7 +188,7 @@ public class MainMenuView : UIBasePanel
     }
 
     /// <summary>
-    /// 获取主界面模拟币图标，供飞币特效设为终点并播放抵达反馈。
+    /// 获取主界面模拟币图标，供飞币特效设为终点并播放抵达反馈
     /// </summary>
     public Image SimulationCoinIcon
     {

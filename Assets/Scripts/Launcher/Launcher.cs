@@ -148,14 +148,14 @@ public class Launcher : SingletonMono<Launcher>
                 out GameSaveData saveData,
                 out int schemaVersion))
         {
-            Debug.LogWarning("未找到可读取的玩家存档。", this);
+            Debug.LogWarning("未找到可读取的玩家存档", this);
             _loadSaveButton.interactable = false;
             return;
         }
 
         if (saveData.playerInfo == null)
         {
-            Debug.LogWarning("玩家存档缺少玩家数据，无法读取。", this);
+            Debug.LogWarning("玩家存档缺少玩家数据, 无法读取", this);
             return;
         }
 
@@ -220,6 +220,12 @@ public class Launcher : SingletonMono<Launcher>
         playerInfoManager.PlayerInfoChanged -= SaveCurrentPlayerInfo;
         playerInfoManager.Init(saveData.playerInfo);
         playerInfoManager.PlayerInfoChanged += SaveCurrentPlayerInfo;
+        MissionAPI.Initialize(playerInfoManager);
+        // TODO:
+        // 1. 用户仅在新建存档时开始初始任务
+        // 2. 新建一个 MissionProtoManager 管理原型
+        // 3. 与读表结合，通过配表实现一系列的任务配置
+        MissionAPI.StartMission(PlayerInfoManager.GetInstance().CreateCoinProto());
     }
 
     /// <summary>

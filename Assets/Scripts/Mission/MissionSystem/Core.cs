@@ -119,6 +119,26 @@ namespace RedSaw.MissionSystem
         protected abstract bool UseMessage(T message);
     }
 
+    /// <summary>可持久化的任务计数需求。</summary>
+    public interface IMissionProgressHandle
+    {
+        int CurrentCount { get; }
+        int TargetCount { get; }
+    }
+
+    /// <summary>任务计数需求的进度快照。</summary>
+    public readonly struct MissionProgress
+    {
+        public readonly int currentCount;
+        public readonly int targetCount;
+
+        public MissionProgress(int currentCount, int targetCount)
+        {
+            this.currentCount = currentCount;
+            this.targetCount = targetCount;
+        }
+    }
+
     /// <summary>任务</summary>
     /// <typeparam name="T"></typeparam>
     public class Mission<T>
@@ -142,8 +162,29 @@ namespace RedSaw.MissionSystem
                     status[i] = handles[i].ToString();
                 return status;
             }
+
         }
-        
+
+        /// <summary>获取所有可计数需求的当前进度。</summary>
+        public MissionProgress[] Progresses
+        {
+            get
+            {
+                var progresses = new List<MissionProgress>();
+                for (var i = 0; i < handles.Length; i++)
+                {
+                    if (handles[i] is IMissionProgressHandle progressHandle)
+                    {
+                        progresses.Add(new MissionProgress(
+                            progressHandle.CurrentCount,
+                            progressHandle.TargetCount));
+                    }
+                }
+
+                return progresses.ToArray();
+            }
+        }
+
         public Mission(MissionPrototype<T> proto)
         {
             this.proto = proto;

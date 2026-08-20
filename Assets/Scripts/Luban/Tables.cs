@@ -25,6 +25,14 @@ public partial class Tables
     /// 家具配置
     /// </summary>
     public HomeTable HomeTable {get; }
+    /// <summary>
+    /// 任务配置
+    /// </summary>
+    public MissionTable MissionTable {get; }
+    /// <summary>
+    /// 基础属性配置
+    /// </summary>
+    public BaseTable BaseTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -32,6 +40,8 @@ public partial class Tables
         ItemTable = new ItemTable(loader("item"));
         LotteryTable = new LotteryTable(loader("lottery"));
         HomeTable = new HomeTable(loader("home"));
+        MissionTable = new MissionTable(loader("mission"));
+        BaseTable = new BaseTable(loader("base"));
         ResolveRef();
     }
     
@@ -40,6 +50,8 @@ public partial class Tables
         ItemTable.ResolveRef(this);
         LotteryTable.ResolveRef(this);
         HomeTable.ResolveRef(this);
+        MissionTable.ResolveRef(this);
+        BaseTable.ResolveRef(this);
     }
 }
 

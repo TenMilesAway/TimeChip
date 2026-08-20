@@ -1,7 +1,7 @@
 [
   {
     "id": 1000,
-    "name": "模拟币",
+    "name": "一枚模拟币",
     "desc": "一枚金灿灿的模拟币，可以用来购物",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_simulation_coin]",
     "rewardScale": 2500
@@ -11,6 +11,13 @@
     "name": "一堆模拟币",
     "desc": "几枚金灿灿的模拟币，可以用来购物",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_coin_stack]",
+    "rewardScale": 4000
+  },
+  {
+    "id": 1010,
+    "name": "时间币",
+    "desc": "精美的时间币，可以用来抽奖",
+    "icon": "Assets/Art/Lottery/SpriteAtlas.spriteatlasv2[icon_lottery_coin]",
     "rewardScale": 4000
   },
   {

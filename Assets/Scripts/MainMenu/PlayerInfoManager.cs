@@ -1,3 +1,4 @@
+using RedSaw.MissionSystem;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -88,7 +89,6 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public event Action TurnAdvanced;
 
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
-    /// <param name="initialData">用于初始化的数据, 会复制以防止外部直接修改内部状态</param>
     public void Init(PlayerInfoData initialData = null)
     {
         _data = initialData == null ? new PlayerInfoData() : CreateCopy(initialData);
@@ -144,6 +144,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public void AddSimulationCoins(int amount)
     {
         SetValue(ref _data.simulationCoins, Mathf.Max(0, _data.simulationCoins + amount));
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.Coin, amount));
     }
 
     /// <summary>尝试消耗指定数量的模拟币</summary>
@@ -205,9 +206,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
-    /// <summary>获取背包中指定道具的持有数量。</summary>
-    /// <param name="itemId">要查询的道具 ID。</param>
-    /// <returns>指定道具的持有数量，未拥有时返回零。</returns>
+    /// <summary>获取背包中指定道具的持有数量</summary>
+    /// <param name="itemId">要查询的道具 ID</param>
+    /// <returns>指定道具的持有数量, 未拥有时返回零</returns>
     public int GetItemCount(int itemId)
     {
         for (int i = 0; i < _data.inventory.Count; i++)
@@ -397,4 +398,21 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     {
         return source == null ? new List<int>() : new List<int>(source);
     }
+
+    #region 任务相关
+    public MissionPrototype<MissionMessage> CreateCoinProto()
+    {
+        var missionRequire = new MissionRequireCoin(1001);
+        var missionReward = new MissionRewardCommon
+        {
+            simulationCoinAmount = 505,
+            timeCoinAmount = 1,
+        };
+        var requires = new MissionRequire<MissionMessage>[] { missionRequire };
+        var rewards = new MissionReward[] { missionReward };
+        // 这里的 "Coin" 应该是 ID, 后续可以用表中的 ID 代替
+        var missionProto = new MissionPrototype<MissionMessage>("Coin", requires, rewards);
+        return missionProto;
+    }
+    #endregion
 }

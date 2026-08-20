@@ -73,9 +73,12 @@ public class CommonRewardPanel : UIBasePanel
         for (int i = 0; i < rewardDataList.Count; i++)
         {
             CommonRewardItemData rewardData = rewardDataList[i];
-            cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(rewardData.itemId);
+            cfg.Base baseConfig = DataTableMananger.GetInstance().Tables.BaseTable.GetOrDefault(rewardData.itemId);
+            cfg.Item itemConfig = baseConfig == null
+                ? DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(rewardData.itemId)
+                : null;
 
-            if (itemConfig == null)
+            if (baseConfig == null && itemConfig == null)
             {
                 Debug.LogError($"奖励物品配置不存在: [{rewardData.itemId}]");
                 continue;
@@ -93,7 +96,9 @@ public class CommonRewardPanel : UIBasePanel
             rewardItemObject.SetActive(false);
             rewardItemObject.transform.SetParent(_commonRewardItemParent, false);
 
-            Sprite icon = await GameManager.Resource.LoadResource<Sprite>(itemConfig.Icon, resourceTag);
+            string iconPath = baseConfig == null ? itemConfig.Icon : baseConfig.Icon;
+            int rewardScale = baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale;
+            Sprite icon = await GameManager.Resource.LoadResource<Sprite>(iconPath, resourceTag);
 
             if (!IsCurrentPresentation(presentationVersion))
             {
@@ -103,13 +108,13 @@ public class CommonRewardPanel : UIBasePanel
 
             if (icon == null)
             {
-                Debug.LogError($"奖励 icon 加载失败: [{rewardData.itemId}], [{itemConfig.Icon}].");
+                Debug.LogError($"奖励 icon 加载失败: [{rewardData.itemId}], [{iconPath}].");
                 UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.CommonRewardItem, rewardItemObject);
                 continue;
             }
 
             CommonRewardItem rewardItem = rewardItemObject.GetComponent<CommonRewardItem>();
-            rewardItem.SetData(rewardData.itemId, icon, rewardData.itemCount, itemConfig.RewardScale);
+            rewardItem.SetData(rewardData.itemId, icon, rewardData.itemCount, rewardScale);
             _rewardItems.Add(rewardItem);
         }
 
@@ -192,6 +197,7 @@ public class CommonRewardPanel : UIBasePanel
 
     private void ClosePanel()
     {
+        GrantNonSimulationCoinBasePropertyRewards();
         PlaySimulationCoinFlyAnimations();
         UIManager.GetInstance().ClosePanel(GetPanelName());
     }
@@ -264,12 +270,34 @@ public class CommonRewardPanel : UIBasePanel
     {
         switch (itemId)
         {
+            case BasePropertyId.SimulationCoin:
+                return itemCount;
             case 1000:
                 return itemCount * 100;
             case 1001:
                 return itemCount * 1000;
             default:
                 return 0;
+        }
+    }
+
+    /// <summary>将不需要飞行表现的 base 表属性奖励写入玩家数据。</summary>
+    private void GrantNonSimulationCoinBasePropertyRewards()
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+
+        for (int i = 0; i < _rewardItems.Count; i++)
+        {
+            CommonRewardItem rewardItem = _rewardItems[i];
+            switch (rewardItem.ItemId)
+            {
+                case BasePropertyId.TimeCoin:
+                    playerInfoManager.AddTimeCoins(rewardItem.Count);
+                    break;
+                case BasePropertyId.Health:
+                    playerInfoManager.ChangeHealth(rewardItem.Count);
+                    break;
+            }
         }
     }
 }
