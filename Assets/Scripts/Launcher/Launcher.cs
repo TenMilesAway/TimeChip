@@ -30,7 +30,7 @@ public class Launcher : SingletonMono<Launcher>
         base.Awake();
 
         InitializeGameManager();
-        MissionAPI.GameOverRequested += ReturnToStartMenu;
+        MissionAPI.GameOverRequested += ShowGameOverPanel;
     }
 
     private void Start()
@@ -60,7 +60,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
-        MissionAPI.GameOverRequested -= ReturnToStartMenu;
+        MissionAPI.GameOverRequested -= ShowGameOverPanel;
     }
 
     private void Update()
@@ -281,7 +281,16 @@ public class Launcher : SingletonMono<Launcher>
             GameSaveData.CurrentSchemaVersion);
     }
 
-    /// <summary>任务失败要求重新开始时清除存档并回到启动菜单。</summary>
+    /// <summary>任务失败时展示游戏结束面板，等待玩家确认返回</summary>
+    private void ShowGameOverPanel()
+    {
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonOverPanel,
+            UILayer.System,
+            new OpenUIParam { callback = ReturnToStartMenu });
+    }
+
+    /// <summary>玩家确认后清除存档并回到启动菜单</summary>
     private void ReturnToStartMenu()
     {
         PlayerPrefsSaveSystem.Delete(PlayerSaveSlotId);

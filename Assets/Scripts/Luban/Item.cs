@@ -28,6 +28,7 @@ public sealed partial class Item : Luban.BeanBase
         Desc = (string)_obj.GetValue("desc");
         Icon = (string)_obj.GetValue("icon");
         RewardScale = (int)_obj.GetValue("rewardScale");
+        CanUse = (int)_obj.GetValue("canUse");
     }
 
     public static Item DeserializeItem(JToken _buf)
@@ -55,6 +56,10 @@ public sealed partial class Item : Luban.BeanBase
     /// 奖励面板下的缩放
     /// </summary>
     public readonly int RewardScale;
+    /// <summary>
+    /// 1为可在背包使用
+    /// </summary>
+    public readonly int CanUse;
 
 
     public const int __ID__ = 2289459;
@@ -72,6 +77,7 @@ public sealed partial class Item : Luban.BeanBase
         + "desc:" + Desc + ","
         + "icon:" + Icon + ","
         + "rewardScale:" + RewardScale + ","
+        + "canUse:" + CanUse + ","
         + "}";
     }
 }

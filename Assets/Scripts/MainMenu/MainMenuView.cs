@@ -18,6 +18,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _lotteryButton;
     [SerializeField] private Button _missionButton;
     [SerializeField] private Button _homeButton;
+    [SerializeField] private Button _inventoryButton;
 
     private MainContentPage _currentContentPage = MainContentPage.Community;    // 当前页面
     private bool _isWaitingForAdvanceTurnConfirmation;
@@ -30,6 +31,7 @@ public class MainMenuView : UIBasePanel
         _lotteryButton.onClick.AddListener(OpenLottery);
         _missionButton.onClick.AddListener(OpenMission);
         _homeButton.onClick.AddListener(OpenHome);
+        _inventoryButton.onClick.AddListener(OpenInventory);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -79,6 +81,11 @@ public class MainMenuView : UIBasePanel
             _homeButton.onClick.RemoveListener(OpenHome);
         }
 
+        if (_inventoryButton != null)
+        {
+            _inventoryButton.onClick.RemoveListener(OpenInventory);
+        }
+
         base.OnDestroy();
     }
 
@@ -119,6 +126,11 @@ public class MainMenuView : UIBasePanel
     private void OpenHome()
     {
         NavigateTo(MainContentPage.Home);
+    }
+
+    private void OpenInventory()
+    {
+        UIManager.GetInstance().OpenPanel(GlobalDefine.InventoryView);
     }
 
     private void NavigateTo(MainContentPage targetPage)

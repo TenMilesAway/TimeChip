@@ -51,7 +51,7 @@ public static class MissionAPI
         CheckDeadlines();
     }
 
-    /// <summary>广播游戏任务消息。</summary>
+    /// <summary>广播游戏任务消息</summary>
     public static void Broadcast(MissionMessage message)
     {
         if (!_isInitialized)
