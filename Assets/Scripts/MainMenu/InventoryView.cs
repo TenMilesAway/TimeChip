@@ -8,6 +8,7 @@ public class InventoryView : UIBasePanel
     private const float RewardScaleDivisor = 10000f;
 
     [SerializeField] private Image _imgIcon;
+    [SerializeField] private Image _imgIconBg;
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtDetail;
     [SerializeField] private Text _txtNum;
@@ -205,6 +206,7 @@ public class InventoryView : UIBasePanel
         _txtNumPrefix.gameObject.SetActive(true);
         _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
         _imgIcon.gameObject.SetActive(false);
+        _imgIconBg.gameObject.SetActive(true);
 
         Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
             entry.Item.Icon,
@@ -230,6 +232,7 @@ public class InventoryView : UIBasePanel
     {
         _detailVersion++;
         _imgIcon.gameObject.SetActive(false);
+        _imgIconBg.gameObject.SetActive(false);
         _txtName.gameObject.SetActive(false);
         _txtDetail.gameObject.SetActive(false);
         _txtNumSplit.gameObject.SetActive(false);

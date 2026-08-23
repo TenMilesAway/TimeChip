@@ -2155,6 +2155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isBlockingWindow: 1
   _imgIcon: {fileID: 2760543466224214723}
+  _imgIconBg: {fileID: 6793744532582114203}
   _txtName: {fileID: 6495577134933152302}
   _txtDetail: {fileID: 2707225742012642280}
   _txtNum: {fileID: 6074925179208718930}

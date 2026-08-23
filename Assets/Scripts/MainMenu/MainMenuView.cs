@@ -168,6 +168,9 @@ public class MainMenuView : UIBasePanel
             case MainContentPage.Home:
                 panelName = GlobalDefine.HomeView;
                 return true;
+            case MainContentPage.Mission:
+                panelName = GlobalDefine.MissionView;
+                return true;
             default:
                 panelName = null;
                 return false;

@@ -151,6 +151,7 @@ namespace RedSaw.MissionSystem
 
         public string id => proto.id;
         public MissionProperty property => proto.property;
+        public bool IsFinished { get; private set; }
 
         /// <summary>获取任务的进度状态</summary>
         public string[] HandleStatus
@@ -200,10 +201,24 @@ namespace RedSaw.MissionSystem
         /// <param name="message">玩家行为消息</param>
         /// <param name="hasStatusChanged">任务是否产生状态变化</param>
         /// <returns>任务是否完成</returns>
-        public bool SendMessage(T message, out bool hasStatusChanged) =>
-            proto.isSingleRequire
+        public bool SendMessage(T message, out bool hasStatusChanged)
+        {
+            hasStatusChanged = false;
+            if (IsFinished)
+            {
+                return false;
+            }
+
+            bool isFinished = proto.isSingleRequire
                 ? _SendMessage_SingleRequire(message, out hasStatusChanged)
                 : _SendMessage_MultiRequire(message, out hasStatusChanged);
+            if (isFinished)
+            {
+                IsFinished = true;
+            }
+
+            return isFinished;
+        }
 
         /// <summary>单需求的任务处理</summary>
         /// <param name="message"></param>
@@ -296,13 +311,30 @@ namespace RedSaw.MissionSystem
                 component.OnMissionRemoved(mission, false);
             return true;
         }
+
+        /// <summary>领取已完成任务的奖励，并将任务标记为完成后移除。</summary>
+        public bool TryClaimMission(string id)
+        {
+            if (!allMissions.TryGetValue(id, out var mission) || !mission.IsFinished)
+            {
+                return false;
+            }
+
+            mission.ApplyReward();
+            allMissions.Remove(id);
+            foreach (var component in components)
+            {
+                component.OnMissionRemoved(mission, true);
+            }
+
+            return true;
+        }
         
         /// <summary>向任务系统发送消息以驱动任务系统</summary>
         /// <param name="message"></param>
         public void SendMessage(T message)
         {
             if (allMissions.Count == 0) return;
-            var queueToRemove = new Queue<Mission<T>>(); 
             foreach (var mission in allMissions.Values)
             {
                 if (!mission.SendMessage(message, out var hasStatusChanged))
@@ -312,20 +344,8 @@ namespace RedSaw.MissionSystem
                 }
 
                 _OnMissionStatusChanged(mission, true);
-                mission.ApplyReward();
-                queueToRemove.Enqueue(mission);
             }
             
-            /* remove completed missions */
-            while (queueToRemove.Count > 0)
-            {
-                var mission = queueToRemove.Dequeue();
-                allMissions.Remove(mission.id);
-                
-                /* inform all componetns that target mission has been removed */
-                foreach (var component in components)
-                    component.OnMissionRemoved(mission, true);
-            }
         }
         
         /// <summary>添加任务系统组件</summary>

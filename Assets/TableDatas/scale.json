@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "item",
+    "desc": "抽奖时的物品展示倍率",
+    "scaleValue": 10000
+  },
+  {
+    "id": 2,
+    "name": "missionReward",
+    "desc": "作为任务奖励时的倍率",
+    "scaleValue": 6000
+  },
+  {
+    "id": 3,
+    "name": "missionIcon",
+    "desc": "作为任务图标时的倍率",
+    "scaleValue": 20000
+  }
+]

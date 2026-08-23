@@ -27,7 +27,7 @@ public sealed partial class Mission : Luban.BeanBase
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
         Message = (string)_obj.GetValue("message");
-        Icon = (string)_obj.GetValue("icon");
+        Icon = (int)_obj.GetValue("icon");
         Condition = (string)_obj.GetValue("condition");
         Target = (string)_obj.GetValue("target");
         Reward = (string)_obj.GetValue("reward");
@@ -57,9 +57,9 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string Message;
     /// <summary>
-    /// 任务图片路径
+    /// 关联的 item ID
     /// </summary>
-    public readonly string Icon;
+    public readonly int Icon;
     /// <summary>
     /// 任务开启条件
     /// </summary>

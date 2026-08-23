@@ -33,6 +33,10 @@ public partial class Tables
     /// 基础属性配置
     /// </summary>
     public BaseTable BaseTable {get; }
+    /// <summary>
+    /// ??????
+    /// </summary>
+    public ScaleTable ScaleTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -42,6 +46,7 @@ public partial class Tables
         HomeTable = new HomeTable(loader("home"));
         MissionTable = new MissionTable(loader("mission"));
         BaseTable = new BaseTable(loader("base"));
+        ScaleTable = new ScaleTable(loader("scale"));
         ResolveRef();
     }
     
@@ -52,6 +57,7 @@ public partial class Tables
         HomeTable.ResolveRef(this);
         MissionTable.ResolveRef(this);
         BaseTable.ResolveRef(this);
+        ScaleTable.ResolveRef(this);
     }
 }
 

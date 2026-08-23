@@ -213,7 +213,6 @@ public class Launcher : SingletonMono<Launcher>
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.MainMenuView);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonTipView);
     }
 
     /// <summary>
@@ -299,9 +298,7 @@ public class Launcher : SingletonMono<Launcher>
         _isNewGame = false;
         SetProcessState(LauncherProcess.None);
 
-        UIManager.GetInstance().ClosePanel(GlobalDefine.MainMenuView);
-        UIManager.GetInstance().ClosePanel(GlobalDefine.CommunityView);
-        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonTipView);
+        UIManager.GetInstance().CloseAllPanels();
 
         gameObject.SetActive(true);
         _loadingRoot.SetActive(false);

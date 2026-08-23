@@ -125,6 +125,22 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    /// <summary>
+    /// 关闭当前所有已打开的面板
+    /// </summary>
+    public void CloseAllPanels()
+    {
+        List<KeyValuePair<string, UIBasePanel>> panels = new List<KeyValuePair<string, UIBasePanel>>(_panelDic);
+        _panelDic.Clear();
+        _blockingWindows.Clear();
+
+        foreach (KeyValuePair<string, UIBasePanel> panelEntry in panels)
+        {
+            panelEntry.Value.OnClose();
+            UnityObjectPoolFactory.GetInstance().PutItem(panelEntry.Key, panelEntry.Value.gameObject);
+        }
+    }
+
     public void ClosePanelAndDestory(string panelName)
     {
         if (_blockingWindows.ContainsKey(panelName))

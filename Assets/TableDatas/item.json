@@ -4,55 +4,55 @@
     "name": "一枚模拟币",
     "desc": "一枚金灿灿的模拟币，可以用来购物",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_simulation_coin]",
-    "rewardScale": 2500,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 2500
   },
   {
     "id": 1001,
     "name": "一堆模拟币",
     "desc": "几枚金灿灿的模拟币，可以用来购物",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_coin_stack]",
-    "rewardScale": 4000,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 4000
   },
   {
     "id": 1010,
     "name": "时间币",
     "desc": "精美的时间币，可以用来抽奖",
     "icon": "Assets/Art/Lottery/SpriteAtlas.spriteatlasv2[icon_lottery_coin]",
-    "rewardScale": 4000,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 4000
   },
   {
     "id": 2000,
     "name": "家具折扣券",
     "desc": "家具折扣券~",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_furniture_coupon]",
-    "rewardScale": 3200,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 3200
   },
   {
     "id": 3000,
     "name": "神秘礼盒",
     "desc": "神秘礼盒~",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_gift_box]",
-    "rewardScale": 4200,
-    "canUse": 1
+    "canUse": 1,
+    "rewardScale": 4200
   },
   {
     "id": 4000,
     "name": "IT技能证书",
     "desc": "IT技能证书~",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_ability_certificate]",
-    "rewardScale": 3600,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 3600
   },
   {
     "id": 4001,
     "name": "维修技能证书",
     "desc": "维修技能证书~",
     "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_ability_certificate]",
-    "rewardScale": 3600,
-    "canUse": 0
+    "canUse": 0,
+    "rewardScale": 3600
   }
 ]

@@ -15,25 +15,23 @@ using Newtonsoft.Json.Linq;
 namespace cfg
 {
 /// <summary>
-/// 道具配置
+/// ??????
 /// </summary>
 
-public sealed partial class Item : Luban.BeanBase
+public sealed partial class Scale : Luban.BeanBase
 {
-    public Item(JToken _buf) 
+    public Scale(JToken _buf) 
     {
         JObject _obj = _buf as JObject;
         Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
-        Icon = (string)_obj.GetValue("icon");
-        CanUse = (int)_obj.GetValue("canUse");
-        RewardScale = (int)_obj.GetValue("rewardScale");
+        ScaleValue = (int)_obj.GetValue("scaleValue");
     }
 
-    public static Item DeserializeItem(JToken _buf)
+    public static Scale DeserializeScale(JToken _buf)
     {
-        return new Item(_buf);
+        return new Scale(_buf);
     }
 
     /// <summary>
@@ -49,20 +47,12 @@ public sealed partial class Item : Luban.BeanBase
     /// </summary>
     public readonly string Desc;
     /// <summary>
-    /// 图片路径
+    /// 在当前场景下参照 item 的缩放倍率
     /// </summary>
-    public readonly string Icon;
-    /// <summary>
-    /// 1为可在背包使用
-    /// </summary>
-    public readonly int CanUse;
-    /// <summary>
-    /// 奖励面板下的缩放
-    /// </summary>
-    public readonly int RewardScale;
+    public readonly int ScaleValue;
 
 
-    public const int __ID__ = 2289459;
+    public const int __ID__ = 79698218;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -75,9 +65,7 @@ public sealed partial class Item : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "desc:" + Desc + ","
-        + "icon:" + Icon + ","
-        + "canUse:" + CanUse + ","
-        + "rewardScale:" + RewardScale + ","
+        + "scaleValue:" + ScaleValue + ","
         + "}";
     }
 }

@@ -62,6 +62,18 @@ public static class MissionAPI
         MissionManager.SendMessage(message);
     }
 
+    /// <summary>领取已完成任务的奖励。</summary>
+    public static bool TryClaimMission(string missionId)
+    {
+        return _isInitialized && MissionManager.TryClaimMission(missionId);
+    }
+
+    /// <summary>获取当前进行中或待领取的任务。</summary>
+    public static Mission<MissionMessage>[] GetActiveMissions()
+    {
+        return _isInitialized ? MissionManager.GetMissions() : Array.Empty<Mission<MissionMessage>>();
+    }
+
     private static void RestoreMissions(List<PlayerMissionData> missionData)
     {
         if (missionData == null)
@@ -237,7 +249,8 @@ public static class MissionAPI
         Mission<MissionMessage>[] missions = MissionManager.GetMissions();
         for (int i = 0; i < missions.Length; i++)
         {
-            if (!MissionTimings.TryGetValue(missions[i].id, out PlayerMissionData data) ||
+            if (missions[i].IsFinished ||
+                !MissionTimings.TryGetValue(missions[i].id, out PlayerMissionData data) ||
                 data.deadlineAge <= 0 ||
                 !IsAtOrAfter(
                     _playerInfoManager.CurrentAge,

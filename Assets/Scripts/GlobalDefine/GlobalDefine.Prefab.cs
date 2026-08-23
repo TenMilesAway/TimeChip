@@ -16,6 +16,7 @@ public class GlobalDefine
     public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";
     public const string CommonOverPanel = "Assets/Art/Common/Prefab/CommonOverPanel.prefab";
     public const string InventoryView = "Assets/Art/MainMenu/Prefab/InventoryView.prefab";
+    public const string MissionView = "Assets/Art/Mission/Prefabs/MissionView.prefab";
 
     // Item
     public const string CommonRewardItem = "Assets/Art/Common/Prefab/CommonRewardItem.prefab";
