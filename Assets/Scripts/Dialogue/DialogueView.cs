@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using DS.Enumerations;
@@ -25,10 +26,14 @@ public class DialogueView : UIBasePanel
     [SerializeField] private Text _txtDialogue;
     [SerializeField] private Image _imgAvatar;
     [SerializeField] private Button _btnShowOrNext;
+    [SerializeField, Min(0.01f)] private float _typewriterSecondsPerChar = 0.05f;
 
     private MissionDialogueViewData _viewData;
     private int _currentIndex;
     private int _presentationVersion;
+    private Tween _typewriterTween;
+    private bool _isTyping;
+    private string _currentLineText;
 
     private void Awake()
     {
@@ -62,6 +67,8 @@ public class DialogueView : UIBasePanel
 
     protected override void OnDestroy()
     {
+        StopTypewriter();
+
         if (_btnShowOrNext != null)
         {
             _btnShowOrNext.onClick.RemoveListener(ShowNextLine);
@@ -83,6 +90,12 @@ public class DialogueView : UIBasePanel
             return;
         }
 
+        if (_isTyping)
+        {
+            CompleteCurrentTypewriterLine();
+            return;
+        }
+
         _currentIndex++;
         if (_currentIndex >= _viewData.lines.Count)
         {
@@ -101,7 +114,8 @@ public class DialogueView : UIBasePanel
         }
 
         MissionDialogueLineData lineData = _viewData.lines[_currentIndex];
-        _txtDialogue.text = lineData?.text ?? string.Empty;
+        _currentLineText = lineData?.text ?? string.Empty;
+        PlayTypewriter(_currentLineText);
 
         if (_txtName != null)
         {
@@ -200,6 +214,65 @@ public class DialogueView : UIBasePanel
         }
 
         _imgAvatar.sprite = avatar;
+    }
+
+    private void PlayTypewriter(string fullText)
+    {
+        StopTypewriter();
+
+        if (_txtDialogue == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(fullText))
+        {
+            _txtDialogue.text = string.Empty;
+            _isTyping = false;
+            return;
+        }
+
+        _txtDialogue.text = string.Empty;
+        _isTyping = true;
+
+        int characterCount = fullText.Length;
+        float duration = Mathf.Max(0.01f, _typewriterSecondsPerChar * characterCount);
+        int visibleCharacters = 0;
+
+        _typewriterTween = DOTween
+            .To(() => visibleCharacters, value =>
+            {
+                visibleCharacters = value;
+                _txtDialogue.text = fullText.Substring(0, Mathf.Clamp(value, 0, characterCount));
+            }, characterCount, duration)
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                _txtDialogue.text = fullText;
+                _isTyping = false;
+                _typewriterTween = null;
+            });
+    }
+
+    private void CompleteCurrentTypewriterLine()
+    {
+        StopTypewriter();
+
+        if (_txtDialogue != null)
+        {
+            _txtDialogue.text = _currentLineText ?? string.Empty;
+        }
+    }
+
+    private void StopTypewriter()
+    {
+        if (_typewriterTween != null)
+        {
+            _typewriterTween.Kill();
+            _typewriterTween = null;
+        }
+
+        _isTyping = false;
     }
 
     private static string GetAvatarPath(DSDialogueSpeaker speaker)

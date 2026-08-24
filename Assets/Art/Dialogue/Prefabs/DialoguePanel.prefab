@@ -581,7 +581,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 2851794547189508377}
+  m_TargetGraphic: {fileID: 6169056469899036628}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -666,6 +666,7 @@ MonoBehaviour:
   _txtDialogue: {fileID: 5856996872465912757}
   _imgAvatar: {fileID: 6011934977065939512}
   _btnShowOrNext: {fileID: 4831098775453820824}
+  _typewriterSecondsPerChar: 0.05
 --- !u!223 &8435618345839852821
 Canvas:
   m_ObjectHideFlags: 0
