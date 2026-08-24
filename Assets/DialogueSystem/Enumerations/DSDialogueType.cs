@@ -5,4 +5,11 @@ namespace DS.Enumerations
         SingleChoice,
         MultipleChoice
     }
+
+    public enum DSDialogueSpeaker
+    {
+        Me,
+        Girlfriend,
+        Daughter
+    }
 }

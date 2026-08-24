@@ -19,6 +19,7 @@ namespace DS.Elements
         public List<DSChoiceSaveData> Choices { get; set; }
         public string Text { get; set; }
         public DSDialogueType DialogueType { get; set; }
+        public DSDialogueSpeaker Speaker { get; set; }
         public DSGroup Group { get; set; }
 
         protected DSGraphView graphView;
@@ -39,6 +40,7 @@ namespace DS.Elements
             DialogueName = nodeName;
             Choices = new List<DSChoiceSaveData>();
             Text = "Dialogue text.";
+            Speaker = DSDialogueSpeaker.Me;
 
             SetPosition(new Rect(position, Vector2.zero));
 
@@ -127,6 +129,20 @@ namespace DS.Elements
 
             customDataContainer.Add(textFoldout);
 
+            if (DialogueType == DSDialogueType.SingleChoice)
+            {
+                List<string> speakerOptions = new List<string> { "我", "女朋友", "女儿" };
+                PopupField<string> speakerField = new PopupField<string>(
+                    "Speaker",
+                    speakerOptions,
+                    GetSpeakerIndex(Speaker));
+                speakerField.RegisterValueChangedCallback(callback =>
+                {
+                    Speaker = GetSpeakerByOption(callback.newValue);
+                });
+                customDataContainer.Add(speakerField);
+            }
+
             extensionContainer.Add(customDataContainer);
         }
 
@@ -174,6 +190,32 @@ namespace DS.Elements
         public void ResetStyle()
         {
             mainContainer.style.backgroundColor = defaultBackgroundColor;
+        }
+
+        private static int GetSpeakerIndex(DSDialogueSpeaker speaker)
+        {
+            switch (speaker)
+            {
+                case DSDialogueSpeaker.Girlfriend:
+                    return 1;
+                case DSDialogueSpeaker.Daughter:
+                    return 2;
+                default:
+                    return 0;
+            }
+        }
+
+        private static DSDialogueSpeaker GetSpeakerByOption(string option)
+        {
+            switch (option)
+            {
+                case "女朋友":
+                    return DSDialogueSpeaker.Girlfriend;
+                case "女儿":
+                    return DSDialogueSpeaker.Daughter;
+                default:
+                    return DSDialogueSpeaker.Me;
+            }
         }
     }
 }

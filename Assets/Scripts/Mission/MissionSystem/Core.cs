@@ -119,14 +119,15 @@ namespace RedSaw.MissionSystem
         protected abstract bool UseMessage(T message);
     }
 
-    /// <summary>可持久化的任务计数需求。</summary>
+    /// <summary>可持久化的任务计数需求</summary>
     public interface IMissionProgressHandle
     {
         int CurrentCount { get; }
         int TargetCount { get; }
+        void RestoreProgress(int progress);
     }
 
-    /// <summary>任务计数需求的进度快照。</summary>
+    /// <summary>任务计数需求的进度快照</summary>
     public readonly struct MissionProgress
     {
         public readonly int currentCount;
@@ -166,7 +167,7 @@ namespace RedSaw.MissionSystem
 
         }
 
-        /// <summary>获取所有可计数需求的当前进度。</summary>
+        /// <summary>获取所有可计数需求的当前进度</summary>
         public MissionProgress[] Progresses
         {
             get
@@ -192,6 +193,54 @@ namespace RedSaw.MissionSystem
             handles = proto.requires.Select(r => r.CreateHandle()).ToArray();
             if (!proto.isSingleRequire)
                 _unfinishedHandles.AddRange(handles);
+        }
+
+        /// <summary>恢复所有可计数需求的已保存进度</summary>
+        public void RestoreProgress(IReadOnlyList<int> requirementProgress)
+        {
+            if (requirementProgress == null)
+            {
+                return;
+            }
+
+            var progressIndex = 0;
+            for (var i = 0; i < handles.Length; i++)
+            {
+                if (!(handles[i] is IMissionProgressHandle progressHandle))
+                {
+                    continue;
+                }
+
+                if (progressIndex >= requirementProgress.Count)
+                {
+                    break;
+                }
+
+                progressHandle.RestoreProgress(requirementProgress[progressIndex]);
+                progressIndex++;
+            }
+
+            if (proto.isSingleRequire)
+            {
+                IsFinished = handles[0] is IMissionProgressHandle singleProgressHandle &&
+                    singleProgressHandle.CurrentCount >= singleProgressHandle.TargetCount;
+                return;
+            }
+
+            _unfinishedHandles.Clear();
+            for (var i = 0; i < handles.Length; i++)
+            {
+                if (!(handles[i] is IMissionProgressHandle progressHandle) ||
+                    progressHandle.CurrentCount < progressHandle.TargetCount)
+                {
+                    _unfinishedHandles.Add(handles[i]);
+                }
+            }
+
+            IsFinished = proto.requireMode == MissionRequireMode.All
+                ? _unfinishedHandles.Count == 0
+                : handles.Any(handle => handle is IMissionProgressHandle progressHandle &&
+                    progressHandle.CurrentCount >= progressHandle.TargetCount);
         }
 
         /// <summary>兑现任务的奖励</summary>
@@ -312,7 +361,7 @@ namespace RedSaw.MissionSystem
             return true;
         }
 
-        /// <summary>领取已完成任务的奖励，并将任务标记为完成后移除。</summary>
+        /// <summary>领取已完成任务的奖励，并将任务标记为完成后移除</summary>
         public bool TryClaimMission(string id)
         {
             if (!allMissions.TryGetValue(id, out var mission) || !mission.IsFinished)

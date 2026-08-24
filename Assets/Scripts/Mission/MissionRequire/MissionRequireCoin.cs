@@ -27,6 +27,11 @@ public class MissionRequireCoin : MissionRequire<MissionMessage>
         public int CurrentCount { get { return count; } }
         public int TargetCount { get { return require.count; } }
 
+        public void RestoreProgress(int progress)
+        {
+            count = Mathf.Max(0, progress);
+        }
+
         protected override bool UseMessage(MissionMessage message)
         {
             count += message.amount;

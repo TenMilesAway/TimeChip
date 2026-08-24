@@ -41,7 +41,7 @@ public class InventoryItem : MonoBehaviour
         _imgIcon.sprite = icon;
         _imgIcon.SetNativeSize();
         _imgIcon.rectTransform.localScale = Vector3.one * (rewardScale / RewardScaleDivisor);
-        _txtNum.text = amount.ToString();
+        _txtNum.text = "×" + amount.ToString();
         _button.onClick.AddListener(clickHandler);
     }
 

@@ -165,6 +165,7 @@ namespace DS.Utilities
                 Text = node.Text,
                 GroupID = node.Group?.ID,
                 DialogueType = node.DialogueType,
+                Speaker = node.Speaker,
                 Position = node.GetPosition().position
             };
 
@@ -193,6 +194,7 @@ namespace DS.Utilities
                 node.Text,
                 ConvertNodeChoicesToDialogueChoices(node.Choices),
                 node.DialogueType,
+                node.Speaker,
                 node.IsStartingNode()
             );
 
@@ -325,6 +327,7 @@ namespace DS.Utilities
                 node.ID = nodeData.ID;
                 node.Choices = choices;
                 node.Text = nodeData.Text;
+                node.Speaker = nodeData.Speaker;
 
                 node.Draw();
 

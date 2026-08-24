@@ -33,6 +33,8 @@ public sealed partial class Mission : Luban.BeanBase
         Reward = (string)_obj.GetValue("reward");
         Deadline = (string)_obj.GetValue("deadline");
         Failure = (string)_obj.GetValue("failure");
+        DialogueStart = (string)_obj.GetValue("dialogueStart");
+        DialogueEnd = (string)_obj.GetValue("dialogueEnd");
     }
 
     public static Mission DeserializeMission(JToken _buf)
@@ -80,6 +82,14 @@ public sealed partial class Mission : Luban.BeanBase
     /// 任务失败惩罚
     /// </summary>
     public readonly string Failure;
+    /// <summary>
+    /// 任务开始时对话
+    /// </summary>
+    public readonly string DialogueStart;
+    /// <summary>
+    /// 任务结束时对话
+    /// </summary>
+    public readonly string DialogueEnd;
 
 
     public const int __ID__ = -1560864404;
@@ -102,6 +112,8 @@ public sealed partial class Mission : Luban.BeanBase
         + "reward:" + Reward + ","
         + "deadline:" + Deadline + ","
         + "failure:" + Failure + ","
+        + "dialogueStart:" + DialogueStart + ","
+        + "dialogueEnd:" + DialogueEnd + ","
         + "}";
     }
 }

@@ -6,10 +6,12 @@
     "message": "Coin",
     "icon": 1000,
     "condition": "",
-    "target": "10000",
+    "target": "100",
     "reward": "2000,1",
     "deadline": "22,6",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "MissionOne,0",
+    "dialogueEnd": "MissionOne,1"
   },
   {
     "id": 2000,
@@ -21,7 +23,9 @@
     "target": "60",
     "reward": "",
     "deadline": "6",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1001,
@@ -33,7 +37,9 @@
     "target": "300",
     "reward": "100,0",
     "deadline": "22,4",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1002,
@@ -45,7 +51,9 @@
     "target": "50",
     "reward": "50,0",
     "deadline": "3",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1003,
@@ -57,7 +65,9 @@
     "target": "200",
     "reward": "0,1",
     "deadline": "4",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 2001,
@@ -69,7 +79,9 @@
     "target": "85",
     "reward": "0,0,10",
     "deadline": "22,10",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 2002,
@@ -81,7 +93,9 @@
     "target": "70",
     "reward": "300,0",
     "deadline": "2",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1010,
@@ -93,7 +107,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1011,
@@ -105,7 +121,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1012,
@@ -117,7 +135,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1013,
@@ -129,7 +149,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1014,
@@ -141,7 +163,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1015,
@@ -153,7 +177,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1016,
@@ -165,7 +191,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1017,
@@ -177,7 +205,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1018,
@@ -189,7 +219,9 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   },
   {
     "id": 1019,
@@ -201,6 +233,8 @@
     "target": "100000",
     "reward": "",
     "deadline": "99,12",
-    "failure": "gameover"
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   }
 ]

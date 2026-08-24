@@ -96,44 +96,10 @@ public static class MissionAPI
             MissionTimings[data.missionId] = CreateMissionData(missionConfig, data);
             if (MissionManager.StartMission(missionProto))
             {
-                RestoreMissionProgress(missionProto, data.requirementProgress);
+                MissionManager
+                    .GetMission(data.missionId)
+                    .RestoreProgress(data.requirementProgress);
             }
-        }
-    }
-
-    private static void RestoreMissionProgress(
-        MissionPrototype<MissionMessage> missionProto,
-        List<int> requirementProgress)
-    {
-        if (requirementProgress == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < missionProto.requires.Length && i < requirementProgress.Count; i++)
-        {
-            int progress = Mathf.Max(0, requirementProgress[i]);
-            if (progress == 0)
-            {
-                continue;
-            }
-
-            MissionMessage message;
-            if (missionProto.requires[i] is MissionRequireCoin)
-            {
-                message = new MissionMessage(MissionEventType.Coin, progress);
-            }
-            else if (missionProto.requires[i] is MissionRequireHealth)
-            {
-                message = new MissionMessage(MissionEventType.Health, progress);
-            }
-            else
-            {
-                Debug.LogWarning("[任务系统] 任务条件不支持进度恢复: " + missionProto.id);
-                continue;
-            }
-
-            MissionManager.SendMessage(message);
         }
     }
 
@@ -233,6 +199,7 @@ public static class MissionAPI
         if (MissionManager.StartMission(missionProto))
         {
             Debug.Log("[任务系统] 开启任务: " + missionConfig.Id + " - " + missionConfig.Name);
+            MissionDialogueService.TryPlayStartDialogue(missionConfig);
             return;
         }
 
@@ -481,6 +448,12 @@ public static class MissionAPI
 
         public void OnMissionRemoved(Mission<MissionMessage> mission, bool isFinished)
         {
+            cfg.Mission missionConfig = null;
+            if (isFinished)
+            {
+                TryGetMissionConfig(mission.id, out missionConfig);
+            }
+
             MissionTimings.Remove(mission.id);
             if (isFinished)
             {
@@ -490,6 +463,7 @@ public static class MissionAPI
             SaveMissions();
             if (isFinished)
             {
+                MissionDialogueService.TryPlayEndDialogue(missionConfig);
                 EvaluateAvailableMissions(false);
             }
         }
