@@ -156,6 +156,7 @@ public static class MissionDialogueService
                 lines.Add(new MissionDialogueLineData
                 {
                     speaker = current.Speaker,
+                    expressionPath = current.SpeakerExpressionPath,
                     text = current.Text
                 });
             }

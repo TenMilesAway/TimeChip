@@ -30,6 +30,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 1
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_delighted.png
     <Position>k__BackingField: {x: -102.4, y: 53.600002}
   - <ID>k__BackingField: 1a47e149-5d28-45ba-b75d-fc34c4eb6f68
     <Name>k__BackingField: 2
@@ -40,6 +41,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/me/role_me_sweat.png
     <Position>k__BackingField: {x: 568.8, y: 53.600002}
   - <ID>k__BackingField: 36834e11-f683-4922-8af0-e331466d639d
     <Name>k__BackingField: 3
@@ -50,6 +52,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 1
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_happy.png
     <Position>k__BackingField: {x: 1239.2, y: 53.600002}
   - <ID>k__BackingField: 8323a3a8-bd94-4961-872d-f47573a4e17e
     <Name>k__BackingField: 4
@@ -60,6 +63,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/me/role_me_unhappy.png
     <Position>k__BackingField: {x: 1908.8, y: 53.600002}
   - <ID>k__BackingField: 7215fe13-76a4-42f1-9d34-b131ff853c4c
     <Name>k__BackingField: 6
@@ -70,6 +74,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/me/role_me_excited.png
     <Position>k__BackingField: {x: 3244, y: 53.600002}
   - <ID>k__BackingField: f923871e-b88f-4554-aeee-0b088108bc9f
     <Name>k__BackingField: 5
@@ -80,6 +85,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 1
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_very_happy.png
     <Position>k__BackingField: {x: 2572.8, y: 53.600002}
   - <ID>k__BackingField: 1633cc53-09e4-428b-bdc1-716f49dca802
     <Name>k__BackingField: 7
@@ -90,6 +96,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 1
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_give_me_five.png
     <Position>k__BackingField: {x: 3922.4, y: 53.600002}
   - <ID>k__BackingField: 6cfe8df0-8fc2-46cf-9c50-d28b286753f7
     <Name>k__BackingField: 1
@@ -100,6 +107,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 1
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_delighted.png
     <Position>k__BackingField: {x: -102.4, y: 408.8}
   - <ID>k__BackingField: e815d00a-a12f-4b0c-baeb-65e6f2f714ae
     <Name>k__BackingField: 2
@@ -110,6 +118,7 @@ MonoBehaviour:
     <GroupID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
     <DialogueType>k__BackingField: 0
     <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/me/role_me_happy.png
     <Position>k__BackingField: {x: 568.8, y: 408.8}
   <OldGroupNames>k__BackingField:
   - "\u521D\u51FA\u8305\u5E90\u5F00\u59CB"

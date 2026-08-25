@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,12 +16,15 @@ namespace DS.Elements
 
     public class DSNode : Node
     {
+        private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
+
         public string ID { get; set; }
         public string DialogueName { get; set; }
         public List<DSChoiceSaveData> Choices { get; set; }
         public string Text { get; set; }
         public DSDialogueType DialogueType { get; set; }
         public DSDialogueSpeaker Speaker { get; set; }
+        public string SpeakerExpressionPath { get; set; }
         public DSGroup Group { get; set; }
 
         protected DSGraphView graphView;
@@ -41,6 +46,7 @@ namespace DS.Elements
             Choices = new List<DSChoiceSaveData>();
             Text = "Dialogue text.";
             Speaker = DSDialogueSpeaker.Me;
+            SpeakerExpressionPath = GetDefaultExpressionPath(Speaker);
 
             SetPosition(new Rect(position, Vector2.zero));
 
@@ -131,6 +137,38 @@ namespace DS.Elements
 
             if (DialogueType == DSDialogueType.SingleChoice)
             {
+                List<string> currentExpressionReferences = GetExpressionReferences(Speaker);
+                SpeakerExpressionPath = ResolveExpressionPath(
+                    SpeakerExpressionPath,
+                    currentExpressionReferences);
+                List<string> expressionNames = currentExpressionReferences
+                    .Select(GetExpressionDisplayName)
+                    .ToList();
+                if (expressionNames.Count == 0)
+                {
+                    expressionNames.Add("(None)");
+                }
+
+                PopupField<string> expressionField = new PopupField<string>(
+                    "Expression",
+                    expressionNames,
+                    currentExpressionReferences.Count == 0
+                        ? 0
+                        : GetExpressionIndex(SpeakerExpressionPath, currentExpressionReferences));
+                expressionField.RegisterValueChangedCallback(callback =>
+                {
+                    if (currentExpressionReferences.Count == 0)
+                    {
+                        SpeakerExpressionPath = string.Empty;
+                        return;
+                    }
+
+                    int expressionIndex = expressionNames.IndexOf(callback.newValue);
+                    SpeakerExpressionPath = expressionIndex >= 0 && expressionIndex < currentExpressionReferences.Count
+                        ? currentExpressionReferences[expressionIndex]
+                        : string.Empty;
+                });
+
                 List<string> speakerOptions = new List<string> { "我", "女朋友", "女儿" };
                 PopupField<string> speakerField = new PopupField<string>(
                     "Speaker",
@@ -139,8 +177,25 @@ namespace DS.Elements
                 speakerField.RegisterValueChangedCallback(callback =>
                 {
                     Speaker = GetSpeakerByOption(callback.newValue);
+
+                    currentExpressionReferences = GetExpressionReferences(Speaker);
+                    SpeakerExpressionPath = currentExpressionReferences.Count == 0
+                        ? string.Empty
+                        : currentExpressionReferences[0];
+
+                    expressionNames = currentExpressionReferences
+                        .Select(GetExpressionDisplayName)
+                        .ToList();
+                    if (expressionNames.Count == 0)
+                    {
+                        expressionNames.Add("(None)");
+                    }
+                    expressionField.choices = expressionNames;
+                    expressionField.index = 0;
+                    expressionField.SetValueWithoutNotify(expressionNames[0]);
                 });
                 customDataContainer.Add(speakerField);
+                customDataContainer.Add(expressionField);
             }
 
             extensionContainer.Add(customDataContainer);
@@ -215,6 +270,102 @@ namespace DS.Elements
                     return DSDialogueSpeaker.Daughter;
                 default:
                     return DSDialogueSpeaker.Me;
+            }
+        }
+
+        private static List<string> GetExpressionReferences(DSDialogueSpeaker speaker)
+        {
+            string folderPath = $"Assets/Art/Role/Sprites/{GetSpeakerFolderName(speaker)}";
+            string[] expressionGuids = AssetDatabase.FindAssets("t:Sprite", new[] { folderPath });
+            List<string> expressionReferences = new List<string>(expressionGuids.Length);
+            for (int i = 0; i < expressionGuids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(expressionGuids[i]);
+                expressionReferences.Add(BuildAtlasExpressionReference(assetPath));
+            }
+
+            expressionReferences.Sort(StringComparer.Ordinal);
+            return expressionReferences;
+        }
+
+        private static string GetDefaultExpressionPath(DSDialogueSpeaker speaker)
+        {
+            List<string> expressionReferences = GetExpressionReferences(speaker);
+            return expressionReferences.Count == 0 ? string.Empty : expressionReferences[0];
+        }
+
+        private static string ResolveExpressionPath(string candidatePath, List<string> expressionReferences)
+        {
+            if (expressionReferences == null || expressionReferences.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            string normalizedCandidate = NormalizeExpressionReference(candidatePath);
+            if (!string.IsNullOrEmpty(normalizedCandidate) && expressionReferences.Contains(normalizedCandidate))
+            {
+                return normalizedCandidate;
+            }
+
+            return expressionReferences[0];
+        }
+
+        private static int GetExpressionIndex(string expressionPath, List<string> expressionReferences)
+        {
+            int index = expressionReferences.IndexOf(expressionPath);
+            return index < 0 ? 0 : index;
+        }
+
+        private static string BuildAtlasExpressionReference(string assetPath)
+        {
+            string spriteName = Path.GetFileNameWithoutExtension(assetPath);
+            return string.IsNullOrEmpty(spriteName)
+                ? string.Empty
+                : $"{RoleSpriteAtlasPath}[{spriteName}]";
+        }
+
+        private static string NormalizeExpressionReference(string expressionPath)
+        {
+            if (string.IsNullOrEmpty(expressionPath))
+            {
+                return string.Empty;
+            }
+
+            if (expressionPath.Contains(".spriteatlasv2[") && expressionPath.EndsWith("]"))
+            {
+                return expressionPath;
+            }
+
+            return BuildAtlasExpressionReference(expressionPath);
+        }
+
+        private static string GetExpressionDisplayName(string expressionReference)
+        {
+            if (string.IsNullOrEmpty(expressionReference))
+            {
+                return string.Empty;
+            }
+
+            int leftBracket = expressionReference.IndexOf('[');
+            int rightBracket = expressionReference.LastIndexOf(']');
+            if (leftBracket < 0 || rightBracket <= leftBracket)
+            {
+                return Path.GetFileNameWithoutExtension(expressionReference);
+            }
+
+            return expressionReference.Substring(leftBracket + 1, rightBracket - leftBracket - 1);
+        }
+
+        private static string GetSpeakerFolderName(DSDialogueSpeaker speaker)
+        {
+            switch (speaker)
+            {
+                case DSDialogueSpeaker.Girlfriend:
+                    return "girlfriend";
+                case DSDialogueSpeaker.Daughter:
+                    return "daughter";
+                default:
+                    return "me";
             }
         }
     }

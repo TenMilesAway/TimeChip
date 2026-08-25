@@ -19,4 +19,5 @@ MonoBehaviour:
     <NextDialogue>k__BackingField: {fileID: 11400000, guid: 05fc55d1fd7f8e64e86bcea918b97a28, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 0
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/me/role_me_excited.png
   <IsStartingDialogue>k__BackingField: 0

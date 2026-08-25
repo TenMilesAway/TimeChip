@@ -13,6 +13,7 @@ namespace DS.ScriptableObjects
         [field: SerializeField] public List<DSDialogueChoiceData> Choices { get; set; }
         [field: SerializeField] public DSDialogueType DialogueType { get; set; }
         [field: SerializeField] public DSDialogueSpeaker Speaker { get; set; }
+        [field: SerializeField] public string SpeakerExpressionPath { get; set; }
         [field: SerializeField] public bool IsStartingDialogue { get; set; }
 
         public void Initialize(
@@ -21,6 +22,7 @@ namespace DS.ScriptableObjects
             List<DSDialogueChoiceData> choices,
             DSDialogueType dialogueType,
             DSDialogueSpeaker speaker,
+            string speakerExpressionPath,
             bool isStartingDialogue)
         {
             DialogueName = dialogueName;
@@ -28,6 +30,7 @@ namespace DS.ScriptableObjects
             Choices = choices;
             DialogueType = dialogueType;
             Speaker = speaker;
+            SpeakerExpressionPath = speakerExpressionPath;
             IsStartingDialogue = isStartingDialogue;
         }
     }

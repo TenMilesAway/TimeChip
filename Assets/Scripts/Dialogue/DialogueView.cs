@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using DS.Enumerations;
 public sealed class MissionDialogueLineData
 {
     public DSDialogueSpeaker speaker;
+    public string expressionPath;
     public string text;
 }
 
@@ -21,6 +23,7 @@ public class DialogueView : UIBasePanel
     private const string MeAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me]";
     private const string GirlfriendAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend]";
     private const string DaughterAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_daughter]";
+    private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
 
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtDialogue;
@@ -122,7 +125,10 @@ public class DialogueView : UIBasePanel
             _txtName.text = GetSpeakerName(lineData?.speaker ?? DSDialogueSpeaker.Me);
         }
 
-        SetAvatarAsync(lineData?.speaker ?? DSDialogueSpeaker.Me, _presentationVersion);
+        SetAvatarAsync(
+            lineData?.speaker ?? DSDialogueSpeaker.Me,
+            lineData?.expressionPath,
+            _presentationVersion);
     }
 
     private void EnsureReferences()
@@ -191,14 +197,19 @@ public class DialogueView : UIBasePanel
         }
     }
 
-    private async void SetAvatarAsync(DSDialogueSpeaker speaker, int presentationVersion)
+    private async void SetAvatarAsync(
+        DSDialogueSpeaker speaker,
+        string expressionPath,
+        int presentationVersion)
     {
         if (_imgAvatar == null)
         {
             return;
         }
 
-        string avatarPath = GetAvatarPath(speaker);
+        string avatarPath = string.IsNullOrEmpty(expressionPath)
+            ? GetAvatarPath(speaker)
+            : NormalizeExpressionReference(expressionPath);
         Sprite avatar = await GameManager.Resource.LoadResource<Sprite>(
             avatarPath,
             GetInstanceID().ToString());
@@ -286,5 +297,18 @@ public class DialogueView : UIBasePanel
             default:
                 return MeAvatarPath;
         }
+    }
+
+    private static string NormalizeExpressionReference(string expressionPath)
+    {
+        if (expressionPath.Contains(".spriteatlasv2[") && expressionPath.EndsWith("]"))
+        {
+            return expressionPath;
+        }
+
+        string spriteName = Path.GetFileNameWithoutExtension(expressionPath);
+        return string.IsNullOrEmpty(spriteName)
+            ? expressionPath
+            : $"{RoleSpriteAtlasPath}[{spriteName}]";
     }
 }

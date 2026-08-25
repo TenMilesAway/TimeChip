@@ -19,4 +19,5 @@ MonoBehaviour:
     <NextDialogue>k__BackingField: {fileID: 0}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 1
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_give_me_five.png
   <IsStartingDialogue>k__BackingField: 0
