@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     public static ResourceComponent Resource { get; private set; }
 
     /// <summary>
-    /// “Ù∆µ(Œ¥ÕÍ≥…)
+    /// “Ù∆µ
     /// </summary>
     public static AudioComponent Audio { get; private set; }
 
@@ -101,6 +101,8 @@ public class GameManager : MonoBehaviour
         Audio       = GetTargetComponent<AudioComponent>();
         Fsm         = GetTargetComponent<FsmComponent>();
         GlobalData  = GetTargetComponent<GlobalDataComponent>();
+
+        Audio.Init();
     }
 
     /// <summary>

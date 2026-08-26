@@ -22,6 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8842fb294b17b364f9127f2f6a7f5d13
+    m_Address: Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ec6830a677adef74eaca4c608688f181
     m_Address: Assets/Art/Common/SpriteAtlas.spriteatlasv2
     m_ReadOnly: 0

@@ -7,8 +7,8 @@ using UnityEngine;
 
 public static class AudioDefineGenTool
 {
-    private static string AudioDataSOPath = "Assets/HotUpdate/Scripts/Audio/AudioDataSO.asset";
-    private static string AudioDefinePath = "Assets/HotUpdate/Scripts/Audio/AudioDefine.cs";
+    private static string AudioDataSOPath = "Assets/Audios/AudioDataSO.asset";
+    private static string AudioDefinePath = "Assets/Scripts/Utility/Audio/AudioDefine.cs";
 
     [MenuItem("Assets/…˙≥…“Ù∆µ≈‰÷√")]
     public static void GenAudioDefine()

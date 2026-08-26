@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 5018041521222749566}
   - component: {fileID: 6062903103661935196}
   - component: {fileID: 5856996872465912757}
+  - component: {fileID: 1974396054682955914}
   m_Layer: 5
   m_Name: Text Dialogue
   m_TagString: Untagged
@@ -211,7 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -219,7 +220,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 78df1e53ee4319c43abae575eaf1b9dd, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -232,6 +233,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u54C8\u55BD\u54C8\u55BD\uFF01\u6211\u63A5\u4E0B\u6765\u5C06\u5728\u8FD9\u5EA7\u57CE\u5E02\u8FDB\u884C\u751F\u5B58\u5566\uFF0C\u8BF7\u4F60\u5E2E\u6211\u89C4\u5212\u63A5\u4E0B\u6765\u8BE5\u5982\u4F55\u3002\u3002\u3002\u3002\u3002"
+--- !u!114 &1974396054682955914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3500423335071641158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &3982864208300225172
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,7 +314,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 78df1e53ee4319c43abae575eaf1b9dd, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0

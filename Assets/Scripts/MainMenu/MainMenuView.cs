@@ -19,6 +19,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _missionButton;
     [SerializeField] private Button _homeButton;
     [SerializeField] private Button _inventoryButton;
+    [SerializeField] private Button _settingButton;
 
     private MainContentPage _currentContentPage = MainContentPage.Community;    // 当前页面
     private bool _isWaitingForAdvanceTurnConfirmation;
@@ -32,6 +33,7 @@ public class MainMenuView : UIBasePanel
         _missionButton.onClick.AddListener(OpenMission);
         _homeButton.onClick.AddListener(OpenHome);
         _inventoryButton.onClick.AddListener(OpenInventory);
+        _settingButton.onClick.AddListener(OpenSetting);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -131,6 +133,13 @@ public class MainMenuView : UIBasePanel
     private void OpenInventory()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.InventoryView);
+    }
+
+    private void OpenSetting()
+    {
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.SettingView,
+            param: new OpenUIParam { data = true });
     }
 
     private void NavigateTo(MainContentPage targetPage)

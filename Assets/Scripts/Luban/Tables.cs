@@ -37,6 +37,10 @@ public partial class Tables
     /// ??????
     /// </summary>
     public ScaleTable ScaleTable {get; }
+    /// <summary>
+    /// 零工配置
+    /// </summary>
+    public WorkTable WorkTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -47,6 +51,7 @@ public partial class Tables
         MissionTable = new MissionTable(loader("mission"));
         BaseTable = new BaseTable(loader("base"));
         ScaleTable = new ScaleTable(loader("scale"));
+        WorkTable = new WorkTable(loader("work"));
         ResolveRef();
     }
     
@@ -58,6 +63,7 @@ public partial class Tables
         MissionTable.ResolveRef(this);
         BaseTable.ResolveRef(this);
         ScaleTable.ResolveRef(this);
+        WorkTable.ResolveRef(this);
     }
 }
 

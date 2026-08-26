@@ -17,12 +17,13 @@ public class Launcher : SingletonMono<Launcher>
 
     [SerializeField] private Button _newGameButton;               // 新游戏按钮
     [SerializeField] private Button _loadSaveButton;              // 读取存档按钮
+    [SerializeField] private Button _settingButton;               // 设置按钮
     [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
-    private bool _isNewGame;                                     // 本次启动是否来自新建存档
+    private bool _isNewGame;                                      // 本次启动是否来自新建存档
     private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
 
     protected override void Awake()
@@ -36,14 +37,15 @@ public class Launcher : SingletonMono<Launcher>
     private void Start()
     {
         _loadingRoot.SetActive(false);
-        if (_newGameButton == null || _loadSaveButton == null)
+        if (_newGameButton == null || _loadSaveButton == null || _settingButton == null)
         {
-            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏按钮和读取存档按钮", this);
+            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏、读取存档和设置按钮", this);
             return;
         }
 
         _newGameButton.onClick.AddListener(CreateNewGame);
         _loadSaveButton.onClick.AddListener(LoadSavedGame);
+        _settingButton.onClick.AddListener(OpenSettingView);
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
 
@@ -57,6 +59,11 @@ public class Launcher : SingletonMono<Launcher>
         if (_loadSaveButton != null)
         {
             _loadSaveButton.onClick.RemoveListener(LoadSavedGame);
+        }
+
+        if (_settingButton != null)
+        {
+            _settingButton.onClick.RemoveListener(OpenSettingView);
         }
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
@@ -215,6 +222,23 @@ public class Launcher : SingletonMono<Launcher>
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
+    private void OpenSettingView()
+    {
+        UIManager.GetInstance().OpenPanel(GlobalDefine.SettingView);
+    }
+
+    /// <summary>保存当前存档并返回启动主界面</summary>
+    public void SaveAndReturnToMainInterface()
+    {
+        if (_gameSaveData != null)
+        {
+            _gameSaveData.playerInfo = PlayerInfoManager.GetInstance().GetSnapshot();
+            SaveGameData();
+        }
+
+        ReturnToStartMenuInternal(deleteSave: false);
+    }
+
     /// <summary>
     /// 使用存档中的玩家数据初始化玩家数据管理器并启用自动保存
     /// </summary>
@@ -292,8 +316,19 @@ public class Launcher : SingletonMono<Launcher>
     /// <summary>玩家确认后清除存档并回到启动菜单</summary>
     private void ReturnToStartMenu()
     {
-        PlayerPrefsSaveSystem.Delete(PlayerSaveSlotId);
-        _gameSaveData = null;
+        ReturnToStartMenuInternal(deleteSave: true);
+    }
+
+    private void ReturnToStartMenuInternal(bool deleteSave)
+    {
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
+
+        if (deleteSave)
+        {
+            PlayerPrefsSaveSystem.Delete(PlayerSaveSlotId);
+            _gameSaveData = null;
+        }
+
         _isInitializingData = false;
         _isNewGame = false;
         SetProcessState(LauncherProcess.None);
@@ -303,7 +338,7 @@ public class Launcher : SingletonMono<Launcher>
         gameObject.SetActive(true);
         _loadingRoot.SetActive(false);
         _menuRoot.SetActive(true);
-        _loadSaveButton.interactable = false;
+        _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
 
     /// <summary>
@@ -311,6 +346,9 @@ public class Launcher : SingletonMono<Launcher>
     /// </summary>
     private void InitializeGameManager()
     {
+        // 场景中已手动创建 GameManager, 因此 return
+        return;
+
         GameManager gameManager = FindObjectOfType<GameManager>();
         if (gameManager == null)
         {
@@ -326,6 +364,11 @@ public class Launcher : SingletonMono<Launcher>
         if (gameManager.GetComponent<TimerComponent>() == null)
         {
             gameManager.gameObject.AddComponent<TimerComponent>();
+        }
+
+        if (gameManager.GetComponent<AudioComponent>() == null)
+        {
+            gameManager.gameObject.AddComponent<AudioComponent>();
         }
     }
 

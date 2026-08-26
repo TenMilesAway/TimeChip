@@ -17,13 +17,15 @@ public class AudioComponent : BaseComponent
     private static string _SFXVolumeKey = "SFXVolume";
     private static string _MusicKey = "Music";
     private static string _SFXKey = "SFX";
+    private static string _VibrationKey = "Vibration";
     private static string _AudioSourceTemplatePath = "Assets/Audio/AudioSourceTemplate.prefab";
 
     private string _currentPlayMusic;
     private bool _isPlaySFX;
     private bool _isPlayMusic;
+    private bool _isVibrationEnabled;
 
-    private void Start()
+    public void Init()
     {
         GameManager.Event.AddListener<AudioClipData>(GameEventType.PlayAudio, PlayAudioClip);
 
@@ -37,15 +39,16 @@ public class AudioComponent : BaseComponent
             }
         }
 
-        // ¼ÓÔØÒôÁ¿
+        // åŠ è½½éŸ³é‡
         LoadMusicVolumeSetting();
         LoadSFXVolumeSetting();
         LoadSettingStatus();
+        LoadVibrationSetting();
     }
 
-    #region Ö÷Òª·½·¨: ³õÊ¼¼ÓÔØ
+    #region ä¸»è¦æ–¹æ³•: åˆå§‹åŠ è½½
     /// <summary>
-    /// ¼ÓÔØ±³¾°ÒôÀÖÒôÁ¿
+    /// åŠ è½½èƒŒæ™¯éŸ³ä¹éŸ³é‡
     /// </summary>
     private void LoadMusicVolumeSetting()
     {
@@ -60,7 +63,7 @@ public class AudioComponent : BaseComponent
     }
 
     /// <summary>
-    /// ¼ÓÔØÒôĞ§ÒôÁ¿
+    /// åŠ è½½éŸ³æ•ˆéŸ³é‡
     /// </summary>
     private void LoadSFXVolumeSetting()
     {
@@ -75,12 +78,12 @@ public class AudioComponent : BaseComponent
     }
 
     /// <summary>
-    /// ¼ÓÔØÒôÀÖ¡¢ÒôĞ§µÄ¿ªÆô
+    /// åŠ è½½éŸ³ä¹ã€éŸ³æ•ˆçš„å¼€å¯
     /// </summary>
     private void LoadSettingStatus()
     {
-        // 0 Îª¹Ø±Õ£¬1 Îª¿ªÆô
-        // ÒôÀÖ
+        // 0 ä¸ºå…³é—­ï¼Œ1 ä¸ºå¼€å¯
+        // éŸ³ä¹
         if (PlayerPrefs.HasKey(_MusicKey))
         {
             _isPlayMusic = PlayerPrefs.GetInt(_MusicKey) == 1;
@@ -91,7 +94,7 @@ public class AudioComponent : BaseComponent
             PlayerPrefs.SetInt(_MusicKey, 1);
         }
 
-        // ÒôĞ§
+        // éŸ³æ•ˆ
         if (PlayerPrefs.HasKey(_SFXKey))
         {
             _isPlaySFX = PlayerPrefs.GetInt(_SFXKey) == 1;
@@ -102,9 +105,53 @@ public class AudioComponent : BaseComponent
             PlayerPrefs.SetInt(_SFXKey, 1);
         }
     }
+
+    private void LoadVibrationSetting()
+    {
+        if (PlayerPrefs.HasKey(_VibrationKey))
+        {
+            _isVibrationEnabled = PlayerPrefs.GetInt(_VibrationKey) == 1;
+        }
+        else
+        {
+            _isVibrationEnabled = true;
+            PlayerPrefs.SetInt(_VibrationKey, 1);
+        }
+    }
     #endregion
 
-    #region Ö÷Òª·½·¨: ²¥·Å
+    #region ä¸»è¦æ–¹æ³•: æ’­æ”¾
+    /// <summary>
+    /// Plays loop-configured background music and stops the current track.
+    /// </summary>
+    public async Task<AudioSource> PlayMusic(string key, Transform parent = null)
+    {
+        if (!_isPlayMusic || !_audioDic.TryGetValue(key, out AudioData data) || !data.loop)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrEmpty(_currentPlayMusic))
+        {
+            RecycleAudioHandle(_currentPlayMusic);
+        }
+
+        return await PlayAudioClip(key, parent);
+    }
+
+    /// <summary>
+    /// Plays a non-loop-configured sound effect.
+    /// </summary>
+    public Task<AudioSource> PlaySFX(string key, Transform parent = null)
+    {
+        if (!_isPlaySFX || !_audioDic.TryGetValue(key, out AudioData data) || data.loop)
+        {
+            return Task.FromResult<AudioSource>(null);
+        }
+
+        return PlayAudioClip(key, parent);
+    }
+
     public async Task<AudioSource> PlayAudioClip(string key, Transform parent = null)
     {
         if (_audioDic.TryGetValue(key, out AudioData data))
@@ -117,7 +164,7 @@ public class AudioComponent : BaseComponent
 
                 if (audioSourceGO == null)
                 {
-                    Debug.LogErrorFormat("¼ÓÔØÊ§°Ü»ò {0} ²»´æÔÚ", _AudioSourceTemplatePath);
+                    Debug.LogErrorFormat("åŠ è½½å¤±è´¥æˆ– {0} ä¸å­˜åœ¨", _AudioSourceTemplatePath);
                     return null;
                 }
 
@@ -141,7 +188,7 @@ public class AudioComponent : BaseComponent
 
                 if (audioSource.outputAudioMixerGroup == null)
                 {
-                    Debug.LogErrorFormat("{0} ²»´æÔÚ", data.mixerName);
+                    Debug.LogErrorFormat("{0} ä¸å­˜åœ¨", data.mixerName);
                     return null;
                 }
 
@@ -169,7 +216,7 @@ public class AudioComponent : BaseComponent
     }
     #endregion
 
-    #region ¼àÌı·½·¨: ²¥·Å
+    #region ç›‘å¬æ–¹æ³•: æ’­æ”¾
     public async void PlayAudioClip(AudioClipData _audioClipData)
     {
         if (!_isPlaySFX) return;
@@ -177,24 +224,24 @@ public class AudioComponent : BaseComponent
         switch (_audioClipData._type)
         {
             case AudioClipType.SFXOpenPanel:
-                await PlayAudioClip(AudioDefine.SFXOpenPanel);
+                await PlaySFX(AudioDefine.SFXOpenPanel);
                 break;
             case AudioClipType.SFXClosePanel:
-                await PlayAudioClip(AudioDefine.SFXClosePanel);
+                await PlaySFX(AudioDefine.SFXClosePanel);
                 break;
             case AudioClipType.Spawn:
-                await PlayAudioClip(AudioDefine.Spawn);
+                await PlaySFX(AudioDefine.Spawn);
                 break;
             case AudioClipType.FirstLevel:
-                await PlayAudioClip(AudioDefine.FirstLevel);
+                await PlaySFX(AudioDefine.FirstLevel);
                 break;
         }
     }
     #endregion
 
-    #region ¸¨Öú·½·¨: ÒôÁ¿ÉèÖÃ
+    #region è¾…åŠ©æ–¹æ³•: éŸ³é‡è®¾ç½®
     /// <summary>
-    /// »ñµÃ±³¾°ÒôÀÖµÄÒôÁ¿
+    /// è·å¾—èƒŒæ™¯éŸ³ä¹çš„éŸ³é‡
     /// </summary>
     public float GetMusicVolume()
     {
@@ -204,7 +251,7 @@ public class AudioComponent : BaseComponent
     }
 
     /// <summary>
-    /// ÉèÖÃ±³¾°ÒôÀÖµÄÒôÁ¿
+    /// è®¾ç½®èƒŒæ™¯éŸ³ä¹çš„éŸ³é‡
     /// </summary>
     public void SetMusicVolume(float volume)
     {
@@ -213,7 +260,7 @@ public class AudioComponent : BaseComponent
     }
 
     /// <summary>
-    /// »ñµÃ±³¾°ÒôĞ§µÄÒôÁ¿
+    /// è·å¾—èƒŒæ™¯éŸ³æ•ˆçš„éŸ³é‡
     /// </summary>
     public float GetSFXVolume()
     {
@@ -227,11 +274,64 @@ public class AudioComponent : BaseComponent
         _audioMixer.SetFloat(_SFXVolumeKey, volume);
         PlayerPrefs.SetFloat(_SFXVolumeKey, volume);
     }
+
+    public bool IsMusicEnabled()
+    {
+        return _isPlayMusic;
+    }
+
+    public void SetMusicEnabled(bool enabled)
+    {
+        _isPlayMusic = enabled;
+        PlayerPrefs.SetInt(_MusicKey, enabled ? 1 : 0);
+
+        if (!enabled && !string.IsNullOrEmpty(_currentPlayMusic))
+        {
+            RecycleAudioHandle(_currentPlayMusic);
+        }
+    }
+
+    public bool IsSFXEnabled()
+    {
+        return _isPlaySFX;
+    }
+
+    public void SetSFXEnabled(bool enabled)
+    {
+        _isPlaySFX = enabled;
+        PlayerPrefs.SetInt(_SFXKey, enabled ? 1 : 0);
+    }
     #endregion
 
-    #region ¸¨Öú·½·¨: »ØÊÕÒôÆµ
+    #region Vibration
+    public bool IsVibrationEnabled()
+    {
+        return _isVibrationEnabled;
+    }
+
+    public void SetVibrationEnabled(bool enabled)
+    {
+        _isVibrationEnabled = enabled;
+        PlayerPrefs.SetInt(_VibrationKey, enabled ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    public void Vibrate()
+    {
+        if (!_isVibrationEnabled)
+        {
+            return;
+        }
+
+#if UNITY_ANDROID || UNITY_IOS
+        Handheld.Vibrate();
+#endif
+    }
+    #endregion
+
+    #region è¾…åŠ©æ–¹æ³•: å›æ”¶éŸ³é¢‘
     /// <summary>
-    /// »ØÊÕÖ¸¶¨ key µÄÒôÆµ
+    /// å›æ”¶æŒ‡å®š key çš„éŸ³é¢‘
     /// </summary>
     public void RecycleAudio(string key)
     {
