@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "神秘礼盒",
+    "itemId": 3000,
+    "price": 999,
+    "num": 3,
+    "weight": 100
+  },
+  {
+    "id": 2,
+    "name": "家具折扣券",
+    "itemId": 2000,
+    "price": 888,
+    "num": 2,
+    "weight": 200
+  },
+  {
+    "id": 3,
+    "name": "神秘礼盒",
+    "itemId": 3000,
+    "price": 1288,
+    "num": 5,
+    "weight": 300
+  },
+  {
+    "id": 4,
+    "name": "神秘礼盒",
+    "itemId": 3000,
+    "price": 1588,
+    "num": 10,
+    "weight": 400
+  },
+  {
+    "id": 5,
+    "name": "IT技能证书",
+    "itemId": 4000,
+    "price": 3000,
+    "num": 1,
+    "weight": 500
+  },
+  {
+    "id": 6,
+    "name": "维修技能证书",
+    "itemId": 4001,
+    "price": 3000,
+    "num": 1,
+    "weight": 600
+  },
+  {
+    "id": 7,
+    "name": "时间币",
+    "itemId": 1010,
+    "price": 488,
+    "num": 1,
+    "weight": 700
+  },
+  {
+    "id": 8,
+    "name": "时间币",
+    "itemId": 1010,
+    "price": 688,
+    "num": 5,
+    "weight": 800
+  },
+  {
+    "id": 9,
+    "name": "时间币",
+    "itemId": 1010,
+    "price": 888,
+    "num": 10,
+    "weight": 900
+  }
+]

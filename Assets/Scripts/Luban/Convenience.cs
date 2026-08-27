@@ -15,23 +15,25 @@ using Newtonsoft.Json.Linq;
 namespace cfg
 {
 /// <summary>
-/// 缩放配置
+/// 便利店配置
 /// </summary>
 
-public sealed partial class Scale : Luban.BeanBase
+public sealed partial class Convenience : Luban.BeanBase
 {
-    public Scale(JToken _buf) 
+    public Convenience(JToken _buf) 
     {
         JObject _obj = _buf as JObject;
         Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
-        Desc = (string)_obj.GetValue("desc");
-        ScaleValue = (int)_obj.GetValue("scaleValue");
+        ItemId = (int)_obj.GetValue("itemId");
+        Price = (int)_obj.GetValue("price");
+        Num = (int)_obj.GetValue("num");
+        Weight = (int)_obj.GetValue("weight");
     }
 
-    public static Scale DeserializeScale(JToken _buf)
+    public static Convenience DeserializeConvenience(JToken _buf)
     {
-        return new Scale(_buf);
+        return new Convenience(_buf);
     }
 
     /// <summary>
@@ -43,16 +45,24 @@ public sealed partial class Scale : Luban.BeanBase
     /// </summary>
     public readonly string Name;
     /// <summary>
-    /// 描述
+    /// 对应 item 的 ID
     /// </summary>
-    public readonly string Desc;
+    public readonly int ItemId;
     /// <summary>
-    /// 在当前场景下参照 item 的缩放倍率
+    /// 价格
     /// </summary>
-    public readonly int ScaleValue;
+    public readonly int Price;
+    /// <summary>
+    /// 购买限制数量
+    /// </summary>
+    public readonly int Num;
+    /// <summary>
+    /// 权重
+    /// </summary>
+    public readonly int Weight;
 
 
-    public const int __ID__ = 79698218;
+    public const int __ID__ = 459727319;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -64,8 +74,10 @@ public sealed partial class Scale : Luban.BeanBase
         return "{ "
         + "id:" + Id + ","
         + "name:" + Name + ","
-        + "desc:" + Desc + ","
-        + "scaleValue:" + ScaleValue + ","
+        + "itemId:" + ItemId + ","
+        + "price:" + Price + ","
+        + "num:" + Num + ","
+        + "weight:" + Weight + ","
         + "}";
     }
 }

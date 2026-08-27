@@ -34,13 +34,17 @@ public partial class Tables
     /// </summary>
     public BaseTable BaseTable {get; }
     /// <summary>
-    /// ??????
+    /// 缩放配置
     /// </summary>
     public ScaleTable ScaleTable {get; }
     /// <summary>
     /// 零工配置
     /// </summary>
     public WorkTable WorkTable {get; }
+    /// <summary>
+    /// 便利店配置
+    /// </summary>
+    public ConvenienceTable ConvenienceTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -52,6 +56,7 @@ public partial class Tables
         BaseTable = new BaseTable(loader("base"));
         ScaleTable = new ScaleTable(loader("scale"));
         WorkTable = new WorkTable(loader("work"));
+        ConvenienceTable = new ConvenienceTable(loader("convenience"));
         ResolveRef();
     }
     
@@ -64,6 +69,7 @@ public partial class Tables
         BaseTable.ResolveRef(this);
         ScaleTable.ResolveRef(this);
         WorkTable.ResolveRef(this);
+        ConvenienceTable.ResolveRef(this);
     }
 }
 

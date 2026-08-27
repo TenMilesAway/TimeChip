@@ -65,6 +65,7 @@ MonoBehaviour:
   _isBlockingWindow: 1
   _btnWork: {fileID: 0}
   _btnHomeStore: {fileID: 0}
+  _btnConvenienceStore: {fileID: 3025033739506808880}
 --- !u!223 &8290727820807594715
 Canvas:
   m_ObjectHideFlags: 0
@@ -658,7 +659,7 @@ GameObject:
   - component: {fileID: 3025033739506808880}
   - component: {fileID: 7923131863903461032}
   m_Layer: 5
-  m_Name: Store Title
+  m_Name: Convenience Store Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -16,7 +16,7 @@ namespace cfg
 {
 
 /// <summary>
-/// ??????
+/// 缩放配置
 /// </summary>
 public partial class ScaleTable
 {

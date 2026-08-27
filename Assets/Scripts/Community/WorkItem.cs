@@ -15,6 +15,8 @@ public class WorkItem : MonoBehaviour
 
     private cfg.Work _workConfig;
     private Action<cfg.Work> _workHandler;
+    private bool _isUnlocked;
+    private string _unlockTip;
 
     private void Awake()
     {
@@ -29,10 +31,16 @@ public class WorkItem : MonoBehaviour
         }
     }
 
-    public void SetData(cfg.Work workConfig, Action<cfg.Work> workHandler)
+    public void SetData(
+        cfg.Work workConfig,
+        Action<cfg.Work> workHandler,
+        bool isUnlocked,
+        string unlockTip)
     {
         _workConfig = workConfig;
         _workHandler = workHandler;
+        _isUnlocked = isUnlocked;
+        _unlockTip = unlockTip;
 
         if (workConfig == null)
         {
@@ -56,13 +64,11 @@ public class WorkItem : MonoBehaviour
         }
 
         bool workedThisTurn = PlayerInfoManager.GetInstance().WorkedThisTurn;
-        _txtTip.gameObject.SetActive(workedThisTurn);
-        _btnGet.SetActive(!workedThisTurn);
-        _btnGetAll.interactable = !workedThisTurn;
-        if (workedThisTurn)
-        {
-            _txtTip.text = "本回合已工作";
-        }
+        bool canAccept = _isUnlocked && !workedThisTurn;
+        _txtTip.gameObject.SetActive(!canAccept);
+        _btnGet.SetActive(canAccept);
+        _btnGetAll.interactable = canAccept;
+        _txtTip.text = workedThisTurn ? "本回合已工作" : _unlockTip;
     }
 
     private void OnClickGet()

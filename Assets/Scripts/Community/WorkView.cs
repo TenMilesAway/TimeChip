@@ -155,18 +155,25 @@ public class WorkView : UIBasePanel
         for (int i = 0; i < _workItems.Length; i++)
         {
             int workIndex = firstItemIndex + i;
+            cfg.Work workConfig = workIndex < _filteredWorks.Count ? _filteredWorks[workIndex] : null;
             _workItems[i].SetData(
-                workIndex < _filteredWorks.Count ? _filteredWorks[workIndex] : null,
-                TryCompleteWork);
+                workConfig,
+                TryCompleteWork,
+                IsWorkUnlocked(workConfig, out string unlockTip),
+                unlockTip);
         }
 
-        _txtLevel.text = "LV.1";
-        _txtWorkName.text = WorkTypes[_selectedWorkTypeIndex];
-        _txtProgress.text = "0 / 0";
-        _sliderProgress.value = 0f;
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        string selectedWorkType = WorkTypes[_selectedWorkTypeIndex];
+        int workLevel = playerInfoManager.GetWorkLevel(selectedWorkType);
+        int workExperience = playerInfoManager.GetWorkExperience(selectedWorkType);
+        _txtLevel.text = $"LV.{workLevel}";
+        _txtWorkName.text = selectedWorkType;
+        _txtProgress.text = $"{workExperience} / {PlayerInfoManager.WorkExperiencePerLevel}";
+        _sliderProgress.value = (float)workExperience / PlayerInfoManager.WorkExperiencePerLevel;
         _txtCurrentPage.text = _currentPage.ToString();
         _txtMaxPage.text = maxPage.ToString();
-        _txtIsWork.text = PlayerInfoManager.GetInstance().WorkedThisTurn ? "已工作" : "未工作";
+        _txtIsWork.text = playerInfoManager.WorkedThisTurn ? "已工作" : "未工作";
         _btnPrevious.interactable = _currentPage > 1;
         _btnNext.interactable = _currentPage < maxPage;
 
@@ -185,9 +192,23 @@ public class WorkView : UIBasePanel
             return;
         }
 
+        if (!IsWorkUnlocked(workConfig, out string unlockTip))
+        {
+            CommonTipView.Show(unlockTip);
+            return;
+        }
+
         if (playerInfoManager.Health < workConfig.HealthCost)
         {
             CommonTipView.Show("体力不足，无法完成零工");
+            return;
+        }
+
+        if (workConfig.IsUseItem == 1 &&
+            !playerInfoManager.TryConsumeItem(workConfig.UnlockItemId))
+        {
+            Debug.LogError($"零工消耗道具失败: [{workConfig.Id}], [{workConfig.UnlockItemId}]", this);
+            CommonTipView.Show("所需道具不足，无法完成零工");
             return;
         }
 
@@ -199,7 +220,41 @@ public class WorkView : UIBasePanel
 
         playerInfoManager.ChangeHealth(-workConfig.HealthCost);
         playerInfoManager.AddSimulationCoins(workConfig.CoinReward);
-        CommonTipView.Show($"完成{workConfig.Name}，获得{workConfig.CoinReward}模拟币");
+        playerInfoManager.AddWorkExperience(workConfig.WorkType, 100);
+        CommonTipView.Show($"完成{workConfig.Name}，获得{workConfig.CoinReward}模拟币和100经验");
+    }
+
+    private static bool IsWorkUnlocked(cfg.Work workConfig, out string unlockTip)
+    {
+        unlockTip = string.Empty;
+        if (workConfig == null)
+        {
+            return false;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        List<string> requirements = new List<string>();
+        if (playerInfoManager.GetWorkLevel(workConfig.WorkType) < workConfig.UnlockLevel)
+        {
+            requirements.Add($"需要LV.{workConfig.UnlockLevel}");
+        }
+
+        if (workConfig.UnlockItemId > 0 &&
+            playerInfoManager.GetItemCount(workConfig.UnlockItemId) <= 0)
+        {
+            cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+                .GetOrDefault(workConfig.UnlockItemId);
+            string itemName = itemConfig == null ? $"道具{workConfig.UnlockItemId}" : itemConfig.Name;
+            requirements.Add($"需要【{itemName}】");
+        }
+
+        if (requirements.Count == 0)
+        {
+            return true;
+        }
+
+        unlockTip = string.Join("及", requirements);
+        return false;
     }
 
     private void UpdateTagSelection()

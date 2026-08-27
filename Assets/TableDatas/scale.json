@@ -16,5 +16,11 @@
     "name": "missionIcon",
     "desc": "作为任务图标时的倍率",
     "scaleValue": 20000
+  },
+  {
+    "id": 4,
+    "name": "convenience",
+    "desc": "作为便利店商品时的倍率",
+    "scaleValue": 15000
   }
 ]

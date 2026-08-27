@@ -32,6 +32,7 @@ public sealed partial class Work : Luban.BeanBase
         HealthCost = (int)_obj.GetValue("healthCost");
         UnlockLevel = (int)_obj.GetValue("unlockLevel");
         UnlockItemId = (int)_obj.GetValue("unlockItemId");
+        IsUseItem = (int)_obj.GetValue("isUseItem");
     }
 
     public static Work DeserializeWork(JToken _buf)
@@ -75,6 +76,10 @@ public sealed partial class Work : Luban.BeanBase
     /// 零工解锁所需条件（item ID）
     /// </summary>
     public readonly int UnlockItemId;
+    /// <summary>
+    /// 是否消耗 unlockItem
+    /// </summary>
+    public readonly int IsUseItem;
 
 
     public const int __ID__ = 2702129;
@@ -96,6 +101,7 @@ public sealed partial class Work : Luban.BeanBase
         + "healthCost:" + HealthCost + ","
         + "unlockLevel:" + UnlockLevel + ","
         + "unlockItemId:" + UnlockItemId + ","
+        + "isUseItem:" + IsUseItem + ","
         + "}";
     }
 }

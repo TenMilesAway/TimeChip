@@ -41,6 +41,47 @@ public sealed class PlayerInfoData
 
     /// <summary>玩家已经完成的任务 ID</summary>
     public List<string> completedMissionIds = new List<string>();
+
+    /// <summary>各零工类型的等级与经验</summary>
+    public List<PlayerWorkProgress> workProgresses = new List<PlayerWorkProgress>();
+
+    /// <summary>便利店商品上次刷新的年龄</summary>
+    public int convenienceOfferAge = -1;
+
+    /// <summary>便利店商品上次刷新的月份</summary>
+    public int convenienceOfferMonth = -1;
+
+    /// <summary>当月便利店商品及其剩余购买次数</summary>
+    public List<PlayerConvenienceOffer> convenienceOffers = new List<PlayerConvenienceOffer>();
+}
+
+/// <summary>
+/// 玩家单个零工类型的等级与经验存档数据
+/// </summary>
+[Serializable]
+public sealed class PlayerWorkProgress
+{
+    public string workType;
+    public int level = 1;
+    public int experience;
+}
+
+/// <summary>
+/// 玩家当月单个便利店商品的购买状态
+/// </summary>
+[Serializable]
+public sealed class PlayerConvenienceOffer
+{
+    public int convenienceId;
+    public int remainingCount;
+}
+
+public enum ConveniencePurchaseResult
+{
+    Success,
+    SoldOut,
+    InsufficientCoins,
+    InvalidOffer
 }
 
 /// <summary>
@@ -88,6 +129,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
+    public const int WorkExperiencePerLevel = 2000;
 
     /// <summary>当前由管理器维护的玩家数据</summary>
     private PlayerInfoData _data = new PlayerInfoData();
@@ -282,6 +324,176 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return 0;
     }
 
+    /// <summary>尝试消耗背包中的指定道具数量。</summary>
+    /// <returns>道具充足且成功消耗时返回 true，否则返回 false。</returns>
+    public bool TryConsumeItem(int itemId, int amount = 1)
+    {
+        if (itemId <= 0 || amount <= 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _data.inventory.Count; i++)
+        {
+            PlayerInventoryItem item = _data.inventory[i];
+            if (item.itemId != itemId || item.amount < amount)
+            {
+                continue;
+            }
+
+            item.amount -= amount;
+            if (item.amount == 0)
+            {
+                _data.inventory.RemoveAt(i);
+            }
+
+            NotifyPlayerInfoChanged();
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>判断当前月份是否已有指定数量的便利店商品。</summary>
+    public bool HasMonthlyConvenienceOffers(int expectedCount)
+    {
+        return expectedCount > 0 &&
+            _data.convenienceOfferAge == _data.currentAge &&
+            _data.convenienceOfferMonth == _data.currentMonth &&
+            _data.convenienceOffers != null &&
+            _data.convenienceOffers.Count == expectedCount;
+    }
+
+    /// <summary>按本月抽取时的顺序获取指定槽位的便利店商品 ID。</summary>
+    public int GetMonthlyConvenienceOfferIdAt(int index)
+    {
+        if (index < 0 || _data.convenienceOffers == null || index >= _data.convenienceOffers.Count)
+        {
+            return 0;
+        }
+
+        PlayerConvenienceOffer offer = _data.convenienceOffers[index];
+        return offer == null ? 0 : offer.convenienceId;
+    }
+
+    /// <summary>保存当前月份随机生成的便利店商品。</summary>
+    public void SetMonthlyConvenienceOffers(IReadOnlyList<cfg.Convenience> offers)
+    {
+        if (offers == null || offers.Count == 0)
+        {
+            throw new ArgumentException("便利店商品不能为空。", nameof(offers));
+        }
+
+        List<PlayerConvenienceOffer> monthlyOffers = new List<PlayerConvenienceOffer>(offers.Count);
+        for (int i = 0; i < offers.Count; i++)
+        {
+            cfg.Convenience offer = offers[i];
+            if (offer == null ||
+                offer.Id <= 0 ||
+                offer.Num <= 0 ||
+                FindConvenienceOffer(monthlyOffers, offer.Id) != null)
+            {
+                throw new ArgumentException("便利店商品必须有不重复的有效库存。", nameof(offers));
+            }
+
+            monthlyOffers.Add(new PlayerConvenienceOffer
+            {
+                convenienceId = offer.Id,
+                remainingCount = offer.Num
+            });
+        }
+
+        _data.convenienceOfferAge = _data.currentAge;
+        _data.convenienceOfferMonth = _data.currentMonth;
+        _data.convenienceOffers = monthlyOffers;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取当月指定便利店商品的剩余购买次数。</summary>
+    public int GetConvenienceOfferRemainingCount(int convenienceId)
+    {
+        PlayerConvenienceOffer offer = FindConvenienceOffer(_data.convenienceOffers, convenienceId);
+        return offer == null ? 0 : offer.remainingCount;
+    }
+
+    /// <summary>判断指定商品是否属于本月便利店商品。</summary>
+    public bool HasMonthlyConvenienceOffer(int convenienceId)
+    {
+        return FindConvenienceOffer(_data.convenienceOffers, convenienceId) != null;
+    }
+
+    /// <summary>尝试购买本月便利店商品，同时扣除模拟币、库存并发放物品。</summary>
+    public ConveniencePurchaseResult TryPurchaseConvenienceOffer(cfg.Convenience offerConfig)
+    {
+        if (offerConfig == null ||
+            !HasMonthlyConvenienceOffers(_data.convenienceOffers.Count))
+        {
+            return ConveniencePurchaseResult.InvalidOffer;
+        }
+
+        PlayerConvenienceOffer offer = FindConvenienceOffer(_data.convenienceOffers, offerConfig.Id);
+        if (offer == null)
+        {
+            return ConveniencePurchaseResult.InvalidOffer;
+        }
+
+        if (offer.remainingCount <= 0)
+        {
+            return ConveniencePurchaseResult.SoldOut;
+        }
+
+        if (offerConfig.Price < 0 || _data.simulationCoins < offerConfig.Price)
+        {
+            return ConveniencePurchaseResult.InsufficientCoins;
+        }
+
+        _data.simulationCoins -= offerConfig.Price;
+        offer.remainingCount--;
+        AddInventoryItem(offerConfig.ItemId, 1);
+        NotifyPlayerInfoChanged();
+        return ConveniencePurchaseResult.Success;
+    }
+
+    /// <summary>获取指定零工类型的当前等级; 未进行过该零工时默认为一级。</summary>
+    public int GetWorkLevel(string workType)
+    {
+        PlayerWorkProgress progress = FindWorkProgress(workType);
+        return progress == null ? 1 : progress.level;
+    }
+
+    /// <summary>获取指定零工类型当前等级的经验。</summary>
+    public int GetWorkExperience(string workType)
+    {
+        PlayerWorkProgress progress = FindWorkProgress(workType);
+        return progress == null ? 0 : progress.experience;
+    }
+
+    /// <summary>增加指定零工类型的经验，每满 2000 经验自动提升一级。</summary>
+    public void AddWorkExperience(string workType, int amount)
+    {
+        if (string.IsNullOrWhiteSpace(workType))
+        {
+            throw new ArgumentException("零工类型不能为空。", nameof(workType));
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        PlayerWorkProgress progress = FindWorkProgress(workType);
+        if (progress == null)
+        {
+            progress = new PlayerWorkProgress { workType = workType };
+            _data.workProgresses.Add(progress);
+        }
+
+        long totalExperience = (long)progress.experience + amount;
+        progress.level += (int)(totalExperience / WorkExperiencePerLevel);
+        progress.experience = (int)(totalExperience % WorkExperiencePerLevel);
+        NotifyPlayerInfoChanged();
+    }
+
     /// <summary>判断指定家具是否已解锁</summary>
     public bool IsHomeUnlocked(int homeId)
     {
@@ -396,6 +608,44 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 _data.unlockedHomeIds.RemoveAt(i);
             }
         }
+
+        if (_data.workProgresses == null)
+        {
+            _data.workProgresses = new List<PlayerWorkProgress>();
+        }
+
+        HashSet<string> workTypes = new HashSet<string>();
+        for (int i = _data.workProgresses.Count - 1; i >= 0; i--)
+        {
+            PlayerWorkProgress progress = _data.workProgresses[i];
+            if (progress == null || string.IsNullOrWhiteSpace(progress.workType) ||
+                !workTypes.Add(progress.workType))
+            {
+                _data.workProgresses.RemoveAt(i);
+                continue;
+            }
+
+            progress.level = Mathf.Max(1, progress.level);
+            progress.experience = Mathf.Clamp(progress.experience, 0, WorkExperiencePerLevel - 1);
+        }
+
+        if (_data.convenienceOffers == null)
+        {
+            _data.convenienceOffers = new List<PlayerConvenienceOffer>();
+        }
+
+        HashSet<int> convenienceIds = new HashSet<int>();
+        for (int i = _data.convenienceOffers.Count - 1; i >= 0; i--)
+        {
+            PlayerConvenienceOffer offer = _data.convenienceOffers[i];
+            if (offer == null ||
+                offer.convenienceId <= 0 ||
+                offer.remainingCount < 0 ||
+                !convenienceIds.Add(offer.convenienceId))
+            {
+                _data.convenienceOffers.RemoveAt(i);
+            }
+        }
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -421,7 +671,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             inventory = CreateInventoryCopy(source.inventory),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
             activeMissions = CreateMissionCopy(source.activeMissions),
-            completedMissionIds = CreateMissionIdCopy(source.completedMissionIds)
+            completedMissionIds = CreateMissionIdCopy(source.completedMissionIds),
+            workProgresses = CreateWorkProgressCopy(source.workProgresses),
+            convenienceOfferAge = source.convenienceOfferAge,
+            convenienceOfferMonth = source.convenienceOfferMonth,
+            convenienceOffers = CreateConvenienceOfferCopy(source.convenienceOffers)
         };
     }
 
@@ -512,5 +766,115 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         return copy;
+    }
+
+    /// <summary>复制零工进度，避免快照修改内部数据。</summary>
+    private static List<PlayerWorkProgress> CreateWorkProgressCopy(List<PlayerWorkProgress> source)
+    {
+        List<PlayerWorkProgress> copy = new List<PlayerWorkProgress>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerWorkProgress progress = source[i];
+            if (progress != null)
+            {
+                copy.Add(new PlayerWorkProgress
+                {
+                    workType = progress.workType,
+                    level = progress.level,
+                    experience = progress.experience
+                });
+            }
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerConvenienceOffer> CreateConvenienceOfferCopy(
+        List<PlayerConvenienceOffer> source)
+    {
+        List<PlayerConvenienceOffer> copy = new List<PlayerConvenienceOffer>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerConvenienceOffer offer = source[i];
+            if (offer != null)
+            {
+                copy.Add(new PlayerConvenienceOffer
+                {
+                    convenienceId = offer.convenienceId,
+                    remainingCount = offer.remainingCount
+                });
+            }
+        }
+
+        return copy;
+    }
+
+    private static PlayerConvenienceOffer FindConvenienceOffer(
+        List<PlayerConvenienceOffer> offers,
+        int convenienceId)
+    {
+        if (offers == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < offers.Count; i++)
+        {
+            PlayerConvenienceOffer offer = offers[i];
+            if (offer != null && offer.convenienceId == convenienceId)
+            {
+                return offer;
+            }
+        }
+
+        return null;
+    }
+
+    private void AddInventoryItem(int itemId, int amount)
+    {
+        for (int i = 0; i < _data.inventory.Count; i++)
+        {
+            PlayerInventoryItem item = _data.inventory[i];
+            if (item.itemId == itemId)
+            {
+                item.amount += amount;
+                return;
+            }
+        }
+
+        _data.inventory.Add(new PlayerInventoryItem
+        {
+            itemId = itemId,
+            amount = amount
+        });
+    }
+
+    private PlayerWorkProgress FindWorkProgress(string workType)
+    {
+        if (string.IsNullOrWhiteSpace(workType))
+        {
+            return null;
+        }
+
+        for (int i = 0; i < _data.workProgresses.Count; i++)
+        {
+            PlayerWorkProgress progress = _data.workProgresses[i];
+            if (progress != null && progress.workType == workType)
+            {
+                return progress;
+            }
+        }
+
+        return null;
     }
 }

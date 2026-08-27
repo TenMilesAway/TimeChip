@@ -8,7 +8,8 @@
     "coinReward": 200,
     "healthCost": 10,
     "unlockLevel": 1,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "isUseItem": 0
   },
   {
     "id": 10002,
@@ -19,7 +20,8 @@
     "coinReward": 300,
     "healthCost": 15,
     "unlockLevel": 2,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "isUseItem": 0
   },
   {
     "id": 10003,
@@ -30,7 +32,8 @@
     "coinReward": 400,
     "healthCost": 20,
     "unlockLevel": 3,
-    "unlockItemId": 1010
+    "unlockItemId": 1010,
+    "isUseItem": 0
   },
   {
     "id": 10004,
@@ -41,7 +44,8 @@
     "coinReward": 500,
     "healthCost": 25,
     "unlockLevel": 4,
-    "unlockItemId": 2000
+    "unlockItemId": 2000,
+    "isUseItem": 0
   },
   {
     "id": 10005,
@@ -52,7 +56,8 @@
     "coinReward": 600,
     "healthCost": 30,
     "unlockLevel": 5,
-    "unlockItemId": 3000
+    "unlockItemId": 3000,
+    "isUseItem": 0
   },
   {
     "id": 10006,
@@ -63,7 +68,8 @@
     "coinReward": 250,
     "healthCost": 11,
     "unlockLevel": 1,
-    "unlockItemId": 0
+    "unlockItemId": 1001,
+    "isUseItem": 0
   },
   {
     "id": 10007,
@@ -74,7 +80,8 @@
     "coinReward": 350,
     "healthCost": 16,
     "unlockLevel": 2,
-    "unlockItemId": 1010
+    "unlockItemId": 1010,
+    "isUseItem": 0
   },
   {
     "id": 10008,
@@ -85,7 +92,8 @@
     "coinReward": 450,
     "healthCost": 21,
     "unlockLevel": 3,
-    "unlockItemId": 2000
+    "unlockItemId": 2000,
+    "isUseItem": 0
   },
   {
     "id": 10009,
@@ -96,7 +104,8 @@
     "coinReward": 550,
     "healthCost": 26,
     "unlockLevel": 4,
-    "unlockItemId": 3000
+    "unlockItemId": 3000,
+    "isUseItem": 0
   },
   {
     "id": 10010,
@@ -107,7 +116,8 @@
     "coinReward": 650,
     "healthCost": 31,
     "unlockLevel": 5,
-    "unlockItemId": 4000
+    "unlockItemId": 4000,
+    "isUseItem": 0
   },
   {
     "id": 10011,
@@ -118,7 +128,8 @@
     "coinReward": 300,
     "healthCost": 12,
     "unlockLevel": 1,
-    "unlockItemId": 0
+    "unlockItemId": 1010,
+    "isUseItem": 0
   },
   {
     "id": 10012,
@@ -129,7 +140,8 @@
     "coinReward": 400,
     "healthCost": 17,
     "unlockLevel": 2,
-    "unlockItemId": 2000
+    "unlockItemId": 2000,
+    "isUseItem": 0
   },
   {
     "id": 10013,
@@ -140,7 +152,8 @@
     "coinReward": 500,
     "healthCost": 22,
     "unlockLevel": 3,
-    "unlockItemId": 3000
+    "unlockItemId": 3000,
+    "isUseItem": 0
   },
   {
     "id": 10014,
@@ -151,7 +164,8 @@
     "coinReward": 600,
     "healthCost": 27,
     "unlockLevel": 4,
-    "unlockItemId": 4000
+    "unlockItemId": 4000,
+    "isUseItem": 0
   },
   {
     "id": 10015,
@@ -162,7 +176,8 @@
     "coinReward": 700,
     "healthCost": 32,
     "unlockLevel": 5,
-    "unlockItemId": 4001
+    "unlockItemId": 4001,
+    "isUseItem": 0
   },
   {
     "id": 10016,
@@ -173,7 +188,8 @@
     "coinReward": 350,
     "healthCost": 13,
     "unlockLevel": 1,
-    "unlockItemId": 0
+    "unlockItemId": 2000,
+    "isUseItem": 0
   },
   {
     "id": 10017,
@@ -184,7 +200,8 @@
     "coinReward": 450,
     "healthCost": 18,
     "unlockLevel": 2,
-    "unlockItemId": 3000
+    "unlockItemId": 3000,
+    "isUseItem": 0
   },
   {
     "id": 10018,
@@ -195,7 +212,8 @@
     "coinReward": 550,
     "healthCost": 23,
     "unlockLevel": 3,
-    "unlockItemId": 4000
+    "unlockItemId": 4000,
+    "isUseItem": 0
   },
   {
     "id": 10019,
@@ -206,7 +224,8 @@
     "coinReward": 650,
     "healthCost": 28,
     "unlockLevel": 4,
-    "unlockItemId": 4001
+    "unlockItemId": 4001,
+    "isUseItem": 0
   },
   {
     "id": 10020,
@@ -217,7 +236,8 @@
     "coinReward": 750,
     "healthCost": 33,
     "unlockLevel": 5,
-    "unlockItemId": 0
+    "unlockItemId": 1000,
+    "isUseItem": 0
   },
   {
     "id": 10021,
@@ -228,7 +248,8 @@
     "coinReward": 400,
     "healthCost": 14,
     "unlockLevel": 1,
-    "unlockItemId": 0
+    "unlockItemId": 3000,
+    "isUseItem": 0
   },
   {
     "id": 10022,
@@ -239,7 +260,8 @@
     "coinReward": 500,
     "healthCost": 19,
     "unlockLevel": 2,
-    "unlockItemId": 4000
+    "unlockItemId": 4000,
+    "isUseItem": 0
   },
   {
     "id": 10023,
@@ -250,7 +272,8 @@
     "coinReward": 600,
     "healthCost": 24,
     "unlockLevel": 3,
-    "unlockItemId": 4001
+    "unlockItemId": 4001,
+    "isUseItem": 0
   },
   {
     "id": 10024,
@@ -261,7 +284,8 @@
     "coinReward": 700,
     "healthCost": 29,
     "unlockLevel": 4,
-    "unlockItemId": 0
+    "unlockItemId": 1000,
+    "isUseItem": 0
   },
   {
     "id": 10025,
@@ -272,7 +296,8 @@
     "coinReward": 800,
     "healthCost": 34,
     "unlockLevel": 5,
-    "unlockItemId": 0
+    "unlockItemId": 1001,
+    "isUseItem": 0
   },
   {
     "id": 10026,
@@ -283,7 +308,8 @@
     "coinReward": 450,
     "healthCost": 15,
     "unlockLevel": 1,
-    "unlockItemId": 4000
+    "unlockItemId": 4000,
+    "isUseItem": 0
   },
   {
     "id": 10027,
@@ -294,7 +320,8 @@
     "coinReward": 550,
     "healthCost": 20,
     "unlockLevel": 2,
-    "unlockItemId": 4001
+    "unlockItemId": 4001,
+    "isUseItem": 0
   },
   {
     "id": 10028,
@@ -305,7 +332,8 @@
     "coinReward": 650,
     "healthCost": 25,
     "unlockLevel": 3,
-    "unlockItemId": 0
+    "unlockItemId": 1000,
+    "isUseItem": 0
   },
   {
     "id": 10029,
@@ -316,7 +344,8 @@
     "coinReward": 750,
     "healthCost": 30,
     "unlockLevel": 4,
-    "unlockItemId": 0
+    "unlockItemId": 1001,
+    "isUseItem": 0
   },
   {
     "id": 10030,
@@ -327,6 +356,7 @@
     "coinReward": 850,
     "healthCost": 35,
     "unlockLevel": 5,
-    "unlockItemId": 0
+    "unlockItemId": 1010,
+    "isUseItem": 0
   }
 ]
