@@ -3,6 +3,5 @@ public static class AudioDefine
 {
     public static string FirstLevel = "FirstLevel";
     public static string Spawn = "Spawn";
-    public static string SFXClosePanel = "SFXClosePanel";
-    public static string SFXOpenPanel = "SFXOpenPanel";
+    public static string SFXUIClick = "SFXUIClick";
 }

@@ -198,7 +198,8 @@ public class WorkView : UIBasePanel
             return;
         }
 
-        if (playerInfoManager.Health < workConfig.HealthCost)
+        WorkBuffResult workResult = BuffSystem.GetInstance().CalculateWorkResult(workConfig);
+        if (playerInfoManager.Health < workResult.HealthCost)
         {
             CommonTipView.Show("体力不足，无法完成零工");
             return;
@@ -218,10 +219,10 @@ public class WorkView : UIBasePanel
             return;
         }
 
-        playerInfoManager.ChangeHealth(-workConfig.HealthCost);
-        playerInfoManager.AddSimulationCoins(workConfig.CoinReward);
+        playerInfoManager.ChangeHealth(-workResult.HealthCost);
+        playerInfoManager.AddSimulationCoins(workResult.CoinReward);
         playerInfoManager.AddWorkExperience(workConfig.WorkType, 100);
-        CommonTipView.Show($"完成{workConfig.Name}，获得{workConfig.CoinReward}模拟币和100经验");
+        CommonTipView.Show($"完成{workConfig.Name}，获得{workResult.CoinReward}模拟币和100经验");
     }
 
     private static bool IsWorkUnlocked(cfg.Work workConfig, out string unlockTip)

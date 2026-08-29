@@ -15,16 +15,19 @@ public class GlobalDefine
     public const string HomeStoreView = "Assets/Art/Community/Prefab/HomeStoreView.prefab";                // Super+
     public const string InventoryView = "Assets/Art/MainMenu/Prefab/InventoryView.prefab";                 // Super+
     public const string ConvenienceStoreView = "Assets/Art/Community/Prefab/ConvenienceStoreView.prefab";  // Super+
+    public const string HomeDetailView = "Assets/Art/Home/Prefab/HomeDetailView.prefab";                   // Super+
     public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";              // Super++
     public const string DialogueView = "Assets/Art/Dialogue/Prefabs/DialoguePanel.prefab";                 // Super++
 
     public const string CommonTipView = "Assets/Art/Common/Prefab/CommonTipView.prefab";                   // System
     public const string CommonRewardPanel = "Assets/Art/Common/Prefab/CommonRewardPanel.prefab";           // System
     public const string CommonOverPanel = "Assets/Art/Common/Prefab/CommonOverPanel.prefab";               // System
+    public const string CommonMessageView = "Assets/Art/Common/Prefab/CommonMessageView.prefab";           // System
     public const string SettingView = "Assets/Art/Setting/Prefab/SettingView.prefab";                      // System
 
     // Item
     public const string CommonRewardItem = "Assets/Art/Common/Prefab/CommonRewardItem.prefab";
     public const string CommonTip = "Assets/Art/Common/Prefab/CommonTip.prefab";
     public const string HomeItem = "Assets/Art/Community/Prefab/HomeItem.prefab";
+    public const string BuffItem = "Assets/Art/MainMenu/Prefab/BuffItem.prefab";
 }

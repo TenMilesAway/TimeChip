@@ -14,6 +14,7 @@ public class Launcher : SingletonMono<Launcher>
     /// 唯一玩家存档使用的固定槽位编号
     /// </summary>
     private const int PlayerSaveSlotId = 0;
+    private const int NewGameTestBuffId = 1001;
 
     [SerializeField] private Button _newGameButton;               // 新游戏按钮
     [SerializeField] private Button _loadSaveButton;              // 读取存档按钮
@@ -207,6 +208,12 @@ public class Launcher : SingletonMono<Launcher>
     private Task LoadRequiredDataAsync()
     {
         DataTableMananger.GetInstance().Init();
+        BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
+        if (_isNewGame)
+        {
+            BuffSystem.GetInstance().TryAddBuff(NewGameTestBuffId);
+        }
+
         MissionAPI.Initialize(PlayerInfoManager.GetInstance(), _isNewGame);
         _isNewGame = false;
 

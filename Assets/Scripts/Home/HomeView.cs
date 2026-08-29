@@ -85,6 +85,11 @@ public class HomeView : UIBasePanel
         }
     }
 
+    public void OpenHomeDetailView()
+    {
+        UIManager.GetInstance().OpenPanel(GlobalDefine.HomeDetailView);
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.HomeView;

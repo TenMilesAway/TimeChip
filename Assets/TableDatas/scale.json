@@ -22,5 +22,11 @@
     "name": "convenience",
     "desc": "作为便利店商品时的倍率",
     "scaleValue": 15000
+  },
+  {
+    "id": 5,
+    "name": "buff",
+    "desc": "作为Buff时的倍率",
+    "scaleValue": 10000
   }
 ]

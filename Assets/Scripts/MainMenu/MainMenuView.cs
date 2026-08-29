@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class MainMenuView : UIBasePanel
 {
@@ -21,9 +22,14 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _inventoryButton;
     [SerializeField] private Button _settingButton;
 
+    [SerializeField] private Transform _buffParent;
+
+    private readonly List<BuffItem> _buffItems = new List<BuffItem>();
+
     private MainContentPage _currentContentPage = MainContentPage.Community;    // 当前页面
     private bool _isWaitingForAdvanceTurnConfirmation;
     private float _advanceTurnConfirmDeadline;
+    private int _buffRefreshVersion;
 
     private void Awake()
     {
@@ -47,17 +53,26 @@ public class MainMenuView : UIBasePanel
         playerInfoManager.PlayerInfoChanged -= RefreshPlayerInfo;
         playerInfoManager.PlayerInfoChanged += RefreshPlayerInfo;
         RefreshPlayerInfo(playerInfoManager);
+
+        BuffSystem buffSystem = BuffSystem.GetInstance();
+        buffSystem.BuffsChanged -= RefreshBuffItems;
+        buffSystem.BuffsChanged += RefreshBuffItems;
+        RefreshBuffItems();
     }
 
     protected override void HideHandle()
     {
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshPlayerInfo;
+        BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
+        ClearBuffItems();
         _isWaitingForAdvanceTurnConfirmation = false;
     }
 
     protected override void OnDestroy()
     {
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshPlayerInfo;
+        BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
+        ClearBuffItems();
         if (_nextMonthButton != null)
         {
             _nextMonthButton.onClick.RemoveListener(TryAdvanceTurn);
@@ -196,6 +211,74 @@ public class MainMenuView : UIBasePanel
         _healthText.text = playerInfoManager.Health.ToString();
         _maxHealthText.text = playerInfoManager.MaxHealth.ToString();
         _simulationCoinsText.text = playerInfoManager.SimulationCoins.ToString();
+    }
+
+    private void RefreshBuffItems()
+    {
+        _buffRefreshVersion++;
+        ClearBuffItems();
+        if (_buffParent == null)
+        {
+            Debug.LogError("MainMenuView 的 BUFF 挂载节点未在 Inspector 中配置。", this);
+            return;
+        }
+
+        CreateBuffItemsAsync(_buffRefreshVersion);
+    }
+
+    private async void CreateBuffItemsAsync(int refreshVersion)
+    {
+        List<ActiveBuffData> activeBuffs = PlayerInfoManager.GetInstance().GetActiveBuffs();
+        string resourceTag = GetInstanceID().ToString();
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuffData activeBuff = activeBuffs[i];
+            cfg.BuffConfig buffConfig = DataTableMananger.GetInstance().Tables.BuffConfigTable
+                .GetOrDefault(activeBuff.buffId);
+            if (buffConfig == null)
+            {
+                Debug.LogError($"激活的 BUFF 配置不存在: [{activeBuff.buffId}]", this);
+                continue;
+            }
+
+            GameObject buffItemObject = await UnityObjectPoolFactory.GetInstance()
+                .GetItem<GameObject>(GlobalDefine.BuffItem, resourceTag);
+            if (refreshVersion != _buffRefreshVersion || !isActiveAndEnabled)
+            {
+                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+                return;
+            }
+
+            BuffItem buffItem = buffItemObject.GetComponent<BuffItem>();
+            if (buffItem == null)
+            {
+                Debug.LogError("BuffItem 预制体缺少 BuffItem 组件。", buffItemObject);
+                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+                continue;
+            }
+
+            buffItem.transform.SetParent(_buffParent, false);
+            _buffItems.Add(buffItem);
+            buffItem.SetData(buffConfig, activeBuff, resourceTag);
+        }
+    }
+
+    private void ClearBuffItems()
+    {
+        _buffRefreshVersion++;
+        for (int i = 0; i < _buffItems.Count; i++)
+        {
+            BuffItem buffItem = _buffItems[i];
+            if (buffItem == null)
+            {
+                continue;
+            }
+
+            buffItem.Clear();
+            UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItem.gameObject);
+        }
+
+        _buffItems.Clear();
     }
 
     /// <summary>

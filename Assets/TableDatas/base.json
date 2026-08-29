@@ -3,7 +3,7 @@
     "id": 101,
     "name": "模拟币",
     "desc": "基础货币",
-    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_simulation_coin]",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_simulation_coin]",
     "rewardScale": 2500
   },
   {
@@ -17,7 +17,7 @@
     "id": 103,
     "name": "健康值",
     "desc": "玩家的健康状态",
-    "icon": "Assets/Art/Common/SpriteAtlas.spriteatlasv2[icon_heart]",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_heart]",
     "rewardScale": 2000
   }
 ]

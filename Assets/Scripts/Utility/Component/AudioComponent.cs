@@ -223,12 +223,6 @@ public class AudioComponent : BaseComponent
 
         switch (_audioClipData._type)
         {
-            case AudioClipType.SFXOpenPanel:
-                await PlaySFX(AudioDefine.SFXOpenPanel);
-                break;
-            case AudioClipType.SFXClosePanel:
-                await PlaySFX(AudioDefine.SFXClosePanel);
-                break;
             case AudioClipType.Spawn:
                 await PlaySFX(AudioDefine.Spawn);
                 break;

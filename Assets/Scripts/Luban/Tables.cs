@@ -45,6 +45,10 @@ public partial class Tables
     /// 便利店配置
     /// </summary>
     public ConvenienceTable ConvenienceTable {get; }
+    /// <summary>
+    /// BUFF ??
+    /// </summary>
+    public BuffConfigTable BuffConfigTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -57,6 +61,7 @@ public partial class Tables
         ScaleTable = new ScaleTable(loader("scale"));
         WorkTable = new WorkTable(loader("work"));
         ConvenienceTable = new ConvenienceTable(loader("convenience"));
+        BuffConfigTable = new BuffConfigTable(loader("buffConfig"));
         ResolveRef();
     }
     
@@ -70,6 +75,7 @@ public partial class Tables
         ScaleTable.ResolveRef(this);
         WorkTable.ResolveRef(this);
         ConvenienceTable.ResolveRef(this);
+        BuffConfigTable.ResolveRef(this);
     }
 }
 

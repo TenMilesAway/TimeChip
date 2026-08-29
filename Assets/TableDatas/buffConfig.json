@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1001,
+    "name": "状态很好",
+    "desc": "零工模拟币收益提高 20%，持续两回合",
+    "icon": 1000,
+    "activationType": "Manual",
+    "activationChance": 0,
+    "trigger": "",
+    "durationType": "Turns",
+    "durationTurns": 2,
+    "maxStacks": 1,
+    "stackRule": "RefreshDuration",
+    "minSatisfaction": 0,
+    "effectType": "WorkCoinMultiplier",
+    "effectValue": 0.2
+  },
+  {
+    "id": 1002,
+    "name": "精力充沛",
+    "desc": "零工体力消耗降低 20%，可叠加至三层",
+    "icon": 4000,
+    "activationType": "Manual",
+    "activationChance": 0,
+    "trigger": "",
+    "durationType": "Turns",
+    "durationTurns": 1,
+    "maxStacks": 3,
+    "stackRule": "AddStack",
+    "minSatisfaction": 0,
+    "effectType": "WorkHealthCostMultiplier",
+    "effectValue": -0.2
+  },
+  {
+    "id": 1003,
+    "name": "居住舒适",
+    "desc": "满意度达到 20 时，零工模拟币收益提高 10%",
+    "icon": 1000,
+    "activationType": "Manual",
+    "activationChance": 0,
+    "trigger": "",
+    "durationType": "Permanent",
+    "durationTurns": 0,
+    "maxStacks": 1,
+    "stackRule": "RefreshDuration",
+    "minSatisfaction": 20,
+    "effectType": "WorkCoinMultiplier",
+    "effectValue": 0.1
+  }
+]

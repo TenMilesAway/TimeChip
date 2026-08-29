@@ -22,11 +22,7 @@ MonoBehaviour:
     path: Assets/Audios/Music/Spawn.ogg
     loop: 0
     mixerName: Music
-  - key: SFXClosePanel
-    path: Assets/Audios/SFX/SFXClosePanel.mp3
-    loop: 0
-    mixerName: SFX
-  - key: SFXOpenPanel
-    path: Assets/Audios/SFX/SFXOpenPanel.mp3
+  - key: SFXUIClick
+    path: Assets/Audios/SFX/SFXUIClick.wav
     loop: 0
     mixerName: SFX

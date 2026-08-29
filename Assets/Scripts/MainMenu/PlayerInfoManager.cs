@@ -36,6 +36,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家已解锁的家具配置 ID 列表</summary>
     public List<int> unlockedHomeIds = new List<int>();
 
+    /// <summary>当前生效的 BUFF 实例</summary>
+    public List<ActiveBuffData> activeBuffs = new List<ActiveBuffData>();
+
     /// <summary>玩家当前进行中的任务及其条件进度</summary>
     public List<PlayerMissionData> activeMissions = new List<PlayerMissionData>();
 
@@ -155,11 +158,39 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>获取玩家在本回合是否已经打工</summary>
     public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
 
+    /// <summary>已购家具提供的满意度总和</summary>
+    public float Satisfaction
+    {
+        get
+        {
+            float satisfaction = 0f;
+            cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+            if (tables == null)
+            {
+                return satisfaction;
+            }
+
+            for (int i = 0; i < _data.unlockedHomeIds.Count; i++)
+            {
+                cfg.Home home = tables.HomeTable.GetOrDefault(_data.unlockedHomeIds[i]);
+                if (home != null)
+                {
+                    satisfaction += home.Satisfaction;
+                }
+            }
+
+            return satisfaction;
+        }
+    }
+
     /// <summary>玩家数据发生变化时触发, UI 可订阅此事件刷新界面</summary>
     public event Action<PlayerInfoManager> PlayerInfoChanged;
 
     /// <summary>回合推进完成时触发, 其他系统可订阅此事件执行回合状态重置</summary>
     public event Action TurnAdvanced;
+
+    /// <summary>当前回合结束、月份切换前触发，用于结算回合末效果。</summary>
+    public event Action TurnEnding;
 
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
     public void Init(PlayerInfoData initialData = null)
@@ -190,6 +221,19 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public void SetCompletedMissionIds(List<string> missionIds)
     {
         _data.completedMissionIds = CreateMissionIdCopy(missionIds);
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取激活 BUFF 的独立副本。</summary>
+    public List<ActiveBuffData> GetActiveBuffs()
+    {
+        return CreateActiveBuffCopy(_data.activeBuffs);
+    }
+
+    /// <summary>更新激活 BUFF 列表。</summary>
+    public void SetActiveBuffs(List<ActiveBuffData> activeBuffs)
+    {
+        _data.activeBuffs = CreateActiveBuffCopy(activeBuffs);
         NotifyPlayerInfoChanged();
     }
 
@@ -535,6 +579,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>推进至下一回合, 重置本回合状态并更新月份; 跨年时年龄增加一岁</summary>
     public void AdvanceTurn()
     {
+        TurnEnding?.Invoke();
         _data.workedThisTurn = false;
         _data.currentMonth++;
 
@@ -609,6 +654,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             }
         }
 
+        if (_data.activeBuffs == null)
+        {
+            _data.activeBuffs = new List<ActiveBuffData>();
+        }
+
+        _data.activeBuffs.RemoveAll(buff => buff == null || buff.buffId <= 0 || buff.stacks <= 0 ||
+            buff.remainingTurns == 0 || buff.remainingTurns < -1);
+
         if (_data.workProgresses == null)
         {
             _data.workProgresses = new List<PlayerWorkProgress>();
@@ -670,6 +723,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             workedThisTurn = source.workedThisTurn,
             inventory = CreateInventoryCopy(source.inventory),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
+            activeBuffs = CreateActiveBuffCopy(source.activeBuffs),
             activeMissions = CreateMissionCopy(source.activeMissions),
             completedMissionIds = CreateMissionIdCopy(source.completedMissionIds),
             workProgresses = CreateWorkProgressCopy(source.workProgresses),
@@ -712,6 +766,32 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private static List<int> CreateHomeIdCopy(List<int> source)
     {
         return source == null ? new List<int>() : new List<int>(source);
+    }
+
+    private static List<ActiveBuffData> CreateActiveBuffCopy(List<ActiveBuffData> source)
+    {
+        List<ActiveBuffData> copy = new List<ActiveBuffData>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            ActiveBuffData buff = source[i];
+            if (buff != null)
+            {
+                copy.Add(new ActiveBuffData
+                {
+                    buffId = buff.buffId,
+                    remainingTurns = buff.remainingTurns,
+                    stacks = buff.stacks,
+                    sourceId = buff.sourceId
+                });
+            }
+        }
+
+        return copy;
     }
 
     /// <summary>复制任务存档数据, 避免快照修改内部任务进度</summary>
