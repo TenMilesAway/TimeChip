@@ -66,6 +66,8 @@ public class HomeItemDetail : UIBasePanel
                 _homeConfig.Name);
         }
 
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         _purchaseButton.interactable = !PlayerInfoManager.GetInstance().IsHomeUnlocked(_homeConfig.Id);
         LoadIconAsync(_homeConfig, GetInstanceID().ToString(), _presentationVersion);
     }
@@ -76,6 +78,8 @@ public class HomeItemDetail : UIBasePanel
     public void Purchase()
     {
         if (_homeConfig == null || PlayerInfoManager.GetInstance().IsHomeUnlocked(_homeConfig.Id)) return;
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
 
         int purchaseCost = GetPurchaseCost();
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
@@ -104,6 +108,7 @@ public class HomeItemDetail : UIBasePanel
         _purchaseButton.interactable = false;
         OnClose();
         CommonTipView.Show($"购买成功，获得家具: {suffix}");
+        GameManager.Audio.Play(AudioDefine.SFXBuy);
     }
 
     /// <summary>

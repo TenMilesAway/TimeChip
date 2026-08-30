@@ -6,29 +6,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AudioDataSO", menuName = "AudioDataSO", order = 0)]
 public class AudioDataSO : ScriptableObject
 {
-    public string desc = "´ËÅäÖÃÊÇ×Ô¶¯Éú³ÉµÄ£¬ÇëÎðÊÖ¶¯ÐÞ¸Ä";
+    public string desc = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ÉµÄ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶ï¿½ï¿½Þ¸ï¿½";
     [SerializeField] public List<AudioData> conf;
 }
 
 [Serializable]
 public class AudioData
 {
-    public string key;       // key Öµ, Ê¹ÓÃ AudioClip µÄ name
-    public string path;      // AudioClip ´æ´¢Â·¾¶
-    public bool loop;        // ÊÇ·ñÑ­»·²¥·Å
-    public string mixerName; // AudioMixer Group µÄÃû³Æ
-}
-
-public enum AudioClipType
-{
-    SFXOpenPanel,
-    SFXClosePanel,
-    Spawn,
-    FirstLevel,
-}
-
-public class AudioClipData
-{
-    public AudioClipType _type;
-    public string _content;
+    public string key;       // key Öµ, Ê¹ï¿½ï¿½ AudioClip ï¿½ï¿½ name
+    public string path;      // AudioClip ï¿½æ´¢Â·ï¿½ï¿½
+    public bool loop;        // ï¿½Ç·ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public string mixerName; // AudioMixer Group ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }

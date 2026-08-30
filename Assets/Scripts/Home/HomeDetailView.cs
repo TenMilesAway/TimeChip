@@ -21,6 +21,12 @@ public class HomeDetailView : UIBasePanel
         RefreshSatisfaction(playerInfoManager);
     }
 
+    protected override void CloseHandle()
+    {
+        GameManager.Audio.Play(AudioDefine.SFXClose);
+        base.CloseHandle();
+    }
+
     protected override void HideHandle()
     {
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshSatisfaction;

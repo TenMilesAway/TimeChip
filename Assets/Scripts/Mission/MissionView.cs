@@ -156,6 +156,7 @@ public class MissionView : UIBasePanel
         {
             Debug.LogWarning($"任务不可领取: [{missionId}]", this);
         }
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private int GetMaxPage()

@@ -225,12 +225,14 @@ public class Launcher : SingletonMono<Launcher>
     /// </summary>
     private void OpenMainMenu()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.MainMenuView);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
     private void OpenSettingView()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.SettingView);
     }
 

@@ -111,6 +111,8 @@ public class MainMenuView : UIBasePanel
     /// </summary>
     private void TryAdvanceTurn()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (!_isWaitingForAdvanceTurnConfirmation ||
             Time.unscaledTime > _advanceTurnConfirmDeadline)
         {
@@ -152,6 +154,7 @@ public class MainMenuView : UIBasePanel
 
     private void OpenSetting()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
             param: new OpenUIParam { data = true });
@@ -176,6 +179,7 @@ public class MainMenuView : UIBasePanel
 
         UIManager.GetInstance().OpenPanel(targetPanelName);
         _currentContentPage = targetPage;
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
     #endregion
 

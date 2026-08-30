@@ -56,6 +56,8 @@ public class HomeStoreView : UIBasePanel
 
         SelectCategory(AllCategory);
         LoadHomeItemsAsync(++_itemRequestVersion);
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     protected override void CloseHandle()
@@ -63,6 +65,8 @@ public class HomeStoreView : UIBasePanel
         _itemRequestVersion++;
         ClearHomeItems();
         base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
     }
 
     protected override void OnDestroy()
@@ -107,6 +111,7 @@ public class HomeStoreView : UIBasePanel
 
         UpdateTagSelection();
         RefreshPage();
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     /// <summary>
@@ -114,6 +119,8 @@ public class HomeStoreView : UIBasePanel
     /// </summary>
     private void ShowPreviousPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (_currentPage > 1)
         {
             _currentPage--;
@@ -126,6 +133,8 @@ public class HomeStoreView : UIBasePanel
     /// </summary>
     private void ShowNextPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (_currentPage < GetMaxPage())
         {
             _currentPage++;

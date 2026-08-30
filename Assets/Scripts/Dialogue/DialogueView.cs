@@ -87,6 +87,7 @@ public class DialogueView : UIBasePanel
 
     private void ShowNextLine()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_viewData == null || _viewData.lines == null || _viewData.lines.Count == 0)
         {
             UIManager.GetInstance().ClosePanel(GetPanelName());

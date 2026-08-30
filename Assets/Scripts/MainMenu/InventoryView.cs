@@ -46,10 +46,20 @@ public class InventoryView : UIBasePanel
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (_isUiReady)
         {
             RefreshInventory();
         }
+    }
+
+    protected override void CloseHandle()
+    {
+        base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
     }
 
     protected override void ShowHandle()
@@ -121,6 +131,7 @@ public class InventoryView : UIBasePanel
 
     private void ShowPreviousPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage <= 1)
         {
             return;
@@ -133,6 +144,7 @@ public class InventoryView : UIBasePanel
 
     private void ShowNextPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClose);
         if (_currentPage >= GetMaxPage())
         {
             return;
@@ -189,6 +201,8 @@ public class InventoryView : UIBasePanel
 
     private async void SelectItem(int itemIndex)
     {
+        await GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (itemIndex < 0 || itemIndex >= _items.Count)
         {
             return;

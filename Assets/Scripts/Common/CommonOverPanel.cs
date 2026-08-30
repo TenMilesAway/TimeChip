@@ -8,6 +8,8 @@ public class CommonOverPanel : UIBasePanel
     protected override void InitHandle(OpenUIParam param)
     {
         _returnToLauncher = param?.callback;
+
+        GameManager.Audio.Play(AudioDefine.SFXFailure);
     }
 
     public override string GetPanelName()
@@ -17,6 +19,7 @@ public class CommonOverPanel : UIBasePanel
 
     public void ReturnToLauncher()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         _returnToLauncher?.Invoke();
         UIManager.GetInstance().ClosePanel(GetPanelName());
     }

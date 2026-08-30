@@ -33,6 +33,8 @@ public class CommonMessageView : UIBasePanel
     {
         base.InitHandle(param);
 
+        GameManager.Audio.Play(AudioDefine.SFXMessageOpen);
+
         if (_txtMessage == null)
         {
             Debug.LogError("CommonMessageView 的消息文本未在 Inspector 中配置", this);
@@ -48,6 +50,13 @@ public class CommonMessageView : UIBasePanel
         }
 
         _txtMessage.text = messageData.Message;
+    }
+
+    protected override void CloseHandle()
+    {
+        base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
     }
 
     public override string GetPanelName()

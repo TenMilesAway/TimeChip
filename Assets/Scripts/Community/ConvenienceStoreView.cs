@@ -36,6 +36,20 @@ public class ConvenienceStoreView : UIBasePanel
         }
     }
 
+    protected override void InitHandle(OpenUIParam param)
+    {
+        base.InitHandle(param);
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+    }
+
+    protected override void CloseHandle()
+    {
+        base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
+    }
+
     protected override void ShowHandle()
     {
         base.ShowHandle();
@@ -205,6 +219,7 @@ public class ConvenienceStoreView : UIBasePanel
         {
             case ConveniencePurchaseResult.Success:
                 RefreshMonthlyOffers();
+                CommonTipView.Show("购买成功");
                 break;
             case ConveniencePurchaseResult.SoldOut:
                 CommonTipView.Show("剩余购买次数不足");

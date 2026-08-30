@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,8 +9,9 @@ public class AudioComponent : BaseComponent
     public AudioDataSO _audioDataSO;
     public AudioMixer _audioMixer;
 
-    private Dictionary<string, AudioData> _audioDic = new Dictionary<string, AudioData>();
-    private Dictionary<string, AudioSource> _playingAudioSources = new Dictionary<string, AudioSource>(); 
+    private readonly Dictionary<string, AudioData> _audioDic = new Dictionary<string, AudioData>();
+    private readonly Dictionary<string, List<AudioSource>> _playingAudioSources =
+        new Dictionary<string, List<AudioSource>>();
 
     private static string _MusicVolumeKey = "MusicVolume";
     private static string _SFXVolumeKey = "SFXVolume";
@@ -25,10 +25,13 @@ public class AudioComponent : BaseComponent
     private bool _isPlayMusic;
     private bool _isVibrationEnabled;
 
+    private void LateUpdate()
+    {
+        RecycleStoppedSFX();
+    }
+
     public void Init()
     {
-        GameManager.Event.AddListener<AudioClipData>(GameEventType.PlayAudio, PlayAudioClip);
-
         _audioDic.Clear();
 
         if (_audioDataSO)
@@ -44,6 +47,8 @@ public class AudioComponent : BaseComponent
         LoadSFXVolumeSetting();
         LoadSettingStatus();
         LoadVibrationSetting();
+
+        _ = PlayMusic(AudioDefine.Community);
     }
 
     #region 主要方法: 初始加载
@@ -122,6 +127,21 @@ public class AudioComponent : BaseComponent
 
     #region 主要方法: 播放
     /// <summary>
+    /// Plays an audio entry defined by <see cref="AudioDefine"/>. The entry's loop
+    /// configuration determines whether it is played as music or as a sound effect.
+    /// </summary>
+    public Task<AudioSource> Play(string key, Transform parent = null)
+    {
+        if (!_audioDic.TryGetValue(key, out AudioData data))
+        {
+            Debug.LogErrorFormat("音频配置不存在: {0}", key);
+            return Task.FromResult<AudioSource>(null);
+        }
+
+        return data.loop ? PlayMusic(key, parent) : PlaySFX(key, parent);
+    }
+
+    /// <summary>
     /// Plays loop-configured background music and stops the current track.
     /// </summary>
     public async Task<AudioSource> PlayMusic(string key, Transform parent = null)
@@ -179,8 +199,6 @@ public class AudioComponent : BaseComponent
                     audioSource.transform.SetParent(this.transform, false);
                 }
 
-                audioSource.transform.localPosition = Vector3.zero;
-                audioSource.gameObject.SetActive(true);
                 audioSource.clip = clip;
                 audioSource.loop = data.loop;
                 AudioMixerGroup[] groups = _audioMixer.FindMatchingGroups(data.mixerName);
@@ -189,21 +207,15 @@ public class AudioComponent : BaseComponent
                 if (audioSource.outputAudioMixerGroup == null)
                 {
                     Debug.LogErrorFormat("{0} 不存在", data.mixerName);
+                    ReturnAudioSource(audioSource);
                     return null;
                 }
 
+                audioSource.transform.localPosition = Vector3.zero;
+                audioSource.gameObject.SetActive(true);
                 audioSource.Play();
-                _playingAudioSources.Add(key, audioSource);
-                if (!data.loop)
-                {
-                    GameManager.DelayedTask.AddDelayedTask(
-                        TimerUtil.GetLaterMillisecondsBySecond(clip.length),
-                        () =>
-                        {
-                            RecycleAudioHandle(key);
-                        });
-                }
-                else
+                TrackAudioSource(key, audioSource);
+                if (data.loop)
                 {
                     _currentPlayMusic = key;
                 }
@@ -213,23 +225,6 @@ public class AudioComponent : BaseComponent
         }
 
         return null;
-    }
-    #endregion
-
-    #region 监听方法: 播放
-    public async void PlayAudioClip(AudioClipData _audioClipData)
-    {
-        if (!_isPlaySFX) return;
-
-        switch (_audioClipData._type)
-        {
-            case AudioClipType.Spawn:
-                await PlaySFX(AudioDefine.Spawn);
-                break;
-            case AudioClipType.FirstLevel:
-                await PlaySFX(AudioDefine.FirstLevel);
-                break;
-        }
     }
     #endregion
 
@@ -334,16 +329,95 @@ public class AudioComponent : BaseComponent
 
     private void RecycleAudioHandle(string key)
     {
-        if (_playingAudioSources.ContainsKey(key))
+        if (!_playingAudioSources.TryGetValue(key, out List<AudioSource> audioSources))
         {
-            AudioSource audioSource = _playingAudioSources[key];
-            audioSource.Stop();
-            if (audioSource.gameObject != null)
-            {
-                UnityObjectPoolFactory.GetInstance().PutItem(_AudioSourceTemplatePath, audioSource.gameObject);
-            }
+            return;
+        }
+
+        for (int i = audioSources.Count - 1; i >= 0; i--)
+        {
+            RecycleAudioSource(key, audioSources[i]);
+        }
+    }
+
+    private void TrackAudioSource(string key, AudioSource audioSource)
+    {
+        if (!_playingAudioSources.TryGetValue(key, out List<AudioSource> audioSources))
+        {
+            audioSources = new List<AudioSource>();
+            _playingAudioSources.Add(key, audioSources);
+        }
+
+        audioSources.Add(audioSource);
+    }
+
+    private void RecycleAudioSource(string key, AudioSource audioSource)
+    {
+        if (!_playingAudioSources.TryGetValue(key, out List<AudioSource> audioSources) ||
+            !audioSources.Remove(audioSource))
+        {
+            return;
+        }
+
+        ReturnAudioSource(audioSource);
+
+        if (audioSources.Count == 0)
+        {
             _playingAudioSources.Remove(key);
         }
+    }
+
+    private void RecycleStoppedSFX()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            AudioSource audioSource = transform.GetChild(i).GetComponent<AudioSource>();
+            if (audioSource == null || audioSource.loop || audioSource.isPlaying)
+            {
+                continue;
+            }
+
+            UntrackAudioSource(audioSource);
+            ReturnAudioSource(audioSource);
+        }
+    }
+
+    private void UntrackAudioSource(AudioSource audioSource)
+    {
+        string emptyKey = null;
+
+        foreach (KeyValuePair<string, List<AudioSource>> pair in _playingAudioSources)
+        {
+            if (!pair.Value.Remove(audioSource))
+            {
+                continue;
+            }
+
+            if (pair.Value.Count == 0)
+            {
+                emptyKey = pair.Key;
+            }
+
+            break;
+        }
+
+        if (emptyKey != null)
+        {
+            _playingAudioSources.Remove(emptyKey);
+        }
+    }
+
+    private void ReturnAudioSource(AudioSource audioSource)
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.Stop();
+        audioSource.clip = null;
+        audioSource.outputAudioMixerGroup = null;
+        UnityObjectPoolFactory.GetInstance().PutItem(_AudioSourceTemplatePath, audioSource.gameObject);
     }
     #endregion
 

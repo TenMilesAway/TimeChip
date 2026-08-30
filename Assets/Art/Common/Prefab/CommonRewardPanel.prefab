@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5254607679141563171}
   - component: {fileID: 440430265036360654}
   - component: {fileID: 4609458618404691518}
+  - component: {fileID: 2217414350833424401}
   m_Layer: 5
   m_Name: CommonRewardPanel
   m_TagString: Untagged
@@ -111,6 +112,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &2217414350833424401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018856591810249677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67e73a6a044632c4799135c34fa66394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overshootScale: 1
+  _popDuration: 0.2
+  _settleDuration: 0.12
 --- !u!1 &2567862070757514954
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,7 +314,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 78df1e53ee4319c43abae575eaf1b9dd, type: 3}
     m_FontSize: 48
     m_FontStyle: 1
     m_BestFit: 0
@@ -393,7 +409,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 78df1e53ee4319c43abae575eaf1b9dd, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0

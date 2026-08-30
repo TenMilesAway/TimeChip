@@ -42,7 +42,7 @@ public class HomeView : UIBasePanel
     }
 
     /// <summary>
-    /// 按玩家已购买的 home.xlsx 家具 ID 同步场景家具的显示状态。
+    /// 按玩家已购买的 home.xlsx 家具 ID 同步场景家具的显示状态
     /// </summary>
     private void RefreshFurnitureVisibility()
     {
@@ -54,7 +54,7 @@ public class HomeView : UIBasePanel
     }
 
     /// <summary>
-    /// 构建并校验 Inspector 中的家具 ID 与场景对象映射。
+    /// 构建并校验 Inspector 中的家具 ID 与场景对象映射
     /// </summary>
     private void BuildFurnitureLookup()
     {
@@ -87,6 +87,7 @@ public class HomeView : UIBasePanel
 
     public void OpenHomeDetailView()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.HomeDetailView);
     }
 

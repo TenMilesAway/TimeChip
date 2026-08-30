@@ -14,9 +14,9 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
 
     private bool _disposed;
 
-    #region Ö÷Òª·½·¨
+    #region ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½
     /// <summary>
-    /// Òì²½»ñÈ¡¶ÔÏó³ØÖÐ¶ÔÏó
+    /// ï¿½ì²½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
     /// </summary>
     public void GetItemAsync<T>(string itemName, string tag, Action<T> callback, Vector3 vec = default) where T : Object
     {
@@ -38,7 +38,7 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
     }
 
     /// <summary>
-    /// Í¬²½»ñÈ¡¶ÔÏó³ØÖÐ¶ÔÏó
+    /// Í¬ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
     /// </summary>
     public async Task<T> GetItem<T>(string itemName, string tag) where T : Object
     {
@@ -69,13 +69,16 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
         {
             pool.Put(objectToReturn);
             callback?.Invoke();
+            return;
         }
+
+        Object.Destroy(objectToReturn);
     }
     #endregion
 
-    #region ¸¨Öú·½·¨
+    #region ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// <summary>
-    /// ´´½¨¶ÔÏó³Ø
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private UnityObjectPool CreatePool(Object obj, string poolName, 
                                         Func<Object> objectFactory,
@@ -88,7 +91,7 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
     }
 
     /// <summary>
-    /// »ñÈ¡¶ÔÏó³Ø×Öµä
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½
     /// </summary>
     public Dictionary<string, UnityObjectPool> GetPools()
     {
@@ -96,7 +99,7 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
     }
     #endregion
 
-    #region ×ÊÔ´ÊÍ·Å
+    #region ï¿½ï¿½Ô´ï¿½Í·ï¿½
     public void Dispose()
     {
         Dispose(true);
@@ -110,9 +113,9 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
 
     private void Dispose(bool disposing)
     {
-        // ÒÑ¾­ÊÍ·Å
+        // ï¿½Ñ¾ï¿½ï¿½Í·ï¿½
         if (_disposed) return;
-        // ÊÍ·ÅÍÐ¹Ü×ÊÔ´
+        // ï¿½Í·ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½Ô´
         if (disposing)
         {
             foreach (var pool in _pools.Values)
@@ -122,7 +125,7 @@ public class UnityObjectPoolFactory : Singleton<UnityObjectPoolFactory>, IDispos
 
             _pools.Clear();
         }
-        // ÊÍ·Å·ÇÍÐ¹Ü×ÊÔ´
+        // ï¿½Í·Å·ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½Ô´
         // ...
         _disposed = true;
     }

@@ -20,6 +20,16 @@ public class CommunityView : UIBasePanel
         _btnConvenienceStore.onClick.AddListener(OnClickConvenienceStore);
     }
 
+    protected override void InitHandle(OpenUIParam param)
+    {
+        base.InitHandle(param);
+    }
+
+    protected override void CloseHandle()
+    {
+        base.CloseHandle();
+    }
+
     protected override void OnDestroy()
     {
         if (_btnConvenienceStore != null)

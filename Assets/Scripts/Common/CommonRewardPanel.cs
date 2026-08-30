@@ -25,6 +25,8 @@ public class CommonRewardPanel : UIBasePanel
     {
         base.InitHandle(param);
 
+        GameManager.Audio.Play(AudioDefine.SFXGetReward);
+
         ResetPresentation();
 
         if (!(param?.data is List<CommonRewardItemData> rewardDataList))
@@ -40,6 +42,8 @@ public class CommonRewardPanel : UIBasePanel
     protected override void CloseHandle()
     {
         base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
 
         _presentationVersion++;
         DOTween.Kill(this);

@@ -28,6 +28,8 @@ public class CommonTipView : UIBasePanel
     /// </summary>
     public static void Show(string message)
     {
+        GameManager.Audio.Play(AudioDefine.SFXMessageOpen);
+
         if (string.IsNullOrWhiteSpace(message))
         {
             return;

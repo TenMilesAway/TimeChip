@@ -100,6 +100,7 @@ public class LotteryView : UIBasePanel
         {
             Debug.LogWarning("时间币不足, 无法抽奖", this);
             CommonTipView.Show("时间币不足");
+            GameManager.Audio.Play(AudioDefine.SFXClickFail);
             return;
         }
 
@@ -113,6 +114,7 @@ public class LotteryView : UIBasePanel
         DOVirtual.DelayedCall(LotteryDuration, CompleteLottery)
             .SetUpdate(true)
             .SetTarget(this);
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private void CompleteLottery()

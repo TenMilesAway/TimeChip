@@ -122,10 +122,12 @@ public class WorkView : UIBasePanel
 
         UpdateTagSelection();
         RefreshPage();
+        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private void ShowPreviousPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage <= 1)
         {
             return;
@@ -137,6 +139,7 @@ public class WorkView : UIBasePanel
 
     private void ShowNextPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage >= GetMaxPage())
         {
             return;
@@ -186,6 +189,9 @@ public class WorkView : UIBasePanel
     private void TryCompleteWork(cfg.Work workConfig)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+
         if (playerInfoManager.WorkedThisTurn)
         {
             CommonTipView.Show("本回合已完成零工");
@@ -223,6 +229,7 @@ public class WorkView : UIBasePanel
         playerInfoManager.AddSimulationCoins(workResult.CoinReward);
         playerInfoManager.AddWorkExperience(workConfig.WorkType, 100);
         CommonTipView.Show($"完成{workConfig.Name}，获得{workResult.CoinReward}模拟币和100经验");
+        GameManager.Audio.Play(AudioDefine.SFXWork);
     }
 
     private static bool IsWorkUnlocked(cfg.Work workConfig, out string unlockTip)

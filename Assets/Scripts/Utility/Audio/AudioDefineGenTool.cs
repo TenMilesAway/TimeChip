@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,71 +6,74 @@ using UnityEngine;
 
 public static class AudioDefineGenTool
 {
-    private static string AudioDataSOPath = "Assets/Audios/AudioDataSO.asset";
-    private static string AudioDefinePath = "Assets/Scripts/Utility/Audio/AudioDefine.cs";
+    private static readonly string AudioDataSOPath = "Assets/Audio/AudioDataSO.asset";
+    private static readonly string AudioDefinePath = "Assets/Scripts/Utility/Audio/AudioDefine.cs";
 
-    [MenuItem("Assets/Éú³ÉÒôÆµÅäÖÃ")]
+    [MenuItem("Assets/ç”ŸæˆéŸ³é¢‘é…ç½®")]
     public static void GenAudioDefine()
     {
-        if (Selection.objects.Length == 0) return;
+        if (Selection.objects.Length == 0)
+        {
+            return;
+        }
 
-        Debug.LogFormat("µ±Ç°Ñ¡ÖĞÎÄ¼ş¼Ğ: {0}", Selection.objects[0].name);
+        Debug.LogFormat("å½“å‰é€‰æ‹©æ–‡ä»¶å¤¹: {0}", Selection.objects[0].name);
 
         Dictionary<string, AudioData> audioDataDic = new Dictionary<string, AudioData>();
 
-        // ÅĞ¶ÏÊÇ·ñÑ¡ÖĞÎÄ¼ş¼Ğ
         if (AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(Selection.objects[0])))
         {
             string rootPath = AssetDatabase.GetAssetPath(Selection.objects[0]);
-
-            // »ñÈ¡ÎÄ¼ş¼ĞÖĞµÄËùÓĞÒôÆµÎÄ¼ş
-            string[] guids = AssetDatabase.FindAssets("t:AudioClip", new string[] { rootPath });
+            string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { rootPath });
 
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                if (clip == null) continue;
+                if (clip == null)
+                {
+                    continue;
+                }
 
-                AudioData data = new AudioData();
                 if (audioDataDic.ContainsKey(clip.name))
                 {
-                    Debug.LogWarningFormat("ÒôÆµÃû³ÆÖØ¸´: Ãû³Æ[{0}] Â·¾¶[{1}]", clip.name, path);
+                    Debug.LogWarningFormat("éŸ³é¢‘åç§°é‡å¤: åç§°[{0}] è·¯å¾„[{1}]", clip.name, path);
                     continue;
                 }
 
                 string relativePath = path.Replace(rootPath + "/", "");
                 relativePath = relativePath.Substring(0, relativePath.LastIndexOf("/"));
-                data.key = clip.name;
-                data.path = path;
-                data.loop = clip.name.StartsWith("Music");
-                data.mixerName = relativePath;
+
+                AudioData data = new AudioData
+                {
+                    key = clip.name,
+                    path = path,
+                    loop = relativePath == "Music" || relativePath.StartsWith("Music/"),
+                    mixerName = relativePath
+                };
                 audioDataDic.Add(data.key, data);
             }
 
-            bool isNewCreate = false;
-
-            // Éú³É SO
             AudioDataSO dataSO = AssetDatabase.LoadAssetAtPath<AudioDataSO>(AudioDataSOPath);
-            if (dataSO == null)
+            bool isNewCreate = dataSO == null;
+            if (isNewCreate)
             {
-                dataSO = ScriptableObject.CreateInstance(typeof(AudioDataSO)) as AudioDataSO;
-                isNewCreate = true;
-            }
-            dataSO.conf = new List<AudioData>();
-            foreach (KeyValuePair<string, AudioData> conf in audioDataDic)
-            {
-                dataSO.conf.Add(conf.Value);
+                dataSO = ScriptableObject.CreateInstance<AudioDataSO>();
             }
 
-            // Èç¹ûÊÇĞÂ´´½¨
-            if (isNewCreate) AssetDatabase.CreateAsset(dataSO, AudioDataSOPath);
-            // Ë¢ĞÂÊı¾İ
-            else EditorUtility.SetDirty(dataSO);
+            dataSO.conf = new List<AudioData>(audioDataDic.Values);
 
-            // Éú³É CSharp
+            if (isNewCreate)
+            {
+                AssetDatabase.CreateAsset(dataSO, AudioDataSOPath);
+            }
+            else
+            {
+                EditorUtility.SetDirty(dataSO);
+            }
+
             StringBuilder contentSB = new StringBuilder();
-            contentSB.Append("// ´ËÎÄ¼şÊÇ×Ô¶¯Éú³ÉµÄ£¬ÇëÎğÊÖ¶¯ĞŞ¸Ä\n");
+            contentSB.Append("// æ­¤æ–‡ä»¶æ˜¯è‡ªåŠ¨ç”Ÿæˆçš„ï¼Œè¯·å‹¿æ‰‹åŠ¨ä¿®æ”¹\n");
             contentSB.Append("public static class AudioDefine\n");
             contentSB.Append("{\n");
             foreach (KeyValuePair<string, AudioData> conf in audioDataDic)
@@ -80,10 +82,11 @@ public static class AudioDefineGenTool
                 contentSB.Append("    public static string " + name + " = \"" + name + "\";\n");
             }
             contentSB.Append("}\n");
-            File.WriteAllText(AudioDefinePath, contentSB.ToString());
-            AssetDatabase.Refresh();
+            File.WriteAllText(AudioDefinePath, contentSB.ToString(), new UTF8Encoding(false));
 
-            Debug.LogFormat("Éú³ÉÍê³É");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("ç”Ÿæˆå®Œæˆ");
         }
     }
 }

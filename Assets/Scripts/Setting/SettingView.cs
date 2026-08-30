@@ -41,6 +41,8 @@ public class SettingView : UIBasePanel
     protected override void CloseHandle()
     {
         base.CloseHandle();
+
+        GameManager.Audio.Play(AudioDefine.SFXClose);
         PlayerPrefs.Save();
 
         _sliderMusic.onValueChanged.RemoveListener(OnMusicVolumeChanged);
@@ -94,11 +96,14 @@ public class SettingView : UIBasePanel
 
     private static float VolumeDbToSliderValue(float volumeDb)
     {
-        return Mathf.InverseLerp(MinVolumeDb, MaxVolumeDb, volumeDb);
+        return Mathf.Clamp01(Mathf.Pow(10f, volumeDb / 20f));
     }
 
     private static float SliderValueToVolumeDb(float sliderValue)
     {
-        return Mathf.Lerp(MinVolumeDb, MaxVolumeDb, sliderValue);
+        float linearVolume = Mathf.Clamp01(sliderValue);
+        return linearVolume <= 0f
+            ? MinVolumeDb
+            : Mathf.Max(MinVolumeDb, 20f * Mathf.Log10(linearVolume));
     }
 }
