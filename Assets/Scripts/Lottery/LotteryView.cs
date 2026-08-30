@@ -154,7 +154,7 @@ public class LotteryView : UIBasePanel
     /// <param name="playerInfoManager">提供最新玩家数据的管理器</param>
     private void RefreshTimeCoins(PlayerInfoManager playerInfoManager)
     {
-        _timeCoinText.text = $"剩余时间币数量：{playerInfoManager.TimeCoins}";
+        _timeCoinText.text = $"{playerInfoManager.TimeCoins}";
     }
 
     private bool TryDrawReward(out CommonRewardItemData reward)

@@ -32,7 +32,8 @@ public class ConvenienceStoreItem : MonoBehaviour
 
     public void SetData(
         cfg.Convenience convenienceConfig,
-        cfg.Item itemConfig,
+        string iconPath,
+        int iconScale,
         float scaleMultiplier,
         int remainingCount,
         Action<cfg.Convenience> purchaseHandler)
@@ -40,7 +41,7 @@ public class ConvenienceStoreItem : MonoBehaviour
         _presentationVersion++;
         _convenienceConfig = convenienceConfig;
         _purchaseHandler = purchaseHandler;
-        if (convenienceConfig == null || itemConfig == null)
+        if (convenienceConfig == null || string.IsNullOrWhiteSpace(iconPath))
         {
             gameObject.SetActive(false);
             return;
@@ -52,13 +53,18 @@ public class ConvenienceStoreItem : MonoBehaviour
         _txtPrice.text = convenienceConfig.Price.ToString();
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
         _imgIcon.sprite = null;
-        LoadIconAsync(itemConfig, scaleMultiplier, _presentationVersion);
+        LoadIconAsync(convenienceConfig.Id, iconPath, iconScale, scaleMultiplier, _presentationVersion);
     }
 
-    private async void LoadIconAsync(cfg.Item itemConfig, float scaleMultiplier, int presentationVersion)
+    private async void LoadIconAsync(
+        int convenienceId,
+        string iconPath,
+        int iconScale,
+        float scaleMultiplier,
+        int presentationVersion)
     {
         Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
-            itemConfig.Icon,
+            iconPath,
             GetInstanceID().ToString());
         if (presentationVersion != _presentationVersion)
         {
@@ -67,14 +73,14 @@ public class ConvenienceStoreItem : MonoBehaviour
 
         if (icon == null)
         {
-            Debug.LogError($"便利店商品图标加载失败: [{itemConfig.Id}], [{itemConfig.Icon}]", this);
+            Debug.LogError($"便利店商品图标加载失败: [{convenienceId}], [{iconPath}]", this);
             return;
         }
 
         _imgIcon.sprite = icon;
         _imgIcon.SetNativeSize();
         _imgIcon.rectTransform.localScale = Vector3.one *
-            (itemConfig.RewardScale / ScaleDivisor) * scaleMultiplier;
+            (iconScale / ScaleDivisor) * scaleMultiplier;
     }
 
     private void OnClickPurchase()

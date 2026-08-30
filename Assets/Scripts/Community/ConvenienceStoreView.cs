@@ -86,11 +86,16 @@ public class ConvenienceStoreView : UIBasePanel
         for (int i = 0; i < _items.Length; i++)
         {
             cfg.Convenience offer = _monthlyOffers[i];
-            cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
-                .GetOrDefault(offer.ItemId);
+            if (!TryGetProductPresentation(offer.ItemId, out string iconPath, out int iconScale))
+            {
+                Debug.LogError($"便利店商品配置不存在: [{offer.Id}], [{offer.ItemId}]", this);
+                continue;
+            }
+
             _items[i].SetData(
                 offer,
-                itemConfig,
+                iconPath,
+                iconScale,
                 scaleMultiplier,
                 PlayerInfoManager.GetInstance().GetConvenienceOfferRemainingCount(offer.Id),
                 TryPurchase);
@@ -107,7 +112,7 @@ public class ConvenienceStoreView : UIBasePanel
             cfg.Convenience config = configurations[i];
             if (config.Weight <= 0 ||
                 config.Num <= 0 ||
-                DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(config.ItemId) == null)
+                !TryGetProductPresentation(config.ItemId, out _, out _))
             {
                 continue;
             }
@@ -211,6 +216,30 @@ public class ConvenienceStoreView : UIBasePanel
                 Debug.LogError($"便利店商品购买失败: [{offerConfig.Id}]", this);
                 break;
         }
+    }
+
+    private static bool TryGetProductPresentation(int productId, out string iconPath, out int iconScale)
+    {
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        cfg.Item itemConfig = tables.ItemTable.GetOrDefault(productId);
+        if (itemConfig != null)
+        {
+            iconPath = itemConfig.Icon;
+            iconScale = itemConfig.RewardScale;
+            return true;
+        }
+
+        cfg.Base baseConfig = tables.BaseTable.GetOrDefault(productId);
+        if (baseConfig != null)
+        {
+            iconPath = baseConfig.Icon;
+            iconScale = baseConfig.RewardScale;
+            return true;
+        }
+
+        iconPath = null;
+        iconScale = 0;
+        return false;
     }
 
     private void RefreshSimulationCoins(PlayerInfoManager playerInfoManager)

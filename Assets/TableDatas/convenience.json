@@ -50,7 +50,7 @@
   {
     "id": 7,
     "name": "时间币",
-    "itemId": 1010,
+    "itemId": 102,
     "price": 488,
     "num": 1,
     "weight": 700
@@ -58,7 +58,7 @@
   {
     "id": 8,
     "name": "时间币",
-    "itemId": 1010,
+    "itemId": 102,
     "price": 688,
     "num": 5,
     "weight": 800
@@ -66,7 +66,7 @@
   {
     "id": 9,
     "name": "时间币",
-    "itemId": 1010,
+    "itemId": 102,
     "price": 888,
     "num": 10,
     "weight": 900

@@ -486,6 +486,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return ConveniencePurchaseResult.SoldOut;
         }
 
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(offerConfig.ItemId);
+        cfg.Base baseConfig = DataTableMananger.GetInstance().Tables.BaseTable
+            .GetOrDefault(offerConfig.ItemId);
+        if (itemConfig == null && (baseConfig == null || !IsSupportedBaseProperty(baseConfig.Id)))
+        {
+            return ConveniencePurchaseResult.InvalidOffer;
+        }
+
         if (offerConfig.Price < 0 || _data.simulationCoins < offerConfig.Price)
         {
             return ConveniencePurchaseResult.InsufficientCoins;
@@ -493,7 +502,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.simulationCoins -= offerConfig.Price;
         offer.remainingCount--;
-        AddInventoryItem(offerConfig.ItemId, 1);
+        if (itemConfig != null)
+        {
+            AddInventoryItem(itemConfig.Id, 1);
+        }
+        else
+        {
+            AddBaseProperty(baseConfig.Id);
+        }
+
         NotifyPlayerInfoChanged();
         return ConveniencePurchaseResult.Success;
     }
@@ -937,6 +954,31 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             itemId = itemId,
             amount = amount
         });
+    }
+
+    private static bool IsSupportedBaseProperty(int basePropertyId)
+    {
+        return basePropertyId == BasePropertyId.SimulationCoin ||
+            basePropertyId == BasePropertyId.TimeCoin ||
+            basePropertyId == BasePropertyId.Health;
+    }
+
+    private void AddBaseProperty(int basePropertyId)
+    {
+        switch (basePropertyId)
+        {
+            case BasePropertyId.SimulationCoin:
+                AddSimulationCoins(1);
+                break;
+            case BasePropertyId.TimeCoin:
+                AddTimeCoins(1);
+                break;
+            case BasePropertyId.Health:
+                ChangeHealth(1);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(basePropertyId));
+        }
     }
 
     private PlayerWorkProgress FindWorkProgress(string workType)
