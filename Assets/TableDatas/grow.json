@@ -1,0 +1,101 @@
+[
+  {
+    "id": 201,
+    "name": "初入职场",
+    "baseEffect": "打工收益",
+    "baseEffectValue": 100,
+    "upgradeAdditionalValue": 20,
+    "oneStarExtraEffect": "收益+10%",
+    "threeStarExtraEffect": "体力消耗-10%",
+    "fiveStarExtraEffect": "收益+20%",
+    "starUpMemoryCosts": "50;75;100;125;150"
+  },
+  {
+    "id": 202,
+    "name": "精打细算",
+    "baseEffect": "商品折扣",
+    "baseEffectValue": 5,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "折扣+5%",
+    "threeStarExtraEffect": "折扣+8%",
+    "fiveStarExtraEffect": "折扣+10%",
+    "starUpMemoryCosts": "75;100;125;150;175"
+  },
+  {
+    "id": 203,
+    "name": "居家巧手",
+    "baseEffect": "家具满意度",
+    "baseEffectValue": 10,
+    "upgradeAdditionalValue": 2,
+    "oneStarExtraEffect": "满意度+5",
+    "threeStarExtraEffect": "满意度+15%",
+    "fiveStarExtraEffect": "消耗-10%",
+    "starUpMemoryCosts": "100;125;150;175;200"
+  },
+  {
+    "id": 204,
+    "name": "幸运时刻",
+    "baseEffect": "抽奖幸运值",
+    "baseEffectValue": 5,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "双倍奖励+5%",
+    "threeStarExtraEffect": "稀有率+10%",
+    "fiveStarExtraEffect": "返还时光币",
+    "starUpMemoryCosts": "125;150;175;200;225"
+  },
+  {
+    "id": 205,
+    "name": "元气满满",
+    "baseEffect": "最大体力",
+    "baseEffectValue": 10,
+    "upgradeAdditionalValue": 2,
+    "oneStarExtraEffect": "首次打工免体力",
+    "threeStarExtraEffect": "恢复+20%",
+    "fiveStarExtraEffect": "额外打工1次",
+    "starUpMemoryCosts": "150;175;200;225;250"
+  },
+  {
+    "id": 206,
+    "name": "人脉积累",
+    "baseEffect": "任务奖励",
+    "baseEffectValue": 5,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "奖励+5%",
+    "threeStarExtraEffect": "刷新冷却-15%",
+    "fiveStarExtraEffect": "回忆点+1",
+    "starUpMemoryCosts": "175;200;225;250;275"
+  },
+  {
+    "id": 207,
+    "name": "时间管理",
+    "baseEffect": "离线收益",
+    "baseEffectValue": 5,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "上限+2小时",
+    "threeStarExtraEffect": "收益+15%",
+    "fiveStarExtraEffect": "立即收益",
+    "starUpMemoryCosts": "200;225;250;275;300"
+  },
+  {
+    "id": 208,
+    "name": "收藏达人",
+    "baseEffect": "藏品价值",
+    "baseEffectValue": 5,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "回忆点+2",
+    "threeStarExtraEffect": "转换收益+20%",
+    "fiveStarExtraEffect": "价值+15%",
+    "starUpMemoryCosts": "225;250;275;300;325"
+  },
+  {
+    "id": 209,
+    "name": "岁月沉淀",
+    "baseEffect": "全局收益",
+    "baseEffectValue": 2,
+    "upgradeAdditionalValue": 1,
+    "oneStarExtraEffect": "模拟币+5%",
+    "threeStarExtraEffect": "回忆点+10%",
+    "fiveStarExtraEffect": "基础效果+10%",
+    "starUpMemoryCosts": "250;275;300;325;350"
+  }
+]

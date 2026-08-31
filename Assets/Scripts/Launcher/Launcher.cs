@@ -15,9 +15,12 @@ public class Launcher : SingletonMono<Launcher>
     /// </summary>
     private const int PlayerSaveSlotId = 0;
     private const int NewGameTestBuffId = 1001;
+    private const int NewLifeMemoryPointReward = 30000;
+    private const int NewLifeGrowCardUnlockCount = 3;
 
     [SerializeField] private Button _newGameButton;               // 新游戏按钮
     [SerializeField] private Button _loadSaveButton;              // 读取存档按钮
+    [SerializeField] private Button _growButton;                  // 时光藏馆按钮
     [SerializeField] private Button _settingButton;               // 设置按钮
     [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
@@ -46,6 +49,7 @@ public class Launcher : SingletonMono<Launcher>
 
         _newGameButton.onClick.AddListener(CreateNewGame);
         _loadSaveButton.onClick.AddListener(LoadSavedGame);
+        _growButton.onClick.AddListener(OpenGrowView);
         _settingButton.onClick.AddListener(OpenSettingView);
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
@@ -60,6 +64,11 @@ public class Launcher : SingletonMono<Launcher>
         if (_loadSaveButton != null)
         {
             _loadSaveButton.onClick.RemoveListener(LoadSavedGame);
+        }
+
+        if (_growButton != null)
+        {
+            _growButton.onClick.RemoveListener(OpenGrowView);
         }
 
         if (_settingButton != null)
@@ -140,6 +149,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _gameSaveData = CreateDefaultGameSaveData();
+        GrantNewLifeGrowReward();
         SaveGameData();
         BeginLaunch(_gameSaveData, true);
     }
@@ -208,6 +218,9 @@ public class Launcher : SingletonMono<Launcher>
     private Task LoadRequiredDataAsync()
     {
         DataTableMananger.GetInstance().Init();
+        GlobalInfoManager.GetInstance().Init();
+        GlobalInfoManager.GetInstance().EnsureGrowCards(
+            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
         BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
         if (_isNewGame)
         {
@@ -234,6 +247,29 @@ public class Launcher : SingletonMono<Launcher>
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.SettingView);
+    }
+
+    private void OpenGrowView()
+    {
+        DataTableMananger.GetInstance().Init();
+        GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
+        globalInfoManager.Init();
+        globalInfoManager.EnsureGrowCards(
+            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.GrowView);
+    }
+
+    private void GrantNewLifeGrowReward()
+    {
+        DataTableMananger.GetInstance().Init();
+        GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
+        globalInfoManager.Init();
+        globalInfoManager.EnsureGrowCards(
+            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
+        globalInfoManager.GrantNewLifeReward(
+            NewLifeMemoryPointReward,
+            NewLifeGrowCardUnlockCount);
     }
 
     /// <summary>保存当前存档并返回启动主界面</summary>

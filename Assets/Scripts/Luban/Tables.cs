@@ -49,6 +49,10 @@ public partial class Tables
     /// BUFF ??
     /// </summary>
     public BuffConfigTable BuffConfigTable {get; }
+    /// <summary>
+    /// 时光藏馆成长配置
+    /// </summary>
+    public GrowTable GrowTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -62,6 +66,7 @@ public partial class Tables
         WorkTable = new WorkTable(loader("work"));
         ConvenienceTable = new ConvenienceTable(loader("convenience"));
         BuffConfigTable = new BuffConfigTable(loader("buffConfig"));
+        GrowTable = new GrowTable(loader("grow"));
         ResolveRef();
     }
     
@@ -76,6 +81,7 @@ public partial class Tables
         WorkTable.ResolveRef(this);
         ConvenienceTable.ResolveRef(this);
         BuffConfigTable.ResolveRef(this);
+        GrowTable.ResolveRef(this);
     }
 }
 
