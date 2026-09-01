@@ -15,12 +15,12 @@ MonoBehaviour:
   ProjectConf:
     projectName: 
     Appid: 
-    CDN: https://gamecomb-gamedevelop-test.oss-cn-hangzhou.aliyuncs.com/zll
+    CDN: https://gamecomb-gamedevelop-test.oss-cn-hangzhou.aliyuncs.com/zll/Temp
     assetLoadType: 0
     compressDataPackage: 0
     VideoUrl: 
-    relativeDST: 
-    DST: D:\UGit\TimeChip\
+    relativeDST: D:/UGit/TimeChipBuild
+    DST: D:/UGit/TimeChipBuild
     StreamCDN: 
     bundleHashLength: 32
     bundlePathIdentifier: StreamingAssets;

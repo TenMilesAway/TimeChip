@@ -27,6 +27,7 @@ public class Launcher : SingletonMono<Launcher>
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
+    private bool _isInitializingTables;                           // 是否正在初始化数据表
     private bool _isNewGame;                                      // 本次启动是否来自新建存档
     private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
 
@@ -41,9 +42,9 @@ public class Launcher : SingletonMono<Launcher>
     private void Start()
     {
         _loadingRoot.SetActive(false);
-        if (_newGameButton == null || _loadSaveButton == null || _settingButton == null)
+        if (_newGameButton == null || _loadSaveButton == null || _growButton == null || _settingButton == null)
         {
-            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏、读取存档和设置按钮", this);
+            Debug.LogError("请在 Launcher 的 Inspector 中绑定新游戏、读取存档、时光藏馆和设置按钮", this);
             return;
         }
 
@@ -51,7 +52,34 @@ public class Launcher : SingletonMono<Launcher>
         _loadSaveButton.onClick.AddListener(LoadSavedGame);
         _growButton.onClick.AddListener(OpenGrowView);
         _settingButton.onClick.AddListener(OpenSettingView);
+        _growButton.interactable = false;
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
+
+        InitializeTablesForGrowButtonAsync();
+    }
+
+    private async void InitializeTablesForGrowButtonAsync()
+    {
+        if (_isInitializingTables)
+        {
+            return;
+        }
+
+        _isInitializingTables = true;
+        await DataTableMananger.GetInstance().Init();
+        _isInitializingTables = false;
+
+        if (_growButton == null)
+        {
+            return;
+        }
+
+        bool isTableReady = DataTableMananger.GetInstance().Tables != null;
+        _growButton.interactable = isTableReady;
+        if (!isTableReady)
+        {
+            Debug.LogError("数据表初始化失败，时光藏馆按钮保持禁用", this);
+        }
     }
 
     private void OnDestroy()
@@ -141,7 +169,7 @@ public class Launcher : SingletonMono<Launcher>
     /// <summary>
     /// 创建默认玩家数据并覆盖唯一存档后开始游戏
     /// </summary>
-    private void CreateNewGame()
+    private async void CreateNewGame()
     {
         if (_process != LauncherProcess.None)
         {
@@ -149,7 +177,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _gameSaveData = CreateDefaultGameSaveData();
-        GrantNewLifeGrowReward();
+        await GrantNewLifeGrowRewardAsync();
         SaveGameData();
         BeginLaunch(_gameSaveData, true);
     }
@@ -215,12 +243,19 @@ public class Launcher : SingletonMono<Launcher>
     /// <summary>
     /// 加载数据
     /// </summary>
-    private Task LoadRequiredDataAsync()
+    private async Task LoadRequiredDataAsync()
     {
-        DataTableMananger.GetInstance().Init();
+        await DataTableMananger.GetInstance().Init();
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null)
+        {
+            Debug.LogError("数据表初始化失败，无法继续加载流程", this);
+            return;
+        }
+
         GlobalInfoManager.GetInstance().Init();
         GlobalInfoManager.GetInstance().EnsureGrowCards(
-            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
+            tables.GrowTable.DataMap.Keys);
         BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
         if (_isNewGame)
         {
@@ -229,8 +264,6 @@ public class Launcher : SingletonMono<Launcher>
 
         MissionAPI.Initialize(PlayerInfoManager.GetInstance(), _isNewGame);
         _isNewGame = false;
-
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -249,24 +282,38 @@ public class Launcher : SingletonMono<Launcher>
         UIManager.GetInstance().OpenPanel(GlobalDefine.SettingView);
     }
 
-    private void OpenGrowView()
+    private async void OpenGrowView()
     {
-        DataTableMananger.GetInstance().Init();
+        await DataTableMananger.GetInstance().Init();
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null)
+        {
+            Debug.LogError("数据表初始化失败，无法打开成长界面", this);
+            return;
+        }
+
         GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
         globalInfoManager.Init();
         globalInfoManager.EnsureGrowCards(
-            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
+            tables.GrowTable.DataMap.Keys);
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.GrowView);
     }
 
-    private void GrantNewLifeGrowReward()
+    private async Task GrantNewLifeGrowRewardAsync()
     {
-        DataTableMananger.GetInstance().Init();
+        await DataTableMananger.GetInstance().Init();
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null)
+        {
+            Debug.LogError("数据表初始化失败，无法发放新生奖励", this);
+            return;
+        }
+
         GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
         globalInfoManager.Init();
         globalInfoManager.EnsureGrowCards(
-            DataTableMananger.GetInstance().Tables.GrowTable.DataMap.Keys);
+            tables.GrowTable.DataMap.Keys);
         globalInfoManager.GrantNewLifeReward(
             NewLifeMemoryPointReward,
             NewLifeGrowCardUnlockCount);
