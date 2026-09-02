@@ -2,26 +2,56 @@
   {
     "id": 1000,
     "name": "一枚模拟币",
-    "desc": "一枚金灿灿的模拟币，可以用来购物",
-    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_simulation_coin]",
-    "canUse": 0,
-    "rewardScale": 2500
+    "desc": "一枚亮晶晶的模拟币，使用后获取少量模拟币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_1]",
+    "canUse": 1,
+    "rewardScale": 2500,
+    "useEffect": "101,100,100"
   },
   {
     "id": 1001,
-    "name": "一堆模拟币",
-    "desc": "几枚金灿灿的模拟币，可以用来购物",
-    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_stack]",
-    "canUse": 0,
-    "rewardScale": 4000
+    "name": "一叠模拟币",
+    "desc": "一叠金灿灿的模拟币，使用后获取一些模拟币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_2]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": "101,500,100"
+  },
+  {
+    "id": 1002,
+    "name": "鼓鼓钱袋",
+    "desc": "钱袋已经被撑得圆滚滚的，使用后获取中量模拟币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_3]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": "101,1000,100"
+  },
+  {
+    "id": 1003,
+    "name": "一箱模拟币",
+    "desc": "箱子里全是模拟币，使用后获取大量模拟币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_4]",
+    "canUse": 1,
+    "rewardScale": 4500,
+    "useEffect": "101,5000,100"
+  },
+  {
+    "id": 1004,
+    "name": "璀璨金库",
+    "desc": "现在，需要担心的是该怎么把钱花完",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_5]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": "101,10000,100"
   },
   {
     "id": 1010,
     "name": "时间币",
-    "desc": "精美的时间币，可以用来抽奖",
-    "icon": "Assets/Art/Lottery/SpriteAtlas.spriteatlasv2[icon_lottery_coin]",
+    "desc": "凝结着一小段时光的特殊货币，投入时光礼物箱，或许能换回一份来自未来的惊喜",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_coin]",
     "canUse": 0,
-    "rewardScale": 4000
+    "rewardScale": 4000,
+    "useEffect": ""
   },
   {
     "id": 2000,
@@ -29,7 +59,8 @@
     "desc": "家具折扣券~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,
-    "rewardScale": 3200
+    "rewardScale": 3200,
+    "useEffect": ""
   },
   {
     "id": 3000,
@@ -37,7 +68,8 @@
     "desc": "神秘礼盒~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
-    "rewardScale": 4200
+    "rewardScale": 4200,
+    "useEffect": ""
   },
   {
     "id": 4000,
@@ -45,7 +77,8 @@
     "desc": "IT技能证书~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_ability_certificate]",
     "canUse": 0,
-    "rewardScale": 3600
+    "rewardScale": 3600,
+    "useEffect": ""
   },
   {
     "id": 4001,
@@ -53,6 +86,7 @@
     "desc": "维修技能证书~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_ability_certificate]",
     "canUse": 0,
-    "rewardScale": 3600
+    "rewardScale": 3600,
+    "useEffect": ""
   }
 ]

@@ -28,6 +28,7 @@ public sealed partial class Work : Luban.BeanBase
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
         Icon = (string)_obj.GetValue("icon");
+        CoinRewardSection = (int)_obj.GetValue("coinRewardSection");
         CoinReward = (int)_obj.GetValue("coinReward");
         HealthCost = (int)_obj.GetValue("healthCost");
         UnlockLevel = (int)_obj.GetValue("unlockLevel");
@@ -60,6 +61,10 @@ public sealed partial class Work : Luban.BeanBase
     /// 零工 icon 地址
     /// </summary>
     public readonly string Icon;
+    /// <summary>
+    /// 金币数浮动区间百分比
+    /// </summary>
+    public readonly int CoinRewardSection;
     /// <summary>
     /// 零工获得金币数
     /// </summary>
@@ -97,6 +102,7 @@ public sealed partial class Work : Luban.BeanBase
         + "name:" + Name + ","
         + "desc:" + Desc + ","
         + "icon:" + Icon + ","
+        + "coinRewardSection:" + CoinRewardSection + ","
         + "coinReward:" + CoinReward + ","
         + "healthCost:" + HealthCost + ","
         + "unlockLevel:" + UnlockLevel + ","

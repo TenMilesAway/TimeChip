@@ -29,6 +29,7 @@ public sealed partial class Item : Luban.BeanBase
         Icon = (string)_obj.GetValue("icon");
         CanUse = (int)_obj.GetValue("canUse");
         RewardScale = (int)_obj.GetValue("rewardScale");
+        UseEffect = (string)_obj.GetValue("useEffect");
     }
 
     public static Item DeserializeItem(JToken _buf)
@@ -60,6 +61,10 @@ public sealed partial class Item : Luban.BeanBase
     /// 奖励面板下的缩放
     /// </summary>
     public readonly int RewardScale;
+    /// <summary>
+    /// 使用奖池
+    /// </summary>
+    public readonly string UseEffect;
 
 
     public const int __ID__ = 2289459;
@@ -78,6 +83,7 @@ public sealed partial class Item : Luban.BeanBase
         + "icon:" + Icon + ","
         + "canUse:" + CanUse + ","
         + "rewardScale:" + RewardScale + ","
+        + "useEffect:" + UseEffect + ","
         + "}";
     }
 }
