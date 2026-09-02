@@ -84,15 +84,15 @@ MonoBehaviour:
       m_ProfileName: Iris
       m_Values:
       - m_Id: 119019eb7213d1243a56f661afa59faa
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
-      - m_Id: 49838da167fb0ba4b9aa00b74c26d529
-        m_Value: ServerData/[BuildTarget]/Iris
-      - m_Id: 4af254a685e78e34fb5a476ad886295d
         m_Value: https://gamecomb-gamedevelop-test.oss-cn-hangzhou.aliyuncs.com/zll/Temp/Iris
+      - m_Id: 49838da167fb0ba4b9aa00b74c26d529
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 4af254a685e78e34fb5a476ad886295d
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 6bbf010db15518f40915418f2c6ff010
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
       - m_Id: 8a384a2d6347e094a8a596959ae794c0
-        m_Value: ServerData/[BuildTarget]
+        m_Value: ServerData/[BuildTarget]/Iris
     m_ProfileEntryNames:
     - m_Id: 119019eb7213d1243a56f661afa59faa
       m_Name: Remote.LoadPath
