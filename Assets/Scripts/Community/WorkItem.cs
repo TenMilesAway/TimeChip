@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WorkItem : MonoBehaviour
 {
+    private const float ScaleDivisor = 10000f;
+
     [SerializeField] private Text _txtTitle;        // 零工标题
     [SerializeField] private Text _txtDetail;       // 零工详情
     [SerializeField] private Text _txtCoin;         // 零工奖励模拟币
@@ -17,6 +20,7 @@ public class WorkItem : MonoBehaviour
     private Action<cfg.Work> _workHandler;
     private bool _isUnlocked;
     private string _unlockTip;
+    private int _iconRequestVersion;
 
     private void Awake()
     {
@@ -41,9 +45,11 @@ public class WorkItem : MonoBehaviour
         _workHandler = workHandler;
         _isUnlocked = isUnlocked;
         _unlockTip = unlockTip;
+        _iconRequestVersion++;
 
         if (workConfig == null)
         {
+            _imgIcon.sprite = null;
             gameObject.SetActive(false);
             return;
         }
@@ -53,6 +59,7 @@ public class WorkItem : MonoBehaviour
         _txtDetail.text = workConfig.Desc;
         _txtCoin.text = $"+{workConfig.CoinReward}";
         _txtHealth.text = $"-{workConfig.HealthCost}";
+        SetIconAsync(workConfig, _iconRequestVersion);
         RefreshWorkState();
     }
 
@@ -69,6 +76,56 @@ public class WorkItem : MonoBehaviour
         _btnGet.SetActive(canAccept);
         _btnGetAll.interactable = canAccept;
         _txtTip.text = workedThisTurn ? "本回合已工作" : _unlockTip;
+    }
+
+    private async void SetIconAsync(cfg.Work workConfig, int requestVersion)
+    {
+        _imgIcon.sprite = null;
+
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(workConfig.Icon);
+        cfg.Scale scaleConfig = GetScale("work");
+        if (itemConfig == null || scaleConfig == null)
+        {
+            Debug.LogError($"零工图标配置不存在: [{workConfig.Id}], [{workConfig.Icon}]", this);
+            return;
+        }
+
+        Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
+            itemConfig.Icon,
+            GetInstanceID().ToString());
+        if (requestVersion != _iconRequestVersion)
+        {
+            return;
+        }
+
+        if (icon == null)
+        {
+            Debug.LogError($"零工图标加载失败: [{workConfig.Id}], [{itemConfig.Icon}]", this);
+            return;
+        }
+
+        _imgIcon.sprite = icon;
+        _imgIcon.SetNativeSize();
+        _imgIcon.rectTransform.localScale = Vector3.one *
+            (itemConfig.RewardScale / ScaleDivisor) *
+            (scaleConfig.ScaleValue / ScaleDivisor);
+    }
+
+    private static cfg.Scale GetScale(string scaleName)
+    {
+        IReadOnlyList<cfg.Scale> scales = DataTableMananger.GetInstance()
+            .Tables.ScaleTable.DataList;
+        for (int i = 0; i < scales.Count; i++)
+        {
+            if (scales[i].Name == scaleName)
+            {
+                return scales[i];
+            }
+        }
+
+        Debug.LogError($"缩放配置不存在: [{scaleName}]");
+        return null;
     }
 
     private void OnClickGet()

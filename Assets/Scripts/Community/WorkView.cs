@@ -170,10 +170,13 @@ public class WorkView : UIBasePanel
         string selectedWorkType = WorkTypes[_selectedWorkTypeIndex];
         int workLevel = playerInfoManager.GetWorkLevel(selectedWorkType);
         int workExperience = playerInfoManager.GetWorkExperience(selectedWorkType);
+        int requiredExperience = PlayerInfoManager.GetWorkExperienceRequired(workLevel);
         _txtLevel.text = $"LV.{workLevel}";
         _txtWorkName.text = selectedWorkType;
-        _txtProgress.text = $"{workExperience} / {PlayerInfoManager.WorkExperiencePerLevel}";
-        _sliderProgress.value = (float)workExperience / PlayerInfoManager.WorkExperiencePerLevel;
+        _txtProgress.text = requiredExperience == 0 ? "∞" : $"{workExperience} / {requiredExperience}";
+        _sliderProgress.minValue = 0f;
+        _sliderProgress.maxValue = requiredExperience == 0 ? 1f : requiredExperience;
+        _sliderProgress.value = requiredExperience == 0 ? 1f : workExperience;
         _txtCurrentPage.text = _currentPage.ToString();
         _txtMaxPage.text = maxPage.ToString();
         _txtIsWork.text = playerInfoManager.WorkedThisTurn ? "已工作" : "未工作";
@@ -211,10 +214,10 @@ public class WorkView : UIBasePanel
             return;
         }
 
-        if (workConfig.IsUseItem == 1 &&
-            !playerInfoManager.TryConsumeItem(workConfig.UnlockItemId))
+        if (workConfig.IsUseItem > 0 &&
+            !playerInfoManager.TryConsumeItem(workConfig.IsUseItem))
         {
-            Debug.LogError($"零工消耗道具失败: [{workConfig.Id}], [{workConfig.UnlockItemId}]", this);
+            Debug.LogError($"零工消耗道具失败: [{workConfig.Id}], [{workConfig.IsUseItem}]", this);
             CommonTipView.Show("所需道具不足，无法完成零工");
             return;
         }
@@ -226,9 +229,15 @@ public class WorkView : UIBasePanel
         }
 
         playerInfoManager.ChangeHealth(-workResult.HealthCost);
-        playerInfoManager.AddSimulationCoins(workResult.CoinReward);
-        playerInfoManager.AddWorkExperience(workConfig.WorkType, 100);
-        CommonTipView.Show($"完成{workConfig.Name}，获得{workResult.CoinReward}模拟币和100经验");
+        int coinReward = CalculateCoinReward(workResult.CoinReward, workConfig.CoinRewardSection);
+        int workExperience = Mathf.Max(0, workConfig.Exp);
+        playerInfoManager.AddSimulationCoins(coinReward);
+        if (workExperience > 0)
+        {
+            playerInfoManager.AddWorkExperience(workConfig.WorkType, workExperience);
+        }
+
+        CommonTipView.Show($"完成{workConfig.Name}，获得{coinReward}模拟币和{workExperience}经验");
         GameManager.Audio.Play(AudioDefine.SFXWork);
     }
 
@@ -250,10 +259,13 @@ public class WorkView : UIBasePanel
         if (workConfig.UnlockItemId > 0 &&
             playerInfoManager.GetItemCount(workConfig.UnlockItemId) <= 0)
         {
-            cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
-                .GetOrDefault(workConfig.UnlockItemId);
-            string itemName = itemConfig == null ? $"道具{workConfig.UnlockItemId}" : itemConfig.Name;
-            requirements.Add($"需要【{itemName}】");
+            requirements.Add($"需要【{GetItemName(workConfig.UnlockItemId)}】");
+        }
+
+        if (workConfig.IsUseItem > 0 &&
+            playerInfoManager.GetItemCount(workConfig.IsUseItem) <= 0)
+        {
+            requirements.Add($"需要并消耗【{GetItemName(workConfig.IsUseItem)}】");
         }
 
         if (requirements.Count == 0)
@@ -263,6 +275,21 @@ public class WorkView : UIBasePanel
 
         unlockTip = string.Join("及", requirements);
         return false;
+    }
+
+    private static int CalculateCoinReward(int baseCoinReward, int rewardSection)
+    {
+        int variationPercent = UnityEngine.Random.Range(
+            -Mathf.Max(0, rewardSection),
+            Mathf.Max(0, rewardSection) + 1);
+        return Mathf.Max(0, Mathf.RoundToInt(baseCoinReward * (100 + variationPercent) / 100f));
+    }
+
+    private static string GetItemName(int itemId)
+    {
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(itemId);
+        return itemConfig == null ? $"道具{itemId}" : itemConfig.Name;
     }
 
     private void UpdateTagSelection()

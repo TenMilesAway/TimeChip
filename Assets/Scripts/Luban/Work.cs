@@ -27,10 +27,11 @@ public sealed partial class Work : Luban.BeanBase
         WorkType = (string)_obj.GetValue("workType");
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
-        Icon = (string)_obj.GetValue("icon");
+        Icon = (int)_obj.GetValue("icon");
         CoinRewardSection = (int)_obj.GetValue("coinRewardSection");
         CoinReward = (int)_obj.GetValue("coinReward");
         HealthCost = (int)_obj.GetValue("healthCost");
+        Exp = (int)_obj.GetValue("exp");
         UnlockLevel = (int)_obj.GetValue("unlockLevel");
         UnlockItemId = (int)_obj.GetValue("unlockItemId");
         IsUseItem = (int)_obj.GetValue("isUseItem");
@@ -59,9 +60,9 @@ public sealed partial class Work : Luban.BeanBase
     /// </summary>
     public readonly string Desc;
     /// <summary>
-    /// 零工 icon 地址
+    /// 零工 icon
     /// </summary>
-    public readonly string Icon;
+    public readonly int Icon;
     /// <summary>
     /// 金币数浮动区间百分比
     /// </summary>
@@ -74,6 +75,10 @@ public sealed partial class Work : Luban.BeanBase
     /// 零工消耗健康数
     /// </summary>
     public readonly int HealthCost;
+    /// <summary>
+    /// 零工获得经验数
+    /// </summary>
+    public readonly int Exp;
     /// <summary>
     /// 零工解锁等级
     /// </summary>
@@ -110,6 +115,7 @@ public sealed partial class Work : Luban.BeanBase
         + "coinRewardSection:" + CoinRewardSection + ","
         + "coinReward:" + CoinReward + ","
         + "healthCost:" + HealthCost + ","
+        + "exp:" + Exp + ","
         + "unlockLevel:" + UnlockLevel + ","
         + "unlockItemId:" + UnlockItemId + ","
         + "isUseItem:" + IsUseItem + ","

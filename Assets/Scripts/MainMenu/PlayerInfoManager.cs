@@ -132,7 +132,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
-    public const int WorkExperiencePerLevel = 2000;
+    public const int MaxWorkLevel = 5;
+    private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
 
     /// <summary>当前由管理器维护的玩家数据</summary>
     private PlayerInfoData _data = new PlayerInfoData();
@@ -529,7 +530,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return progress == null ? 0 : progress.experience;
     }
 
-    /// <summary>增加指定零工类型的经验，每满 2000 经验自动提升一级。</summary>
+    /// <summary>获取指定零工等级升级所需的经验，满级时返回零。</summary>
+    public static int GetWorkExperienceRequired(int level)
+    {
+        return level < 1 || level >= MaxWorkLevel
+            ? 0
+            : WorkLevelExperienceRequirements[level - 1];
+    }
+
+    /// <summary>增加指定零工类型的经验，并在达到各等级阈值时自动升级。</summary>
     public void AddWorkExperience(string workType, int amount)
     {
         if (string.IsNullOrWhiteSpace(workType))
@@ -549,9 +558,29 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.workProgresses.Add(progress);
         }
 
+        if (progress.level >= MaxWorkLevel)
+        {
+            return;
+        }
+
         long totalExperience = (long)progress.experience + amount;
-        progress.level += (int)(totalExperience / WorkExperiencePerLevel);
-        progress.experience = (int)(totalExperience % WorkExperiencePerLevel);
+        while (progress.level < MaxWorkLevel)
+        {
+            int requiredExperience = GetWorkExperienceRequired(progress.level);
+            if (totalExperience < requiredExperience)
+            {
+                progress.experience = (int)totalExperience;
+                break;
+            }
+
+            totalExperience -= requiredExperience;
+            progress.level++;
+            if (progress.level >= MaxWorkLevel)
+            {
+                progress.experience = 0;
+            }
+        }
+
         NotifyPlayerInfoChanged();
     }
 
@@ -695,8 +724,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 continue;
             }
 
-            progress.level = Mathf.Max(1, progress.level);
-            progress.experience = Mathf.Clamp(progress.experience, 0, WorkExperiencePerLevel - 1);
+            progress.level = Mathf.Clamp(progress.level, 1, MaxWorkLevel);
+            int requiredExperience = GetWorkExperienceRequired(progress.level);
+            progress.experience = requiredExperience == 0
+                ? 0
+                : Mathf.Clamp(progress.experience, 0, requiredExperience - 1);
         }
 
         if (_data.convenienceOffers == null)
