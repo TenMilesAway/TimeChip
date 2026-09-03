@@ -102,6 +102,7 @@ public class CommonRewardPanel : UIBasePanel
 
             string iconPath = baseConfig == null ? itemConfig.Icon : baseConfig.Icon;
             int rewardScale = baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale;
+            int level = itemConfig == null ? 1 : itemConfig.Level;
             Sprite icon = await GameManager.Resource.LoadResource<Sprite>(iconPath, resourceTag);
 
             if (!IsCurrentPresentation(presentationVersion))
@@ -118,7 +119,7 @@ public class CommonRewardPanel : UIBasePanel
             }
 
             CommonRewardItem rewardItem = rewardItemObject.GetComponent<CommonRewardItem>();
-            rewardItem.SetData(rewardData.itemId, icon, rewardData.itemCount, rewardScale);
+            rewardItem.SetData(rewardData.itemId, icon, rewardData.itemCount, rewardScale, level);
             _rewardItems.Add(rewardItem);
         }
 
@@ -276,10 +277,6 @@ public class CommonRewardPanel : UIBasePanel
         {
             case BasePropertyId.SimulationCoin:
                 return itemCount;
-            case 1000:
-                return itemCount * 100;
-            case 1001:
-                return itemCount * 1000;
             default:
                 return 0;
         }

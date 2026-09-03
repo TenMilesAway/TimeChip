@@ -2,6 +2,7 @@
   {
     "id": 1000,
     "name": "一枚模拟币",
+    "level": 1,
     "desc": "一枚亮晶晶的模拟币，使用后获取少量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_1]",
     "canUse": 1,
@@ -11,6 +12,7 @@
   {
     "id": 1001,
     "name": "一叠模拟币",
+    "level": 2,
     "desc": "一叠金灿灿的模拟币，使用后获取一些模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_2]",
     "canUse": 1,
@@ -20,6 +22,7 @@
   {
     "id": 1002,
     "name": "鼓鼓钱袋",
+    "level": 3,
     "desc": "钱袋已经被撑得圆滚滚的，使用后获取中量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_3]",
     "canUse": 1,
@@ -29,6 +32,7 @@
   {
     "id": 1003,
     "name": "一箱模拟币",
+    "level": 4,
     "desc": "箱子里全是模拟币，使用后获取大量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_4]",
     "canUse": 1,
@@ -38,15 +42,17 @@
   {
     "id": 1004,
     "name": "璀璨金库",
+    "level": 5,
     "desc": "现在，需要担心的是该怎么把钱花完",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_5]",
     "canUse": 1,
-    "rewardScale": 4000,
+    "rewardScale": 3800,
     "useEffect": "101,10000,100"
   },
   {
     "id": 1010,
     "name": "时间币",
+    "level": 3,
     "desc": "凝结着一小段时光的特殊货币，投入时光礼物箱，或许能换回一份来自未来的惊喜",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_coin]",
     "canUse": 0,
@@ -56,6 +62,7 @@
   {
     "id": 2000,
     "name": "家具折扣券",
+    "level": 0,
     "desc": "家具折扣券~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,
@@ -65,6 +72,7 @@
   {
     "id": 3000,
     "name": "神秘礼盒",
+    "level": 4,
     "desc": "神秘礼盒~",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
@@ -73,20 +81,282 @@
   },
   {
     "id": 4000,
-    "name": "IT技能证书",
-    "desc": "IT技能证书~",
-    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_ability_certificate]",
+    "name": "电动踏板车",
+    "level": 2,
+    "desc": "拧下车把，城市的每条小路都能变成赚钱捷径",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_3]",
     "canUse": 0,
-    "rewardScale": 3600,
+    "rewardScale": 4000,
     "useEffect": ""
   },
   {
     "id": 4001,
-    "name": "维修技能证书",
-    "desc": "维修技能证书~",
-    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_ability_certificate]",
+    "name": "厢式货车",
+    "level": 2,
+    "desc": "装得下半座仓库",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_4]",
     "canUse": 0,
-    "rewardScale": 3600,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4002,
+    "name": "建筑许可证书",
+    "level": 3,
+    "desc": "薄薄一张纸，却能打开大型工程的厚重大门",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_5]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4003,
+    "name": "版式启蒙册",
+    "level": 2,
+    "desc": "教文字和图片各就各位，拯救摇摇欲坠的海报",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_1]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4004,
+    "name": "灵感数位板",
+    "level": 2,
+    "desc": "接住稍纵即逝的灵感，再把它们画成可以交稿的样子",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_2]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4005,
+    "name": "宣传样机册",
+    "level": 3,
+    "desc": "提前看看成品，避免创意只活在想象之中",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_3]",
+    "canUse": 0,
+    "rewardScale": 3800,
+    "useEffect": ""
+  },
+  {
+    "id": 4006,
+    "name": "品牌识别手册",
+    "level": 3,
+    "desc": "让颜色、图形和字体一眼看出是同一家人",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_4]",
+    "canUse": 0,
+    "rewardScale": 4500,
+    "useEffect": ""
+  },
+  {
+    "id": 4007,
+    "name": "展陈设计证",
+    "level": 4,
+    "desc": "获得让平面创意站起来，并占满整个展厅的资格",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_5]",
+    "canUse": 0,
+    "rewardScale": 4500,
+    "useEffect": ""
+  },
+  {
+    "id": 4008,
+    "name": "Wwb三剑客教程",
+    "level": 2,
+    "desc": "集齐结构、样式与交互，网页终于不再各长各的",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_1]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4009,
+    "name": "WeiX教程",
+    "level": 2,
+    "desc": "小小页面装下大大功能",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_2]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4010,
+    "name": "Hadeep教程",
+    "level": 3,
+    "desc": "教一群机器分头搬数据",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_3]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4011,
+    "name": "MySOL教程",
+    "level": 3,
+    "desc": "让四处乱跑的数据排好队",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_4]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4012,
+    "name": "Unlty教程",
+    "level": 4,
+    "desc": "从拖动一个方块开始，不知不觉搭出一整个世界",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_5]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4013,
+    "name": "基础维修工具包",
+    "level": 2,
+    "desc": "东西不算多，但足够让坏掉的家电重新反省",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_1]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4014,
+    "name": "管路维护套装",
+    "level": 2,
+    "desc": "专治滴答作响，以及半夜突然有想法的水管",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_2]",
+    "canUse": 0,
+    "rewardScale": 4200,
+    "useEffect": ""
+  },
+  {
+    "id": 4015,
+    "name": "智能万用表",
+    "level": 3,
+    "desc": "电路虽然不会说话，但屏幕上的波形很会告密",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_3]",
+    "canUse": 0,
+    "rewardScale": 4400,
+    "useEffect": ""
+  },
+  {
+    "id": 4016,
+    "name": "重型检修箱",
+    "level": 3,
+    "desc": "拧紧螺丝已经不够，让整台设备重新升级",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_4]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4017,
+    "name": "精密校准箱",
+    "level": 4,
+    "desc": "专门处理肉眼看不见、维修报价却看得很清楚的问题",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_5]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 4018,
+    "name": "灵感钢笔",
+    "level": 2,
+    "desc": "负责把路过脑海的句子当场逮住，并按在纸上",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_1]",
+    "canUse": 0,
+    "rewardScale": 5500,
+    "useEffect": ""
+  },
+  {
+    "id": 4019,
+    "name": "卖点卡册",
+    "level": 2,
+    "desc": "普通东西翻上几页，也能发现自己其实很有优势",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_2]",
+    "canUse": 0,
+    "rewardScale": 5500,
+    "useEffect": ""
+  },
+  {
+    "id": 4020,
+    "name": "采访录音笔",
+    "level": 3,
+    "desc": "忠实记录每句话，包括那句“这段千万别写”",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_3]",
+    "canUse": 0,
+    "rewardScale": 4500,
+    "useEffect": ""
+  },
+  {
+    "id": 4021,
+    "name": "剧本打字机",
+    "level": 3,
+    "desc": "纸上的人物开始互相制造麻烦",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_4]",
+    "canUse": 0,
+    "rewardScale": 4500,
+    "useEffect": ""
+  },
+  {
+    "id": 4022,
+    "name": "策划档案箱",
+    "level": 4,
+    "desc": "装得下目标、流程和预算",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_5]",
+    "canUse": 0,
+    "rewardScale": 4500,
+    "useEffect": ""
+  },
+  {
+    "id": 4023,
+    "name": "临时委托单",
+    "level": 3,
+    "desc": "一张突然送上门的工作，撕下票根就没有犹豫时间",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_1]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 4024,
+    "name": "合作通行券",
+    "level": 3,
+    "desc": "有效期和机会一样短暂，验票之后立即失效",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_2]",
+    "canUse": 0,
+    "rewardScale": 5500,
+    "useEffect": ""
+  },
+  {
+    "id": 4025,
+    "name": "特别邀请函",
+    "level": 4,
+    "desc": "看起来不像群发的，至少封蜡盖得非常认真",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_3]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 4026,
+    "name": "项目投标书",
+    "level": 4,
+    "desc": "把准备与野心装订成册，提交后静候命运翻页",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_4]",
+    "canUse": 0,
+    "rewardScale": 5200,
+    "useEffect": ""
+  },
+  {
+    "id": 4027,
+    "name": "传奇推荐信",
+    "level": 5,
+    "desc": "有人替你敲开命运的大门，可惜这封信只能用一次",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_5]",
+    "canUse": 0,
+    "rewardScale": 0,
     "useEffect": ""
   }
 ]

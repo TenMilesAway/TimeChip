@@ -25,6 +25,7 @@ public sealed partial class Item : Luban.BeanBase
         JObject _obj = _buf as JObject;
         Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
+        Level = (int)_obj.GetValue("level");
         Desc = (string)_obj.GetValue("desc");
         Icon = (string)_obj.GetValue("icon");
         CanUse = (int)_obj.GetValue("canUse");
@@ -45,6 +46,10 @@ public sealed partial class Item : Luban.BeanBase
     /// 名称
     /// </summary>
     public readonly string Name;
+    /// <summary>
+    /// 品质
+    /// </summary>
+    public readonly int Level;
     /// <summary>
     /// 描述
     /// </summary>
@@ -79,6 +84,7 @@ public sealed partial class Item : Luban.BeanBase
         return "{ "
         + "id:" + Id + ","
         + "name:" + Name + ","
+        + "level:" + Level + ","
         + "desc:" + Desc + ","
         + "icon:" + Icon + ","
         + "canUse:" + CanUse + ","
