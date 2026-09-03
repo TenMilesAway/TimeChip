@@ -6,10 +6,15 @@ public class InventoryView : UIBasePanel
 {
     private const int ItemsPerPage = 16;
     private const float RewardScaleDivisor = 10000f;
+    private static readonly Color RareLevelColor = new Color(0.2f, 0.6f, 1f);
+    private static readonly Color EpicLevelColor = new Color(0.7f, 0.3f, 1f);
+    private static readonly Color LegendaryLevelColor = new Color(1f, 0.75f, 0.1f);
+    private static readonly Color MythicLevelColor = new Color(1f, 0.25f, 0.25f);
 
     [SerializeField] private Image _imgIcon;
     [SerializeField] private Image _imgIconBg;
     [SerializeField] private Text _txtName;
+    [SerializeField] private Text _txtLevel;                  // 品质
     [SerializeField] private Text _txtDetail;
     [SerializeField] private Text _txtNum;
     [SerializeField] private Text _txtNumSplit;
@@ -213,7 +218,9 @@ public class InventoryView : UIBasePanel
         _txtName.text = entry.Item.Name;
         _txtDetail.text = entry.Item.Desc;
         _txtNum.text = entry.Amount.ToString();
+        SetLevel(entry.Item.Level);
         _txtName.gameObject.SetActive(true);
+        _txtLevel.gameObject.SetActive(true);
         _txtDetail.gameObject.SetActive(true);
         _txtNum.gameObject.SetActive(true);
         _txtNumSplit.gameObject.SetActive(true);
@@ -248,6 +255,7 @@ public class InventoryView : UIBasePanel
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(false);
         _txtName.gameObject.SetActive(false);
+        _txtLevel.gameObject.SetActive(false);
         _txtDetail.gameObject.SetActive(false);
         _txtNumSplit.gameObject.SetActive(false);
         _txtNumPrefix.gameObject.SetActive(false);
@@ -264,7 +272,8 @@ public class InventoryView : UIBasePanel
     {
         if (_imgIcon == null ||
             _txtName == null ||
-            _txtDetail == null ||
+        _txtLevel == null ||
+        _txtDetail == null ||
             _txtNum == null ||
             _btnUse == null ||
             _previousPageButton == null ||
@@ -288,6 +297,33 @@ public class InventoryView : UIBasePanel
         }
 
         return true;
+    }
+
+    private void SetLevel(int level)
+    {
+        switch (level)
+        {
+            case 2:
+                _txtLevel.text = "稀有";
+                _txtLevel.color = RareLevelColor;
+                break;
+            case 3:
+                _txtLevel.text = "史诗";
+                _txtLevel.color = EpicLevelColor;
+                break;
+            case 4:
+                _txtLevel.text = "传说";
+                _txtLevel.color = LegendaryLevelColor;
+                break;
+            case 5:
+                _txtLevel.text = "神话";
+                _txtLevel.color = MythicLevelColor;
+                break;
+            default:
+                _txtLevel.text = "普通";
+                _txtLevel.color = Color.white;
+                break;
+        }
     }
 
     private T FindComponentByName<T>(string objectName) where T : Component
