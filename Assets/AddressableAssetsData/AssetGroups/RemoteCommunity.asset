@@ -20,17 +20,20 @@ MonoBehaviour:
   - m_GUID: 03313c1b30f26764bb26a23c3a0b2f74
     m_Address: Assets/Art/Community/Prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ed3950d867259a4ab5d8e4d2326924c
     m_Address: Assets/Art/Community/SpritesBig
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d91133700d959e542868074536a70fb1
     m_Address: Assets/Art/Community/SpriteAtlas.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}

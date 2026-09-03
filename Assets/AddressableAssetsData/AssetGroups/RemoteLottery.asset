@@ -20,17 +20,20 @@ MonoBehaviour:
   - m_GUID: 1ec044a85fac2724590d30f04c3fa8b4
     m_Address: Assets/Art/Lottery/SpritesBig
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 540125ed55f2f504ab1e0c2391f63409
     m_Address: Assets/Art/Lottery/SpriteAtlas.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d83ac0170ca73534fb366b23112a3d68
     m_Address: Assets/Art/Lottery/Prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}

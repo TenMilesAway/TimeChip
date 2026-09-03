@@ -20,47 +20,56 @@ MonoBehaviour:
   - m_GUID: 295e65c5082a9fc4e883c2baea8e3cfb
     m_Address: Assets/Art/Home/Prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 351c04e266687be4b8e9635d57fc1801
     m_Address: Assets/Art/Home/SpriteAtlasBedroom.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4582af74c199d45468d0f97e7256a753
     m_Address: Assets/Art/Home/SpriteAtlasKitchen.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4bf8a6fc0eb400b45ac2598fba2b69d7
     m_Address: Assets/Art/Home/SpritesBig
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 907c4b00a765ebd4382ea1d0006d8d93
     m_Address: Assets/Art/Home/SpriteAtlasWashroom.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4474ffc079426e438148ccdc4b1e97b
     m_Address: Assets/Art/Home/SpriteAtlasBalcony.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b32725cdeca725949a62f6270dc5da3c
     m_Address: Assets/Art/Home/SpriteAtlasBedroom2.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb777ff55b072644794282e8e8c5f1e5
     m_Address: Assets/Art/Home/SpriteAtlasLivingroom.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fb86157ec037d444e9dba14df7eb1e52
     m_Address: Assets/Art/Home/SpriteAtlasGame.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}

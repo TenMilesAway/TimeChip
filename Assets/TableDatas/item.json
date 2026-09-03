@@ -60,6 +60,16 @@
     "useEffect": ""
   },
   {
+    "id": 1011,
+    "name": "转盘币",
+    "level": 4,
+    "desc": "滴滴滴，转盘币！",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_wheel_coin]",
+    "canUse": 0,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
     "id": 2000,
     "name": "家具折扣券",
     "level": 0,

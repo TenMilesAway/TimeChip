@@ -20,17 +20,20 @@ MonoBehaviour:
   - m_GUID: 62f696a81f3286a438b8bbcf9c7c38c1
     m_Address: Assets/Art/Mission/SpritesBig
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8cd4ede1a6b516a40a78d6f3ba0a850f
     m_Address: Assets/Art/Mission/Prefabs
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba20770d5ef9e1c45abed5ae8ea378e5
     m_Address: Assets/Art/Mission/SpriteAtlas.spriteatlasv2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}

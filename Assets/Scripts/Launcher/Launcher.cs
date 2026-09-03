@@ -370,6 +370,7 @@ public class Launcher : SingletonMono<Launcher>
             maxHealth = 100,
             simulationCoins = 2000,
             timeCoins = 10,
+            wheelCoins = 10,
             workedThisTurn = false
         };
     }

@@ -20,7 +20,8 @@ MonoBehaviour:
   - m_GUID: 7d0135bdef1123949866317077c6bd14
     m_Address: Assets/Audio
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - preload-game-content
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}

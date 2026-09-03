@@ -19,5 +19,12 @@
     "desc": "玩家的健康状态",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_heart]",
     "rewardScale": 2000
+  },
+  {
+    "id": 104,
+    "name": "转盘币",
+    "desc": "抽奖货币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_wheel_coin]",
+    "rewardScale": 4000
   }
 ]

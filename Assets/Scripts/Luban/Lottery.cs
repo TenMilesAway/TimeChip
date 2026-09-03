@@ -27,6 +27,7 @@ public sealed partial class Lottery : Luban.BeanBase
         Name = (string)_obj.GetValue("name");
         Desc = (string)_obj.GetValue("desc");
         Rewards = (string)_obj.GetValue("rewards");
+        UseCoin = (string)_obj.GetValue("useCoin");
     }
 
     public static Lottery DeserializeLottery(JToken _buf)
@@ -50,6 +51,10 @@ public sealed partial class Lottery : Luban.BeanBase
     /// 奖励配置
     /// </summary>
     public readonly string Rewards;
+    /// <summary>
+    /// 消耗的货币
+    /// </summary>
+    public readonly string UseCoin;
 
 
     public const int __ID__ = 2019323689;
@@ -66,6 +71,7 @@ public sealed partial class Lottery : Luban.BeanBase
         + "name:" + Name + ","
         + "desc:" + Desc + ","
         + "rewards:" + Rewards + ","
+        + "useCoin:" + UseCoin + ","
         + "}";
     }
 }

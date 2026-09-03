@@ -27,6 +27,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的时间币数量</summary>
     public int timeCoins;
 
+    /// <summary>玩家持有的转盘币数量</summary>
+    public int wheelCoins;
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -56,6 +59,15 @@ public sealed class PlayerInfoData
 
     /// <summary>当月便利店商品及其剩余购买次数</summary>
     public List<PlayerConvenienceOffer> convenienceOffers = new List<PlayerConvenienceOffer>();
+
+    /// <summary>神秘转盘上次刷新的年龄</summary>
+    public int mysteryWheelAge = -1;
+
+    /// <summary>神秘转盘上次刷新的月份</summary>
+    public int mysteryWheelMonth = -1;
+
+    /// <summary>当月神秘转盘奖励</summary>
+    public List<PlayerMysteryWheelReward> mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
 }
 
 /// <summary>
@@ -77,6 +89,14 @@ public sealed class PlayerConvenienceOffer
 {
     public int convenienceId;
     public int remainingCount;
+}
+
+/// <summary>神秘转盘中的单个奖励存档数据</summary>
+[Serializable]
+public sealed class PlayerMysteryWheelReward
+{
+    public int itemId;
+    public int amount;
 }
 
 public enum ConveniencePurchaseResult
@@ -155,6 +175,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的时间币数量</summary>
     public int TimeCoins { get { return _data.timeCoins; } }
+
+    /// <summary>获取玩家当前持有的转盘币数量</summary>
+    public int WheelCoins { get { return _data.wheelCoins; } }
 
     /// <summary>获取玩家在本回合是否已经打工</summary>
     public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
@@ -316,6 +339,18 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return TrySpendCoins(ref _data.timeCoins, amount);
     }
 
+    /// <summary>按指定数值增加或减少转盘币, 转盘币不会低于零</summary>
+    public void AddWheelCoins(int amount)
+    {
+        SetValue(ref _data.wheelCoins, Mathf.Max(0, _data.wheelCoins + amount));
+    }
+
+    /// <summary>尝试消耗指定数量的转盘币</summary>
+    public bool TrySpendWheelCoins(int amount)
+    {
+        return TrySpendCoins(ref _data.wheelCoins, amount);
+    }
+
     /// <summary>向背包添加道具; 相同道具会自动叠加数量</summary>
     /// <param name="itemId">要添加的道具 ID, 必须大于零</param>
     /// <param name="amount">要添加的数量, 必须大于零</param>
@@ -397,6 +432,102 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         return false;
+    }
+
+    /// <summary>获取可作为消耗资源的基础货币或背包道具数量</summary>
+    public int GetConsumableCount(int itemId)
+    {
+        switch (itemId)
+        {
+            case BasePropertyId.SimulationCoin:
+                return _data.simulationCoins;
+            case BasePropertyId.TimeCoin:
+                return _data.timeCoins;
+            case BasePropertyId.WheelCoin:
+                return _data.wheelCoins;
+            default:
+                return GetItemCount(itemId);
+        }
+    }
+
+    /// <summary>尝试消耗基础货币或背包道具</summary>
+    public bool TrySpendConsumable(int itemId, int amount)
+    {
+        switch (itemId)
+        {
+            case BasePropertyId.SimulationCoin:
+                return TrySpendSimulationCoins(amount);
+            case BasePropertyId.TimeCoin:
+                return TrySpendTimeCoins(amount);
+            case BasePropertyId.WheelCoin:
+                return TrySpendWheelCoins(amount);
+            default:
+                return TryConsumeItem(itemId, amount);
+        }
+    }
+
+    /// <summary>判断当前月份是否已有指定数量的神秘转盘奖励</summary>
+    public bool HasMonthlyMysteryWheelRewards(int expectedCount)
+    {
+        return expectedCount > 0 &&
+            _data.mysteryWheelAge == _data.currentAge &&
+            _data.mysteryWheelMonth == _data.currentMonth &&
+            _data.mysteryWheelRewards != null &&
+            _data.mysteryWheelRewards.Count == expectedCount;
+    }
+
+    /// <summary>获取当月指定槽位的神秘转盘奖励</summary>
+    public bool TryGetMonthlyMysteryWheelRewardAt(int index, out int itemId, out int amount)
+    {
+        itemId = 0;
+        amount = 0;
+        if (index < 0 || _data.mysteryWheelRewards == null || index >= _data.mysteryWheelRewards.Count)
+        {
+            return false;
+        }
+
+        PlayerMysteryWheelReward reward = _data.mysteryWheelRewards[index];
+        if (reward == null || reward.itemId <= 0 || reward.amount <= 0)
+        {
+            return false;
+        }
+
+        itemId = reward.itemId;
+        amount = reward.amount;
+        return true;
+    }
+
+    /// <summary>保存当前月份随机生成的神秘转盘奖励</summary>
+    public void SetMonthlyMysteryWheelRewards(IReadOnlyList<CommonRewardItemData> rewards)
+    {
+        if (rewards == null || rewards.Count == 0)
+        {
+            throw new ArgumentException("神秘转盘奖励不能为空", nameof(rewards));
+        }
+
+        HashSet<int> itemIds = new HashSet<int>();
+        List<PlayerMysteryWheelReward> monthlyRewards =
+            new List<PlayerMysteryWheelReward>(rewards.Count);
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            CommonRewardItemData reward = rewards[i];
+            if (reward == null || reward.itemId <= 0 || reward.itemCount <= 0 ||
+                !itemIds.Add(reward.itemId))
+            {
+                throw new ArgumentException("神秘转盘奖励必须为不重复的有效物品", nameof(rewards));
+            }
+
+            monthlyRewards.Add(new PlayerMysteryWheelReward
+            {
+                itemId = reward.itemId,
+                amount = reward.itemCount
+            });
+        }
+
+        _data.mysteryWheelAge = _data.currentAge;
+        _data.mysteryWheelMonth = _data.currentMonth;
+        _data.mysteryWheelRewards = monthlyRewards;
+        NotifyPlayerInfoChanged();
     }
 
     /// <summary>判断当前月份是否已有指定数量的便利店商品。</summary>
@@ -678,6 +809,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.health = Mathf.Clamp(_data.health, 0, _data.maxHealth);
         _data.simulationCoins = Mathf.Max(0, _data.simulationCoins);
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
+        _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
         if (_data.inventory == null)
         {
             _data.inventory = new List<PlayerInventoryItem>();
@@ -748,6 +880,22 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 _data.convenienceOffers.RemoveAt(i);
             }
         }
+
+        if (_data.mysteryWheelRewards == null)
+        {
+            _data.mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
+        }
+
+        HashSet<int> mysteryWheelRewardIds = new HashSet<int>();
+        for (int i = _data.mysteryWheelRewards.Count - 1; i >= 0; i--)
+        {
+            PlayerMysteryWheelReward reward = _data.mysteryWheelRewards[i];
+            if (reward == null || reward.itemId <= 0 || reward.amount <= 0 ||
+                !mysteryWheelRewardIds.Add(reward.itemId))
+            {
+                _data.mysteryWheelRewards.RemoveAt(i);
+            }
+        }
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -769,6 +917,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             maxHealth = source.maxHealth,
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
+            wheelCoins = source.wheelCoins,
             workedThisTurn = source.workedThisTurn,
             inventory = CreateInventoryCopy(source.inventory),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
@@ -778,7 +927,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             workProgresses = CreateWorkProgressCopy(source.workProgresses),
             convenienceOfferAge = source.convenienceOfferAge,
             convenienceOfferMonth = source.convenienceOfferMonth,
-            convenienceOffers = CreateConvenienceOfferCopy(source.convenienceOffers)
+            convenienceOffers = CreateConvenienceOfferCopy(source.convenienceOffers),
+            mysteryWheelAge = source.mysteryWheelAge,
+            mysteryWheelMonth = source.mysteryWheelMonth,
+            mysteryWheelRewards = CreateMysteryWheelRewardCopy(source.mysteryWheelRewards)
         };
     }
 
@@ -948,6 +1100,31 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return copy;
     }
 
+    private static List<PlayerMysteryWheelReward> CreateMysteryWheelRewardCopy(
+        List<PlayerMysteryWheelReward> source)
+    {
+        List<PlayerMysteryWheelReward> copy = new List<PlayerMysteryWheelReward>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerMysteryWheelReward reward = source[i];
+            if (reward != null)
+            {
+                copy.Add(new PlayerMysteryWheelReward
+                {
+                    itemId = reward.itemId,
+                    amount = reward.amount
+                });
+            }
+        }
+
+        return copy;
+    }
+
     private static PlayerConvenienceOffer FindConvenienceOffer(
         List<PlayerConvenienceOffer> offers,
         int convenienceId)
@@ -992,7 +1169,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     {
         return basePropertyId == BasePropertyId.SimulationCoin ||
             basePropertyId == BasePropertyId.TimeCoin ||
-            basePropertyId == BasePropertyId.Health;
+            basePropertyId == BasePropertyId.Health ||
+            basePropertyId == BasePropertyId.WheelCoin;
     }
 
     private void AddBaseProperty(int basePropertyId)
@@ -1007,6 +1185,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 break;
             case BasePropertyId.Health:
                 ChangeHealth(1);
+                break;
+            case BasePropertyId.WheelCoin:
+                AddWheelCoins(1);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(basePropertyId));
