@@ -1,14 +1,13 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DS.ScriptableObjects;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public static class MissionDialogueService
 {
-    private const string DialoguePanelPathFormat = "Assets/DialogueSystem/Dialogues/{0}/{0}.asset";
+    private const string DialogueAssetPathFormat =
+        "Assets/DialogueSystem/Dialogues/{0}/{0}.asset";
+    private const string ResourceTag = "MissionDialogueService";
 
     private static readonly Dictionary<string, DSDialogueContainerSO> ContainerCache =
         new Dictionary<string, DSDialogueContainerSO>();
@@ -23,7 +22,10 @@ public static class MissionDialogueService
         TryPlayDialogue(missionConfig, missionConfig?.DialogueEnd, "结束");
     }
 
-    private static void TryPlayDialogue(cfg.Mission missionConfig, string dialogueConfig, string phase)
+    private static async void TryPlayDialogue(
+        cfg.Mission missionConfig,
+        string dialogueConfig,
+        string phase)
     {
         if (missionConfig == null || string.IsNullOrEmpty(dialogueConfig))
         {
@@ -37,7 +39,8 @@ public static class MissionDialogueService
             return;
         }
 
-        if (!TryLoadContainer(fileName, out DSDialogueContainerSO container) || container == null)
+        DSDialogueContainerSO container = await LoadContainerAsync(fileName);
+        if (container == null)
         {
             Debug.LogWarning(
                 $"[任务系统] 任务[{missionConfig.Id}]无法加载对话文件({phase}): {fileName}");
@@ -82,35 +85,32 @@ public static class MissionDialogueService
             groupIndex >= 0;
     }
 
-    private static bool TryLoadContainer(string fileName, out DSDialogueContainerSO container)
+    private static async Task<DSDialogueContainerSO> LoadContainerAsync(string fileName)
     {
-        if (ContainerCache.TryGetValue(fileName, out container) && container != null)
+        if (ContainerCache.TryGetValue(fileName, out DSDialogueContainerSO cachedContainer) &&
+            cachedContainer != null)
         {
-            return true;
+            return cachedContainer;
         }
 
-        container = Resources.Load<DSDialogueContainerSO>(fileName);
-        if (container == null)
+        if (GameManager.Resource == null)
         {
-            container = Resources.Load<DSDialogueContainerSO>(
-                $"DialogueSystem/Dialogues/{fileName}/{fileName}");
+            Debug.LogError(
+                $"[任务系统] ResourceComponent 未初始化，无法加载对话 Addressable：{fileName}");
+            return null;
         }
 
-#if UNITY_EDITOR
+        string assetPath = string.Format(DialogueAssetPathFormat, fileName);
+        DSDialogueContainerSO container =
+            await GameManager.Resource.LoadResource<DSDialogueContainerSO>(assetPath, ResourceTag);
         if (container == null)
         {
-            string assetPath = string.Format(DialoguePanelPathFormat, fileName);
-            container = AssetDatabase.LoadAssetAtPath<DSDialogueContainerSO>(assetPath);
-        }
-#endif
-
-        if (container == null)
-        {
-            return false;
+            Debug.LogError($"[任务系统] 未找到对话 Addressable：{assetPath}");
+            return null;
         }
 
         ContainerCache[fileName] = container;
-        return true;
+        return container;
     }
 
     private static List<MissionDialogueLineData> BuildDialogueLines(
