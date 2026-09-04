@@ -73,7 +73,7 @@
     "id": 2000,
     "name": "家具折扣券",
     "level": 0,
-    "desc": "家具折扣券~",
+    "desc": "搬空家具城指日可待！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,
     "rewardScale": 3200,
@@ -81,13 +81,13 @@
   },
   {
     "id": 3000,
-    "name": "神秘礼盒",
+    "name": "初级零工凭证礼盒",
     "level": 4,
-    "desc": "神秘礼盒~",
+    "desc": "里面包含各类初级零工所需的凭证，有较小概率获得中级零工凭证",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
     "rewardScale": 4200,
-    "useEffect": ""
+    "useEffect": "4000,1,50;4001,1,50;4002,1,1;4003,1,50;4004,1,50;4005,1,1;4006,1,1;4008,1,50;4009,1,50;4010,1,1;4011,1,1;4013,1,50;4014,1,50;4015,1,1;4016,1,1;4018,1,50;4019,1,50;4020,1,1;4021,1,1;4023,1,10;4024,1,1"
   },
   {
     "id": 4000,

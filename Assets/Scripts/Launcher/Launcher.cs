@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TimeChip.Save;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 /// <summary>
@@ -17,6 +19,7 @@ public class Launcher : SingletonMono<Launcher>
     private const int NewGameTestBuffId = 1001;
     private const int NewLifeMemoryPointReward = 30000;
     private const int NewLifeGrowCardUnlockCount = 3;
+    private const string PreloadGameContentLabel = "preload-game-content";
 
     [SerializeField] private Button _newGameButton;               // 新游戏按钮
     [SerializeField] private Button _loadSaveButton;              // 读取存档按钮
@@ -24,10 +27,13 @@ public class Launcher : SingletonMono<Launcher>
     [SerializeField] private Button _settingButton;               // 设置按钮
     [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
+    [SerializeField] private Text _txtLoad;                       // 加载进度文本
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
     private bool _isInitializingTables;                           // 是否正在初始化数据表
+    private bool _isPreloadingGameContent;                        // 是否正在下载进入游戏所需的 AA 资源
+    private bool _isOpeningMenuPanel;                             // 是否正在通过转场打开启动菜单面板
     private bool _isNewGame;                                      // 本次启动是否来自新建存档
     private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
 
@@ -116,7 +122,10 @@ public class Launcher : SingletonMono<Launcher>
                 SetProcessState(LauncherProcess.PreloadIng);
                 break;
             case LauncherProcess.PreloadIng:
-                SetProcessState(LauncherProcess.PreloadEnd);
+                if (!_isPreloadingGameContent)
+                {
+                    PreloadGameContentAsync();
+                }
                 break;
             case LauncherProcess.PreloadEnd:
                 SetProcessState(LauncherProcess.ConnectBegin);
@@ -167,11 +176,59 @@ public class Launcher : SingletonMono<Launcher>
     }
 
     /// <summary>
+    /// 下载进入游戏所需的 Addressables 依赖，下载完成后才继续加载流程
+    /// </summary>
+    private async void PreloadGameContentAsync()
+    {
+        _isPreloadingGameContent = true;
+        AsyncOperationHandle downloadHandle =
+            Addressables.DownloadDependenciesAsync(PreloadGameContentLabel, false);
+
+        while (!downloadHandle.IsDone)
+        {
+            UpdateDownloadProgress(downloadHandle, "游戏");
+            await Task.Yield();
+        }
+
+        UpdateDownloadProgress(downloadHandle, "游戏");
+        bool downloadSucceeded = downloadHandle.Status == AsyncOperationStatus.Succeeded;
+        Addressables.Release(downloadHandle);
+        _isPreloadingGameContent = false;
+
+        if (!downloadSucceeded)
+        {
+            Debug.LogError(
+                $"下载 Addressables 标签 \"{PreloadGameContentLabel}\" 的游戏资源失败，已取消进入游戏。",
+                this);
+            ReturnToStartMenuInternal(deleteSave: false);
+            return;
+        }
+
+        SetProcessState(LauncherProcess.PreloadEnd);
+    }
+
+    /// <summary>
+    /// 将 Addressables 的实际下载字节进度显示到加载界面
+    /// </summary>
+    private void UpdateDownloadProgress(AsyncOperationHandle downloadHandle, string resourceName)
+    {
+        if (_txtLoad == null)
+        {
+            return;
+        }
+
+        DownloadStatus downloadStatus = downloadHandle.GetDownloadStatus();
+        int progressPercent = Mathf.FloorToInt(
+            Mathf.Clamp01(downloadStatus.Percent) * 100f);
+        _txtLoad.text = $"正在下载{resourceName}资源... {progressPercent}%";
+    }
+
+    /// <summary>
     /// 创建默认玩家数据并覆盖唯一存档后开始游戏
     /// </summary>
     private async void CreateNewGame()
     {
-        if (_process != LauncherProcess.None)
+        if (_process != LauncherProcess.None || _isOpeningMenuPanel)
         {
             return;
         }
@@ -187,7 +244,7 @@ public class Launcher : SingletonMono<Launcher>
     /// </summary>
     private void LoadSavedGame()
     {
-        if (_process != LauncherProcess.None)
+        if (_process != LauncherProcess.None || _isOpeningMenuPanel)
         {
             return;
         }
@@ -220,6 +277,10 @@ public class Launcher : SingletonMono<Launcher>
     private void BeginLaunch(GameSaveData saveData, bool isNewGame)
     {
         InitializePlayerInfo(saveData, isNewGame);
+        if (_txtLoad != null)
+        {
+            _txtLoad.text = "正在检查游戏资源...";
+        }
         _menuRoot.SetActive(false);
         _loadingRoot.SetActive(true);
         SetProcessState(LauncherProcess.PreloadBegin);
@@ -231,6 +292,10 @@ public class Launcher : SingletonMono<Launcher>
     private async void InitializeDataAsync()
     {
         _isInitializingData = true;
+        if (_txtLoad != null)
+        {
+            _txtLoad.text = "正在初始化游戏数据...";
+        }
 
         // 先让加载界面完成一帧渲染，再执行后续异步加载任务
         await Task.Yield();
@@ -276,19 +341,44 @@ public class Launcher : SingletonMono<Launcher>
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
-    private void OpenSettingView()
+    private async void OpenSettingView()
     {
+        if (!TryBeginMenuPanelTransition("设置"))
+        {
+            return;
+        }
+
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.SettingView);
+        if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.SettingView, "设置"))
+        {
+            EndMenuPanelTransition();
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.SettingView,
+            action: EndMenuPanelTransition);
     }
 
     private async void OpenGrowView()
     {
+        if (!TryBeginMenuPanelTransition("时光藏馆"))
+        {
+            return;
+        }
+
+        if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.GrowView, "时光藏馆"))
+        {
+            EndMenuPanelTransition();
+            return;
+        }
+
         await DataTableMananger.GetInstance().Init();
         cfg.Tables tables = DataTableMananger.GetInstance().Tables;
         if (tables == null)
         {
             Debug.LogError("数据表初始化失败，无法打开成长界面", this);
+            EndMenuPanelTransition();
             return;
         }
 
@@ -297,7 +387,67 @@ public class Launcher : SingletonMono<Launcher>
         globalInfoManager.EnsureGrowCards(
             tables.GrowTable.DataMap.Keys);
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.GrowView);
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.GrowView,
+            action: EndMenuPanelTransition);
+    }
+
+    /// <summary>
+    /// 显示启动菜单中的转场界面并防止重复打开面板
+    /// </summary>
+    private bool TryBeginMenuPanelTransition(string panelName)
+    {
+        if (_process != LauncherProcess.None || _isOpeningMenuPanel)
+        {
+            return false;
+        }
+
+        _isOpeningMenuPanel = true;
+        if (_txtLoad != null)
+        {
+            _txtLoad.text = $"正在检查{panelName}资源...";
+        }
+        _loadingRoot.SetActive(true);
+        return true;
+    }
+
+    /// <summary>
+    /// 下载启动菜单目标面板的 Addressables 依赖
+    /// </summary>
+    private async Task<bool> DownloadMenuPanelDependenciesAsync(
+        string panelAddress,
+        string panelName)
+    {
+        AsyncOperationHandle downloadHandle =
+            Addressables.DownloadDependenciesAsync(panelAddress, false);
+
+        while (!downloadHandle.IsDone)
+        {
+            UpdateDownloadProgress(downloadHandle, panelName);
+            await Task.Yield();
+        }
+
+        UpdateDownloadProgress(downloadHandle, panelName);
+        bool downloadSucceeded = downloadHandle.Status == AsyncOperationStatus.Succeeded;
+        Addressables.Release(downloadHandle);
+
+        if (!downloadSucceeded)
+        {
+            Debug.LogError(
+                $"下载 {panelName} 的 Addressables 资源失败，已取消打开面板。",
+                this);
+        }
+
+        return downloadSucceeded;
+    }
+
+    /// <summary>
+    /// 目标面板显示或下载失败后，关闭启动菜单转场界面
+    /// </summary>
+    private void EndMenuPanelTransition()
+    {
+        _isOpeningMenuPanel = false;
+        _loadingRoot.SetActive(false);
     }
 
     private async Task GrantNewLifeGrowRewardAsync()
@@ -423,6 +573,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _isInitializingData = false;
+        _isPreloadingGameContent = false;
         _isNewGame = false;
         SetProcessState(LauncherProcess.None);
 

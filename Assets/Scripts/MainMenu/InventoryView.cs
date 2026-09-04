@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,6 +33,7 @@ public class InventoryView : UIBasePanel
     private int _currentPage = 1;
     private int _refreshVersion;
     private int _detailVersion;
+    private int _selectedItemId;
     private bool _isUiReady;
 
     private void Awake()
@@ -45,6 +47,7 @@ public class InventoryView : UIBasePanel
 
         _previousPageButton.onClick.AddListener(ShowPreviousPage);
         _nextPageButton.onClick.AddListener(ShowNextPage);
+        _btnUse.onClick.AddListener(UseSelectedItem);
         HideDetail();
     }
 
@@ -99,6 +102,11 @@ public class InventoryView : UIBasePanel
         if (_nextPageButton != null)
         {
             _nextPageButton.onClick.RemoveListener(ShowNextPage);
+        }
+
+        if (_btnUse != null)
+        {
+            _btnUse.onClick.RemoveListener(UseSelectedItem);
         }
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnPlayerInfoChanged;
@@ -214,6 +222,7 @@ public class InventoryView : UIBasePanel
         }
 
         InventoryEntry entry = _items[itemIndex];
+        _selectedItemId = entry.Item.Id;
         int detailVersion = ++_detailVersion;
         _txtName.text = entry.Item.Name;
         _txtDetail.text = entry.Item.Desc;
@@ -252,6 +261,7 @@ public class InventoryView : UIBasePanel
     private void HideDetail()
     {
         _detailVersion++;
+        _selectedItemId = 0;
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(false);
         _txtName.gameObject.SetActive(false);
@@ -261,6 +271,97 @@ public class InventoryView : UIBasePanel
         _txtNumPrefix.gameObject.SetActive(false);
         _txtNum.gameObject.SetActive(false);
         _btnUse.gameObject.SetActive(false);
+    }
+
+    private void UseSelectedItem()
+    {
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_selectedItemId);
+        if (itemConfig == null || itemConfig.CanUse != 1)
+        {
+            Debug.LogError($"无法使用背包道具: [{_selectedItemId}]", this);
+            return;
+        }
+
+        if (!TryDrawUseEffect(itemConfig.UseEffect, out CommonRewardItemData reward))
+        {
+            Debug.LogError($"背包道具使用效果配置无效: [{itemConfig.Id}], [{itemConfig.UseEffect}]", this);
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
+        {
+            Debug.LogError($"背包道具消耗失败: [{itemConfig.Id}]", this);
+            return;
+        }
+
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables.BaseTable.GetOrDefault(reward.itemId) == null)
+        {
+            playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+        }
+
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
+        {
+            data = new List<CommonRewardItemData> { reward }
+        });
+    }
+
+    private bool TryDrawUseEffect(string useEffect, out CommonRewardItemData reward)
+    {
+        reward = null;
+        if (string.IsNullOrWhiteSpace(useEffect))
+        {
+            return false;
+        }
+
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        List<UseEffectReward> rewards = new List<UseEffectReward>();
+        string[] effectEntries = useEffect.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+        long totalWeight = 0;
+
+        for (int i = 0; i < effectEntries.Length; i++)
+        {
+            string[] values = effectEntries[i].Split(',');
+            if (values.Length != 3 ||
+                !int.TryParse(values[0], out int itemId) ||
+                !int.TryParse(values[1], out int itemCount) ||
+                !int.TryParse(values[2], out int weight) ||
+                itemId <= 0 || itemCount <= 0 || weight <= 0 ||
+                (tables.BaseTable.GetOrDefault(itemId) == null &&
+                 tables.ItemTable.GetOrDefault(itemId) == null))
+            {
+                Debug.LogError($"背包道具使用效果条目无效: [{effectEntries[i]}]", this);
+                return false;
+            }
+
+            rewards.Add(new UseEffectReward(itemId, itemCount, weight));
+            totalWeight += weight;
+        }
+
+        if (totalWeight <= 0)
+        {
+            return false;
+        }
+
+        double randomValue = UnityEngine.Random.value * totalWeight;
+        long accumulatedWeight = 0;
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            UseEffectReward effectReward = rewards[i];
+            accumulatedWeight += effectReward.Weight;
+            if (randomValue < accumulatedWeight)
+            {
+                reward = new CommonRewardItemData
+                {
+                    itemId = effectReward.ItemId,
+                    itemCount = effectReward.ItemCount
+                };
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int GetMaxPage()
@@ -349,6 +450,20 @@ public class InventoryView : UIBasePanel
         {
             Item = item;
             Amount = amount;
+        }
+    }
+
+    private readonly struct UseEffectReward
+    {
+        public readonly int ItemId;
+        public readonly int ItemCount;
+        public readonly int Weight;
+
+        public UseEffectReward(int itemId, int itemCount, int weight)
+        {
+            ItemId = itemId;
+            ItemCount = itemCount;
+            Weight = weight;
         }
     }
 }
