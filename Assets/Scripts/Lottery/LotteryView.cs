@@ -26,6 +26,7 @@ public class LotteryView : UIBasePanel
     [SerializeField] private Text _wheelCoinText;           // 剩余转盘币文本
 
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
+    private Vector3 _lotteryButtonScale;                    // 抽奖按钮缩放
     private Vector2[] _bubblePositions;                     // 气泡位置
     private Vector3[] _bubbleScales;                        // 气泡缩放
     private float _lotteryBoxRotation;                      // 奖池盒子旋转
@@ -42,6 +43,11 @@ public class LotteryView : UIBasePanel
     private const int MysteryWheelMinimumSteps = 24;        // 至少转两圈
     private const float MysteryWheelSlowInterval = 0.16f;   // 转盘最慢间隔
     private const float MysteryWheelFastInterval = 0.035f;  // 转盘最快间隔
+    private const float IdleButtonScaleMultiplier = 1.035f; // 待机按钮最大缩放
+    private const float IdleButtonBreathDuration = 0.25f;   // 待机按钮单程时长
+    private const float IdleButtonInterval = 1.5f;          // 待机按钮呼吸间隔
+    private const float IdleDecorationScaleMultiplier = 1.025f; // 待机装饰最大缩放
+    private const float LotteryRevealDuration = 0.38f;      // 开箱揭晓演出时长
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -63,6 +69,7 @@ public class LotteryView : UIBasePanel
         playerInfoManager.TurnAdvanced += RefreshMysteryWheelRewards;
         RefreshTimeCoins(playerInfoManager);
         RefreshMysteryWheelRewards();
+        PlayIdleAnimations();
     }
 
     protected override void HideHandle()
@@ -132,8 +139,10 @@ public class LotteryView : UIBasePanel
         _lotteryButton.interactable = false;
 
         DOTween.Kill(this);
+        PlayLotteryButtonClickAnimation();
         PlayLotteryBoxAnimation();
         PlayBubbleAnimations();
+        PlayLotteryHapticFeedback();
 
         DOVirtual.DelayedCall(LotteryDuration, CompleteLottery)
             .SetUpdate(true)
@@ -145,10 +154,22 @@ public class LotteryView : UIBasePanel
     {
         if (!_isLotteryInProgress) return;
 
-        _isLotteryInProgress = false;
         DOTween.Kill(this);
         RestoreAnimationState();
+        PlayLotteryRevealAnimation();
+
+        DOVirtual.DelayedCall(LotteryRevealDuration, CompleteLotteryReward)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void CompleteLotteryReward()
+    {
+        if (!_isLotteryInProgress) return;
+
+        _isLotteryInProgress = false;
         _lotteryButton.interactable = true;
+        PlayIdleAnimations();
 
         if (!TryDrawReward(LotteryPoolId, out CommonRewardItemData reward)) return;
 
@@ -550,6 +571,7 @@ public class LotteryView : UIBasePanel
         if (_hasCachedAnimationState) return;
 
         _lotteryBoxScale = _lotteryBox.localScale;
+        _lotteryButtonScale = _lotteryButton.transform.localScale;
         _lotteryBoxRotation = _lotteryBox.localEulerAngles.z;
 
         _bubblePositions = new Vector2[_bubbles.Length];
@@ -564,20 +586,74 @@ public class LotteryView : UIBasePanel
         _hasCachedAnimationState = true;
     }
 
-    private void PlayLotteryBoxAnimation()
+    private void PlayIdleAnimations()
     {
-        const float shakeAngle = 7f;
-        const float animationDuration = 0.16f;
+        if (_normal != null && !_normal.activeInHierarchy)
+        {
+            return;
+        }
 
         DOTween.Sequence()
-            .Append(_lotteryBox.DORotate(new Vector3(0f, 0f, _lotteryBoxRotation + shakeAngle), animationDuration))
-            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 1.08f, animationDuration))
-            .Append(_lotteryBox.DORotate(new Vector3(0f, 0f, _lotteryBoxRotation - shakeAngle), animationDuration * 2f))
-            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 0.92f, animationDuration * 2f))
-            .Append(_lotteryBox.DORotate(new Vector3(0f, 0f, _lotteryBoxRotation), animationDuration))
-            .Join(_lotteryBox.DOScale(_lotteryBoxScale, animationDuration))
+            .Append(_lotteryButton.transform.DOScale(
+                _lotteryButtonScale * IdleButtonScaleMultiplier,
+                IdleButtonBreathDuration))
+            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale, IdleButtonBreathDuration))
+            .AppendInterval(IdleButtonInterval)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1)
+            .SetUpdate(true)
+            .SetTarget(this);
+
+        PlayIdleDecorationAnimation(
+            _lotteryBox,
+            _lotteryBoxScale,
+            UnityEngine.Random.Range(2.5f, 5f));
+    }
+
+    private void PlayIdleDecorationAnimation(
+        RectTransform decoration,
+        Vector3 originalScale,
+        float interval)
+    {
+        const float expandDuration = 0.35f;
+        const float restoreDuration = 0.45f;
+
+        DOTween.Sequence()
+            .AppendInterval(UnityEngine.Random.Range(0.5f, interval))
+            .Append(decoration.DOScale(
+                originalScale * IdleDecorationScaleMultiplier,
+                expandDuration))
+            .Append(decoration.DOScale(originalScale, restoreDuration))
+            .AppendInterval(interval)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void PlayLotteryBoxAnimation()
+    {
+        const float shakeAngle = 8f;
+        const float animationDuration = 0.1f;
+
+        DOTween.Sequence()
+            .Append(_lotteryBox.DOScale(_lotteryBoxScale * 0.96f, animationDuration))
+            .Append(_lotteryBox.DORotate(
+                new Vector3(0f, 0f, _lotteryBoxRotation + shakeAngle), animationDuration))
+            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 1.04f, animationDuration))
+            .Append(_lotteryBox.DORotate(
+                new Vector3(0f, 0f, _lotteryBoxRotation - shakeAngle), animationDuration * 1.2f))
+            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 0.98f, animationDuration * 1.2f))
+            .Append(_lotteryBox.DORotate(
+                new Vector3(0f, 0f, _lotteryBoxRotation + shakeAngle), animationDuration * 0.9f))
+            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 1.06f, animationDuration * 0.9f))
+            .Append(_lotteryBox.DORotate(
+                new Vector3(0f, 0f, _lotteryBoxRotation - shakeAngle), animationDuration * 0.8f))
+            .Join(_lotteryBox.DOScale(_lotteryBoxScale * 0.97f, animationDuration * 0.8f))
+            .Append(_lotteryBox.DORotate(
+                new Vector3(0f, 0f, _lotteryBoxRotation), animationDuration))
+            .Join(_lotteryBox.DOScale(_lotteryBoxScale, animationDuration))
+            .SetEase(Ease.InOutQuad)
             .SetUpdate(true)
             .SetTarget(this);
     }
@@ -587,21 +663,54 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < _bubbles.Length; i++)
         {
             RectTransform bubble = _bubbles[i];
-            float duration = 1.2f + i * 0.1f;
-            Vector2 movement = new Vector2(i % 2 == 0 ? 12f : -12f, 16f);
+            Vector2 movement = (_bubblePositions[i] - (Vector2)_lotteryBox.anchoredPosition)
+                .normalized * 16f;
 
             DOTween.Sequence()
-                .Append(bubble.DOAnchorPos(_bubblePositions[i] + movement, duration))
-                .Join(bubble.DOScale(_bubbleScales[i] * 1.06f, duration))
-                .Append(bubble.DOAnchorPos(_bubblePositions[i] - movement, duration * 2f))
-                .Join(bubble.DOScale(_bubbleScales[i] * 0.94f, duration * 2f))
-                .Append(bubble.DOAnchorPos(_bubblePositions[i], duration))
-                .Join(bubble.DOScale(_bubbleScales[i], duration))
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1)
+                .AppendInterval(0.08f + i * 0.06f)
+                .Append(bubble.DOAnchorPos(_bubblePositions[i] + movement, 0.16f))
+                .Join(bubble.DOScale(_bubbleScales[i] * 1.12f, 0.16f))
+                .Append(bubble.DOAnchorPos(_bubblePositions[i], 0.24f))
+                .Join(bubble.DOScale(_bubbleScales[i], 0.24f))
+                .SetEase(Ease.OutBack)
                 .SetUpdate(true)
                 .SetTarget(this);
         }
+    }
+
+    private void PlayLotteryButtonClickAnimation()
+    {
+        DOTween.Sequence()
+            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale * 0.94f, 0.06f))
+            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale * 1.06f, 0.1f))
+            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale, 0.12f))
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void PlayLotteryRevealAnimation()
+    {
+        GameManager.Audio.Vibrate();
+
+        DOTween.Sequence()
+            .Append(_lotteryBox.DOScale(_lotteryBoxScale * 0.9f, 0.08f))
+            .Append(_lotteryBox.DOScale(_lotteryBoxScale * 1.15f, 0.18f).SetEase(Ease.OutBack))
+            .Append(_lotteryBox.DOScale(_lotteryBoxScale, 0.12f))
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void PlayLotteryHapticFeedback()
+    {
+        GameManager.Audio.Vibrate();
+
+        DOVirtual.DelayedCall(0.26f, () => GameManager.Audio.Vibrate())
+            .SetUpdate(true)
+            .SetTarget(this);
+        DOVirtual.DelayedCall(0.52f, () => GameManager.Audio.Vibrate())
+            .SetUpdate(true)
+            .SetTarget(this);
     }
 
     private void RestoreAnimationState()
@@ -610,6 +719,7 @@ public class LotteryView : UIBasePanel
 
         _lotteryBox.localRotation = Quaternion.Euler(0f, 0f, _lotteryBoxRotation);
         _lotteryBox.localScale = _lotteryBoxScale;
+        _lotteryButton.transform.localScale = _lotteryButtonScale;
 
         for (int i = 0; i < _bubbles.Length; i++)
         {
