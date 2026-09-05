@@ -27,6 +27,7 @@ public class LotteryView : UIBasePanel
 
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
     private Vector3 _lotteryButtonScale;                    // 抽奖按钮缩放
+    private Vector3 _mysButtonScale;                        // 转盘按钮缩放
     private Vector2[] _bubblePositions;                     // 气泡位置
     private Vector3[] _bubbleScales;                        // 气泡缩放
     private float _lotteryBoxRotation;                      // 奖池盒子旋转
@@ -48,6 +49,7 @@ public class LotteryView : UIBasePanel
     private const float IdleButtonInterval = 1.5f;          // 待机按钮呼吸间隔
     private const float IdleDecorationScaleMultiplier = 1.025f; // 待机装饰最大缩放
     private const float LotteryRevealDuration = 0.38f;      // 开箱揭晓演出时长
+    private const float MysteryWheelRevealDuration = 0.38f; // 转盘结果揭晓时长
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -498,6 +500,11 @@ public class LotteryView : UIBasePanel
 
         _isLotteryInProgress = true;
         _mysButton.interactable = false;
+        DOTween.Kill(this);
+        ClearMysteryWheelHighlights();
+        PlayMysteryWheelButtonClickAnimation();
+        GameManager.Audio.Vibrate();
+
         int selectedIndex = UnityEngine.Random.Range(0, MysteryWheelRewardCount);
         PlayMysteryWheelAnimation(selectedIndex);
         GameManager.Audio.Play(AudioDefine.SFXClick);
@@ -510,6 +517,7 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < stepCount; i++)
         {
             int currentIndex = i % MysteryWheelRewardCount;
+            int stepIndex = i;
             float progress = stepCount <= 1 ? 1f : (float)i / (stepCount - 1);
             float speedMultiplier = Mathf.Sin(progress * Mathf.PI);
             float interval = Mathf.Lerp(
@@ -517,7 +525,11 @@ public class LotteryView : UIBasePanel
                 MysteryWheelFastInterval,
                 speedMultiplier);
 
-            sequence.AppendCallback(() => HighlightMysteryWheelItem(currentIndex));
+            sequence.AppendCallback(() =>
+            {
+                HighlightMysteryWheelItem(currentIndex);
+                PlayMysteryWheelStepHaptic(stepIndex, stepCount);
+            });
             sequence.AppendInterval(interval);
         }
 
@@ -531,9 +543,25 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        _mysLotteryItems[selectedIndex].PlayRewardRevealAnimation();
+        GameManager.Audio.Vibrate();
+
+        DOVirtual.DelayedCall(
+                MysteryWheelRevealDuration,
+                () => CompleteMysteryWheelReward(selectedIndex))
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void CompleteMysteryWheelReward(int selectedIndex)
+    {
+        if (!_isLotteryInProgress)
+        {
+            return;
+        }
+
         _isLotteryInProgress = false;
         _mysButton.interactable = true;
-
         CommonRewardItemData reward = _mysteryWheelRewards[selectedIndex];
         ApplyReward(reward);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
@@ -547,6 +575,15 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < _mysLotteryItems.Length; i++)
         {
             _mysLotteryItems[i].SetHighlighted(i == selectedIndex);
+        }
+    }
+
+    private static void PlayMysteryWheelStepHaptic(int stepIndex, int stepCount)
+    {
+        bool isFinalThreeSteps = stepIndex >= stepCount - 3;
+        if (stepIndex == 0 || isFinalThreeSteps || stepIndex % 4 == 0)
+        {
+            GameManager.Audio.Vibrate();
         }
     }
 
@@ -572,6 +609,7 @@ public class LotteryView : UIBasePanel
 
         _lotteryBoxScale = _lotteryBox.localScale;
         _lotteryButtonScale = _lotteryButton.transform.localScale;
+        _mysButtonScale = _mysButton.transform.localScale;
         _lotteryBoxRotation = _lotteryBox.localEulerAngles.z;
 
         _bubblePositions = new Vector2[_bubbles.Length];
@@ -689,6 +727,17 @@ public class LotteryView : UIBasePanel
             .SetTarget(this);
     }
 
+    private void PlayMysteryWheelButtonClickAnimation()
+    {
+        DOTween.Sequence()
+            .Append(_mysButton.transform.DOScale(_mysButtonScale * 0.94f, 0.06f))
+            .Append(_mysButton.transform.DOScale(_mysButtonScale * 1.06f, 0.1f))
+            .Append(_mysButton.transform.DOScale(_mysButtonScale, 0.12f))
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
     private void PlayLotteryRevealAnimation()
     {
         GameManager.Audio.Vibrate();
@@ -720,6 +769,7 @@ public class LotteryView : UIBasePanel
         _lotteryBox.localRotation = Quaternion.Euler(0f, 0f, _lotteryBoxRotation);
         _lotteryBox.localScale = _lotteryBoxScale;
         _lotteryButton.transform.localScale = _lotteryButtonScale;
+        _mysButton.transform.localScale = _mysButtonScale;
 
         for (int i = 0; i < _bubbles.Length; i++)
         {

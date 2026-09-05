@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,11 +11,13 @@ public class MysLotteryItem : MonoBehaviour
     [SerializeField] private Text _num;
 
     private Color _defaultBackgroundColor;
+    private Vector3 _defaultScale;
     private int _presentationVersion;
 
     private void Awake()
     {
         _defaultBackgroundColor = _bg.color;
+        _defaultScale = transform.localScale;
     }
 
     public async void SetData(CommonRewardItemData reward)
@@ -54,6 +57,24 @@ public class MysLotteryItem : MonoBehaviour
 
     public void SetHighlighted(bool highlighted)
     {
-        _bg.color = highlighted ? Color.yellow : _defaultBackgroundColor;
+        DOTween.Kill(this);
+        _bg.DOColor(highlighted ? Color.yellow : _defaultBackgroundColor, 0.08f)
+            .SetTarget(this);
+        transform.DOScale(_defaultScale * (highlighted ? 1.08f : 1f), 0.08f)
+            .SetEase(Ease.OutQuad)
+            .SetTarget(this);
+    }
+
+    public void PlayRewardRevealAnimation()
+    {
+        DOTween.Kill(this);
+        _bg.color = Color.yellow;
+
+        DOTween.Sequence()
+            .Append(transform.DOScale(_defaultScale * 0.92f, 0.06f))
+            .Append(transform.DOScale(_defaultScale * 1.18f, 0.18f).SetEase(Ease.OutBack))
+            .Append(transform.DOScale(_defaultScale * 1.08f, 0.14f))
+            .SetUpdate(true)
+            .SetTarget(this);
     }
 }
