@@ -4,23 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ´ò¿ª UI Ê±µÄ²ÎÊı
+/// æ‰“å¼€ UI æ—¶ä¼ é€’çš„å‚æ•°
 /// </summary>
 public class OpenUIParam
 {
     public object data;
     public Action callback;
+    public bool rewardsAlreadyGranted; // å¥–åŠ±æ˜¯å¦å·²åœ¨æ‰“å¼€é¢æ¿å‰ç»“ç®—
 }
 
 /// <summary>
-/// UI »ùÀà
+/// UI é¢æ¿åŸºç±»
 /// </summary>
 public abstract class UIBasePanel : MonoBehaviour
 {
     [HideInInspector] public bool _isBlockingWindow = true;
 
     /// <summary>
-    /// ³õÊ¼»¯
+    /// åˆå§‹åŒ–
     /// </summary>
     public void OnInit(OpenUIParam param)
     {
@@ -33,7 +34,7 @@ public abstract class UIBasePanel : MonoBehaviour
     }
 
     /// <summary>
-    /// ¹Ø±Õ
+    /// å…³é—­
     /// </summary>
     public void OnClose()
     {
@@ -47,7 +48,7 @@ public abstract class UIBasePanel : MonoBehaviour
     }
 
     /// <summary>
-    /// ÏÔÊ¾
+    /// æ˜¾ç¤º
     /// </summary>
     public void OnShow()
     {
@@ -61,7 +62,7 @@ public abstract class UIBasePanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Òş²Ø
+    /// éšè—
     /// </summary>
     public void OnHide()
     {

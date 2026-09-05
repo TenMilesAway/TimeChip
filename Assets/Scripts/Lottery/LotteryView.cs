@@ -8,8 +8,14 @@ using UnityEngine.UI;
 public class LotteryView : UIBasePanel
 {
     [Header("抽奖界面")]
+    [SerializeField] private Button _btnChangeLottery;  // 切换抽奖类型按钮
+    [SerializeField] private GameObject _selection; // 切换抽奖类型界面
     [SerializeField] private GameObject _normal;  // 普通抽奖
     [SerializeField] private GameObject _mys;     // 神秘转盘
+    [SerializeField] private Button _btnChangeNormal;  // 切换至普通抽奖
+    [SerializeField] private Button _btnChangeMys;     // 切换至神秘转盘
+    [SerializeField] private Button _btnCloseChangeLottery; // 关闭切换抽奖类型界面按钮
+
 
     [Header("普通抽奖")]
     [FormerlySerializedAs("lotteryBox")]
@@ -17,12 +23,14 @@ public class LotteryView : UIBasePanel
     [FormerlySerializedAs("bubbles")]
     [SerializeField] private RectTransform[] _bubbles;      // 气泡
     [FormerlySerializedAs("lotteryButton")]
-    [SerializeField] private Button _lotteryButton;         // 抽奖按钮
+    [SerializeField] private Button _normalButton;          // 抽奖按钮
+    [SerializeField] private Button _normalFiveButton;      // 抽奖按钮，五连抽
     [SerializeField] private Text _timeCoinText;            // 剩余时间币文本
 
     [Header("神秘转盘")]
     [SerializeField] private MysLotteryItem[] _mysLotteryItems; // 神秘转盘奖品列表, 共 12 个
     [SerializeField] private Button _mysButton;             // 抽奖按钮
+    [SerializeField] private Button _mysFiveButton;         // 抽奖按钮，五连抽
     [SerializeField] private Text _wheelCoinText;           // 剩余转盘币文本
 
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
@@ -34,11 +42,13 @@ public class LotteryView : UIBasePanel
     private bool _hasCachedAnimationState;                  // 是否缓存动画状态
     private bool _hasRegisteredButtonListener;              // 是否注册按钮监听
     private bool _isLotteryInProgress;                      // 是否正在抽奖
+    private Tween _rewardPresentationTween;                 // 延迟显示奖励的回调
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
 
     private const int LotteryPoolId = 1;                    // 奖池 ID
     private const int MysteryWheelPoolId = 2;               // 神秘转盘奖池 ID
+    private const int FiveDrawCount = 5;                    // 五连抽次数
     private const float LotteryDuration = 1f;               // 奖池抽奖间隔
     private const int MysteryWheelRewardCount = 12;         // 转盘奖品数量
     private const int MysteryWheelMinimumSteps = 24;        // 至少转两圈
@@ -70,8 +80,14 @@ public class LotteryView : UIBasePanel
         playerInfoManager.TurnAdvanced -= RefreshMysteryWheelRewards;
         playerInfoManager.TurnAdvanced += RefreshMysteryWheelRewards;
         RefreshTimeCoins(playerInfoManager);
-        RefreshMysteryWheelRewards();
-        PlayIdleAnimations();
+        _selection.SetActive(false);
+
+        if (!_normal.activeSelf && !_mys.activeSelf)
+        {
+            _normal.SetActive(true);
+        }
+
+        SwitchLotteryMode(_mys.activeSelf);
     }
 
     protected override void HideHandle()
@@ -80,19 +96,30 @@ public class LotteryView : UIBasePanel
 
         _isLotteryInProgress = false;
         DOTween.Kill(this);
+        CancelRewardPresentation();
         RestoreAnimationState();
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         playerInfoManager.PlayerInfoChanged -= RefreshTimeCoins;
         playerInfoManager.TurnAdvanced -= RefreshMysteryWheelRewards;
 
-        if (_lotteryButton != null)
+        if (_normalButton != null)
         {
-            _lotteryButton.interactable = true;
+            _normalButton.interactable = true;
+        }
+
+        if (_normalFiveButton != null)
+        {
+            _normalFiveButton.interactable = true;
         }
 
         if (_mysButton != null)
         {
             _mysButton.interactable = true;
+        }
+
+        if (_mysFiveButton != null)
+        {
+            _mysFiveButton.interactable = true;
         }
 
         ClearMysteryWheelHighlights();
@@ -101,11 +128,18 @@ public class LotteryView : UIBasePanel
     protected override void OnDestroy()
     {
         DOTween.Kill(this);
+        CancelRewardPresentation();
 
         if (_hasRegisteredButtonListener)
         {
-            _lotteryButton.onClick.RemoveListener(StartLottery);
+            _normalButton.onClick.RemoveListener(StartLottery);
+            _normalFiveButton.onClick.RemoveListener(StartNormalFiveLottery);
             _mysButton.onClick.RemoveListener(StartMysteryWheelLottery);
+            _mysFiveButton.onClick.RemoveListener(StartMysteryWheelFiveLottery);
+            _btnChangeLottery.onClick.RemoveListener(OpenLotterySelection);
+            _btnCloseChangeLottery.onClick.RemoveListener(CloseLotterySelection);
+            _btnChangeNormal.onClick.RemoveListener(SwitchToNormalLottery);
+            _btnChangeMys.onClick.RemoveListener(SwitchToMysteryWheelLottery);
         }
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
@@ -123,22 +157,48 @@ public class LotteryView : UIBasePanel
     {
         if (_hasRegisteredButtonListener) return;
 
-        _lotteryButton.onClick.AddListener(StartLottery);
+        _normalButton.onClick.AddListener(StartLottery);
+        _normalFiveButton.onClick.AddListener(StartNormalFiveLottery);
         _mysButton.onClick.AddListener(StartMysteryWheelLottery);
+        _mysFiveButton.onClick.AddListener(StartMysteryWheelFiveLottery);
+        _btnChangeLottery.onClick.AddListener(OpenLotterySelection);
+        _btnCloseChangeLottery.onClick.AddListener(CloseLotterySelection);
+        _btnChangeNormal.onClick.AddListener(SwitchToNormalLottery);
+        _btnChangeMys.onClick.AddListener(SwitchToMysteryWheelLottery);
         _hasRegisteredButtonListener = true;
     }
 
     private void StartLottery()
     {
+        StartLottery(1);
+    }
+
+    private void StartNormalFiveLottery()
+    {
+        StartLottery(FiveDrawCount);
+    }
+
+    private void StartLottery(int drawCount)
+    {
         if (_isLotteryInProgress) return;
 
-        if (!TrySpendLotteryCost(LotteryPoolId))
+        if (!TryDrawRewards(LotteryPoolId, drawCount, out List<CommonRewardItemData> rewards))
+        {
+            Debug.LogError($"抽奖奖励配置无效: [{LotteryPoolId}]", this);
+            return;
+        }
+
+        if (!TrySpendLotteryCost(LotteryPoolId, drawCount))
         {
             return;
         }
 
+        ApplyRewards(rewards);
+        ScheduleRewardPresentation(rewards, LotteryDuration + LotteryRevealDuration + 0.01f);
+
         _isLotteryInProgress = true;
-        _lotteryButton.interactable = false;
+        _normalButton.interactable = false;
+        _normalFiveButton.interactable = false;
 
         DOTween.Kill(this);
         PlayLotteryButtonClickAnimation();
@@ -170,17 +230,55 @@ public class LotteryView : UIBasePanel
         if (!_isLotteryInProgress) return;
 
         _isLotteryInProgress = false;
-        _lotteryButton.interactable = true;
+        _normalButton.interactable = true;
+        _normalFiveButton.interactable = true;
         PlayIdleAnimations();
+    }
 
-        if (!TryDrawReward(LotteryPoolId, out CommonRewardItemData reward)) return;
-
-        ApplyReward(reward);
-
-        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
+    private void OpenLotterySelection()
+    {
+        if (!_isLotteryInProgress)
         {
-            data = new List<CommonRewardItemData> { reward }
-        });
+            _selection.SetActive(true);
+        }
+    }
+
+    private void CloseLotterySelection()
+    {
+        _selection.SetActive(false);
+    }
+
+    private void SwitchToNormalLottery()
+    {
+        SwitchLotteryMode(false);
+    }
+
+    private void SwitchToMysteryWheelLottery()
+    {
+        SwitchLotteryMode(true);
+    }
+
+    private void SwitchLotteryMode(bool showMysteryWheel)
+    {
+        if (_isLotteryInProgress)
+        {
+            return;
+        }
+
+        DOTween.Kill(this);
+        RestoreAnimationState();
+        _normal.SetActive(!showMysteryWheel);
+        _mys.SetActive(showMysteryWheel);
+        _selection.SetActive(false);
+
+        if (showMysteryWheel)
+        {
+            RefreshMysteryWheelRewards();
+        }
+        else
+        {
+            PlayIdleAnimations();
+        }
     }
 
     private static void ApplyReward(CommonRewardItemData reward)
@@ -189,13 +287,28 @@ public class LotteryView : UIBasePanel
         switch (reward.itemId)
         {
             case BasePropertyId.SimulationCoin:
+                playerInfoManager.AddSimulationCoins(reward.itemCount);
+                break;
             case BasePropertyId.TimeCoin:
+                playerInfoManager.AddTimeCoins(reward.itemCount);
+                break;
             case BasePropertyId.Health:
+                playerInfoManager.ChangeHealth(reward.itemCount);
+                break;
             case BasePropertyId.WheelCoin:
+                playerInfoManager.AddWheelCoins(reward.itemCount);
                 break;
             default:
                 playerInfoManager.AddItem(reward.itemId, reward.itemCount);
                 break;
+        }
+    }
+
+    private static void ApplyRewards(List<CommonRewardItemData> rewards)
+    {
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            ApplyReward(rewards[i]);
         }
     }
 
@@ -259,8 +372,34 @@ public class LotteryView : UIBasePanel
         return false;
     }
 
-    private bool TrySpendLotteryCost(int lotteryPoolId)
+    private bool TryDrawRewards(
+        int lotteryPoolId,
+        int drawCount,
+        out List<CommonRewardItemData> rewards)
     {
+        rewards = new List<CommonRewardItemData>(drawCount);
+        for (int i = 0; i < drawCount; i++)
+        {
+            if (!TryDrawReward(lotteryPoolId, out CommonRewardItemData reward))
+            {
+                rewards.Clear();
+                return false;
+            }
+
+            rewards.Add(reward);
+        }
+
+        return true;
+    }
+
+    private bool TrySpendLotteryCost(int lotteryPoolId, int drawCount = 1)
+    {
+        if (drawCount <= 0)
+        {
+            Debug.LogError($"抽奖次数无效: [{drawCount}]", this);
+            return false;
+        }
+
         cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
             .GetOrDefault(lotteryPoolId);
         if (lotteryConfig == null || !TryParseCosts(lotteryConfig.UseCoin, out List<LotteryCost> costs))
@@ -273,7 +412,14 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < costs.Count; i++)
         {
             LotteryCost cost = costs[i];
-            if (playerInfoManager.GetConsumableCount(cost.ItemId) < cost.Amount)
+            if (cost.Amount > int.MaxValue / drawCount)
+            {
+                Debug.LogError($"抽奖消耗数量溢出: [{cost.ItemId}], [{drawCount}]", this);
+                return false;
+            }
+
+            int totalAmount = cost.Amount * drawCount;
+            if (playerInfoManager.GetConsumableCount(cost.ItemId) < totalAmount)
             {
                 CommonTipView.Show("抽奖币不足");
                 GameManager.Audio.Play(AudioDefine.SFXClickFail);
@@ -284,9 +430,10 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < costs.Count; i++)
         {
             LotteryCost cost = costs[i];
-            if (!playerInfoManager.TrySpendConsumable(cost.ItemId, cost.Amount))
+            int totalAmount = cost.Amount * drawCount;
+            if (!playerInfoManager.TrySpendConsumable(cost.ItemId, totalAmount))
             {
-                Debug.LogError($"抽奖消耗失败: [{cost.ItemId}], [{cost.Amount}]", this);
+                Debug.LogError($"抽奖消耗失败: [{cost.ItemId}], [{totalAmount}]", this);
                 return false;
             }
         }
@@ -368,12 +515,14 @@ public class LotteryView : UIBasePanel
         {
             Debug.LogError($"神秘转盘必须配置 {MysteryWheelRewardCount} 个奖品格。", this);
             _mysButton.interactable = false;
+            _mysFiveButton.interactable = false;
             return;
         }
 
         if (!TryLoadMonthlyMysteryWheelRewards())
         {
             _mysButton.interactable = false;
+            _mysFiveButton.interactable = false;
             return;
         }
 
@@ -384,6 +533,7 @@ public class LotteryView : UIBasePanel
 
         ClearMysteryWheelHighlights();
         _mysButton.interactable = true;
+        _mysFiveButton.interactable = true;
     }
 
     private bool TryLoadMonthlyMysteryWheelRewards()
@@ -488,24 +638,53 @@ public class LotteryView : UIBasePanel
 
     private void StartMysteryWheelLottery()
     {
+        StartMysteryWheelLottery(1);
+    }
+
+    private void StartMysteryWheelFiveLottery()
+    {
+        StartMysteryWheelLottery(FiveDrawCount);
+    }
+
+    private void StartMysteryWheelLottery(int drawCount)
+    {
         if (_isLotteryInProgress || _mysteryWheelRewards.Count != MysteryWheelRewardCount)
         {
             return;
         }
 
-        if (!TrySpendLotteryCost(MysteryWheelPoolId))
+        List<CommonRewardItemData> rewards = new List<CommonRewardItemData>(drawCount);
+        int selectedIndex = 0;
+        for (int i = 0; i < drawCount; i++)
+        {
+            selectedIndex = UnityEngine.Random.Range(0, MysteryWheelRewardCount);
+            rewards.Add(_mysteryWheelRewards[selectedIndex]);
+        }
+
+        if (!TrySpendLotteryCost(MysteryWheelPoolId, drawCount))
         {
             return;
         }
 
+        ApplyRewards(rewards);
+        if (drawCount > 1)
+        {
+            PresentRewards(rewards);
+            return;
+        }
+
+        ScheduleRewardPresentation(
+            rewards,
+            GetMysteryWheelAnimationDuration(selectedIndex) + MysteryWheelRevealDuration + 0.01f);
+
         _isLotteryInProgress = true;
         _mysButton.interactable = false;
+        _mysFiveButton.interactable = false;
         DOTween.Kill(this);
         ClearMysteryWheelHighlights();
         PlayMysteryWheelButtonClickAnimation();
         GameManager.Audio.Vibrate();
 
-        int selectedIndex = UnityEngine.Random.Range(0, MysteryWheelRewardCount);
         PlayMysteryWheelAnimation(selectedIndex);
         GameManager.Audio.Play(AudioDefine.SFXClick);
     }
@@ -536,6 +715,23 @@ public class LotteryView : UIBasePanel
         sequence.OnComplete(() => CompleteMysteryWheelLottery(selectedIndex));
     }
 
+    private static float GetMysteryWheelAnimationDuration(int selectedIndex)
+    {
+        int stepCount = MysteryWheelMinimumSteps + selectedIndex + 1;
+        float duration = 0f;
+        for (int i = 0; i < stepCount; i++)
+        {
+            float progress = stepCount <= 1 ? 1f : (float)i / (stepCount - 1);
+            float speedMultiplier = Mathf.Sin(progress * Mathf.PI);
+            duration += Mathf.Lerp(
+                MysteryWheelSlowInterval,
+                MysteryWheelFastInterval,
+                speedMultiplier);
+        }
+
+        return duration;
+    }
+
     private void CompleteMysteryWheelLottery(int selectedIndex)
     {
         if (!_isLotteryInProgress)
@@ -548,12 +744,12 @@ public class LotteryView : UIBasePanel
 
         DOVirtual.DelayedCall(
                 MysteryWheelRevealDuration,
-                () => CompleteMysteryWheelReward(selectedIndex))
+                CompleteMysteryWheelReward)
             .SetUpdate(true)
             .SetTarget(this);
     }
 
-    private void CompleteMysteryWheelReward(int selectedIndex)
+    private void CompleteMysteryWheelReward()
     {
         if (!_isLotteryInProgress)
         {
@@ -562,11 +758,33 @@ public class LotteryView : UIBasePanel
 
         _isLotteryInProgress = false;
         _mysButton.interactable = true;
-        CommonRewardItemData reward = _mysteryWheelRewards[selectedIndex];
-        ApplyReward(reward);
+        _mysFiveButton.interactable = true;
+    }
+
+    private void ScheduleRewardPresentation(List<CommonRewardItemData> rewards, float delay)
+    {
+        List<CommonRewardItemData> rewardsToPresent = new List<CommonRewardItemData>(rewards);
+        _rewardPresentationTween?.Kill();
+        _rewardPresentationTween = DOVirtual.DelayedCall(delay, () =>
+            {
+                _rewardPresentationTween = null;
+                PresentRewards(rewardsToPresent);
+            })
+            .SetUpdate(true);
+    }
+
+    private void CancelRewardPresentation()
+    {
+        _rewardPresentationTween?.Kill();
+        _rewardPresentationTween = null;
+    }
+
+    private static void PresentRewards(List<CommonRewardItemData> rewards)
+    {
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
         {
-            data = new List<CommonRewardItemData> { reward }
+            data = rewards,
+            rewardsAlreadyGranted = true
         });
     }
 
@@ -608,7 +826,7 @@ public class LotteryView : UIBasePanel
         if (_hasCachedAnimationState) return;
 
         _lotteryBoxScale = _lotteryBox.localScale;
-        _lotteryButtonScale = _lotteryButton.transform.localScale;
+        _lotteryButtonScale = _normalButton.transform.localScale;
         _mysButtonScale = _mysButton.transform.localScale;
         _lotteryBoxRotation = _lotteryBox.localEulerAngles.z;
 
@@ -632,10 +850,10 @@ public class LotteryView : UIBasePanel
         }
 
         DOTween.Sequence()
-            .Append(_lotteryButton.transform.DOScale(
+            .Append(_normalButton.transform.DOScale(
                 _lotteryButtonScale * IdleButtonScaleMultiplier,
                 IdleButtonBreathDuration))
-            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale, IdleButtonBreathDuration))
+            .Append(_normalButton.transform.DOScale(_lotteryButtonScale, IdleButtonBreathDuration))
             .AppendInterval(IdleButtonInterval)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1)
@@ -719,9 +937,9 @@ public class LotteryView : UIBasePanel
     private void PlayLotteryButtonClickAnimation()
     {
         DOTween.Sequence()
-            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale * 0.94f, 0.06f))
-            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale * 1.06f, 0.1f))
-            .Append(_lotteryButton.transform.DOScale(_lotteryButtonScale, 0.12f))
+            .Append(_normalButton.transform.DOScale(_lotteryButtonScale * 0.94f, 0.06f))
+            .Append(_normalButton.transform.DOScale(_lotteryButtonScale * 1.06f, 0.1f))
+            .Append(_normalButton.transform.DOScale(_lotteryButtonScale, 0.12f))
             .SetEase(Ease.OutBack)
             .SetUpdate(true)
             .SetTarget(this);
@@ -768,7 +986,7 @@ public class LotteryView : UIBasePanel
 
         _lotteryBox.localRotation = Quaternion.Euler(0f, 0f, _lotteryBoxRotation);
         _lotteryBox.localScale = _lotteryBoxScale;
-        _lotteryButton.transform.localScale = _lotteryButtonScale;
+        _normalButton.transform.localScale = _lotteryButtonScale;
         _mysButton.transform.localScale = _mysButtonScale;
 
         for (int i = 0; i < _bubbles.Length; i++)

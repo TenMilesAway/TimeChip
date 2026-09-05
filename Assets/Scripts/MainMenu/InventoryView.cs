@@ -138,8 +138,22 @@ public class InventoryView : UIBasePanel
         }
 
         _currentPage = Mathf.Clamp(_currentPage, 1, GetMaxPage());
-        HideDetail();
+        int selectedItemIndex = FindItemIndex(_selectedItemId);
+        if (selectedItemIndex >= 0)
+        {
+            _currentPage = selectedItemIndex / ItemsPerPage + 1;
+        }
+        else
+        {
+            HideDetail();
+        }
+
         RefreshPageAsync(++_refreshVersion);
+
+        if (selectedItemIndex >= 0)
+        {
+            ShowItemDetailAsync(selectedItemIndex);
+        }
     }
 
     private void ShowPreviousPage()
@@ -212,10 +226,14 @@ public class InventoryView : UIBasePanel
         }
     }
 
-    private async void SelectItem(int itemIndex)
+    private void SelectItem(int itemIndex)
     {
-        await GameManager.Audio.Play(AudioDefine.SFXClick);
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        ShowItemDetailAsync(itemIndex);
+    }
 
+    private async void ShowItemDetailAsync(int itemIndex)
+    {
         if (itemIndex < 0 || itemIndex >= _items.Count)
         {
             return;
@@ -256,6 +274,24 @@ public class InventoryView : UIBasePanel
         _imgIcon.SetNativeSize();
         _imgIcon.rectTransform.localScale = Vector3.one * (entry.Item.RewardScale / RewardScaleDivisor);
         _imgIcon.gameObject.SetActive(true);
+    }
+
+    private int FindItemIndex(int itemId)
+    {
+        if (itemId <= 0)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < _items.Count; i++)
+        {
+            if (_items[i].Item.Id == itemId)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void HideDetail()

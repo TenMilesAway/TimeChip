@@ -34,5 +34,11 @@
     "name": "work",
     "desc": "在零工面板时的倍率",
     "scaleValue": 12000
+  },
+  {
+    "id": 7,
+    "name": "mysIcon",
+    "desc": "在神秘转盘时的倍率",
+    "scaleValue": 7000
   }
 ]

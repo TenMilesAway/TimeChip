@@ -15,6 +15,7 @@ public class CommonRewardPanel : UIBasePanel
     private readonly List<CommonRewardItem> _rewardItems = new List<CommonRewardItem>(); // 奖励物品
 
     private int _presentationVersion; // 当前展示版本号，用于处理异步加载和展示的顺序问题
+    private bool _rewardsAlreadyGranted; // 奖励是否已在展示前结算
 
     private void Awake()
     {
@@ -27,6 +28,7 @@ public class CommonRewardPanel : UIBasePanel
 
         GameManager.Audio.Play(AudioDefine.SFXGetReward);
 
+        _rewardsAlreadyGranted = param != null && param.rewardsAlreadyGranted;
         ResetPresentation();
 
         if (!(param?.data is List<CommonRewardItemData> rewardDataList))
@@ -202,8 +204,12 @@ public class CommonRewardPanel : UIBasePanel
 
     private void ClosePanel()
     {
-        GrantNonSimulationCoinBasePropertyRewards();
-        PlaySimulationCoinFlyAnimations();
+        if (!_rewardsAlreadyGranted)
+        {
+            GrantNonSimulationCoinBasePropertyRewards();
+            PlaySimulationCoinFlyAnimations();
+        }
+
         UIManager.GetInstance().ClosePanel(GetPanelName());
     }
 

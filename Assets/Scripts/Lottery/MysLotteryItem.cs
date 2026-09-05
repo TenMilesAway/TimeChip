@@ -14,6 +14,9 @@ public class MysLotteryItem : MonoBehaviour
     private Vector3 _defaultScale;
     private int _presentationVersion;
 
+    private const float RewardScaleDivisor = 10000f;
+    private const int MysIconScaleId = 7;
+
     private void Awake()
     {
         _defaultBackgroundColor = _bg.color;
@@ -38,6 +41,14 @@ public class MysLotteryItem : MonoBehaviour
         }
 
         string iconPath = baseConfig == null ? itemConfig.Icon : baseConfig.Icon;
+        int rewardScale = baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale;
+        cfg.Scale mysIconScaleConfig = tables.ScaleTable.GetOrDefault(MysIconScaleId);
+        if (mysIconScaleConfig == null)
+        {
+            Debug.LogError($"神秘转盘图标缩放配置不存在: [{MysIconScaleId}]", this);
+            return;
+        }
+
         Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
             iconPath,
             $"{GetInstanceID()}_{presentationVersion}");
@@ -53,6 +64,10 @@ public class MysLotteryItem : MonoBehaviour
         }
 
         _icon.sprite = icon;
+        _icon.SetNativeSize();
+        float scaleMultiplier = mysIconScaleConfig.ScaleValue / RewardScaleDivisor;
+        _icon.rectTransform.localScale =
+            Vector3.one * (rewardScale / RewardScaleDivisor) * scaleMultiplier;
     }
 
     public void SetHighlighted(bool highlighted)
