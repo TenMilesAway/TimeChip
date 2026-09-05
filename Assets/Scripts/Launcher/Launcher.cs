@@ -234,7 +234,7 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _gameSaveData = CreateDefaultGameSaveData();
-        await GrantNewLifeGrowRewardAsync();
+        // await GrantNewLifeGrowRewardAsync();
         SaveGameData();
         BeginLaunch(_gameSaveData, true);
     }
@@ -351,13 +351,14 @@ public class Launcher : SingletonMono<Launcher>
         GameManager.Audio.Play(AudioDefine.SFXClick);
         if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.SettingView, "设置"))
         {
-            EndMenuPanelTransition();
+            CancelMenuPanelTransition();
             return;
         }
 
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
-            action: EndMenuPanelTransition);
+            param: new OpenUIParam { data = true },
+            action: CompleteMenuPanelTransition);
     }
 
     private async void OpenGrowView()
@@ -369,7 +370,7 @@ public class Launcher : SingletonMono<Launcher>
 
         if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.GrowView, "时光藏馆"))
         {
-            EndMenuPanelTransition();
+            CancelMenuPanelTransition();
             return;
         }
 
@@ -378,7 +379,7 @@ public class Launcher : SingletonMono<Launcher>
         if (tables == null)
         {
             Debug.LogError("数据表初始化失败，无法打开成长界面", this);
-            EndMenuPanelTransition();
+            CancelMenuPanelTransition();
             return;
         }
 
@@ -389,7 +390,7 @@ public class Launcher : SingletonMono<Launcher>
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.GrowView,
-            action: EndMenuPanelTransition);
+            action: CompleteMenuPanelTransition);
     }
 
     /// <summary>
@@ -407,6 +408,7 @@ public class Launcher : SingletonMono<Launcher>
         {
             _txtLoad.text = $"正在检查{panelName}资源...";
         }
+        _menuRoot.SetActive(false);
         _loadingRoot.SetActive(true);
         return true;
     }
@@ -442,12 +444,32 @@ public class Launcher : SingletonMono<Launcher>
     }
 
     /// <summary>
-    /// 目标面板显示或下载失败后，关闭启动菜单转场界面
+    /// 目标面板显示后，关闭启动菜单转场界面
     /// </summary>
-    private void EndMenuPanelTransition()
+    private void CompleteMenuPanelTransition()
     {
         _isOpeningMenuPanel = false;
         _loadingRoot.SetActive(false);
+    }
+
+    /// <summary>
+    /// 资源加载失败时恢复启动菜单
+    /// </summary>
+    private void CancelMenuPanelTransition()
+    {
+        CompleteMenuPanelTransition();
+        _menuRoot.SetActive(true);
+    }
+
+    /// <summary>
+    /// 从启动菜单的子界面返回时恢复启动菜单
+    /// </summary>
+    public void ReturnToLauncherMenu()
+    {
+        _isOpeningMenuPanel = false;
+        _loadingRoot.SetActive(false);
+        _menuRoot.SetActive(true);
+        _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
 
     private async Task GrantNewLifeGrowRewardAsync()

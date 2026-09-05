@@ -49,6 +49,11 @@ public class SettingView : UIBasePanel
         _sliderSFX.onValueChanged.RemoveListener(OnSFXVolumeChanged);
         _toggleVibra.onValueChanged.RemoveListener(OnVibrationChanged);
         _btnBack.onClick.RemoveListener(OnBackButtonClicked);
+
+        if (Launcher.Instance != null)
+        {
+            Launcher.Instance.ReturnToLauncherMenu();
+        }
     }
 
     public override string GetPanelName()

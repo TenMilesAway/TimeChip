@@ -23,16 +23,19 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _settingButton;
 
     [SerializeField] private Transform _buffParent;
+    [SerializeField] private GameObject _goLoad;
 
     private readonly List<BuffItem> _buffItems = new List<BuffItem>();
 
     private MainContentPage _currentContentPage = MainContentPage.Community;    // 当前页面
     private bool _isWaitingForAdvanceTurnConfirmation;
+    private bool _isNavigating;
     private float _advanceTurnConfirmDeadline;
     private int _buffRefreshVersion;
 
     private void Awake()
     {
+        SetLoadingVisible(false);
         _nextMonthButton.onClick.AddListener(TryAdvanceTurn);
         _communityButton.onClick.AddListener(OpenCommunity);
         _lotteryButton.onClick.AddListener(OpenLottery);
@@ -66,6 +69,7 @@ public class MainMenuView : UIBasePanel
         BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
         ClearBuffItems();
         _isWaitingForAdvanceTurnConfirmation = false;
+        SetLoadingVisible(false);
     }
 
     protected override void OnDestroy()
@@ -160,9 +164,9 @@ public class MainMenuView : UIBasePanel
             param: new OpenUIParam { data = true });
     }
 
-    private void NavigateTo(MainContentPage targetPage)
+    private async void NavigateTo(MainContentPage targetPage)
     {
-        if (_currentContentPage == targetPage)
+        if (_isNavigating || _currentContentPage == targetPage)
         {
             return;
         }
@@ -172,16 +176,44 @@ public class MainMenuView : UIBasePanel
             return;
         }
 
-        if (TryGetPanelName(_currentContentPage, out string currentPanelName))
+        _isNavigating = true;
+        try
         {
-            UIManager.GetInstance().ClosePanel(currentPanelName);
-        }
+            UIBasePanel targetPanel = await UIManager.GetInstance()
+                .OpenPanelAsync(targetPanelName);
+            if (targetPanel == null)
+            {
+                return;
+            }
 
-        UIManager.GetInstance().OpenPanel(targetPanelName);
-        _currentContentPage = targetPage;
-        GameManager.Audio.Play(AudioDefine.SFXClick);
+            if (TryGetPanelName(_currentContentPage, out string currentPanelName))
+            {
+                UIManager.GetInstance().ClosePanel(currentPanelName);
+            }
+
+            _currentContentPage = targetPage;
+            GameManager.Audio.Play(AudioDefine.SFXClick);
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
     #endregion
+
+    /// <summary>
+    /// 设置页面异步加载遮罩的显示状态
+    /// </summary>
+    public void SetLoadingVisible(bool visible)
+    {
+        if (_goLoad == null)
+        {
+            Debug.LogError("MainMenuView 的 Load 节点未在 Inspector 中配置。", this);
+            return;
+        }
+
+        _goLoad.SetActive(visible);
+    }
 
     private static bool TryGetPanelName(MainContentPage page, out string panelName)
     {

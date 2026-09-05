@@ -51,6 +51,16 @@ public class GrowView : UIBasePanel
         GlobalInfoManager.GetInstance().GlobalInfoChanged -= OnGlobalInfoChanged;
     }
 
+    protected override void CloseHandle()
+    {
+        base.CloseHandle();
+
+        if (Launcher.Instance != null)
+        {
+            Launcher.Instance.ReturnToLauncherMenu();
+        }
+    }
+
     protected override void OnDestroy()
     {
         GlobalInfoManager.GetInstance().GlobalInfoChanged -= OnGlobalInfoChanged;

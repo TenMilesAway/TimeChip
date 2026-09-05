@@ -28,6 +28,7 @@ public class UIManager : Singleton<UIManager>
     private readonly List<string> _loadingPanels = new List<string>();
 
     private RectTransform _uiRoot;
+    private int _loadingOverlayCount;
 
     /// <summary>
     /// 初始化 Launcher UI Root 引用
@@ -43,36 +44,69 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     public async void OpenPanel(string panelName, UILayer layer = UILayer.Mid, OpenUIParam param = null, Action action = null)
     {
+        await OpenPanelAsync(panelName, layer, param, action);
+    }
+
+    /// <summary>
+    /// 异步打开 UI 面板；首次加载时会显示主界面的加载遮罩
+    /// </summary>
+    public async Task<UIBasePanel> OpenPanelAsync(
+        string panelName,
+        UILayer layer = UILayer.Mid,
+        OpenUIParam param = null,
+        Action action = null)
+    {
         if (_loadingPanels.Contains(panelName) || !TryGetUIRoot())
         {
-            return;
+            return null;
         }
 
         _loadingPanels.Add(panelName);
-
-        if (_panelDic.TryGetValue(panelName, out UIBasePanel panel))
+        bool isLoadingOverlayVisible = false;
+        try
         {
-            GetPanelCompletedLogic(panelName, panel, param, action);
-            return;
+            if (_panelDic.TryGetValue(panelName, out UIBasePanel panel))
+            {
+                GetPanelCompletedLogic(panel, param, action);
+                return panel;
+            }
+
+            isLoadingOverlayVisible = BeginLoadingOverlay(panelName);
+            GameObject panelGO = await UnityObjectPoolFactory.GetInstance()
+                .GetItem<GameObject>(panelName, GetInstance().ToString());
+
+            if (!TryGetUIRoot())
+            {
+                UnityObjectPoolFactory.GetInstance().PutItem(panelName, panelGO);
+                return null;
+            }
+
+            panelGO.transform.SetParent(_uiRoot, false);
+            RectTransform panelTransform = panelGO.transform as RectTransform;
+            panelTransform.offsetMax = Vector2.zero;
+            panelTransform.offsetMin = Vector2.zero;
+
+            UIBasePanel panelComponent = panelGO.GetComponent<UIBasePanel>();
+            if (panelComponent == null)
+            {
+                Debug.LogError($"UI prefab '{panelName}' is missing a UIBasePanel component.");
+                UnityObjectPoolFactory.GetInstance().PutItem(panelName, panelGO);
+                return null;
+            }
+
+            GetPanelCompletedLogic(panelComponent, param, action);
+            _panelDic.Add(panelName, panelComponent);
+            return panelComponent;
         }
-
-        GameObject panelGO = await UnityObjectPoolFactory.GetInstance().GetItem<GameObject>(panelName, GetInstance().ToString());
-
-        if (!TryGetUIRoot())
+        finally
         {
+            if (isLoadingOverlayVisible)
+            {
+                EndLoadingOverlay();
+            }
+
             _loadingPanels.Remove(panelName);
-            UnityObjectPoolFactory.GetInstance().PutItem(panelName, panelGO);
-            return;
         }
-
-        panelGO.transform.SetParent(_uiRoot, false);
-        RectTransform panelTransform = panelGO.transform as RectTransform;
-        panelTransform.offsetMax = Vector2.zero;
-        panelTransform.offsetMin = Vector2.zero;
-
-        UIBasePanel panelComponent = panelGO.GetComponent<UIBasePanel>();
-        GetPanelCompletedLogic(panelName, panelComponent, param, action);
-        _panelDic.Add(panelName, panelComponent);
     }
 
     private bool TryGetUIRoot()
@@ -90,18 +124,44 @@ public class UIManager : Singleton<UIManager>
         return _uiRoot != null;
     }
 
-    private void GetPanelCompletedLogic(string panelName, UIBasePanel panel, OpenUIParam param, Action action)
+    private void GetPanelCompletedLogic(UIBasePanel panel, OpenUIParam param, Action action)
     {
         panel.OnInit(param);
 
-        if (panel._isBlockingWindow && !_blockingWindows.ContainsKey(panelName))
+        if (panel._isBlockingWindow && !_blockingWindows.ContainsKey(panel.GetPanelName()))
         {
-            _blockingWindows.Add(panelName, panel);
+            _blockingWindows.Add(panel.GetPanelName(), panel);
         }
 
         panel.OnShow();
         action?.Invoke();
-        _loadingPanels.Remove(panelName);
+    }
+
+    private bool BeginLoadingOverlay(string panelName)
+    {
+        if (panelName == GlobalDefine.MainMenuView ||
+            !_panelDic.TryGetValue(GlobalDefine.MainMenuView, out UIBasePanel panel) ||
+            !(panel is MainMenuView mainMenuView))
+        {
+            return false;
+        }
+
+        _loadingOverlayCount++;
+        mainMenuView.SetLoadingVisible(true);
+        return true;
+    }
+
+    private void EndLoadingOverlay()
+    {
+        _loadingOverlayCount = Mathf.Max(0, _loadingOverlayCount - 1);
+        if (_loadingOverlayCount != 0 ||
+            !_panelDic.TryGetValue(GlobalDefine.MainMenuView, out UIBasePanel panel) ||
+            !(panel is MainMenuView mainMenuView))
+        {
+            return;
+        }
+
+        mainMenuView.SetLoadingVisible(false);
     }
 
     public UIBasePanel GetOpeningPanel(string panelName)

@@ -3219,10 +3219,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -35
       objectReference: {fileID: 0}
-    - target: {fileID: 5962513753563500781, guid: 02e572d420a00984aa8a8597a8d8a027, type: 3}
-      propertyPath: m_OverrideSorting
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6984841763990018068, guid: 02e572d420a00984aa8a8597a8d8a027, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -4123,7 +4119,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -272}
-  m_SizeDelta: {x: 450, y: 200}
+  m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1971887378
 MonoBehaviour:
