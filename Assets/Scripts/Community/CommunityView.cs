@@ -8,6 +8,7 @@ public class CommunityView : UIBasePanel
     [SerializeField] private Button _btnWork;       // 零工中心
     [SerializeField] private Button _btnHomeStore;  // 家具店
     [SerializeField] private Button _btnConvenienceStore; // 便利店
+    [SerializeField] private Button _btnCilinic;    // 医务室
 
     private void Awake()
     {
@@ -53,6 +54,11 @@ public class CommunityView : UIBasePanel
     public void OnClickConvenienceStore()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+    }
+
+    public void OnClickClinic()
+    {
+        UIManager.GetInstance().OpenPanel(GlobalDefine.ClinicView);
     }
 
     public override string GetPanelName()

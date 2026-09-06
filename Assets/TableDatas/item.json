@@ -70,9 +70,39 @@
     "useEffect": ""
   },
   {
+    "id": 1050,
+    "name": "创可贴",
+    "level": 1,
+    "desc": "稍微治疗一下你的伤势",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_bandage]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 1051,
+    "name": "元气胶囊",
+    "level": 2,
+    "desc": "吃下这颗胶囊就好啦",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_vitality_capsule]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
+    "id": 1052,
+    "name": "医疗包",
+    "level": 3,
+    "desc": "里面什么都有，帮助你快速恢复健康",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_kit]",
+    "canUse": 1,
+    "rewardScale": 4000,
+    "useEffect": ""
+  },
+  {
     "id": 2000,
     "name": "家具折扣券",
-    "level": 0,
+    "level": 1,
     "desc": "搬空家具城指日可待！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,

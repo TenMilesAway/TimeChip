@@ -33,6 +33,21 @@ public sealed class PlayerInfoData
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
+    /// <summary>标识玩家本回合是否已完成体检</summary>
+    public bool examinedThisTurn;
+
+    /// <summary>标识玩家本回合是否已使用治疗服务</summary>
+    public bool treatedThisTurn;
+
+    /// <summary>标识玩家本回合是否已在药房购买治疗物品</summary>
+    public bool purchasedClinicItemThisTurn;
+
+    /// <summary>治疗服务一的当前价格</summary>
+    public int cureService1Price = 300;
+
+    /// <summary>治疗服务二的当前价格</summary>
+    public int cureService2Price = 600;
+
     /// <summary>玩家拥有的可叠加道具列表</summary>
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
 
@@ -107,6 +122,30 @@ public enum ConveniencePurchaseResult
     InvalidOffer
 }
 
+public enum ClinicExaminationResult
+{
+    Success,
+    AlreadyExamined,
+    InvalidBuff
+}
+
+public enum ClinicTreatmentResult
+{
+    Success,
+    AlreadyTreated,
+    InsufficientCoins,
+    HealthFull,
+    InvalidService
+}
+
+public enum ClinicItemPurchaseResult
+{
+    Success,
+    AlreadyPurchased,
+    InsufficientCoins,
+    InvalidItem
+}
+
 /// <summary>
 /// 玩家当前进行中的单个任务存档数据
 /// </summary>
@@ -152,6 +191,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
+    private const int CureService1PriceIncrease = 30;
+    private const int CureService2PriceIncrease = 60;
     public const int MaxWorkLevel = 5;
     private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
 
@@ -181,6 +222,21 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家在本回合是否已经打工</summary>
     public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
+
+    /// <summary>获取玩家本回合是否已完成体检</summary>
+    public bool ExaminedThisTurn { get { return _data.examinedThisTurn; } }
+
+    /// <summary>获取玩家本回合是否已使用治疗服务</summary>
+    public bool TreatedThisTurn { get { return _data.treatedThisTurn; } }
+
+    /// <summary>获取玩家本回合是否已购买治疗物品</summary>
+    public bool PurchasedClinicItemThisTurn { get { return _data.purchasedClinicItemThisTurn; } }
+
+    /// <summary>获取治疗服务一当前价格</summary>
+    public int CureService1Price { get { return _data.cureService1Price; } }
+
+    /// <summary>获取治疗服务二当前价格</summary>
+    public int CureService2Price { get { return _data.cureService2Price; } }
 
     /// <summary>已购家具提供的满意度总和</summary>
     public float Satisfaction
@@ -647,6 +703,106 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return ConveniencePurchaseResult.Success;
     }
 
+    /// <summary>尝试完成本回合体检并激活指定 BUFF。</summary>
+    public ClinicExaminationResult TryUseClinicExamination(int buffId)
+    {
+        if (_data.examinedThisTurn)
+        {
+            return ClinicExaminationResult.AlreadyExamined;
+        }
+
+        if (buffId <= 0)
+        {
+            return ClinicExaminationResult.InvalidBuff;
+        }
+
+        _data.examinedThisTurn = true;
+        NotifyPlayerInfoChanged();
+        return ClinicExaminationResult.Success;
+    }
+
+    /// <summary>尝试使用治疗服务并在成功后提高该服务的下次价格。</summary>
+    public ClinicTreatmentResult TryUseClinicTreatment(int serviceId)
+    {
+        if (_data.treatedThisTurn)
+        {
+            return ClinicTreatmentResult.AlreadyTreated;
+        }
+
+        int price;
+        int healthRestore;
+        switch (serviceId)
+        {
+            case 1:
+                price = _data.cureService1Price;
+                healthRestore = 10;
+                break;
+            case 2:
+                price = _data.cureService2Price;
+                healthRestore = 25;
+                break;
+            default:
+                return ClinicTreatmentResult.InvalidService;
+        }
+
+        if (_data.health >= _data.maxHealth)
+        {
+            return ClinicTreatmentResult.HealthFull;
+        }
+
+        if (_data.simulationCoins < price)
+        {
+            return ClinicTreatmentResult.InsufficientCoins;
+        }
+
+        _data.simulationCoins -= price;
+        _data.health = Mathf.Clamp(_data.health + healthRestore, 0, _data.maxHealth);
+        _data.treatedThisTurn = true;
+        if (serviceId == 1)
+        {
+            _data.cureService1Price = IncreaseClinicServicePrice(
+                _data.cureService1Price,
+                CureService1PriceIncrease);
+        }
+        else
+        {
+            _data.cureService2Price = IncreaseClinicServicePrice(
+                _data.cureService2Price,
+                CureService2PriceIncrease);
+        }
+
+        NotifyPlayerInfoChanged();
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.Health, _data.health));
+        return ClinicTreatmentResult.Success;
+    }
+
+    /// <summary>尝试购买本回合唯一可购买的治疗物品。</summary>
+    public ClinicItemPurchaseResult TryPurchaseClinicItem(int itemId, int price)
+    {
+        if (_data.purchasedClinicItemThisTurn)
+        {
+            return ClinicItemPurchaseResult.AlreadyPurchased;
+        }
+
+        if (itemId <= 0 ||
+            price < 0 ||
+            DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId) == null)
+        {
+            return ClinicItemPurchaseResult.InvalidItem;
+        }
+
+        if (_data.simulationCoins < price)
+        {
+            return ClinicItemPurchaseResult.InsufficientCoins;
+        }
+
+        _data.simulationCoins -= price;
+        AddInventoryItem(itemId, 1);
+        _data.purchasedClinicItemThisTurn = true;
+        NotifyPlayerInfoChanged();
+        return ClinicItemPurchaseResult.Success;
+    }
+
     /// <summary>获取指定零工类型的当前等级; 未进行过该零工时默认为一级。</summary>
     public int GetWorkLevel(string workType)
     {
@@ -758,6 +914,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     {
         TurnEnding?.Invoke();
         _data.workedThisTurn = false;
+        _data.examinedThisTurn = false;
+        _data.treatedThisTurn = false;
+        _data.purchasedClinicItemThisTurn = false;
         _data.currentMonth++;
 
         if (_data.currentMonth > MonthsPerYear)
@@ -800,6 +959,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return true;
     }
 
+    private static int IncreaseClinicServicePrice(int price, int increase)
+    {
+        return (int)Math.Min(int.MaxValue, (long)price + increase);
+    }
+
     /// <summary>修正初始化数据中的无效值, 确保内部状态始终处于合法范围</summary>
     private void NormalizeData()
     {
@@ -810,6 +974,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.simulationCoins = Mathf.Max(0, _data.simulationCoins);
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
         _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
+        _data.cureService1Price = Mathf.Max(300, _data.cureService1Price);
+        _data.cureService2Price = Mathf.Max(600, _data.cureService2Price);
         if (_data.inventory == null)
         {
             _data.inventory = new List<PlayerInventoryItem>();
@@ -919,6 +1085,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             timeCoins = source.timeCoins,
             wheelCoins = source.wheelCoins,
             workedThisTurn = source.workedThisTurn,
+            examinedThisTurn = source.examinedThisTurn,
+            treatedThisTurn = source.treatedThisTurn,
+            purchasedClinicItemThisTurn = source.purchasedClinicItemThisTurn,
+            cureService1Price = source.cureService1Price,
+            cureService2Price = source.cureService2Price,
             inventory = CreateInventoryCopy(source.inventory),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
             activeBuffs = CreateActiveBuffCopy(source.activeBuffs),

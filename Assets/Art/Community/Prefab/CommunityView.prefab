@@ -66,6 +66,7 @@ MonoBehaviour:
   _btnWork: {fileID: 0}
   _btnHomeStore: {fileID: 0}
   _btnConvenienceStore: {fileID: 3025033739506808880}
+  _btnCilinic: {fileID: 0}
 --- !u!223 &8290727820807594715
 Canvas:
   m_ObjectHideFlags: 0
@@ -1435,7 +1436,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7849996767384150011}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6181902121454920995}
+        m_TargetAssemblyTypeName: CommunityView, Assembly-CSharp
+        m_MethodName: OnClickClinic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &859459865003835001
 MonoBehaviour:
   m_ObjectHideFlags: 0
