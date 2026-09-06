@@ -77,7 +77,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_bandage]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "103,5,100"
   },
   {
     "id": 1051,
@@ -87,7 +87,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_vitality_capsule]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "103,10,100"
   },
   {
     "id": 1052,
@@ -97,7 +97,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_kit]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "103,15,100"
   },
   {
     "id": 2000,
