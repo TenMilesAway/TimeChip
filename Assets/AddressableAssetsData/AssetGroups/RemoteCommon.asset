@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 645e6d0409f291b4eba0330d8007a8c4
   m_SerializeEntries:
+  - m_GUID: 06253267ccfcdf849a464acd8a8da500
+    m_Address: Assets/Art/Common/SpritesBig
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload-game-content
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f191510425ed2a4aac5c60c7e658d77
     m_Address: Assets/Art/Common/Prefab
     m_ReadOnly: 0
