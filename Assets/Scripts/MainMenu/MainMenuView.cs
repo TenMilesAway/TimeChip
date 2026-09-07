@@ -47,6 +47,8 @@ public class MainMenuView : UIBasePanel
 
     protected override void InitHandle(OpenUIParam param)
     {
+        _currentContentPage = MainContentPage.Community;
+        _isNavigating = false;
         RefreshPlayerInfo(PlayerInfoManager.GetInstance());
     }
 
