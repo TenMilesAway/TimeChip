@@ -9,10 +9,12 @@ public class MysLotteryItem : MonoBehaviour
     [SerializeField] private Image _bg;
     [SerializeField] private Image _icon;
     [SerializeField] private Text _num;
+    [SerializeField] private Button _btnDetail;
 
     private Color _defaultBackgroundColor;
     private Vector3 _defaultScale;
     private int _presentationVersion;
+    private int _itemId;
 
     private const float RewardScaleDivisor = 10000f;
     private const int MysIconScaleId = 7;
@@ -21,11 +23,22 @@ public class MysLotteryItem : MonoBehaviour
     {
         _defaultBackgroundColor = _bg.color;
         _defaultScale = transform.localScale;
+        _btnDetail.onClick.AddListener(OpenItemDetail);
+    }
+
+    private void OnDestroy()
+    {
+        if (_btnDetail != null)
+        {
+            _btnDetail.onClick.RemoveListener(OpenItemDetail);
+        }
     }
 
     public async void SetData(CommonRewardItemData reward)
     {
         _presentationVersion++;
+        _itemId = reward.itemId;
+        _btnDetail.interactable = false;
         int presentationVersion = _presentationVersion;
         SetHighlighted(false);
         _icon.sprite = null;
@@ -40,6 +53,7 @@ public class MysLotteryItem : MonoBehaviour
             return;
         }
 
+        _btnDetail.interactable = itemConfig != null;
         string iconPath = baseConfig == null ? itemConfig.Icon : baseConfig.Icon;
         int rewardScale = baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale;
         cfg.Scale mysIconScaleConfig = tables.ScaleTable.GetOrDefault(MysIconScaleId);
@@ -68,6 +82,21 @@ public class MysLotteryItem : MonoBehaviour
         float scaleMultiplier = mysIconScaleConfig.ScaleValue / RewardScaleDivisor;
         _icon.rectTransform.localScale =
             Vector3.one * (rewardScale / RewardScaleDivisor) * scaleMultiplier;
+    }
+
+    private void OpenItemDetail()
+    {
+        if (_itemId <= 0 ||
+            DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_itemId) == null)
+        {
+            Debug.LogError($"神秘转盘奖励详情配置不存在: [{_itemId}]", this);
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonItemDetailView,
+            param: new OpenUIParam { data = _itemId });
     }
 
     public void SetHighlighted(bool highlighted)
