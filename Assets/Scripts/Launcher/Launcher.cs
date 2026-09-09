@@ -543,6 +543,7 @@ public class Launcher : SingletonMono<Launcher>
             simulationCoins = 2000,
             timeCoins = 10,
             wheelCoins = 10,
+            boxCoins = 10,
             workedThisTurn = false
         };
     }

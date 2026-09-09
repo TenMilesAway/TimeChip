@@ -307,6 +307,9 @@ public class CommonRewardPanel : UIBasePanel
                 case BasePropertyId.WheelCoin:
                     playerInfoManager.AddWheelCoins(rewardItem.Count);
                     break;
+                case BasePropertyId.BoxCoin:
+                    playerInfoManager.AddBoxCoins(rewardItem.Count);
+                    break;
             }
         }
     }

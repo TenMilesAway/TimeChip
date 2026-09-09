@@ -70,6 +70,16 @@
     "useEffect": ""
   },
   {
+    "id": 1012,
+    "name": "秘匣币",
+    "level": 4,
+    "desc": "嘟嘟嘟，秘匣币！",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_secret_box_coin]",
+    "canUse": 0,
+    "rewardScale": 3500,
+    "useEffect": ""
+  },
+  {
     "id": 1050,
     "name": "创可贴",
     "level": 1,
@@ -397,6 +407,46 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_5]",
     "canUse": 0,
     "rewardScale": 5500,
+    "useEffect": ""
+  },
+  {
+    "id": 5000,
+    "name": "野生狗奶",
+    "level": 3,
+    "desc": "一切秩序即将崩塌，宇宙论为一片死寂虚空，而野生狗奶依旧存在",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_wild_dog_milk]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": ""
+  },
+  {
+    "id": 5001,
+    "name": "活虾(死亡)",
+    "level": 3,
+    "desc": "量子叠加，薛定谔的终极定理，超出三界之外，不在五行之中，售价十四",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_live_shrimp(dead)]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": ""
+  },
+  {
+    "id": 5002,
+    "name": "免费米饭",
+    "level": 3,
+    "desc": "最后的考古学家在虚空尽头挖出一块牌子，写着：”免费米饭，两元\"",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_free_rice_two_yuan]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": ""
+  },
+  {
+    "id": 5003,
+    "name": "春秋肠",
+    "level": 3,
+    "desc": "吃下它，你将重新站在那个岔路口，再一次，做出同样的选择",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_spring_autumn_ham]",
+    "canUse": 0,
+    "rewardScale": 7000,
     "useEffect": ""
   }
 ]

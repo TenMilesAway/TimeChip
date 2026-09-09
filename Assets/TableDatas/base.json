@@ -26,5 +26,12 @@
     "desc": "抽奖货币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_wheel_coin]",
     "rewardScale": 4000
+  },
+  {
+    "id": 105,
+    "name": "秘匣币",
+    "desc": "抽奖货币",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_secret_box_coin]",
+    "rewardScale": 3500
   }
 ]

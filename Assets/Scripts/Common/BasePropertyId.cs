@@ -5,4 +5,5 @@ public static class BasePropertyId
     public const int TimeCoin = 102;
     public const int Health = 103;
     public const int WheelCoin = 104;
+    public const int BoxCoin = 105;
 }

@@ -12,8 +12,10 @@ public class LotteryView : UIBasePanel
     [SerializeField] private GameObject _selection; // 切换抽奖类型界面
     [SerializeField] private GameObject _normal;  // 普通抽奖
     [SerializeField] private GameObject _mys;     // 神秘转盘
+    [SerializeField] private GameObject _box;     // 时光秘匣
     [SerializeField] private Button _btnChangeNormal;  // 切换至普通抽奖
     [SerializeField] private Button _btnChangeMys;     // 切换至神秘转盘
+    [SerializeField] private Button _btnChangeBox;     // 切换至时光秘匣
     [SerializeField] private Button _btnCloseChangeLottery; // 关闭切换抽奖类型界面按钮
 
 
@@ -33,6 +35,11 @@ public class LotteryView : UIBasePanel
     [SerializeField] private Button _mysFiveButton;         // 抽奖按钮，五连抽
     [SerializeField] private Text _wheelCoinText;           // 剩余转盘币文本
 
+    [Header("时光秘匣")]
+    [SerializeField] private BoxLotteryItem[] _boxLotteryItem;  // 时光秘匣奖品列表, 共 6 个
+    [SerializeField] private Button _boxButton;             // 抽奖按钮
+    [SerializeField] private Text _boxCoinText;             // 剩余秘匣币文本
+
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
     private Vector3 _lotteryButtonScale;                    // 抽奖按钮缩放
     private Vector3 _mysButtonScale;                        // 转盘按钮缩放
@@ -45,12 +52,18 @@ public class LotteryView : UIBasePanel
     private Tween _rewardPresentationTween;                 // 延迟显示奖励的回调
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
+    private readonly List<CommonRewardItemData> _boxRewards =
+        new List<CommonRewardItemData>(BoxRewardCount);
+    private int _selectedBoxIndex = -1;
 
     private const int LotteryPoolId = 1;                    // 奖池 ID
     private const int MysteryWheelPoolId = 2;               // 神秘转盘奖池 ID
+    private const int BoxLotteryPoolId = 3;                 // 时光秘匣奖池 ID
+    private const int BoxCoinItemId = BasePropertyId.BoxCoin; // 秘匣币道具 ID
     private const int FiveDrawCount = 5;                    // 五连抽次数
     private const float LotteryDuration = 1f;               // 奖池抽奖间隔
     private const int MysteryWheelRewardCount = 12;         // 转盘奖品数量
+    private const int BoxRewardCount = 6;                   // 秘匣盒子数量
     private const int MysteryWheelMinimumSteps = 24;        // 至少转两圈
     private const float MysteryWheelSlowInterval = 0.16f;   // 转盘最慢间隔
     private const float MysteryWheelFastInterval = 0.035f;  // 转盘最快间隔
@@ -60,6 +73,7 @@ public class LotteryView : UIBasePanel
     private const float IdleDecorationScaleMultiplier = 1.025f; // 待机装饰最大缩放
     private const float LotteryRevealDuration = 0.38f;      // 开箱揭晓演出时长
     private const float MysteryWheelRevealDuration = 0.38f; // 转盘结果揭晓时长
+    private const float BoxRevealDuration = 0.52f;          // 秘匣结果揭晓时长
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -82,12 +96,12 @@ public class LotteryView : UIBasePanel
         RefreshTimeCoins(playerInfoManager);
         _selection.SetActive(false);
 
-        if (!_normal.activeSelf && !_mys.activeSelf)
+        if (!_normal.activeSelf && !_mys.activeSelf && !_box.activeSelf)
         {
             _normal.SetActive(true);
         }
 
-        SwitchLotteryMode(_mys.activeSelf);
+        SwitchLotteryMode(GetActiveLotteryMode());
     }
 
     protected override void HideHandle()
@@ -122,6 +136,7 @@ public class LotteryView : UIBasePanel
             _mysFiveButton.interactable = true;
         }
 
+        ResetBoxSelection();
         ClearMysteryWheelHighlights();
     }
 
@@ -140,6 +155,13 @@ public class LotteryView : UIBasePanel
             _btnCloseChangeLottery.onClick.RemoveListener(CloseLotterySelection);
             _btnChangeNormal.onClick.RemoveListener(SwitchToNormalLottery);
             _btnChangeMys.onClick.RemoveListener(SwitchToMysteryWheelLottery);
+            _btnChangeBox.onClick.RemoveListener(SwitchToBoxLottery);
+            _boxButton.onClick.RemoveListener(StartBoxLottery);
+
+            for (int i = 0; i < _boxLotteryItem.Length; i++)
+            {
+                _boxLotteryItem[i].Selected -= SelectBox;
+            }
         }
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
@@ -165,6 +187,13 @@ public class LotteryView : UIBasePanel
         _btnCloseChangeLottery.onClick.AddListener(CloseLotterySelection);
         _btnChangeNormal.onClick.AddListener(SwitchToNormalLottery);
         _btnChangeMys.onClick.AddListener(SwitchToMysteryWheelLottery);
+        _btnChangeBox.onClick.AddListener(SwitchToBoxLottery);
+        _boxButton.onClick.AddListener(StartBoxLottery);
+        for (int i = 0; i < _boxLotteryItem.Length; i++)
+        {
+            _boxLotteryItem[i].Selected += SelectBox;
+        }
+
         _hasRegisteredButtonListener = true;
     }
 
@@ -250,15 +279,30 @@ public class LotteryView : UIBasePanel
 
     private void SwitchToNormalLottery()
     {
-        SwitchLotteryMode(false);
+        SwitchLotteryMode(LotteryMode.Normal);
     }
 
     private void SwitchToMysteryWheelLottery()
     {
-        SwitchLotteryMode(true);
+        SwitchLotteryMode(LotteryMode.MysteryWheel);
     }
 
-    private void SwitchLotteryMode(bool showMysteryWheel)
+    private void SwitchToBoxLottery()
+    {
+        SwitchLotteryMode(LotteryMode.Box);
+    }
+
+    private LotteryMode GetActiveLotteryMode()
+    {
+        if (_box.activeSelf)
+        {
+            return LotteryMode.Box;
+        }
+
+        return _mys.activeSelf ? LotteryMode.MysteryWheel : LotteryMode.Normal;
+    }
+
+    private void SwitchLotteryMode(LotteryMode lotteryMode)
     {
         if (_isLotteryInProgress)
         {
@@ -267,13 +311,18 @@ public class LotteryView : UIBasePanel
 
         DOTween.Kill(this);
         RestoreAnimationState();
-        _normal.SetActive(!showMysteryWheel);
-        _mys.SetActive(showMysteryWheel);
+        _normal.SetActive(lotteryMode == LotteryMode.Normal);
+        _mys.SetActive(lotteryMode == LotteryMode.MysteryWheel);
+        _box.SetActive(lotteryMode == LotteryMode.Box);
         _selection.SetActive(false);
 
-        if (showMysteryWheel)
+        if (lotteryMode == LotteryMode.MysteryWheel)
         {
             RefreshMysteryWheelRewards();
+        }
+        else if (lotteryMode == LotteryMode.Box)
+        {
+            RefreshBoxLotteryRewards();
         }
         else
         {
@@ -298,6 +347,9 @@ public class LotteryView : UIBasePanel
             case BasePropertyId.WheelCoin:
                 playerInfoManager.AddWheelCoins(reward.itemCount);
                 break;
+            case BasePropertyId.BoxCoin:
+                playerInfoManager.AddBoxCoins(reward.itemCount);
+                break;
             default:
                 playerInfoManager.AddItem(reward.itemId, reward.itemCount);
                 break;
@@ -320,6 +372,114 @@ public class LotteryView : UIBasePanel
     {
         _timeCoinText.text = $"{playerInfoManager.TimeCoins}";
         _wheelCoinText.text = $"{playerInfoManager.WheelCoins}";
+        _boxCoinText.text = $"{playerInfoManager.GetConsumableCount(BoxCoinItemId)}";
+    }
+
+    private void RefreshBoxLotteryRewards()
+    {
+        if (_boxLotteryItem == null || _boxLotteryItem.Length != BoxRewardCount)
+        {
+            Debug.LogError($"时光秘匣必须配置 {BoxRewardCount} 个盒子。", this);
+            _boxButton.interactable = false;
+            return;
+        }
+
+        if (!TryDrawUniqueRewards(BoxLotteryPoolId, BoxRewardCount, out List<CommonRewardItemData> rewards))
+        {
+            Debug.LogError($"时光秘匣可用奖励少于 {BoxRewardCount} 个。", this);
+            _boxButton.interactable = false;
+            return;
+        }
+
+        _boxRewards.Clear();
+        _boxRewards.AddRange(rewards);
+        ResetBoxSelection();
+    }
+
+    private void SelectBox(BoxLotteryItem selectedBox)
+    {
+        if (_isLotteryInProgress || _boxRewards.Count != BoxRewardCount)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _boxLotteryItem.Length; i++)
+        {
+            bool selected = _boxLotteryItem[i] == selectedBox;
+            _boxLotteryItem[i].SetSelected(selected);
+            if (selected)
+            {
+                _selectedBoxIndex = i;
+            }
+        }
+
+        _boxButton.interactable = true;
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+    }
+
+    private void StartBoxLottery()
+    {
+        if (_isLotteryInProgress || _selectedBoxIndex < 0 ||
+            _selectedBoxIndex >= _boxRewards.Count)
+        {
+            return;
+        }
+
+        if (!TrySpendLotteryCost(BoxLotteryPoolId))
+        {
+            return;
+        }
+
+        CommonRewardItemData reward = _boxRewards[_selectedBoxIndex];
+        ApplyReward(reward);
+        ScheduleRewardPresentation(
+            new List<CommonRewardItemData> { reward },
+            BoxRevealDuration + 0.01f);
+
+        _isLotteryInProgress = true;
+        _boxButton.interactable = false;
+
+        _boxLotteryItem[_selectedBoxIndex].PlayDrawAnimation();
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        GameManager.Audio.Vibrate();
+
+        DOVirtual.DelayedCall(BoxRevealDuration, CompleteBoxLottery)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private void CompleteBoxLottery()
+    {
+        if (!_isLotteryInProgress)
+        {
+            return;
+        }
+
+        _isLotteryInProgress = false;
+        RefreshBoxLotteryRewards();
+    }
+
+    private void ResetBoxSelection()
+    {
+        _selectedBoxIndex = -1;
+        if (_boxLotteryItem == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _boxLotteryItem.Length; i++)
+        {
+            if (_boxLotteryItem[i] != null)
+            {
+                _boxLotteryItem[i].ResetPresentation();
+                _boxLotteryItem[i].SetInteractable(true);
+            }
+        }
+
+        if (_boxButton != null)
+        {
+            _boxButton.interactable = false;
+        }
     }
 
     private bool TryDrawReward(int lotteryPoolId, out CommonRewardItemData reward)
@@ -387,6 +547,61 @@ public class LotteryView : UIBasePanel
             }
 
             rewards.Add(reward);
+        }
+
+        return true;
+    }
+
+    private bool TryDrawUniqueRewards(
+        int lotteryPoolId,
+        int drawCount,
+        out List<CommonRewardItemData> rewards)
+    {
+        rewards = new List<CommonRewardItemData>(drawCount);
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null)
+        {
+            return false;
+        }
+
+        List<LotteryReward> candidates = ParseRewards(lotteryConfig.Rewards);
+        candidates.RemoveAll(reward => !HasRewardPresentation(reward.ItemId));
+        RemoveDuplicateRewardItems(candidates);
+        if (candidates.Count < drawCount)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < drawCount; i++)
+        {
+            long totalWeight = 0;
+            for (int j = 0; j < candidates.Count; j++)
+            {
+                totalWeight += candidates[j].Weight;
+            }
+
+            long randomValue = (long)(UnityEngine.Random.value * totalWeight);
+            long accumulatedWeight = 0;
+            int selectedIndex = candidates.Count - 1;
+            for (int j = 0; j < candidates.Count; j++)
+            {
+                accumulatedWeight += candidates[j].Weight;
+                if (randomValue < accumulatedWeight)
+                {
+                    selectedIndex = j;
+                    break;
+                }
+            }
+
+            LotteryReward selectedReward = candidates[selectedIndex];
+            rewards.Add(new CommonRewardItemData
+            {
+                itemId = selectedReward.ItemId,
+                itemCount = selectedReward.ItemCount
+            });
+            candidates.RemoveAt(selectedIndex);
         }
 
         return true;
@@ -994,6 +1209,13 @@ public class LotteryView : UIBasePanel
             _bubbles[i].anchoredPosition = _bubblePositions[i];
             _bubbles[i].localScale = _bubbleScales[i];
         }
+    }
+
+    private enum LotteryMode
+    {
+        Normal,
+        MysteryWheel,
+        Box
     }
 
     private readonly struct LotteryReward

@@ -30,6 +30,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的转盘币数量</summary>
     public int wheelCoins;
 
+    /// <summary>玩家持有的秘匣币数量</summary>
+    public int boxCoins;
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -220,6 +223,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>获取玩家当前持有的转盘币数量</summary>
     public int WheelCoins { get { return _data.wheelCoins; } }
 
+    /// <summary>获取玩家当前持有的秘匣币数量</summary>
+    public int BoxCoins { get { return _data.boxCoins; } }
+
     /// <summary>获取玩家在本回合是否已经打工</summary>
     public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
 
@@ -407,6 +413,18 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return TrySpendCoins(ref _data.wheelCoins, amount);
     }
 
+    /// <summary>按指定数值增加或减少秘匣币, 秘匣币不会低于零</summary>
+    public void AddBoxCoins(int amount)
+    {
+        SetValue(ref _data.boxCoins, Mathf.Max(0, _data.boxCoins + amount));
+    }
+
+    /// <summary>尝试消耗指定数量的秘匣币</summary>
+    public bool TrySpendBoxCoins(int amount)
+    {
+        return TrySpendCoins(ref _data.boxCoins, amount);
+    }
+
     /// <summary>向背包添加道具; 相同道具会自动叠加数量</summary>
     /// <param name="itemId">要添加的道具 ID, 必须大于零</param>
     /// <param name="amount">要添加的数量, 必须大于零</param>
@@ -501,6 +519,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 return _data.timeCoins;
             case BasePropertyId.WheelCoin:
                 return _data.wheelCoins;
+            case BasePropertyId.BoxCoin:
+                return _data.boxCoins;
             default:
                 return GetItemCount(itemId);
         }
@@ -517,6 +537,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 return TrySpendTimeCoins(amount);
             case BasePropertyId.WheelCoin:
                 return TrySpendWheelCoins(amount);
+            case BasePropertyId.BoxCoin:
+                return TrySpendBoxCoins(amount);
             default:
                 return TryConsumeItem(itemId, amount);
         }
@@ -974,6 +996,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.simulationCoins = Mathf.Max(0, _data.simulationCoins);
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
         _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
+        _data.boxCoins = Mathf.Max(0, _data.boxCoins);
         _data.cureService1Price = Mathf.Max(300, _data.cureService1Price);
         _data.cureService2Price = Mathf.Max(600, _data.cureService2Price);
         if (_data.inventory == null)
@@ -1084,6 +1107,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
             wheelCoins = source.wheelCoins,
+            boxCoins = source.boxCoins,
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,
@@ -1341,7 +1365,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return basePropertyId == BasePropertyId.SimulationCoin ||
             basePropertyId == BasePropertyId.TimeCoin ||
             basePropertyId == BasePropertyId.Health ||
-            basePropertyId == BasePropertyId.WheelCoin;
+            basePropertyId == BasePropertyId.WheelCoin ||
+            basePropertyId == BasePropertyId.BoxCoin;
     }
 
     private void AddBaseProperty(int basePropertyId)
@@ -1359,6 +1384,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 break;
             case BasePropertyId.WheelCoin:
                 AddWheelCoins(1);
+                break;
+            case BasePropertyId.BoxCoin:
+                AddBoxCoins(1);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(basePropertyId));
