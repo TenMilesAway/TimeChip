@@ -33,6 +33,31 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的秘匣币数量</summary>
     public int boxCoins;
 
+    /// <summary>社区中心等级，范围为 1 至 6</summary>
+    public int communityCentreLevel = 1;
+
+    /// <summary>当前社区等级内积累的经验</summary>
+    public int communityCentreExperience;
+
+    /// <summary>社区升级后尚未使用的提案选择次数</summary>
+    public int communityCentreProposalChoiceCount;
+
+    /// <summary>当前待选择的社区提案配置 ID</summary>
+    public List<int> communityCentreProposalOfferIds = new List<int>();
+
+    /// <summary>社区需求上次刷新的年龄</summary>
+    public int communityCentreNeedAge = -1;
+
+    /// <summary>社区需求上次刷新的月份</summary>
+    public int communityCentreNeedMonth = -1;
+
+    /// <summary>当月社区需求及其提交状态</summary>
+    public List<PlayerCommunityCentreNeed> communityCentreNeeds =
+        new List<PlayerCommunityCentreNeed>();
+
+    /// <summary>当月全部社区需求的额外经验是否已领取</summary>
+    public bool communityCentreAllNeedsBonusGranted;
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -117,12 +142,35 @@ public sealed class PlayerMysteryWheelReward
     public int amount;
 }
 
+/// <summary>当月单个社区需求的存档数据</summary>
+[Serializable]
+public sealed class PlayerCommunityCentreNeed
+{
+    public int itemId;
+    public bool submitted;
+}
+
 public enum ConveniencePurchaseResult
 {
     Success,
     SoldOut,
     InsufficientCoins,
     InvalidOffer
+}
+
+public enum CommunityCentreNeedSubmitResult
+{
+    Success,
+    AlreadySubmitted,
+    InsufficientItem,
+    InvalidNeed
+}
+
+public enum CommunityCentreRedundancySubmitResult
+{
+    Success,
+    InsufficientRedundancy,
+    InvalidItem
 }
 
 public enum ClinicExaminationResult
@@ -194,10 +242,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
+    private const int MinCommunityCentreLevel = 1;
+    private const int MaxCommunityCentreLevel = 6;
     private const int CureService1PriceIncrease = 30;
     private const int CureService2PriceIncrease = 60;
     public const int MaxWorkLevel = 5;
     private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
+    private static readonly int[] CommunityCentreExperienceRequirements =
+        { 150, 350, 700, 1200, 1800 };
 
     /// <summary>当前由管理器维护的玩家数据</summary>
     private PlayerInfoData _data = new PlayerInfoData();
@@ -225,6 +277,199 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的秘匣币数量</summary>
     public int BoxCoins { get { return _data.boxCoins; } }
+
+    /// <summary>当前社区中心等级</summary>
+    public int CommunityCentreLevel { get { return _data.communityCentreLevel; } }
+
+    /// <summary>当前社区等级内积累的经验</summary>
+    public int CommunityCentreExperience { get { return _data.communityCentreExperience; } }
+
+    /// <summary>尚未使用的社区提案选择次数</summary>
+    public int CommunityCentreProposalChoiceCount
+    {
+        get { return _data.communityCentreProposalChoiceCount; }
+    }
+
+    /// <summary>获取当前待选择的社区提案配置 ID。</summary>
+    public List<int> GetCommunityCentreProposalOfferIds()
+    {
+        return new List<int>(_data.communityCentreProposalOfferIds);
+    }
+
+    /// <summary>保存当前待选择的社区提案配置 ID。</summary>
+    public void SetCommunityCentreProposalOfferIds(IReadOnlyList<int> offerIds)
+    {
+        if (offerIds == null || offerIds.Count == 0)
+        {
+            throw new ArgumentException("社区提案候选不能为空", nameof(offerIds));
+        }
+
+        HashSet<int> uniqueOfferIds = new HashSet<int>();
+        for (int i = 0; i < offerIds.Count; i++)
+        {
+            if (offerIds[i] <= 0 || !uniqueOfferIds.Add(offerIds[i]))
+            {
+                throw new ArgumentException("社区提案候选必须为不重复的有效配置", nameof(offerIds));
+            }
+        }
+
+        _data.communityCentreProposalOfferIds = new List<int>(offerIds);
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>消耗一次社区提案选择次数，并清除当前候选。</summary>
+    public bool TryConsumeCommunityCentreProposalChoice()
+    {
+        if (_data.communityCentreProposalChoiceCount <= 0)
+        {
+            return false;
+        }
+
+        _data.communityCentreProposalChoiceCount--;
+        _data.communityCentreProposalOfferIds.Clear();
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    /// <summary>当月社区需求是否已生成且数量有效</summary>
+    public bool HasMonthlyCommunityCentreNeeds(int expectedCount)
+    {
+        return expectedCount > 0 &&
+            _data.communityCentreNeedAge == _data.currentAge &&
+            _data.communityCentreNeedMonth == _data.currentMonth &&
+            _data.communityCentreNeeds != null &&
+            _data.communityCentreNeeds.Count == expectedCount;
+    }
+
+    /// <summary>获取当月指定槽位的社区需求</summary>
+    public bool TryGetMonthlyCommunityCentreNeedAt(
+        int index,
+        out int itemId,
+        out bool submitted)
+    {
+        itemId = 0;
+        submitted = false;
+        if (index < 0 || _data.communityCentreNeeds == null ||
+            index >= _data.communityCentreNeeds.Count)
+        {
+            return false;
+        }
+
+        PlayerCommunityCentreNeed need = _data.communityCentreNeeds[index];
+        if (need == null || need.itemId <= 0)
+        {
+            return false;
+        }
+
+        itemId = need.itemId;
+        submitted = need.submitted;
+        return true;
+    }
+
+    /// <summary>保存本月随机生成的社区需求</summary>
+    public void SetMonthlyCommunityCentreNeeds(IReadOnlyList<int> itemIds)
+    {
+        if (itemIds == null || itemIds.Count == 0)
+        {
+            throw new ArgumentException("社区需求不能为空", nameof(itemIds));
+        }
+
+        HashSet<int> uniqueItemIds = new HashSet<int>();
+        List<PlayerCommunityCentreNeed> needs =
+            new List<PlayerCommunityCentreNeed>(itemIds.Count);
+        for (int i = 0; i < itemIds.Count; i++)
+        {
+            if (itemIds[i] <= 0 || !uniqueItemIds.Add(itemIds[i]))
+            {
+                throw new ArgumentException("社区需求必须为不重复的有效道具", nameof(itemIds));
+            }
+
+            needs.Add(new PlayerCommunityCentreNeed { itemId = itemIds[i] });
+        }
+
+        _data.communityCentreNeedAge = _data.currentAge;
+        _data.communityCentreNeedMonth = _data.currentMonth;
+        _data.communityCentreNeeds = needs;
+        _data.communityCentreAllNeedsBonusGranted = false;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>提交一个当月社区需求，并发放随机社区经验及全数提交奖励。</summary>
+    public CommunityCentreNeedSubmitResult TrySubmitCommunityCentreNeed(
+        int index,
+        out int experienceGained,
+        out int bonusExperienceGained)
+    {
+        experienceGained = 0;
+        bonusExperienceGained = 0;
+        if (_data.communityCentreNeeds == null ||
+            !HasMonthlyCommunityCentreNeeds(_data.communityCentreNeeds.Count) ||
+            index < 0 || index >= _data.communityCentreNeeds.Count)
+        {
+            return CommunityCentreNeedSubmitResult.InvalidNeed;
+        }
+
+        PlayerCommunityCentreNeed need = _data.communityCentreNeeds[index];
+        if (need == null || need.itemId <= 0)
+        {
+            return CommunityCentreNeedSubmitResult.InvalidNeed;
+        }
+
+        if (need.submitted)
+        {
+            return CommunityCentreNeedSubmitResult.AlreadySubmitted;
+        }
+
+        if (!TryConsumeItem(need.itemId))
+        {
+            return CommunityCentreNeedSubmitResult.InsufficientItem;
+        }
+
+        need.submitted = true;
+        experienceGained = UnityEngine.Random.Range(20, 26);
+        if (AreAllCommunityCentreNeedsSubmitted() &&
+            !_data.communityCentreAllNeedsBonusGranted)
+        {
+            _data.communityCentreAllNeedsBonusGranted = true;
+            bonusExperienceGained = 20;
+            experienceGained += bonusExperienceGained;
+        }
+
+        AddCommunityCentreExperience(experienceGained);
+        return CommunityCentreNeedSubmitResult.Success;
+    }
+
+    /// <summary>提交一个冗余社区道具，换取社区物资礼盒和社区经验。</summary>
+    public CommunityCentreRedundancySubmitResult TrySubmitCommunityCentreRedundancyItem(
+        int itemId)
+    {
+        const int redundancyItemCategory = 4;
+        const int communitySupplyGiftBoxItemId = 3001;
+        const int communityExperienceReward = 10;
+
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(itemId);
+        if (itemConfig == null ||
+            itemConfig.Category != redundancyItemCategory ||
+            itemConfig.Id == communitySupplyGiftBoxItemId)
+        {
+            return CommunityCentreRedundancySubmitResult.InvalidItem;
+        }
+
+        if (GetItemCount(itemId) <= 1)
+        {
+            return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
+        }
+
+        if (!TryConsumeItem(itemId))
+        {
+            return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
+        }
+
+        AddItem(communitySupplyGiftBoxItemId, 1);
+        AddCommunityCentreExperience(communityExperienceReward);
+        return CommunityCentreRedundancySubmitResult.Success;
+    }
 
     /// <summary>获取玩家在本回合是否已经打工</summary>
     public bool WorkedThisTurn { get { return _data.workedThisTurn; } }
@@ -423,6 +668,50 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public bool TrySpendBoxCoins(int amount)
     {
         return TrySpendCoins(ref _data.boxCoins, amount);
+    }
+
+    /// <summary>增加社区经验，升级后自动获得一次社区提案选择次数。</summary>
+    public void AddCommunityCentreExperience(int amount)
+    {
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "社区经验增加数量必须大于零");
+        }
+
+        if (_data.communityCentreLevel >= MaxCommunityCentreLevel)
+        {
+            return;
+        }
+
+        _data.communityCentreExperience = checked(_data.communityCentreExperience + amount);
+        while (_data.communityCentreLevel < MaxCommunityCentreLevel)
+        {
+            int requiredExperience = GetCommunityCentreExperienceRequired(
+                _data.communityCentreLevel);
+            if (_data.communityCentreExperience < requiredExperience)
+            {
+                break;
+            }
+
+            _data.communityCentreExperience -= requiredExperience;
+            _data.communityCentreLevel++;
+            _data.communityCentreProposalChoiceCount++;
+        }
+
+        if (_data.communityCentreLevel >= MaxCommunityCentreLevel)
+        {
+            _data.communityCentreExperience = 0;
+        }
+
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取升至下一社区等级所需的经验；满级时返回零。</summary>
+    public int GetCommunityCentreExperienceRequired()
+    {
+        return GetCommunityCentreExperienceRequired(_data.communityCentreLevel);
     }
 
     /// <summary>向背包添加道具; 相同道具会自动叠加数量</summary>
@@ -981,6 +1270,34 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return true;
     }
 
+    private bool AreAllCommunityCentreNeedsSubmitted()
+    {
+        if (_data.communityCentreNeeds == null || _data.communityCentreNeeds.Count == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _data.communityCentreNeeds.Count; i++)
+        {
+            if (_data.communityCentreNeeds[i] == null ||
+                !_data.communityCentreNeeds[i].submitted)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static int GetCommunityCentreExperienceRequired(int communityCentreLevel)
+    {
+        int requirementIndex = communityCentreLevel - MinCommunityCentreLevel;
+        return requirementIndex >= 0 &&
+            requirementIndex < CommunityCentreExperienceRequirements.Length
+            ? CommunityCentreExperienceRequirements[requirementIndex]
+            : 0;
+    }
+
     private static int IncreaseClinicServicePrice(int price, int increase)
     {
         return (int)Math.Min(int.MaxValue, (long)price + increase);
@@ -997,6 +1314,48 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
         _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
         _data.boxCoins = Mathf.Max(0, _data.boxCoins);
+        _data.communityCentreLevel = Mathf.Clamp(
+            _data.communityCentreLevel,
+            MinCommunityCentreLevel,
+            MaxCommunityCentreLevel);
+        _data.communityCentreExperience = Mathf.Max(0, _data.communityCentreExperience);
+        _data.communityCentreProposalChoiceCount = Mathf.Max(
+            0,
+            _data.communityCentreProposalChoiceCount);
+        if (_data.communityCentreProposalOfferIds == null)
+        {
+            _data.communityCentreProposalOfferIds = new List<int>();
+        }
+
+        HashSet<int> communityCentreProposalOfferIds = new HashSet<int>();
+        for (int i = _data.communityCentreProposalOfferIds.Count - 1; i >= 0; i--)
+        {
+            if (_data.communityCentreProposalOfferIds[i] <= 0 ||
+                !communityCentreProposalOfferIds.Add(_data.communityCentreProposalOfferIds[i]))
+            {
+                _data.communityCentreProposalOfferIds.RemoveAt(i);
+            }
+        }
+
+        if (_data.communityCentreLevel >= MaxCommunityCentreLevel)
+        {
+            _data.communityCentreExperience = 0;
+        }
+        if (_data.communityCentreNeeds == null)
+        {
+            _data.communityCentreNeeds = new List<PlayerCommunityCentreNeed>();
+        }
+
+        HashSet<int> communityCentreNeedItemIds = new HashSet<int>();
+        for (int i = _data.communityCentreNeeds.Count - 1; i >= 0; i--)
+        {
+            PlayerCommunityCentreNeed need = _data.communityCentreNeeds[i];
+            if (need == null || need.itemId <= 0 ||
+                !communityCentreNeedItemIds.Add(need.itemId))
+            {
+                _data.communityCentreNeeds.RemoveAt(i);
+            }
+        }
         _data.cureService1Price = Mathf.Max(300, _data.cureService1Price);
         _data.cureService2Price = Mathf.Max(600, _data.cureService2Price);
         if (_data.inventory == null)
@@ -1108,6 +1467,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             timeCoins = source.timeCoins,
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
+            communityCentreLevel = source.communityCentreLevel,
+            communityCentreExperience = source.communityCentreExperience,
+            communityCentreProposalChoiceCount = source.communityCentreProposalChoiceCount,
+            communityCentreProposalOfferIds = new List<int>(source.communityCentreProposalOfferIds),
+            communityCentreNeedAge = source.communityCentreNeedAge,
+            communityCentreNeedMonth = source.communityCentreNeedMonth,
+            communityCentreNeeds = CreateCommunityCentreNeedCopies(source.communityCentreNeeds),
+            communityCentreAllNeedsBonusGranted = source.communityCentreAllNeedsBonusGranted,
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,
@@ -1156,6 +1523,31 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         return copy;
+    }
+
+    private static List<PlayerCommunityCentreNeed> CreateCommunityCentreNeedCopies(
+        List<PlayerCommunityCentreNeed> source)
+    {
+        List<PlayerCommunityCentreNeed> copies = new List<PlayerCommunityCentreNeed>();
+        if (source == null)
+        {
+            return copies;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerCommunityCentreNeed need = source[i];
+            if (need != null)
+            {
+                copies.Add(new PlayerCommunityCentreNeed
+                {
+                    itemId = need.itemId,
+                    submitted = need.submitted
+                });
+            }
+        }
+
+        return copies;
     }
 
     /// <summary>复制已解锁家具 ID 列表, 避免快照修改内部数据</summary>

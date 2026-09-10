@@ -40,5 +40,11 @@
     "name": "mysIcon",
     "desc": "在神秘转盘时的倍率",
     "scaleValue": 7000
+  },
+  {
+    "id": 8,
+    "name": "communityCentre",
+    "desc": "在社区中心冗余道具时的倍率",
+    "scaleValue": 7500
   }
 ]

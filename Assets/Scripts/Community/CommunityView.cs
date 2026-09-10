@@ -5,16 +5,17 @@ using UnityEngine.UI;
 
 public class CommunityView : UIBasePanel
 {
-    [SerializeField] private Button _btnWork;       // 零工中心
-    [SerializeField] private Button _btnHomeStore;  // 家具店
+    [SerializeField] private Button _btnWork;             // 零工中心
+    [SerializeField] private Button _btnHomeStore;        // 家具店
     [SerializeField] private Button _btnConvenienceStore; // 便利店
-    [SerializeField] private Button _btnCilinic;    // 医务室
+    [SerializeField] private Button _btnCilinic;          // 医务室
+    [SerializeField] private Button _btnCommunityCentre;  // 社区中心
 
     private void Awake()
     {
         if (_btnConvenienceStore == null)
         {
-            Debug.LogError("CommunityView 未绑定便利店按钮。", this);
+            Debug.LogError("CommunityView 未绑定便利店按钮", this);
             return;
         }
 
@@ -59,6 +60,11 @@ public class CommunityView : UIBasePanel
     public void OnClickClinic()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.ClinicView);
+    }
+
+    public void OnClickCommunityCentre()
+    {
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityCentreView);
     }
 
     public override string GetPanelName()

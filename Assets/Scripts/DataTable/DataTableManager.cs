@@ -23,7 +23,8 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "work",
         "convenience",
         "buffConfig",
-        "grow"
+        "grow",
+        "communityCentre"
     };
 
     #region Getter

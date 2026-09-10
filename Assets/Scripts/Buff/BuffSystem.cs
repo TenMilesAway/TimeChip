@@ -32,7 +32,10 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     }
 
     /// <summary>按配置添加 BUFF。即时 BUFF 会立刻结算而不会写入存档。</summary>
-    public bool TryAddBuff(int buffId, int sourceId = 0)
+    public bool TryAddBuff(
+        int buffId,
+        int sourceId = 0,
+        ISet<int> buffIdsToReplace = null)
     {
         cfg.BuffConfig config = GetConfig(buffId);
         if (config == null || !MeetsSatisfactionRequirement(config))
@@ -48,6 +51,13 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         }
 
         List<ActiveBuffData> activeBuffs = _playerInfoManager.GetActiveBuffs();
+        if (buffIdsToReplace != null)
+        {
+            activeBuffs.RemoveAll(activeBuff =>
+                activeBuff.buffId != buffId &&
+                buffIdsToReplace.Contains(activeBuff.buffId));
+        }
+
         ActiveBuffData activeBuff = FindActiveBuff(activeBuffs, buffId);
         if (activeBuff == null)
         {

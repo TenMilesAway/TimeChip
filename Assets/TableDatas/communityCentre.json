@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "category": "LearningExperience",
+    "tier": 1,
+    "buffId": 2001,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_01_learning]"
+  },
+  {
+    "id": 2,
+    "category": "LearningExperience",
+    "tier": 2,
+    "buffId": 2002,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_01_learning]"
+  },
+  {
+    "id": 3,
+    "category": "LearningExperience",
+    "tier": 3,
+    "buffId": 2003,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_01_learning]"
+  },
+  {
+    "id": 4,
+    "category": "ShopDiscount",
+    "tier": 1,
+    "buffId": 2004,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_02_shop]"
+  },
+  {
+    "id": 5,
+    "category": "ShopDiscount",
+    "tier": 2,
+    "buffId": 2005,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_02_shop]"
+  },
+  {
+    "id": 6,
+    "category": "ShopDiscount",
+    "tier": 3,
+    "buffId": 2006,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_02_shop]"
+  },
+  {
+    "id": 7,
+    "category": "NeighbourEncounter",
+    "tier": 1,
+    "buffId": 2007,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_03_neighbor]"
+  },
+  {
+    "id": 8,
+    "category": "NeighbourEncounter",
+    "tier": 2,
+    "buffId": 2008,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_03_neighbor]"
+  },
+  {
+    "id": 9,
+    "category": "NeighbourEncounter",
+    "tier": 3,
+    "buffId": 2009,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_03_neighbor]"
+  },
+  {
+    "id": 10,
+    "category": "PartTimeIncome",
+    "tier": 1,
+    "buffId": 2010,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_04_gig_income]"
+  },
+  {
+    "id": 11,
+    "category": "PartTimeIncome",
+    "tier": 2,
+    "buffId": 2011,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_04_gig_income]"
+  },
+  {
+    "id": 12,
+    "category": "PartTimeIncome",
+    "tier": 3,
+    "buffId": 2012,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_04_gig_income]"
+  },
+  {
+    "id": 13,
+    "category": "HealthBenefit",
+    "tier": 1,
+    "buffId": 2013,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_05_health]"
+  },
+  {
+    "id": 14,
+    "category": "HealthBenefit",
+    "tier": 2,
+    "buffId": 2014,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_05_health]"
+  },
+  {
+    "id": 15,
+    "category": "HealthBenefit",
+    "tier": 3,
+    "buffId": 2015,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_05_health]"
+  },
+  {
+    "id": 16,
+    "category": "LotteryRarity",
+    "tier": 1,
+    "buffId": 2016,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_06_lottery]"
+  },
+  {
+    "id": 17,
+    "category": "LotteryRarity",
+    "tier": 2,
+    "buffId": 2017,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_06_lottery]"
+  },
+  {
+    "id": 18,
+    "category": "LotteryRarity",
+    "tier": 3,
+    "buffId": 2018,
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[proposal_06_lottery]"
+  }
+]

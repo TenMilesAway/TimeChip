@@ -37,6 +37,8 @@ public sealed partial class BuffConfig : Luban.BeanBase
         MinSatisfaction = (float)_obj.GetValue("minSatisfaction");
         EffectType = (string)_obj.GetValue("effectType");
         EffectValue = (float)_obj.GetValue("effectValue");
+        ExtraEffectType = (string)_obj.GetValue("extraEffectType");
+        ExtraEffectValue = (float)_obj.GetValue("extraEffectValue");
     }
 
     public static BuffConfig DeserializeBuffConfig(JToken _buf)
@@ -100,6 +102,14 @@ public sealed partial class BuffConfig : Luban.BeanBase
     /// 效果数值；倍率为增量，如 0.2 = +20%
     /// </summary>
     public readonly float EffectValue;
+    /// <summary>
+    /// 附加效果类型；无附加效果时留空
+    /// </summary>
+    public readonly string ExtraEffectType;
+    /// <summary>
+    /// 附加效果数值；无附加效果时填 0
+    /// </summary>
+    public readonly float ExtraEffectValue;
 
 
     public const int __ID__ = -1370631787;
@@ -126,6 +136,8 @@ public sealed partial class BuffConfig : Luban.BeanBase
         + "minSatisfaction:" + MinSatisfaction + ","
         + "effectType:" + EffectType + ","
         + "effectValue:" + EffectValue + ","
+        + "extraEffectType:" + ExtraEffectType + ","
+        + "extraEffectValue:" + ExtraEffectValue + ","
         + "}";
     }
 }

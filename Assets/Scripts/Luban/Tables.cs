@@ -53,6 +53,10 @@ public partial class Tables
     /// 时光藏馆成长配置
     /// </summary>
     public GrowTable GrowTable {get; }
+    /// <summary>
+    /// 社区中心永久 BUFF 提案配置
+    /// </summary>
+    public CommunityCentreTable CommunityCentreTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -67,6 +71,7 @@ public partial class Tables
         ConvenienceTable = new ConvenienceTable(loader("convenience"));
         BuffConfigTable = new BuffConfigTable(loader("buffConfig"));
         GrowTable = new GrowTable(loader("grow"));
+        CommunityCentreTable = new CommunityCentreTable(loader("communityCentre"));
         ResolveRef();
     }
     
@@ -82,6 +87,7 @@ public partial class Tables
         ConvenienceTable.ResolveRef(this);
         BuffConfigTable.ResolveRef(this);
         GrowTable.ResolveRef(this);
+        CommunityCentreTable.ResolveRef(this);
     }
 }
 

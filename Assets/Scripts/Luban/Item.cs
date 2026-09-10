@@ -26,6 +26,7 @@ public sealed partial class Item : Luban.BeanBase
         Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
         Level = (int)_obj.GetValue("level");
+        Category = (int)_obj.GetValue("category");
         Desc = (string)_obj.GetValue("desc");
         Icon = (string)_obj.GetValue("icon");
         CanUse = (int)_obj.GetValue("canUse");
@@ -50,6 +51,10 @@ public sealed partial class Item : Luban.BeanBase
     /// 品质
     /// </summary>
     public readonly int Level;
+    /// <summary>
+    /// 道具类别
+    /// </summary>
+    public readonly int Category;
     /// <summary>
     /// 描述
     /// </summary>
@@ -85,6 +90,7 @@ public sealed partial class Item : Luban.BeanBase
         + "id:" + Id + ","
         + "name:" + Name + ","
         + "level:" + Level + ","
+        + "category:" + Category + ","
         + "desc:" + Desc + ","
         + "icon:" + Icon + ","
         + "canUse:" + CanUse + ","

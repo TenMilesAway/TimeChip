@@ -28,6 +28,7 @@ public class Launcher : SingletonMono<Launcher>
     [SerializeField] private GameObject _menuRoot;                // 启动菜单根节点
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
     [SerializeField] private Text _txtLoad;                       // 加载进度文本
+    [SerializeField] private bool _enableGmPanel;                 // 是否启用 GM 面板
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
@@ -36,6 +37,7 @@ public class Launcher : SingletonMono<Launcher>
     private bool _isOpeningMenuPanel;                             // 是否正在通过转场打开启动菜单面板
     private bool _isNewGame;                                      // 本次启动是否来自新建存档
     private GameSaveData _gameSaveData;                           // 当前加载的唯一存档
+    private GMPanel _gmPanel;                                     // 运行时 GM 面板
 
     protected override void Awake()
     {
@@ -112,6 +114,7 @@ public class Launcher : SingletonMono<Launcher>
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
         MissionAPI.GameOverRequested -= ShowGameOverPanel;
+        DestroyGmPanel();
     }
 
     private void Update()
@@ -339,6 +342,7 @@ public class Launcher : SingletonMono<Launcher>
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.MainMenuView);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
+        EnsureGmPanel();
     }
 
     private async void OpenSettingView()
@@ -601,11 +605,31 @@ public class Launcher : SingletonMono<Launcher>
         SetProcessState(LauncherProcess.None);
 
         UIManager.GetInstance().CloseAllPanels();
+        DestroyGmPanel();
 
         gameObject.SetActive(true);
         _loadingRoot.SetActive(false);
         _menuRoot.SetActive(true);
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
+    }
+
+    private void EnsureGmPanel()
+    {
+        if (!_enableGmPanel || _gmPanel != null)
+        {
+            return;
+        }
+
+        _gmPanel = GMPanel.Create();
+    }
+
+    private void DestroyGmPanel()
+    {
+        if (_gmPanel != null)
+        {
+            Destroy(_gmPanel.gameObject);
+            _gmPanel = null;
+        }
     }
 
     /// <summary>
