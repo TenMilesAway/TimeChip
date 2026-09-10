@@ -743,6 +743,15 @@ public class LotteryView : UIBasePanel
 
         for (int i = 0; i < _mysLotteryItems.Length; i++)
         {
+            if (_mysLotteryItems[i] == null)
+            {
+                Debug.LogError($"神秘转盘第 {i + 1} 个奖品格未配置。", this);
+                _mysButton.interactable = false;
+                _mysFiveButton.interactable = false;
+                return;
+            }
+
+            _mysLotteryItems[i].gameObject.SetActive(true);
             _mysLotteryItems[i].SetData(_mysteryWheelRewards[i]);
         }
 
