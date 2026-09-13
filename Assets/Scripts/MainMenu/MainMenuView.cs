@@ -24,6 +24,8 @@ public class MainMenuView : UIBasePanel
 
     [SerializeField] private Transform _buffParent;
     [SerializeField] private GameObject _goLoad;
+    [SerializeField] private GameObject _goBottom;
+    [SerializeField] private GameObject _goInventory;
 
     private readonly List<BuffItem> _buffItems = new List<BuffItem>();
 
@@ -164,6 +166,22 @@ public class MainMenuView : UIBasePanel
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
             param: new OpenUIParam { data = true });
+    }
+
+    /// <summary>
+    /// 设置会遮挡主菜单的全屏页面打开时需要隐藏的导航区域。
+    /// </summary>
+    public void SetNavigationVisible(bool visible)
+    {
+        if (_goBottom != null)
+        {
+            _goBottom.SetActive(visible);
+        }
+
+        if (_goInventory != null)
+        {
+            _goInventory.SetActive(visible);
+        }
     }
 
     private async void NavigateTo(MainContentPage targetPage)

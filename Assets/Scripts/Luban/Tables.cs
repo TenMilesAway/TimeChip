@@ -57,6 +57,10 @@ public partial class Tables
     /// 社区中心永久 BUFF 提案配置
     /// </summary>
     public CommunityCentreTable CommunityCentreTable {get; }
+    /// <summary>
+    /// 地铁地点配置
+    /// </summary>
+    public SubwayTable SubwayTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -72,6 +76,7 @@ public partial class Tables
         BuffConfigTable = new BuffConfigTable(loader("buffConfig"));
         GrowTable = new GrowTable(loader("grow"));
         CommunityCentreTable = new CommunityCentreTable(loader("communityCentre"));
+        SubwayTable = new SubwayTable(loader("subway"));
         ResolveRef();
     }
     
@@ -88,6 +93,7 @@ public partial class Tables
         BuffConfigTable.ResolveRef(this);
         GrowTable.ResolveRef(this);
         CommunityCentreTable.ResolveRef(this);
+        SubwayTable.ResolveRef(this);
     }
 }
 

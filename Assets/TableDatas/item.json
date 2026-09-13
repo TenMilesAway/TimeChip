@@ -504,5 +504,148 @@
     "canUse": 0,
     "rewardScale": 7000,
     "useEffect": ""
+  },
+  {
+    "id": 5004,
+    "name": "小鸡手办",
+    "level": 3,
+    "category": 5,
+    "desc": "似曾相识故人来",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_basketball_trainee_chicken]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": ""
+  },
+  {
+    "id": 6000,
+    "name": "小白条",
+    "level": 1,
+    "category": 6,
+    "desc": "总爱成群贴着水面穿梭，个头不大，逃跑时倒是格外认真",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_01_white_strip]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6001,
+    "name": "河鲫鱼",
+    "level": 1,
+    "category": 6,
+    "desc": "河畔最常见的老住户，性情温和，似乎已经看惯了岸边的钓鱼人",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_02_crucian]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6002,
+    "name": "小泥鳅",
+    "level": 1,
+    "category": 6,
+    "desc": "身体滑溜得几乎抓不住，一眨眼就能钻进河底的泥沙里",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_03_loach]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6003,
+    "name": "红尾鲤鱼",
+    "level": 2,
+    "category": 6,
+    "desc": "摆动鲜艳的红色尾鳍缓缓游过，据说遇见它会带来一点小好运",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_04_redtail_carp]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6004,
+    "name": "青草鱼",
+    "level": 2,
+    "category": 6,
+    "desc": "喜欢藏在水草丰茂的地方，胃口很好，几乎从不浪费任何一片嫩叶",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_05_grass_carp]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6005,
+    "name": "银鲢鱼",
+    "level": 2,
+    "category": 6,
+    "desc": "银亮的鱼身会映出水面的天光，受到惊吓时常会突然跃出水面",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_06_silver_carp]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6006,
+    "name": "河鲈鱼",
+    "level": 3,
+    "category": 6,
+    "desc": "披着整齐的深色条纹，是河中敏捷的猎手，上钩后依然很有力气",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_07_river_perch]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6007,
+    "name": "花鳜鱼",
+    "level": 3,
+    "category": 6,
+    "desc": "华丽斑纹是天然的伪装，静止时几乎能与河底的碎石融为一体",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_08_mandarin_fish]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6008,
+    "name": "蓝须鲶鱼",
+    "level": 3,
+    "category": 6,
+    "desc": "长长的胡须可以感知水流变化，即使在昏暗的河底也不会迷路",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_09_blue_catfish]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6009,
+    "name": "福运锦鲤",
+    "level": 4,
+    "category": 6,
+    "desc": "白橙相间的鳞片十分耀眼，传说放进水缸里，家中的好运会悄悄增加",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_10_lucky_koi]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6010,
+    "name": "月辉鳟鱼",
+    "level": 4,
+    "category": 6,
+    "desc": "只在月光洒满河面时出现，游过之后，水中会留下一道淡淡的银蓝微光",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_11_moonlight_trout]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
+  },
+  {
+    "id": 6011,
+    "name": "时光游鱼",
+    "level": 5,
+    "category": 6,
+    "desc": "鳞片间流动着细小的时间刻度，据说凝视它太久，会想起一段已经遗忘的往事",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_12_timefish]",
+    "canUse": 0,
+    "rewardScale": 0,
+    "useEffect": ""
   }
 ]

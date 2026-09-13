@@ -10,6 +10,7 @@ public class CommunityView : UIBasePanel
     [SerializeField] private Button _btnConvenienceStore; // 便利店
     [SerializeField] private Button _btnCilinic;          // 医务室
     [SerializeField] private Button _btnCommunityCentre;  // 社区中心
+    [SerializeField] private Button _btnSubway;           // 地铁
 
     private void Awake()
     {
@@ -20,6 +21,13 @@ public class CommunityView : UIBasePanel
         }
 
         _btnConvenienceStore.onClick.AddListener(OnClickConvenienceStore);
+        if (_btnSubway == null)
+        {
+            Debug.LogError("CommunityView 未绑定地铁按钮", this);
+            return;
+        }
+
+        _btnSubway.onClick.AddListener(OnClickSubway);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -37,6 +45,11 @@ public class CommunityView : UIBasePanel
         if (_btnConvenienceStore != null)
         {
             _btnConvenienceStore.onClick.RemoveListener(OnClickConvenienceStore);
+        }
+
+        if (_btnSubway != null)
+        {
+            _btnSubway.onClick.RemoveListener(OnClickSubway);
         }
 
         base.OnDestroy();
@@ -65,6 +78,12 @@ public class CommunityView : UIBasePanel
     public void OnClickCommunityCentre()
     {
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityCentreView);
+    }
+
+    public void OnClickSubway()
+    {
+        UIManager.GetInstance().ClosePanel(GetPanelName());
+        UIManager.GetInstance().OpenPanel(GlobalDefine.SubwayView);
     }
 
     public override string GetPanelName()

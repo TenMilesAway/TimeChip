@@ -878,6 +878,8 @@ MonoBehaviour:
   _settingButton: {fileID: 7689060409219661255}
   _buffParent: {fileID: 3026864693955986365}
   _goLoad: {fileID: 1885304055932669627}
+  _goBottom: {fileID: 1463995235120349186}
+  _goInventory: {fileID: 1352079754783472908}
 --- !u!223 &5962513753563500781
 Canvas:
   m_ObjectHideFlags: 0

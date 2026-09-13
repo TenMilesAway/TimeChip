@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "name": "社区",
+    "desc": "默认解锁的起始地点",
+    "image": "Assets/Art/Community/SpritesBig/community_station.png[community_station]",
+    "fare": 0,
+    "itemCosts": "",
+    "unlockCommunityLevel": 0,
+    "unlockItemId": 0,
+    "unlockCoin": 0
+  },
+  {
+    "id": 2,
+    "name": "河畔公园",
+    "desc": "在河边放松片刻，也许能钓到稀有鱼类",
+    "image": "Assets/Art/Community/SpritesBig/subway_fish.png[subway_fish]",
+    "fare": 200,
+    "itemCosts": "",
+    "unlockCommunityLevel": 2,
+    "unlockItemId": 0,
+    "unlockCoin": 0
+  }
+]

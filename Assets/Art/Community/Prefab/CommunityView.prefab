@@ -147,6 +147,7 @@ MonoBehaviour:
   _btnConvenienceStore: {fileID: 3025033739506808880}
   _btnCilinic: {fileID: 0}
   _btnCommunityCentre: {fileID: 0}
+  _btnSubway: {fileID: 3010212295998737396}
 --- !u!223 &8290727820807594715
 Canvas:
   m_ObjectHideFlags: 0

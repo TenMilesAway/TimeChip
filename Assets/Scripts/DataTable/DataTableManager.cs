@@ -24,7 +24,8 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "convenience",
         "buffConfig",
         "grow",
-        "communityCentre"
+        "communityCentre",
+        "subway"
     };
 
     #region Getter
