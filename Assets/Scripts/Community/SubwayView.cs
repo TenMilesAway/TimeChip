@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +45,8 @@ public class SubwayView : UIBasePanel
     [Space(10)]
     [SerializeField] private GameObject _goDetailLock;   // 未解锁时下方详情显示
     [SerializeField] private GameObject _goDatailUnlock; // 解锁时下方详情显示
+    [SerializeField] private GameObject _goPrice;        // 车费区域
+    [SerializeField] private GameObject _goButtonGo;     // 前往按钮区域
 
     private readonly List<cfg.Subway> _locations = new List<cfg.Subway>();
     private cfg.Subway _selectedLocation;
@@ -83,21 +86,21 @@ public class SubwayView : UIBasePanel
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshLocationStates;
         PlayerInfoManager.GetInstance().PlayerInfoChanged += RefreshLocationStates;
-        SetMainMenuNavigationVisible(false);
+        UIManager.GetInstance().SetMainMenuNavigationVisible(false);
         RefreshLocationStates();
     }
 
     protected override void HideHandle()
     {
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshLocationStates;
-        SetMainMenuNavigationVisible(true);
+        UIManager.GetInstance().SetMainMenuNavigationVisible(!_isNavigating);
         base.HideHandle();
     }
 
     protected override void OnDestroy()
     {
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshLocationStates;
-        SetMainMenuNavigationVisible(true);
+        UIManager.GetInstance().SetMainMenuNavigationVisible(!_isNavigating);
         if (_btnBack != null)
         {
             _btnBack.onClick.RemoveListener(OnClickBack);
@@ -205,8 +208,13 @@ public class SubwayView : UIBasePanel
     private void RefreshDetail()
     {
         bool isUnlocked = IsLocationUnlocked(_selectedLocation);
+        bool shouldShowTravelControls = _selectedLocation != null &&
+                                        !IsCurrentLocation(_selectedLocation) &&
+                                        isUnlocked;
         _goDetailLock.SetActive(_selectedLocation != null && !isUnlocked);
         _goDatailUnlock.SetActive(_selectedLocation != null && isUnlocked);
+        _goPrice.SetActive(shouldShowTravelControls);
+        _goButtonGo.SetActive(shouldShowTravelControls);
 
         if (_selectedLocation == null)
         {
@@ -220,7 +228,7 @@ public class SubwayView : UIBasePanel
         _txtUnlockName.text = _selectedLocation.Name;
         _txtUnlockDetail.text = _selectedLocation.Desc;
         _txtUnlockPrice.text = _selectedLocation.Fare > 0
-            ? $"车费：{_selectedLocation.Fare}"
+            ? $"{_selectedLocation.Fare}"
             : "免费";
         _btnGo.interactable = isUnlocked && !IsCurrentLocation(_selectedLocation);
         LoadLocationImageAsync(_selectedLocation);
@@ -296,6 +304,20 @@ public class SubwayView : UIBasePanel
             return;
         }
 
+        if (!TryGetTravelCosts(_selectedLocation, out List<KeyValuePair<int, int>> travelCosts))
+        {
+            Debug.LogError($"地铁消耗配置无效: [{_selectedLocation.Id}]", this);
+            CommonTipView.Show("前往配置异常");
+            return;
+        }
+
+        if (!CanAffordTravelCosts(travelCosts))
+        {
+            CommonTipView.Show("车费或所需道具不足");
+            GameManager.Audio.Play(AudioDefine.SFXClickFail);
+            return;
+        }
+
         _isNavigating = true;
         try
         {
@@ -303,6 +325,16 @@ public class SubwayView : UIBasePanel
                 .OpenPanelAsync(destinationPanelName);
             if (destinationPanel == null)
             {
+                return;
+            }
+
+            if (!TrySpendTravelCosts(travelCosts))
+            {
+                Debug.LogError($"地铁扣除消耗失败: [{_selectedLocation.Id}]", this);
+                UIManager.GetInstance().ClosePanel(destinationPanelName);
+                UIManager.GetInstance().SetMainMenuNavigationVisible(false);
+                CommonTipView.Show("车费或所需道具不足");
+                GameManager.Audio.Play(AudioDefine.SFXClickFail);
                 return;
             }
 
@@ -341,6 +373,109 @@ public class SubwayView : UIBasePanel
         return false;
     }
 
+    private static bool TryGetTravelCosts(
+        cfg.Subway locationConfig,
+        out List<KeyValuePair<int, int>> travelCosts)
+    {
+        travelCosts = new List<KeyValuePair<int, int>>();
+        if (locationConfig == null || locationConfig.Fare < 0)
+        {
+            return false;
+        }
+
+        Dictionary<int, int> costsByItemId = new Dictionary<int, int>();
+        if (locationConfig.Fare > 0 &&
+            !TryAddTravelCost(
+                costsByItemId,
+                BasePropertyId.SimulationCoin,
+                locationConfig.Fare))
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(locationConfig.ItemCosts))
+        {
+            string[] entries = locationConfig.ItemCosts.Split(
+                new[] { ';' },
+                StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < entries.Length; i++)
+            {
+                string[] values = entries[i].Split(',');
+                if (values.Length != 2 ||
+                    !int.TryParse(values[0], out int itemId) ||
+                    !int.TryParse(values[1], out int amount) ||
+                    !TryAddTravelCost(costsByItemId, itemId, amount))
+                {
+                    return false;
+                }
+            }
+        }
+
+        foreach (KeyValuePair<int, int> cost in costsByItemId)
+        {
+            travelCosts.Add(cost);
+        }
+
+        return true;
+    }
+
+    private static bool TryAddTravelCost(
+        Dictionary<int, int> costsByItemId,
+        int itemId,
+        int amount)
+    {
+        if (itemId <= 0 || amount <= 0)
+        {
+            return false;
+        }
+
+        if (costsByItemId.TryGetValue(itemId, out int existingAmount))
+        {
+            if (existingAmount > int.MaxValue - amount)
+            {
+                return false;
+            }
+
+            costsByItemId[itemId] = existingAmount + amount;
+            return true;
+        }
+
+        costsByItemId.Add(itemId, amount);
+        return true;
+    }
+
+    private static bool CanAffordTravelCosts(
+        List<KeyValuePair<int, int>> travelCosts)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        for (int i = 0; i < travelCosts.Count; i++)
+        {
+            KeyValuePair<int, int> cost = travelCosts[i];
+            if (playerInfoManager.GetConsumableCount(cost.Key) < cost.Value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TrySpendTravelCosts(
+        List<KeyValuePair<int, int>> travelCosts)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        for (int i = 0; i < travelCosts.Count; i++)
+        {
+            KeyValuePair<int, int> cost = travelCosts[i];
+            if (!playerInfoManager.TrySpendConsumable(cost.Key, cost.Value))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private async void LoadLocationImageAsync(cfg.Subway locationConfig)
     {
         int requestVersion = ++_imageRequestVersion;
@@ -364,16 +499,6 @@ public class SubwayView : UIBasePanel
         _imgUnlock.sprite = image;
     }
 
-    private static void SetMainMenuNavigationVisible(bool visible)
-    {
-        MainMenuView mainMenuView = UIManager.GetInstance()
-            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
-        if (mainMenuView != null)
-        {
-            mainMenuView.SetNavigationVisible(visible);
-        }
-    }
-
     private bool HasValidUiReferences()
     {
         if (_txtLockTip != null &&
@@ -385,7 +510,9 @@ public class SubwayView : UIBasePanel
             _btnBack != null &&
             _subwayPoints != null &&
             _goDetailLock != null &&
-            _goDatailUnlock != null)
+            _goDatailUnlock != null &&
+            _goPrice != null &&
+            _goButtonGo != null)
         {
             return true;
         }

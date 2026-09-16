@@ -170,6 +170,18 @@ public class UIManager : Singleton<UIManager>
         return panel;
     }
 
+    /// <summary>
+    /// 设置主界面底部导航与背包入口的显示状态。
+    /// </summary>
+    public void SetMainMenuNavigationVisible(bool visible)
+    {
+        if (_panelDic.TryGetValue(GlobalDefine.MainMenuView, out UIBasePanel panel) &&
+            panel is MainMenuView mainMenuView)
+        {
+            mainMenuView.SetNavigationVisible(visible);
+        }
+    }
+
     public void ClosePanel(string panelName)
     {
         if (_blockingWindows.ContainsKey(panelName))

@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "社区",
-    "desc": "默认解锁的起始地点",
+    "desc": "温馨的社区",
     "image": "Assets/Art/Community/SpritesBig/community_station.png[community_station]",
     "fare": 0,
     "itemCosts": "",

@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,12 +12,18 @@ public class FishView : UIBasePanel
     private const float CatchRiseDistance = 110f;            // 捕鱼: 捕捉上升距离
     private const float CatchRiseSpeed = 1100f;               // 捕鱼: 捕捉上升速度
     private const float CatchFallSpeed = 220f;                // 捕鱼: 捕捉下降速度
+    private const float ClickPressDuration = 0.06f;           // 捕鱼游戏: 点击按钮压缩时长
+    private const float ClickBounceDuration = 0.14f;          // 捕鱼游戏: 点击按钮回弹时长
+    private const float ClickSettleDuration = 0.1f;           // 捕鱼游戏: 点击按钮复位时长
+    private const float FishButtonCooldownSeconds = 1f;       // 捕鱼游戏结束后再次钓鱼的等待时间
+    private const float InitialFishProgress = 0.5f;           // 捕鱼游戏: 初始进度
     private const float ProgressIncreasePerSecond = 0.25f;   // 捕鱼游戏: 进度条增加速度
     private const float ProgressDecreasePerSecond = 0.12f;   // 捕鱼游戏: 进度条减少速度
 
     [SerializeField] private Image _imgFishProgress;    // 捕鱼游戏: 鱼进度条
     [SerializeField] private Button _btnFish;           // 钓鱼按钮
     [SerializeField] private Button _btnClick;          // 捕鱼游戏: 与鱼互动按钮
+    [SerializeField] private Button _btnBack;           // 返回社区
     [SerializeField] private Animator _animatorFishRod; // 鱼竿动画
 
     [SerializeField] private GameObject _goFishCatch;   // 捕鱼游戏
@@ -30,6 +37,7 @@ public class FishView : UIBasePanel
     private const string AnimationEnd = "End";       // 上钩动画
 
     private Coroutine _fishingCoroutine;
+    private Coroutine _fishButtonCooldownCoroutine;
     private bool _isCatchActive;
     private float _fishTargetY;
     private float _fishMoveSpeed;
@@ -40,6 +48,7 @@ public class FishView : UIBasePanel
     private float _catchTargetY;
     private Vector2 _initialFishPosition;
     private Vector2 _initialCatchPosition;
+    private Vector3 _initialClickButtonScale;
 
     private void Awake()
     {
@@ -51,23 +60,28 @@ public class FishView : UIBasePanel
 
         _initialFishPosition = _rectFish.anchoredPosition;
         _initialCatchPosition = _rectCatch.anchoredPosition;
+        _initialClickButtonScale = _btnClick.transform.localScale;
         _btnFish.onClick.AddListener(OnClickFish);
         _btnClick.onClick.AddListener(OnClickCatch);
+        _btnBack.onClick.AddListener(OnClickBack);
     }
 
     protected override void ShowHandle()
     {
         ResetFishingState();
+        UIManager.GetInstance().SetMainMenuNavigationVisible(false);
     }
 
     protected override void HideHandle()
     {
         StopFishing();
+        UIManager.GetInstance().SetMainMenuNavigationVisible(true);
     }
 
     protected override void OnDestroy()
     {
         StopFishing();
+        UIManager.GetInstance().SetMainMenuNavigationVisible(true);
         if (_btnFish != null)
         {
             _btnFish.onClick.RemoveListener(OnClickFish);
@@ -76,6 +90,11 @@ public class FishView : UIBasePanel
         if (_btnClick != null)
         {
             _btnClick.onClick.RemoveListener(OnClickCatch);
+        }
+
+        if (_btnBack != null)
+        {
+            _btnBack.onClick.RemoveListener(OnClickBack);
         }
 
         base.OnDestroy();
@@ -95,7 +114,7 @@ public class FishView : UIBasePanel
 
     private void OnClickFish()
     {
-        if (_fishingCoroutine != null)
+        if (_fishingCoroutine != null || _fishButtonCooldownCoroutine != null)
         {
             return;
         }
@@ -114,6 +133,13 @@ public class FishView : UIBasePanel
         _catchTargetY = Mathf.Min(
             Mathf.Max(_catchTargetY, _rectCatch.anchoredPosition.y) + CatchRiseDistance,
             _catchMaxY);
+        PlayCatchClickFeedback();
+    }
+
+    private void OnClickBack()
+    {
+        UIManager.GetInstance().ClosePanel(GetPanelName());
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
     private IEnumerator WaitForFishBite()
@@ -150,6 +176,7 @@ public class FishView : UIBasePanel
     private void StartCatchGame()
     {
         _goFishCatch.SetActive(true);
+        _imgFishProgress.fillAmount = InitialFishProgress;
         CalculateMovementBounds();
         _isCatchActive = true;
         _btnClick.interactable = true;
@@ -208,13 +235,69 @@ public class FishView : UIBasePanel
         if (_imgFishProgress.fillAmount >= 1f)
         {
             CompleteFishCatch();
+            return;
+        }
+
+        if (_imgFishProgress.fillAmount <= 0f)
+        {
+            EndCatchGameWithCooldown();
         }
     }
 
     private void CompleteFishCatch()
     {
-        ResetFishingState();
+        EndCatchGameWithCooldown();
         CommonTipView.Show("成功捕捉到鱼！");
+    }
+
+    private void EndCatchGameWithCooldown()
+    {
+        ResetFishingState();
+        _btnFish.interactable = false;
+        _fishButtonCooldownCoroutine = StartCoroutine(EnableFishButtonAfterCooldown());
+    }
+
+    private IEnumerator EnableFishButtonAfterCooldown()
+    {
+        yield return new WaitForSeconds(FishButtonCooldownSeconds);
+        _fishButtonCooldownCoroutine = null;
+        _btnFish.interactable = true;
+    }
+
+    private void PlayCatchClickFeedback()
+    {
+        DOTween.Kill(_btnClick);
+        _btnClick.transform.localScale = _initialClickButtonScale;
+
+        Vector3 pressedScale = Vector3.Scale(
+            _initialClickButtonScale,
+            new Vector3(1.08f, 0.92f, 1f));
+        Vector3 bouncedScale = Vector3.Scale(
+            _initialClickButtonScale,
+            new Vector3(0.95f, 1.1f, 1f));
+
+        DOTween.Sequence()
+            .Append(_btnClick.transform.DOScale(pressedScale, ClickPressDuration))
+            .Append(
+                _btnClick.transform.DOScale(bouncedScale, ClickBounceDuration)
+                    .SetEase(Ease.OutBack))
+            .Append(
+                _btnClick.transform.DOScale(
+                    _initialClickButtonScale,
+                    ClickSettleDuration)
+                    .SetEase(Ease.OutQuad))
+            .SetTarget(_btnClick);
+    }
+
+    private void StopCatchClickFeedback()
+    {
+        if (_btnClick == null)
+        {
+            return;
+        }
+
+        DOTween.Kill(_btnClick);
+        _btnClick.transform.localScale = _initialClickButtonScale;
     }
 
     private void SelectNextFishTarget()
@@ -272,7 +355,14 @@ public class FishView : UIBasePanel
             _fishingCoroutine = null;
         }
 
+        if (_fishButtonCooldownCoroutine != null)
+        {
+            StopCoroutine(_fishButtonCooldownCoroutine);
+            _fishButtonCooldownCoroutine = null;
+        }
+
         _isCatchActive = false;
+        StopCatchClickFeedback();
     }
 
     private bool HasValidUiReferences()
@@ -280,6 +370,7 @@ public class FishView : UIBasePanel
         if (_imgFishProgress != null &&
             _btnFish != null &&
             _btnClick != null &&
+            _btnBack != null &&
             _animatorFishRod != null &&
             _goFishCatch != null &&
             _rectFishBg != null &&
