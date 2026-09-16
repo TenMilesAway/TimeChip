@@ -11,6 +11,7 @@ public class GlobalDefine
     public const string MissionView = "Assets/Art/Mission/Prefabs/MissionView.prefab";                     // Mid+
     public const string GrowView = "Assets/Art/Grow/Prefab/GrowView.prefab";                               // Mid+
     public const string SubwayView = "Assets/Art/Community/Prefab/SubwayView.prefab";                      // Mid+
+    public const string FishView = "Assets/Art/Community/Prefab/FishView.prefab";                          // Mid+
 
     public const string MainMenuView = "Assets/Art/MainMenu/Prefab/MainMenuView.prefab";                   // Super
     public const string WorkView = "Assets/Art/Community/Prefab/WorkView.prefab";                          // Super+

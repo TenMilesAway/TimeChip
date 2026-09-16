@@ -4,6 +4,29 @@ using UnityEngine.UI;
 
 public class SubwayView : UIBasePanel
 {
+    [System.Serializable]
+    private class SubwayDestination
+    {
+        [SerializeField] private int _locationId;
+        [SerializeField] private string _panelName;
+
+        public SubwayDestination(int locationId, string panelName)
+        {
+            _locationId = locationId;
+            _panelName = panelName;
+        }
+
+        public bool Matches(int locationId)
+        {
+            return _locationId == locationId;
+        }
+
+        public string PanelName
+        {
+            get { return _panelName; }
+        }
+    }
+
     [SerializeField] private Text _txtLockTip;  // 未解锁时提示文本
     [SerializeField] private Text _txtUnlockName; // 解锁时：地点名称
     [SerializeField] private Text _txtUnlockDetail; // 解锁时：地点详情
@@ -12,6 +35,10 @@ public class SubwayView : UIBasePanel
     [SerializeField] private Button _btnGo;         // 解锁时：前往按钮
     [SerializeField] private Button _btnBack;   // 回到社区按钮
     [SerializeField] private SubwayPoint[] _subwayPoints; // 地铁点, 目前仅 2 个, 根据表中顺序进行初始化
+    [SerializeField] private SubwayDestination[] _destinations =
+    {
+        new SubwayDestination(2, GlobalDefine.FishView),
+    };
 
 
     [Space(10)]
@@ -21,6 +48,7 @@ public class SubwayView : UIBasePanel
     private readonly List<cfg.Subway> _locations = new List<cfg.Subway>();
     private cfg.Subway _selectedLocation;
     private bool _isUiReady;
+    private bool _isNavigating;
     private int _imageRequestVersion;
 
     private void Awake()
@@ -33,6 +61,7 @@ public class SubwayView : UIBasePanel
         }
 
         _btnBack.onClick.AddListener(OnClickBack);
+        _btnGo.onClick.AddListener(OnClickGo);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -72,6 +101,11 @@ public class SubwayView : UIBasePanel
         if (_btnBack != null)
         {
             _btnBack.onClick.RemoveListener(OnClickBack);
+        }
+
+        if (_btnGo != null)
+        {
+            _btnGo.onClick.RemoveListener(OnClickGo);
         }
 
         base.OnDestroy();
@@ -244,6 +278,67 @@ public class SubwayView : UIBasePanel
     {
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
+    }
+
+    private async void OnClickGo()
+    {
+        if (_isNavigating ||
+            _selectedLocation == null ||
+            !IsLocationUnlocked(_selectedLocation) ||
+            IsCurrentLocation(_selectedLocation))
+        {
+            return;
+        }
+
+        if (!TryGetDestinationPanelName(_selectedLocation.Id, out string destinationPanelName))
+        {
+            CommonTipView.Show($"【{_selectedLocation.Name}】暂未开放");
+            return;
+        }
+
+        _isNavigating = true;
+        try
+        {
+            UIBasePanel destinationPanel = await UIManager.GetInstance()
+                .OpenPanelAsync(destinationPanelName);
+            if (destinationPanel == null)
+            {
+                return;
+            }
+
+            UIManager.GetInstance().ClosePanel(GetPanelName());
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
+    }
+
+    private bool TryGetDestinationPanelName(int locationId, out string panelName)
+    {
+        if (_destinations != null)
+        {
+            for (int i = 0; i < _destinations.Length; i++)
+            {
+                SubwayDestination destination = _destinations[i];
+                if (destination != null &&
+                    destination.Matches(locationId) &&
+                    !string.IsNullOrEmpty(destination.PanelName))
+                {
+                    panelName = destination.PanelName;
+                    return true;
+                }
+            }
+        }
+
+        if (locationId == 2)
+        {
+            panelName = GlobalDefine.FishView;
+            return true;
+        }
+
+        panelName = null;
+        return false;
     }
 
     private async void LoadLocationImageAsync(cfg.Subway locationConfig)
