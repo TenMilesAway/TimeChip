@@ -17,9 +17,7 @@ public class BoxLotteryItem : MonoBehaviour
 
     private void Awake()
     {
-        _rectTransform = transform as RectTransform;
-        _defaultAnchoredPosition = _rectTransform.anchoredPosition;
-        _defaultScale = transform.localScale;
+        CachePresentationState();
         _btnSelect.onClick.AddListener(Select);
     }
 
@@ -75,9 +73,22 @@ public class BoxLotteryItem : MonoBehaviour
     public void ResetPresentation()
     {
         DOTween.Kill(this);
+        CachePresentationState();
         _goSelected.SetActive(false);
         _rectTransform.anchoredPosition = _defaultAnchoredPosition;
         transform.localScale = _defaultScale;
+    }
+
+    private void CachePresentationState()
+    {
+        if (_rectTransform != null)
+        {
+            return;
+        }
+
+        _rectTransform = transform as RectTransform;
+        _defaultAnchoredPosition = _rectTransform.anchoredPosition;
+        _defaultScale = transform.localScale;
     }
 
     private void Select()

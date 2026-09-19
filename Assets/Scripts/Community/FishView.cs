@@ -278,6 +278,8 @@ public class FishView : UIBasePanel
     {
         _goStoreHooks.SetActive(showHooks);
         _goStoreBaits.SetActive(!showHooks);
+        _btnPageHook.interactable = !showHooks;
+        _btnPageBait.interactable = showHooks;
     }
 
     private void RefreshStore(PlayerInfoManager playerInfoManager)

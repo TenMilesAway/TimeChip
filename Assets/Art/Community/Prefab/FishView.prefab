@@ -2555,7 +2555,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.98923004, g: 1, b: 0.25, a: 0.8}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -4334,7 +4334,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.9882353, g: 1, b: 0.2509804, a: 0.8}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -5021,6 +5021,14 @@ PrefabInstance:
     - target: {fileID: 2593480427482520464, guid: f5f2ea8ee74fe2149b72757379655604, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.00004738908
+      objectReference: {fileID: 0}
+    - target: {fileID: 3738643805058158643, guid: f5f2ea8ee74fe2149b72757379655604, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3738643805058158643, guid: f5f2ea8ee74fe2149b72757379655604, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4854703572701971867, guid: f5f2ea8ee74fe2149b72757379655604, type: 3}
       propertyPath: m_LocalRotation.z
