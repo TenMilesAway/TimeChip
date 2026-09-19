@@ -169,7 +169,7 @@ namespace DS.Elements
                         : string.Empty;
                 });
 
-                List<string> speakerOptions = new List<string> { "我", "女朋友", "女儿" };
+                List<string> speakerOptions = new List<string> { "我", "喵夫人", "女儿" };
                 PopupField<string> speakerField = new PopupField<string>(
                     "Speaker",
                     speakerOptions,
@@ -264,7 +264,7 @@ namespace DS.Elements
         {
             switch (option)
             {
-                case "女朋友":
+                case "喵夫人":
                     return DSDialogueSpeaker.Girlfriend;
                 case "女儿":
                     return DSDialogueSpeaker.Daughter;

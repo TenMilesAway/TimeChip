@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f262818b55b0f4418296bad0176bdab, type: 3}
-  m_Name: 1
+  m_Name: 9
   m_EditorClassIdentifier: 
-  <DialogueName>k__BackingField: 1
-  <Text>k__BackingField: "\u6211\u56DE\u6765\u5566\uFF0C\u96F6\u5DE5\u987A\u5229\u5B8C\u6210\u3002"
+  <DialogueName>k__BackingField: 9
+  <Text>k__BackingField: "\u90A3\u4E0D\u662F\u5077\u5077\uFF0C\u662F\u5408\u7406\u8868\u8FBE\u4E2A\u4EBA\u9700\u6C42\uFF01"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 11400000, guid: c40ea50afad52f749bf8608162327f54, type: 2}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: 9e0395a05701b1a438260ed3e8f024d8, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 0
-  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
-  <IsStartingDialogue>k__BackingField: 1
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_shy]
+  <IsStartingDialogue>k__BackingField: 0

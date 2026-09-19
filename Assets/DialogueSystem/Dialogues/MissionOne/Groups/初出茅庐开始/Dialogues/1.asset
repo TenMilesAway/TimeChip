@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: 1
   m_EditorClassIdentifier: 
   <DialogueName>k__BackingField: 1
-  <Text>k__BackingField: "\u65B0\u7684\u751F\u6D3B\u5C31\u8981\u5F00\u59CB\u4E86\uFF0C\u611F\u89C9\u600E\u4E48\u6837\uFF1F"
+  <Text>k__BackingField: "\u6211\u4ECA\u5929\u6295\u4E86\u4E09\u5341\u4EFD\u7B80\u5386\u4E86\uFF01"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
     <NextDialogue>k__BackingField: {fileID: 11400000, guid: 04c4435c21b013d46b36611024c46486, type: 2}
   <DialogueType>k__BackingField: 0
-  <Speaker>k__BackingField: 1
-  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/Sprites/girlfriend/role_girlfriend_delighted.png
+  <Speaker>k__BackingField: 0
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_excited]
   <IsStartingDialogue>k__BackingField: 1

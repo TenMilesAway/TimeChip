@@ -237,6 +237,7 @@ public class WorkView : UIBasePanel
             playerInfoManager.AddWorkExperience(workConfig.WorkType, workExperience);
         }
 
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.Work));
         CommonTipView.Show($"完成{workConfig.Name}，获得{coinReward}模拟币和{workExperience}经验");
         GameManager.Audio.Play(AudioDefine.SFXWork);
     }

@@ -190,7 +190,7 @@ public class DialogueView : UIBasePanel
         switch (speaker)
         {
             case DSDialogueSpeaker.Girlfriend:
-                return "女朋友";
+                return "喵夫人";
             case DSDialogueSpeaker.Daughter:
                 return "女儿";
             default:
