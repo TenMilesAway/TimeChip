@@ -557,7 +557,7 @@
     "desc": "摆动鲜艳的红色尾鳍缓缓游过，据说遇见它会带来一点小好运",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_04_redtail_carp]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -568,7 +568,7 @@
     "desc": "喜欢藏在水草丰茂的地方，胃口很好，几乎从不浪费任何一片嫩叶",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_05_grass_carp]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -579,7 +579,7 @@
     "desc": "银亮的鱼身会映出水面的天光，受到惊吓时常会突然跃出水面",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_06_silver_carp]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -590,7 +590,7 @@
     "desc": "披着整齐的深色条纹，是河中敏捷的猎手，上钩后依然很有力气",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_07_river_perch]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -601,7 +601,7 @@
     "desc": "华丽斑纹是天然的伪装，静止时几乎能与河底的碎石融为一体",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_08_mandarin_fish]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -612,7 +612,7 @@
     "desc": "长长的胡须可以感知水流变化，即使在昏暗的河底也不会迷路",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_09_blue_catfish]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -623,7 +623,7 @@
     "desc": "白橙相间的鳞片十分耀眼，传说放进水缸里，家中的好运会悄悄增加",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_10_lucky_koi]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -634,7 +634,7 @@
     "desc": "只在月光洒满河面时出现，游过之后，水中会留下一道淡淡的银蓝微光",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_11_moonlight_trout]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   },
   {
@@ -645,7 +645,139 @@
     "desc": "鳞片间流动着细小的时间刻度，据说凝视它太久，会想起一段已经遗忘的往事",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_12_timefish]",
     "canUse": 0,
-    "rewardScale": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6020,
+    "name": "灵巧细钩",
+    "level": 1,
+    "category": 7,
+    "desc": "灵巧细钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_02_agile]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6021,
+    "name": "宽口鱼钩",
+    "level": 2,
+    "category": 7,
+    "desc": "宽口鱼钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_03_wide]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6022,
+    "name": "稳固倒刺钩",
+    "level": 3,
+    "category": 7,
+    "desc": "稳固倒刺钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_04_barbed]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6023,
+    "name": "双重稳固钩",
+    "level": 4,
+    "category": 7,
+    "desc": "双重稳固钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_05_double]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6024,
+    "name": "时光鱼钩",
+    "level": 5,
+    "category": 7,
+    "desc": "时光鱼钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_06_time]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6025,
+    "name": "练习圆钩",
+    "level": 1,
+    "category": 7,
+    "desc": "练习圆钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_01_beginner]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6030,
+    "name": "面团",
+    "level": 1,
+    "category": 8,
+    "desc": "面团",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_dough]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6031,
+    "name": "蚯蚓",
+    "level": 2,
+    "category": 8,
+    "desc": "蚯蚓",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_worm]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6032,
+    "name": "玉米",
+    "level": 2,
+    "category": 8,
+    "desc": "玉米",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_corn]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6033,
+    "name": "小虾",
+    "level": 3,
+    "category": 8,
+    "desc": "小虾",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_shrimp]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6034,
+    "name": "紫金果",
+    "level": 4,
+    "category": 8,
+    "desc": "紫金果",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_scent_fruit]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
+    "id": 6035,
+    "name": "时光果",
+    "level": 5,
+    "category": 8,
+    "desc": "时光果",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_time]",
+    "canUse": 0,
+    "rewardScale": 5000,
     "useEffect": ""
   }
 ]

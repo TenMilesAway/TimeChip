@@ -9,6 +9,8 @@ using UnityEngine;
 [Serializable]
 public sealed class PlayerInfoData
 {
+    public const int DefaultFishHookItemId = 6025;
+
     /// <summary>玩家的当前年龄</summary>
     public int currentAge = 18;
 
@@ -79,6 +81,12 @@ public sealed class PlayerInfoData
     /// <summary>玩家拥有的可叠加道具列表</summary>
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
 
+    /// <summary>当前装备的鱼钩道具 ID</summary>
+    public int equippedFishHookItemId = DefaultFishHookItemId;
+
+    /// <summary>当前装备的鱼饵道具 ID，零表示未装备</summary>
+    public int equippedFishBaitItemId;
+
     /// <summary>玩家已解锁的家具配置 ID 列表</summary>
     public List<int> unlockedHomeIds = new List<int>();
 
@@ -103,6 +111,15 @@ public sealed class PlayerInfoData
     /// <summary>当月便利店商品及其剩余购买次数</summary>
     public List<PlayerConvenienceOffer> convenienceOffers = new List<PlayerConvenienceOffer>();
 
+    /// <summary>河边商店商品及其剩余购买次数</summary>
+    public List<PlayerFishStoreOffer> fishStoreOffers = new List<PlayerFishStoreOffer>();
+
+    /// <summary>鱼饵购买次数上次刷新的年龄</summary>
+    public int fishStoreBaitRefreshAge = -1;
+
+    /// <summary>鱼饵购买次数上次刷新的月份</summary>
+    public int fishStoreBaitRefreshMonth = -1;
+
     /// <summary>神秘转盘上次刷新的年龄</summary>
     public int mysteryWheelAge = -1;
 
@@ -111,6 +128,14 @@ public sealed class PlayerInfoData
 
     /// <summary>当月神秘转盘奖励</summary>
     public List<PlayerMysteryWheelReward> mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
+}
+
+public enum FishStorePurchaseResult
+{
+    Success,
+    SoldOut,
+    InsufficientCoins,
+    InvalidOffer
 }
 
 /// <summary>
@@ -131,6 +156,14 @@ public sealed class PlayerWorkProgress
 public sealed class PlayerConvenienceOffer
 {
     public int convenienceId;
+    public int remainingCount;
+}
+
+/// <summary>河边商店单个商品的购买状态</summary>
+[Serializable]
+public sealed class PlayerFishStoreOffer
+{
+    public int fishStoreId;
     public int remainingCount;
 }
 
@@ -277,6 +310,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的秘匣币数量</summary>
     public int BoxCoins { get { return _data.boxCoins; } }
+
+    /// <summary>当前装备的鱼钩道具 ID</summary>
+    public int EquippedFishHookItemId { get { return _data.equippedFishHookItemId; } }
+
+    /// <summary>当前装备的鱼饵道具 ID，零表示未装备</summary>
+    public int EquippedFishBaitItemId { get { return _data.equippedFishBaitItemId; } }
 
     /// <summary>当前社区中心等级</summary>
     public int CommunityCentreLevel { get { return _data.communityCentreLevel; } }
@@ -767,6 +806,34 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return 0;
     }
 
+    /// <summary>尝试装备背包中持有的鱼钩或鱼饵。</summary>
+    public bool TryEquipFishingItem(cfg.Item itemConfig)
+    {
+        const int FishHookCategory = 7;
+        const int FishBaitCategory = 8;
+        if (itemConfig == null ||
+            GetItemCount(itemConfig.Id) <= 0)
+        {
+            return false;
+        }
+
+        if (itemConfig.Category == FishHookCategory)
+        {
+            _data.equippedFishHookItemId = itemConfig.Id;
+        }
+        else if (itemConfig.Category == FishBaitCategory)
+        {
+            _data.equippedFishBaitItemId = itemConfig.Id;
+        }
+        else
+        {
+            return false;
+        }
+
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
     /// <summary>尝试消耗背包中的指定道具数量。</summary>
     /// <returns>道具充足且成功消耗时返回 true，否则返回 false。</returns>
     public bool TryConsumeItem(int itemId, int amount = 1)
@@ -788,6 +855,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             if (item.amount == 0)
             {
                 _data.inventory.RemoveAt(i);
+                if (_data.equippedFishBaitItemId == itemId)
+                {
+                    _data.equippedFishBaitItemId = 0;
+                }
             }
 
             NotifyPlayerInfoChanged();
@@ -1014,6 +1085,98 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return ConveniencePurchaseResult.Success;
     }
 
+    /// <summary>确保河边商店商品已建立购买次数，并在新回合重置鱼饵购买次数。</summary>
+    public void RefreshFishStoreOffers(IReadOnlyList<cfg.FishStore> offers)
+    {
+        if (offers == null)
+        {
+            throw new ArgumentNullException(nameof(offers));
+        }
+
+        if (_data.fishStoreOffers == null)
+        {
+            _data.fishStoreOffers = new List<PlayerFishStoreOffer>();
+        }
+
+        bool isNewTurn = _data.fishStoreBaitRefreshAge != _data.currentAge ||
+            _data.fishStoreBaitRefreshMonth != _data.currentMonth;
+        for (int i = 0; i < offers.Count; i++)
+        {
+            cfg.FishStore offerConfig = offers[i];
+            if (!IsValidFishStoreOffer(offerConfig))
+            {
+                continue;
+            }
+
+            PlayerFishStoreOffer offer = FindFishStoreOffer(_data.fishStoreOffers, offerConfig.Id);
+            if (offer == null)
+            {
+                offer = new PlayerFishStoreOffer
+                {
+                    fishStoreId = offerConfig.Id,
+                    remainingCount = offerConfig.Num
+                };
+                _data.fishStoreOffers.Add(offer);
+            }
+            else if (isNewTurn && IsFishBaitOffer(offerConfig.Id))
+            {
+                offer.remainingCount = offerConfig.Num;
+            }
+        }
+
+        if (isNewTurn)
+        {
+            _data.fishStoreBaitRefreshAge = _data.currentAge;
+            _data.fishStoreBaitRefreshMonth = _data.currentMonth;
+            NotifyPlayerInfoChanged();
+        }
+    }
+
+    /// <summary>获取河边商店指定商品的剩余购买次数。</summary>
+    public int GetFishStoreOfferRemainingCount(int fishStoreId)
+    {
+        PlayerFishStoreOffer offer = FindFishStoreOffer(_data.fishStoreOffers, fishStoreId);
+        return offer == null ? 0 : offer.remainingCount;
+    }
+
+    /// <summary>购买河边商店商品，同时扣除模拟币并发放对应道具。</summary>
+    public FishStorePurchaseResult TryPurchaseFishStoreOffer(cfg.FishStore offerConfig)
+    {
+        if (!IsValidFishStoreOffer(offerConfig))
+        {
+            return FishStorePurchaseResult.InvalidOffer;
+        }
+
+        PlayerFishStoreOffer offer = FindFishStoreOffer(_data.fishStoreOffers, offerConfig.Id);
+        if (offer == null)
+        {
+            return FishStorePurchaseResult.InvalidOffer;
+        }
+
+        if (offer.remainingCount <= 0)
+        {
+            return FishStorePurchaseResult.SoldOut;
+        }
+
+        if (_data.simulationCoins < offerConfig.Price)
+        {
+            return FishStorePurchaseResult.InsufficientCoins;
+        }
+
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(offerConfig.ItemId);
+        if (itemConfig == null)
+        {
+            return FishStorePurchaseResult.InvalidOffer;
+        }
+
+        _data.simulationCoins -= offerConfig.Price;
+        offer.remainingCount--;
+        AddInventoryItem(itemConfig.Id, 1);
+        NotifyPlayerInfoChanged();
+        return FishStorePurchaseResult.Success;
+    }
+
     /// <summary>尝试完成本回合体检并激活指定 BUFF。</summary>
     public ClinicExaminationResult TryUseClinicExamination(int buffId)
     {
@@ -1236,6 +1399,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.currentAge++;
         }
 
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables != null)
+        {
+            RefreshFishStoreOffers(tables.FishStoreTable.DataList);
+        }
+
         TurnAdvanced?.Invoke();
         NotifyPlayerInfoChanged();
     }
@@ -1365,6 +1534,22 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.inventory.RemoveAll(item => item == null || item.itemId <= 0 || item.amount <= 0);
 
+        if (_data.equippedFishHookItemId <= 0)
+        {
+            _data.equippedFishHookItemId = PlayerInfoData.DefaultFishHookItemId;
+        }
+
+        if (GetItemCount(_data.equippedFishHookItemId) <= 0)
+        {
+            AddInventoryItem(_data.equippedFishHookItemId, 1);
+        }
+
+        if (_data.equippedFishBaitItemId < 0 ||
+            GetItemCount(_data.equippedFishBaitItemId) <= 0)
+        {
+            _data.equippedFishBaitItemId = 0;
+        }
+
         if (_data.unlockedHomeIds == null)
         {
             _data.unlockedHomeIds = new List<int>();
@@ -1429,6 +1614,25 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             }
         }
 
+        if (_data.fishStoreOffers == null)
+        {
+            _data.fishStoreOffers = new List<PlayerFishStoreOffer>();
+        }
+
+        HashSet<int> fishStoreIds = new HashSet<int>();
+        for (int i = _data.fishStoreOffers.Count - 1; i >= 0; i--)
+        {
+            PlayerFishStoreOffer offer = _data.fishStoreOffers[i];
+            if (offer == null ||
+                offer.fishStoreId < 1 ||
+                offer.fishStoreId > 11 ||
+                offer.remainingCount < 0 ||
+                !fishStoreIds.Add(offer.fishStoreId))
+            {
+                _data.fishStoreOffers.RemoveAt(i);
+            }
+        }
+
         if (_data.mysteryWheelRewards == null)
         {
             _data.mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
@@ -1482,6 +1686,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             cureService1Price = source.cureService1Price,
             cureService2Price = source.cureService2Price,
             inventory = CreateInventoryCopy(source.inventory),
+            equippedFishHookItemId = source.equippedFishHookItemId,
+            equippedFishBaitItemId = source.equippedFishBaitItemId,
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
             activeBuffs = CreateActiveBuffCopy(source.activeBuffs),
             activeMissions = CreateMissionCopy(source.activeMissions),
@@ -1490,6 +1696,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             convenienceOfferAge = source.convenienceOfferAge,
             convenienceOfferMonth = source.convenienceOfferMonth,
             convenienceOffers = CreateConvenienceOfferCopy(source.convenienceOffers),
+            fishStoreOffers = CreateFishStoreOfferCopy(source.fishStoreOffers),
+            fishStoreBaitRefreshAge = source.fishStoreBaitRefreshAge,
+            fishStoreBaitRefreshMonth = source.fishStoreBaitRefreshMonth,
             mysteryWheelAge = source.mysteryWheelAge,
             mysteryWheelMonth = source.mysteryWheelMonth,
             mysteryWheelRewards = CreateMysteryWheelRewardCopy(source.mysteryWheelRewards)
@@ -1520,6 +1729,31 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 itemId = item.itemId,
                 amount = item.amount
             });
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerFishStoreOffer> CreateFishStoreOfferCopy(
+        List<PlayerFishStoreOffer> source)
+    {
+        List<PlayerFishStoreOffer> copy = new List<PlayerFishStoreOffer>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerFishStoreOffer offer = source[i];
+            if (offer != null)
+            {
+                copy.Add(new PlayerFishStoreOffer
+                {
+                    fishStoreId = offer.fishStoreId,
+                    remainingCount = offer.remainingCount
+                });
+            }
         }
 
         return copy;
@@ -1731,6 +1965,42 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         return null;
+    }
+
+    private static PlayerFishStoreOffer FindFishStoreOffer(
+        List<PlayerFishStoreOffer> offers,
+        int fishStoreId)
+    {
+        if (offers == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < offers.Count; i++)
+        {
+            PlayerFishStoreOffer offer = offers[i];
+            if (offer != null && offer.fishStoreId == fishStoreId)
+            {
+                return offer;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsValidFishStoreOffer(cfg.FishStore offerConfig)
+    {
+        return offerConfig != null &&
+            offerConfig.Id >= 1 &&
+            offerConfig.Id <= 11 &&
+            offerConfig.ItemId > 0 &&
+            offerConfig.Price >= 0 &&
+            offerConfig.Num > 0;
+    }
+
+    private static bool IsFishBaitOffer(int fishStoreId)
+    {
+        return fishStoreId >= 6 && fishStoreId <= 11;
     }
 
     private void AddInventoryItem(int itemId, int amount)

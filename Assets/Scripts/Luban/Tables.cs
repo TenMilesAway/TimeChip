@@ -61,6 +61,10 @@ public partial class Tables
     /// 地铁地点配置
     /// </summary>
     public SubwayTable SubwayTable {get; }
+    /// <summary>
+    /// 捕鱼商店配置
+    /// </summary>
+    public FishStoreTable FishStoreTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -77,6 +81,7 @@ public partial class Tables
         GrowTable = new GrowTable(loader("grow"));
         CommunityCentreTable = new CommunityCentreTable(loader("communityCentre"));
         SubwayTable = new SubwayTable(loader("subway"));
+        FishStoreTable = new FishStoreTable(loader("fishStore"));
         ResolveRef();
     }
     
@@ -94,6 +99,7 @@ public partial class Tables
         GrowTable.ResolveRef(this);
         CommunityCentreTable.ResolveRef(this);
         SubwayTable.ResolveRef(this);
+        FishStoreTable.ResolveRef(this);
     }
 }
 

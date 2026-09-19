@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "name": "灵巧细钩",
+    "itemId": 6021,
+    "price": 1000,
+    "num": 1
+  },
+  {
+    "id": 2,
+    "name": "宽口鱼钩",
+    "itemId": 6022,
+    "price": 2000,
+    "num": 1
+  },
+  {
+    "id": 3,
+    "name": "稳固倒刺钩",
+    "itemId": 6023,
+    "price": 5000,
+    "num": 1
+  },
+  {
+    "id": 4,
+    "name": "双重稳固钩",
+    "itemId": 6024,
+    "price": 10000,
+    "num": 1
+  },
+  {
+    "id": 5,
+    "name": "时光鱼钩",
+    "itemId": 6025,
+    "price": 20000,
+    "num": 1
+  },
+  {
+    "id": 6,
+    "name": "面团",
+    "itemId": 6030,
+    "price": 50,
+    "num": 10
+  },
+  {
+    "id": 7,
+    "name": "蚯蚓",
+    "itemId": 6031,
+    "price": 100,
+    "num": 5
+  },
+  {
+    "id": 8,
+    "name": "玉米",
+    "itemId": 6032,
+    "price": 100,
+    "num": 5
+  },
+  {
+    "id": 9,
+    "name": "小虾",
+    "itemId": 6033,
+    "price": 200,
+    "num": 3
+  },
+  {
+    "id": 10,
+    "name": "紫金果",
+    "itemId": 6034,
+    "price": 400,
+    "num": 1
+  },
+  {
+    "id": 11,
+    "name": "时光果",
+    "itemId": 6035,
+    "price": 1000,
+    "num": 1
+  }
+]

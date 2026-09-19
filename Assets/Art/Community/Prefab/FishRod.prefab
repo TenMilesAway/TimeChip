@@ -177,7 +177,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 211256249853016143}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0004882813, w: 0.9999999}
   m_LocalPosition: {x: 0.34712002, y: 0.00000022155155, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -539,7 +539,7 @@ Transform:
   m_GameObject: {fileID: 4472308285816126099}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.7087288, w: 0.70548105}
-  m_LocalPosition: {x: 2.0052319, y: 0.185, z: 0}
+  m_LocalPosition: {x: 2.005232, y: 0.185, z: 0}
   m_LocalScale: {x: 1.6666665, y: 1.6666665, z: 1.6666665}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1067,7 +1067,7 @@ GameObject:
   - component: {fileID: 2295202905331041534}
   - component: {fileID: 4957437822255008115}
   m_Layer: 0
-  m_Name: FinishRod
+  m_Name: FishRod
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1258,7 +1258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8137834711672301663}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.00000012343907, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0002988866, w: 1}
   m_LocalPosition: {x: 0.2557727, y: 0.00000014656781, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
