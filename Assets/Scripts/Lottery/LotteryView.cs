@@ -13,9 +13,11 @@ public class LotteryView : UIBasePanel
     [SerializeField] private GameObject _normal;  // 普通抽奖
     [SerializeField] private GameObject _mys;     // 神秘转盘
     [SerializeField] private GameObject _box;     // 时光秘匣
+    [SerializeField] private GameObject _card;    // 时光星阵
     [SerializeField] private Button _btnChangeNormal;  // 切换至普通抽奖
     [SerializeField] private Button _btnChangeMys;     // 切换至神秘转盘
     [SerializeField] private Button _btnChangeBox;     // 切换至时光秘匣
+    [SerializeField] private Button _btnChangeCard;    // 切换至时光星阵
     [SerializeField] private Button _btnCloseChangeLottery; // 关闭切换抽奖类型界面按钮
 
 
@@ -40,6 +42,13 @@ public class LotteryView : UIBasePanel
     [SerializeField] private Button _boxButton;             // 抽奖按钮
     [SerializeField] private Text _boxCoinText;             // 剩余秘匣币文本
 
+    [Header("时光星阵")]
+    [SerializeField] private CardLotteryItem[] _cardLotteryItems;  // 时光星阵奖品列表, 共 16 个
+    [SerializeField] private CardLotteryAdditionItem[] _cardLotteryRightAdditionItems; // 时光星阵右侧附加奖励列表, 共 4 个
+    [SerializeField] private CardLotteryAdditionItem[] _cardLotteryBottomAdditionItems; // 时光星阵底部附加奖励列表, 共 4 个
+    [SerializeField] private Button _cardButton;            // 抽奖按钮
+    [SerializeField] private Text _cardCoinTest;            // 剩余星阵币文本
+
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
     private Vector3 _lotteryButtonScale;                    // 抽奖按钮缩放
     private Vector3 _mysButtonScale;                        // 转盘按钮缩放
@@ -59,11 +68,15 @@ public class LotteryView : UIBasePanel
     private const int LotteryPoolId = 1;                    // 奖池 ID
     private const int MysteryWheelPoolId = 2;               // 神秘转盘奖池 ID
     private const int BoxLotteryPoolId = 3;                 // 时光秘匣奖池 ID
+    private const int CardLotteryPoolId = 4;                // 时光星阵奖池 ID
     private const int BoxCoinItemId = BasePropertyId.BoxCoin; // 秘匣币道具 ID
     private const int FiveDrawCount = 5;                    // 五连抽次数
     private const float LotteryDuration = 1f;               // 奖池抽奖间隔
     private const int MysteryWheelRewardCount = 12;         // 转盘奖品数量
     private const int BoxRewardCount = 6;                   // 秘匣盒子数量
+    private const int CardLotteryItemCount = 16;            // 星阵卡牌数量
+    private const int CardLotteryAdditionRewardCount = 8;   // 星阵附加奖励数量
+    private const int CardLotteryLineLength = 4;            // 星阵每行、每列卡牌数量
     private const int MysteryWheelMinimumSteps = 24;        // 至少转两圈
     private const float MysteryWheelSlowInterval = 0.16f;   // 转盘最慢间隔
     private const float MysteryWheelFastInterval = 0.035f;  // 转盘最快间隔
@@ -74,6 +87,7 @@ public class LotteryView : UIBasePanel
     private const float LotteryRevealDuration = 0.38f;      // 开箱揭晓演出时长
     private const float MysteryWheelRevealDuration = 0.38f; // 转盘结果揭晓时长
     private const float BoxRevealDuration = 0.52f;          // 秘匣结果揭晓时长
+    private const float CardRevealDuration = 0.36f;         // 星阵翻牌时长
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -96,7 +110,7 @@ public class LotteryView : UIBasePanel
         RefreshTimeCoins(playerInfoManager);
         _selection.SetActive(false);
 
-        if (!_normal.activeSelf && !_mys.activeSelf && !_box.activeSelf)
+        if (!_normal.activeSelf && !_mys.activeSelf && !_box.activeSelf && !_card.activeSelf)
         {
             _normal.SetActive(true);
         }
@@ -156,7 +170,9 @@ public class LotteryView : UIBasePanel
             _btnChangeNormal.onClick.RemoveListener(SwitchToNormalLottery);
             _btnChangeMys.onClick.RemoveListener(SwitchToMysteryWheelLottery);
             _btnChangeBox.onClick.RemoveListener(SwitchToBoxLottery);
+            _btnChangeCard.onClick.RemoveListener(SwitchToCardLottery);
             _boxButton.onClick.RemoveListener(StartBoxLottery);
+            _cardButton.onClick.RemoveListener(StartCardLottery);
 
             for (int i = 0; i < _boxLotteryItem.Length; i++)
             {
@@ -188,7 +204,9 @@ public class LotteryView : UIBasePanel
         _btnChangeNormal.onClick.AddListener(SwitchToNormalLottery);
         _btnChangeMys.onClick.AddListener(SwitchToMysteryWheelLottery);
         _btnChangeBox.onClick.AddListener(SwitchToBoxLottery);
+        _btnChangeCard.onClick.AddListener(SwitchToCardLottery);
         _boxButton.onClick.AddListener(StartBoxLottery);
+        _cardButton.onClick.AddListener(StartCardLottery);
         for (int i = 0; i < _boxLotteryItem.Length; i++)
         {
             _boxLotteryItem[i].Selected += SelectBox;
@@ -292,11 +310,21 @@ public class LotteryView : UIBasePanel
         SwitchLotteryMode(LotteryMode.Box);
     }
 
+    private void SwitchToCardLottery()
+    {
+        SwitchLotteryMode(LotteryMode.Card);
+    }
+
     private LotteryMode GetActiveLotteryMode()
     {
         if (_box.activeSelf)
         {
             return LotteryMode.Box;
+        }
+
+        if (_card.activeSelf)
+        {
+            return LotteryMode.Card;
         }
 
         return _mys.activeSelf ? LotteryMode.MysteryWheel : LotteryMode.Normal;
@@ -314,6 +342,7 @@ public class LotteryView : UIBasePanel
         _normal.SetActive(lotteryMode == LotteryMode.Normal);
         _mys.SetActive(lotteryMode == LotteryMode.MysteryWheel);
         _box.SetActive(lotteryMode == LotteryMode.Box);
+        _card.SetActive(lotteryMode == LotteryMode.Card);
         _selection.SetActive(false);
 
         if (lotteryMode == LotteryMode.MysteryWheel)
@@ -323,6 +352,10 @@ public class LotteryView : UIBasePanel
         else if (lotteryMode == LotteryMode.Box)
         {
             RefreshBoxLotteryRewards();
+        }
+        else if (lotteryMode == LotteryMode.Card)
+        {
+            RefreshCardLottery();
         }
         else
         {
@@ -350,6 +383,9 @@ public class LotteryView : UIBasePanel
             case BasePropertyId.BoxCoin:
                 playerInfoManager.AddBoxCoins(reward.itemCount);
                 break;
+            case BasePropertyId.CardCoin:
+                playerInfoManager.AddCardCoins(reward.itemCount);
+                break;
             default:
                 playerInfoManager.AddItem(reward.itemId, reward.itemCount);
                 break;
@@ -373,6 +409,7 @@ public class LotteryView : UIBasePanel
         _timeCoinText.text = $"{playerInfoManager.TimeCoins}";
         _wheelCoinText.text = $"{playerInfoManager.WheelCoins}";
         _boxCoinText.text = $"{playerInfoManager.GetConsumableCount(BoxCoinItemId)}";
+        _cardCoinTest.text = $"{playerInfoManager.CardCoins}";
     }
 
     private void RefreshBoxLotteryRewards()
@@ -481,6 +518,288 @@ public class LotteryView : UIBasePanel
             _boxButton.interactable = false;
         }
     }
+
+    private void RefreshCardLottery()
+        {
+            if (_cardLotteryItems == null || _cardLotteryItems.Length != CardLotteryItemCount ||
+                _cardLotteryRightAdditionItems == null ||
+                _cardLotteryRightAdditionItems.Length != CardLotteryLineLength ||
+                _cardLotteryBottomAdditionItems == null ||
+                _cardLotteryBottomAdditionItems.Length != CardLotteryLineLength)
+            {
+                Debug.LogError("时光星阵卡牌或附加奖励栏配置不完整", this);
+                _cardButton.interactable = false;
+                return;
+            }
+
+            if (!TryLoadCardLotteryAdditionRewards())
+            {
+                _cardButton.interactable = false;
+                return;
+            }
+
+            PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+            for (int i = 0; i < _cardLotteryItems.Length; i++)
+            {
+                if (_cardLotteryItems[i] == null)
+                {
+                    Debug.LogError($"时光星阵第 {i + 1} 张卡牌未配置", this);
+                    _cardButton.interactable = false;
+                    return;
+                }
+
+                if (playerInfoManager.TryGetCardLotteryItemAt(i, out int itemId, out int amount))
+                {
+                    _cardLotteryItems[i].SetOpened(new CommonRewardItemData
+                    {
+                        itemId = itemId,
+                        itemCount = amount
+                    });
+                }
+                else
+                {
+                    _cardLotteryItems[i].SetUnopened();
+                }
+            }
+
+            for (int i = 0; i < CardLotteryLineLength; i++)
+            {
+                if (_cardLotteryRightAdditionItems[i] == null ||
+                    _cardLotteryBottomAdditionItems[i] == null)
+                {
+                    Debug.LogError($"时光星阵第 {i + 1} 个附加奖励栏未配置", this);
+                    _cardButton.interactable = false;
+                    return;
+                }
+
+                if (!TryGetCardLotteryAdditionReward(i, out CommonRewardItemData rightReward) ||
+                    !TryGetCardLotteryAdditionReward(
+                        CardLotteryLineLength + i,
+                        out CommonRewardItemData bottomReward))
+                {
+                    _cardButton.interactable = false;
+                    return;
+                }
+
+                _cardLotteryRightAdditionItems[i].SetData(
+                    rightReward,
+                    playerInfoManager.HasClaimedCardLotteryAdditionReward(i));
+                _cardLotteryBottomAdditionItems[i].SetData(
+                    bottomReward,
+                    playerInfoManager.HasClaimedCardLotteryAdditionReward(
+                        CardLotteryLineLength + i));
+            }
+
+            _cardButton.interactable = HasUnopenedCardLotteryItem();
+        }
+
+        private bool TryLoadCardLotteryAdditionRewards()
+        {
+            PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+            if (!playerInfoManager.HasCardLotteryAdditionRewards(CardLotteryAdditionRewardCount))
+            {
+                cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+                    .GetOrDefault(CardLotteryPoolId);
+                if (lotteryConfig == null ||
+                    !TryParseAdditionRewards(
+                        lotteryConfig.AdditionRewards,
+                        out List<CommonRewardItemData> additionRewards) ||
+                    additionRewards.Count != CardLotteryAdditionRewardCount)
+                {
+                    Debug.LogError($"时光星阵附加奖励配置无效: [{CardLotteryPoolId}]", this);
+                    return false;
+                }
+
+                ShuffleCardLotteryAdditionRewards(additionRewards);
+                playerInfoManager.SetCardLotteryAdditionRewards(additionRewards);
+            }
+
+            return true;
+        }
+
+        private static void ShuffleCardLotteryAdditionRewards(List<CommonRewardItemData> rewards)
+        {
+            for (int i = rewards.Count - 1; i > 0; i--)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, i + 1);
+                CommonRewardItemData temporaryReward = rewards[i];
+                rewards[i] = rewards[randomIndex];
+                rewards[randomIndex] = temporaryReward;
+            }
+        }
+
+        private bool TryGetCardLotteryAdditionReward(
+            int index,
+            out CommonRewardItemData reward)
+        {
+            reward = null;
+            if (!PlayerInfoManager.GetInstance().TryGetCardLotteryAdditionRewardAt(
+                    index,
+                    out int itemId,
+                    out int amount))
+            {
+                Debug.LogError($"时光星阵附加奖励不存在: [{index}]", this);
+                return false;
+            }
+
+            reward = new CommonRewardItemData { itemId = itemId, itemCount = amount };
+            return true;
+        }
+
+        private void StartCardLottery()
+        {
+            if (_isLotteryInProgress || !TryGetRandomUnopenedCardIndex(out int cardIndex))
+            {
+                return;
+            }
+
+            if (!TryDrawReward(CardLotteryPoolId, out CommonRewardItemData cardReward))
+            {
+                Debug.LogError($"时光星阵奖励配置无效: [{CardLotteryPoolId}]", this);
+                return;
+            }
+
+            if (!TrySpendLotteryCost(CardLotteryPoolId) ||
+                !PlayerInfoManager.GetInstance().TrySetCardLotteryItem(
+                    cardIndex,
+                    cardReward,
+                    CardLotteryItemCount))
+            {
+                return;
+            }
+
+            List<CommonRewardItemData> rewards = new List<CommonRewardItemData> { cardReward };
+            rewards.AddRange(ClaimCompletedCardLotteryAdditionRewards());
+            ApplyRewards(rewards);
+            ScheduleRewardPresentation(rewards, CardRevealDuration + 0.01f);
+
+            _isLotteryInProgress = true;
+            _cardButton.interactable = false;
+            _cardLotteryItems[cardIndex].PlayRevealAnimation(cardReward);
+            GameManager.Audio.Play(AudioDefine.SFXClick);
+            GameManager.Audio.Vibrate();
+
+            DOVirtual.DelayedCall(CardRevealDuration, CompleteCardLottery)
+                .SetUpdate(true)
+                .SetTarget(this);
+        }
+
+        private bool TryGetRandomUnopenedCardIndex(out int cardIndex)
+        {
+            List<int> unopenedIndices = new List<int>();
+            PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+            for (int i = 0; i < CardLotteryItemCount; i++)
+            {
+                if (!playerInfoManager.TryGetCardLotteryItemAt(i, out _, out _))
+                {
+                    unopenedIndices.Add(i);
+                }
+            }
+
+            if (unopenedIndices.Count == 0)
+            {
+                cardIndex = -1;
+                return false;
+            }
+
+            cardIndex = unopenedIndices[UnityEngine.Random.Range(0, unopenedIndices.Count)];
+            return true;
+        }
+
+        private List<CommonRewardItemData> ClaimCompletedCardLotteryAdditionRewards()
+        {
+            List<CommonRewardItemData> claimedRewards = new List<CommonRewardItemData>();
+            for (int row = 0; row < CardLotteryLineLength; row++)
+            {
+                if (IsCardLotteryLineComplete(row, true))
+                {
+                    TryClaimCardLotteryAdditionReward(row, claimedRewards);
+                }
+            }
+
+            for (int column = 0; column < CardLotteryLineLength; column++)
+            {
+                if (IsCardLotteryLineComplete(column, false))
+                {
+                    TryClaimCardLotteryAdditionReward(
+                        CardLotteryLineLength + column,
+                        claimedRewards);
+                }
+            }
+
+            return claimedRewards;
+        }
+
+        private bool IsCardLotteryLineComplete(int lineIndex, bool isRow)
+        {
+            PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+            for (int offset = 0; offset < CardLotteryLineLength; offset++)
+            {
+                int cardIndex = isRow
+                    ? lineIndex * CardLotteryLineLength + offset
+                    : offset * CardLotteryLineLength + lineIndex;
+                if (!playerInfoManager.TryGetCardLotteryItemAt(cardIndex, out _, out _))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void TryClaimCardLotteryAdditionReward(
+            int additionIndex,
+            List<CommonRewardItemData> claimedRewards)
+        {
+            if (PlayerInfoManager.GetInstance().TryClaimCardLotteryAdditionReward(
+                    additionIndex,
+                    out int itemId,
+                    out int amount))
+            {
+                SetCardLotteryAdditionObtained(additionIndex);
+                claimedRewards.Add(new CommonRewardItemData
+                {
+                    itemId = itemId,
+                    itemCount = amount
+                });
+            }
+        }
+
+        private void SetCardLotteryAdditionObtained(int additionIndex)
+        {
+            if (additionIndex < CardLotteryLineLength)
+            {
+                _cardLotteryRightAdditionItems[additionIndex].SetObtained(true);
+                return;
+            }
+
+            _cardLotteryBottomAdditionItems[additionIndex - CardLotteryLineLength]
+                .SetObtained(true);
+        }
+
+        private bool HasUnopenedCardLotteryItem()
+        {
+            for (int i = 0; i < CardLotteryItemCount; i++)
+            {
+                if (!PlayerInfoManager.GetInstance().TryGetCardLotteryItemAt(i, out _, out _))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void CompleteCardLottery()
+        {
+            if (!_isLotteryInProgress)
+            {
+                return;
+            }
+
+            _isLotteryInProgress = false;
+            _cardButton.interactable = HasUnopenedCardLotteryItem();
+        }
 
     private bool TryDrawReward(int lotteryPoolId, out CommonRewardItemData reward)
     {
@@ -698,6 +1017,34 @@ public class LotteryView : UIBasePanel
         }
 
         return costs.Count > 0;
+    }
+
+    private static bool TryParseAdditionRewards(
+        string rewardConfig,
+        out List<CommonRewardItemData> rewards)
+    {
+        rewards = new List<CommonRewardItemData>();
+        if (string.IsNullOrWhiteSpace(rewardConfig))
+        {
+            return false;
+        }
+
+        string[] entries = rewardConfig.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] values = entries[i].Split(',');
+            if (values.Length != 2 ||
+                !int.TryParse(values[0], out int itemId) ||
+                !int.TryParse(values[1], out int itemCount) ||
+                itemId <= 0 || itemCount <= 0)
+            {
+                return false;
+            }
+
+            rewards.Add(new CommonRewardItemData { itemId = itemId, itemCount = itemCount });
+        }
+
+        return rewards.Count > 0;
     }
 
     private List<LotteryReward> ParseRewards(string rewardConfig)
@@ -1224,7 +1571,8 @@ public class LotteryView : UIBasePanel
     {
         Normal,
         MysteryWheel,
-        Box
+        Box,
+        Card
     }
 
     private readonly struct LotteryReward

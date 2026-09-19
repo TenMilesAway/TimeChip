@@ -284,12 +284,14 @@ public class SubwayView : UIBasePanel
 
     private void OnClickBack()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
     private async void OnClickGo()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_isNavigating ||
             _selectedLocation == null ||
             !IsLocationUnlocked(_selectedLocation) ||

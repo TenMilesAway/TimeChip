@@ -87,7 +87,6 @@ public class ConvenienceStoreItem : MonoBehaviour
     {
         if (_convenienceConfig != null)
         {
-            GameManager.Audio.Play(AudioDefine.SFXBuy);
             _purchaseHandler?.Invoke(_convenienceConfig);
         }
     }

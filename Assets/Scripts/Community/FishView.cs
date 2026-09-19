@@ -190,6 +190,7 @@ public class FishView : UIBasePanel
 
     private void OnClickFish()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_fishingCoroutine != null || _fishButtonCooldownCoroutine != null)
         {
             return;
@@ -215,6 +216,7 @@ public class FishView : UIBasePanel
             return;
         }
 
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         _catchTargetY = Mathf.Min(
             Mathf.Max(_catchTargetY, _rectCatch.anchoredPosition.y) + CatchRiseDistance,
             _catchMaxY);
@@ -223,12 +225,14 @@ public class FishView : UIBasePanel
 
     private void OnClickBack()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityView);
     }
 
     private void OnClickFishStore()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         RefreshStore(PlayerInfoManager.GetInstance());
         SetStorePage(true);
         _goStore.SetActive(true);
@@ -236,31 +240,37 @@ public class FishView : UIBasePanel
 
     private void OnClickFishStoreClose()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         _goStore.SetActive(false);
     }
 
     private void OnClickChangeBait()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         OpenChangePanel(FishBaitCategory);
     }
 
     private void OnClickChangeHook()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         OpenChangePanel(FishHookCategory);
     }
 
     private void OnClickCloseChangePanel()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         _goChangePanel.SetActive(false);
     }
 
     private void OnClickHookPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         SetStorePage(true);
     }
 
     private void OnClickBaitPage()
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         SetStorePage(false);
     }
 
@@ -333,6 +343,7 @@ public class FishView : UIBasePanel
 
     private void OnClickChangeItem(cfg.Item itemConfig)
     {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (!PlayerInfoManager.GetInstance().TryEquipFishingItem(itemConfig))
         {
             Debug.LogError($"装备钓鱼道具失败: [{itemConfig.Id}]", this);
@@ -436,6 +447,7 @@ public class FishView : UIBasePanel
         switch (purchaseResult)
         {
             case FishStorePurchaseResult.Success:
+                GameManager.Audio.Play(AudioDefine.SFXBuy);
                 CommonTipView.Show($"购买{storeConfig.Name}成功");
                 break;
             case FishStorePurchaseResult.SoldOut:

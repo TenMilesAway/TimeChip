@@ -109,6 +109,7 @@ public class SubwayPoint : MonoBehaviour
     {
         if (_locationConfig != null)
         {
+            GameManager.Audio.Play(AudioDefine.SFXClick);
             _selectHandler?.Invoke(_locationConfig);
         }
     }

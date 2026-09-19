@@ -78,7 +78,7 @@ public class FishStoreItem : MonoBehaviour
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXBuy);
+        GameManager.Audio.Play(AudioDefine.SFXClick);
         _purchaseHandler?.Invoke(_storeConfig);
     }
 }

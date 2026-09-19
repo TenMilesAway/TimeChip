@@ -218,6 +218,7 @@ public class ConvenienceStoreView : UIBasePanel
         switch (purchaseResult)
         {
             case ConveniencePurchaseResult.Success:
+                GameManager.Audio.Play(AudioDefine.SFXBuy);
                 RefreshMonthlyOffers();
                 CommonTipView.Show("购买成功");
                 break;

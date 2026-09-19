@@ -181,6 +181,7 @@ public class ClinicView : UIBasePanel
         {
             case ClinicItemPurchaseResult.Success:
                 cfg.Item item = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId);
+                GameManager.Audio.Play(AudioDefine.SFXBuy);
                 CommonTipView.Show($"购买成功，获得【{item.Name}】");
                 break;
             case ClinicItemPurchaseResult.AlreadyPurchased:

@@ -35,6 +35,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的秘匣币数量</summary>
     public int boxCoins;
 
+    /// <summary>玩家持有的星阵币数量</summary>
+    public int cardCoins = 16;
+
     /// <summary>社区中心等级，范围为 1 至 6</summary>
     public int communityCentreLevel = 1;
 
@@ -128,6 +131,16 @@ public sealed class PlayerInfoData
 
     /// <summary>当月神秘转盘奖励</summary>
     public List<PlayerMysteryWheelReward> mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
+
+    /// <summary>时光星阵已翻开的卡牌奖励</summary>
+    public List<PlayerCardLotteryItem> cardLotteryItems = new List<PlayerCardLotteryItem>();
+
+    /// <summary>时光星阵初始化后固定的附加奖励</summary>
+    public List<PlayerCardLotteryAdditionReward> cardLotteryAdditionRewards =
+        new List<PlayerCardLotteryAdditionReward>();
+
+    /// <summary>已领取的时光星阵附加奖励索引</summary>
+    public List<int> claimedCardLotteryAdditionIndices = new List<int>();
 }
 
 public enum FishStorePurchaseResult
@@ -170,6 +183,23 @@ public sealed class PlayerFishStoreOffer
 /// <summary>神秘转盘中的单个奖励存档数据</summary>
 [Serializable]
 public sealed class PlayerMysteryWheelReward
+{
+    public int itemId;
+    public int amount;
+}
+
+/// <summary>时光星阵单张已翻开卡牌的奖励</summary>
+[Serializable]
+public sealed class PlayerCardLotteryItem
+{
+    public int index;
+    public int itemId;
+    public int amount;
+}
+
+/// <summary>时光星阵附加奖励</summary>
+[Serializable]
+public sealed class PlayerCardLotteryAdditionReward
 {
     public int itemId;
     public int amount;
@@ -310,6 +340,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的秘匣币数量</summary>
     public int BoxCoins { get { return _data.boxCoins; } }
+
+    /// <summary>获取玩家当前持有的星阵币数量</summary>
+    public int CardCoins { get { return _data.cardCoins; } }
 
     /// <summary>当前装备的鱼钩道具 ID</summary>
     public int EquippedFishHookItemId { get { return _data.equippedFishHookItemId; } }
@@ -709,6 +742,18 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return TrySpendCoins(ref _data.boxCoins, amount);
     }
 
+    /// <summary>按指定数值增减星阵币, 星阵币不会低于零</summary>
+    public void AddCardCoins(int amount)
+    {
+        SetValue(ref _data.cardCoins, Mathf.Max(0, _data.cardCoins + amount));
+    }
+
+    /// <summary>尝试消耗指定数量的星阵币</summary>
+    public bool TrySpendCardCoins(int amount)
+    {
+        return TrySpendCoins(ref _data.cardCoins, amount);
+    }
+
     /// <summary>增加社区经验，升级后自动获得一次社区提案选择次数。</summary>
     public void AddCommunityCentreExperience(int amount)
     {
@@ -881,6 +926,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 return _data.wheelCoins;
             case BasePropertyId.BoxCoin:
                 return _data.boxCoins;
+            case BasePropertyId.CardCoin:
+                return _data.cardCoins;
             default:
                 return GetItemCount(itemId);
         }
@@ -899,6 +946,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 return TrySpendWheelCoins(amount);
             case BasePropertyId.BoxCoin:
                 return TrySpendBoxCoins(amount);
+            case BasePropertyId.CardCoin:
+                return TrySpendCardCoins(amount);
             default:
                 return TryConsumeItem(itemId, amount);
         }
@@ -966,6 +1015,132 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.mysteryWheelMonth = _data.currentMonth;
         _data.mysteryWheelRewards = monthlyRewards;
         NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取指定星阵卡牌已保存的奖励。</summary>
+    public bool TryGetCardLotteryItemAt(int index, out int itemId, out int amount)
+    {
+        itemId = 0;
+        amount = 0;
+        PlayerCardLotteryItem cardItem = FindCardLotteryItem(index);
+        if (cardItem == null)
+        {
+            return false;
+        }
+
+        itemId = cardItem.itemId;
+        amount = cardItem.amount;
+        return true;
+    }
+
+    /// <summary>保存刚翻开的星阵卡牌奖励；相同位置不可重复保存。</summary>
+    public bool TrySetCardLotteryItem(
+        int index,
+        CommonRewardItemData reward,
+        int expectedCardCount)
+    {
+        if (index < 0 || index >= expectedCardCount || reward == null ||
+            reward.itemId <= 0 || reward.itemCount <= 0 ||
+            FindCardLotteryItem(index) != null)
+        {
+            return false;
+        }
+
+        _data.cardLotteryItems.Add(new PlayerCardLotteryItem
+        {
+            index = index,
+            itemId = reward.itemId,
+            amount = reward.itemCount
+        });
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    /// <summary>判断时光星阵附加奖励是否已初始化。</summary>
+    public bool HasCardLotteryAdditionRewards(int expectedCount)
+    {
+        return expectedCount > 0 &&
+            _data.cardLotteryAdditionRewards != null &&
+            _data.cardLotteryAdditionRewards.Count == expectedCount;
+    }
+
+    /// <summary>初始化时光星阵的固定附加奖励；已初始化时保持原奖励不变。</summary>
+    public void SetCardLotteryAdditionRewards(IReadOnlyList<CommonRewardItemData> rewards)
+    {
+        if (rewards == null || rewards.Count == 0 ||
+            HasCardLotteryAdditionRewards(rewards.Count))
+        {
+            return;
+        }
+
+        List<PlayerCardLotteryAdditionReward> additionRewards =
+            new List<PlayerCardLotteryAdditionReward>(rewards.Count);
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            CommonRewardItemData reward = rewards[i];
+            if (reward == null || reward.itemId <= 0 || reward.itemCount <= 0)
+            {
+                throw new ArgumentException("时光星阵附加奖励必须有效", nameof(rewards));
+            }
+
+            additionRewards.Add(new PlayerCardLotteryAdditionReward
+            {
+                itemId = reward.itemId,
+                amount = reward.itemCount
+            });
+        }
+
+        _data.cardLotteryAdditionRewards = additionRewards;
+        _data.claimedCardLotteryAdditionIndices = new List<int>();
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取指定星阵附加奖励。</summary>
+    public bool TryGetCardLotteryAdditionRewardAt(int index, out int itemId, out int amount)
+    {
+        itemId = 0;
+        amount = 0;
+        if (index < 0 || _data.cardLotteryAdditionRewards == null ||
+            index >= _data.cardLotteryAdditionRewards.Count)
+        {
+            return false;
+        }
+
+        PlayerCardLotteryAdditionReward reward = _data.cardLotteryAdditionRewards[index];
+        if (reward == null || reward.itemId <= 0 || reward.amount <= 0)
+        {
+            return false;
+        }
+
+        itemId = reward.itemId;
+        amount = reward.amount;
+        return true;
+    }
+
+    /// <summary>领取一次星阵附加奖励；已经领取时返回 false。</summary>
+    public bool TryClaimCardLotteryAdditionReward(
+        int index,
+        out int itemId,
+        out int amount)
+    {
+        if (!TryGetCardLotteryAdditionRewardAt(index, out itemId, out amount) ||
+            _data.claimedCardLotteryAdditionIndices.Contains(index))
+        {
+            itemId = 0;
+            amount = 0;
+            return false;
+        }
+
+        _data.claimedCardLotteryAdditionIndices.Add(index);
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    /// <summary>判断指定时光星阵附加奖励是否已经领取。</summary>
+    public bool HasClaimedCardLotteryAdditionReward(int index)
+    {
+        return _data.claimedCardLotteryAdditionIndices != null &&
+            _data.claimedCardLotteryAdditionIndices.Contains(index);
     }
 
     /// <summary>判断当前月份是否已有指定数量的便利店商品。</summary>
@@ -1483,6 +1658,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.timeCoins = Mathf.Max(0, _data.timeCoins);
         _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
         _data.boxCoins = Mathf.Max(0, _data.boxCoins);
+        _data.cardCoins = Mathf.Max(0, _data.cardCoins);
         _data.communityCentreLevel = Mathf.Clamp(
             _data.communityCentreLevel,
             MinCommunityCentreLevel,
@@ -1648,6 +1824,34 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 _data.mysteryWheelRewards.RemoveAt(i);
             }
         }
+
+        if (_data.cardLotteryItems == null)
+        {
+            _data.cardLotteryItems = new List<PlayerCardLotteryItem>();
+        }
+
+        HashSet<int> cardLotteryIndices = new HashSet<int>();
+        _data.cardLotteryItems.RemoveAll(cardItem => cardItem == null ||
+            cardItem.index < 0 || cardItem.index >= 16 || cardItem.itemId <= 0 ||
+            cardItem.amount <= 0 || !cardLotteryIndices.Add(cardItem.index));
+
+        if (_data.cardLotteryAdditionRewards == null)
+        {
+            _data.cardLotteryAdditionRewards = new List<PlayerCardLotteryAdditionReward>();
+        }
+
+        _data.cardLotteryAdditionRewards.RemoveAll(reward => reward == null ||
+            reward.itemId <= 0 || reward.amount <= 0);
+
+        if (_data.claimedCardLotteryAdditionIndices == null)
+        {
+            _data.claimedCardLotteryAdditionIndices = new List<int>();
+        }
+
+        HashSet<int> claimedCardAdditionIndices = new HashSet<int>();
+        _data.claimedCardLotteryAdditionIndices.RemoveAll(index => index < 0 ||
+            index >= _data.cardLotteryAdditionRewards.Count ||
+            !claimedCardAdditionIndices.Add(index));
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -1671,6 +1875,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             timeCoins = source.timeCoins,
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
+            cardCoins = source.cardCoins,
             communityCentreLevel = source.communityCentreLevel,
             communityCentreExperience = source.communityCentreExperience,
             communityCentreProposalChoiceCount = source.communityCentreProposalChoiceCount,
@@ -1701,7 +1906,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             fishStoreBaitRefreshMonth = source.fishStoreBaitRefreshMonth,
             mysteryWheelAge = source.mysteryWheelAge,
             mysteryWheelMonth = source.mysteryWheelMonth,
-            mysteryWheelRewards = CreateMysteryWheelRewardCopy(source.mysteryWheelRewards)
+            mysteryWheelRewards = CreateMysteryWheelRewardCopy(source.mysteryWheelRewards),
+            cardLotteryItems = CreateCardLotteryItemCopy(source.cardLotteryItems),
+            cardLotteryAdditionRewards = CreateCardLotteryAdditionRewardCopy(
+                source.cardLotteryAdditionRewards),
+            claimedCardLotteryAdditionIndices =
+                source.claimedCardLotteryAdditionIndices == null
+                    ? new List<int>()
+                    : new List<int>(source.claimedCardLotteryAdditionIndices)
         };
     }
 
@@ -1946,6 +2158,58 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return copy;
     }
 
+    private static List<PlayerCardLotteryItem> CreateCardLotteryItemCopy(
+        List<PlayerCardLotteryItem> source)
+    {
+        List<PlayerCardLotteryItem> copy = new List<PlayerCardLotteryItem>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerCardLotteryItem cardItem = source[i];
+            if (cardItem != null)
+            {
+                copy.Add(new PlayerCardLotteryItem
+                {
+                    index = cardItem.index,
+                    itemId = cardItem.itemId,
+                    amount = cardItem.amount
+                });
+            }
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerCardLotteryAdditionReward> CreateCardLotteryAdditionRewardCopy(
+        List<PlayerCardLotteryAdditionReward> source)
+    {
+        List<PlayerCardLotteryAdditionReward> copy =
+            new List<PlayerCardLotteryAdditionReward>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerCardLotteryAdditionReward reward = source[i];
+            if (reward != null)
+            {
+                copy.Add(new PlayerCardLotteryAdditionReward
+                {
+                    itemId = reward.itemId,
+                    amount = reward.amount
+                });
+            }
+        }
+
+        return copy;
+    }
+
     private static PlayerConvenienceOffer FindConvenienceOffer(
         List<PlayerConvenienceOffer> offers,
         int convenienceId)
@@ -1982,6 +2246,25 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             if (offer != null && offer.fishStoreId == fishStoreId)
             {
                 return offer;
+            }
+        }
+
+        return null;
+    }
+
+    private PlayerCardLotteryItem FindCardLotteryItem(int index)
+    {
+        if (_data.cardLotteryItems == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < _data.cardLotteryItems.Count; i++)
+        {
+            PlayerCardLotteryItem cardItem = _data.cardLotteryItems[i];
+            if (cardItem != null && cardItem.index == index)
+            {
+                return cardItem;
             }
         }
 
@@ -2028,7 +2311,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             basePropertyId == BasePropertyId.TimeCoin ||
             basePropertyId == BasePropertyId.Health ||
             basePropertyId == BasePropertyId.WheelCoin ||
-            basePropertyId == BasePropertyId.BoxCoin;
+            basePropertyId == BasePropertyId.BoxCoin ||
+            basePropertyId == BasePropertyId.CardCoin;
     }
 
     private void AddBaseProperty(int basePropertyId)
@@ -2049,6 +2333,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 break;
             case BasePropertyId.BoxCoin:
                 AddBoxCoins(1);
+                break;
+            case BasePropertyId.CardCoin:
+                AddCardCoins(1);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(basePropertyId));
