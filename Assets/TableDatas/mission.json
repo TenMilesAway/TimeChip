@@ -25,7 +25,7 @@
     "deadline": "22,6",
     "failure": "gameover",
     "dialogueStart": "MissionOne,2",
-    "dialogueEnd": ""
+    "dialogueEnd": "MissionOne,3"
   },
   {
     "id": 2000,

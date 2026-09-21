@@ -19,10 +19,13 @@ MonoBehaviour:
     <Position>k__BackingField: {x: -127.2, y: -9.599995}
   - <ID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
     <Name>k__BackingField: "\u521D\u51FA\u8305\u5E90\u7ED3\u675F"
-    <Position>k__BackingField: {x: -127.19995, y: 345.60004}
+    <Position>k__BackingField: {x: -127.2, y: 345.6}
   - <ID>k__BackingField: a16d797e-80fc-49fb-9201-1ce1a8ed517f
     <Name>k__BackingField: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u5F00\u59CB"
     <Position>k__BackingField: {x: -33.6, y: 830.4}
+  - <ID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <Name>k__BackingField: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u7ED3\u675F"
+    <Position>k__BackingField: {x: -33.6, y: 1270.4001}
   <Nodes>k__BackingField:
   - <ID>k__BackingField: fe78b4c3-fcec-451f-8de2-8c23c7d582d1
     <Name>k__BackingField: 1
@@ -180,18 +183,6 @@ MonoBehaviour:
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_give_me_five]
     <Reward>k__BackingField: 
     <Position>k__BackingField: {x: 7263.2, y: 53.600002}
-  - <ID>k__BackingField: 6cfe8df0-8fc2-46cf-9c50-d28b286753f7
-    <Name>k__BackingField: 1
-    <Text>k__BackingField: "\u6211\u56DE\u6765\u5566\uFF0C\u96F6\u5DE5\u987A\u5229\u5B8C\u6210\u3002"
-    <Choices>k__BackingField:
-    - <Text>k__BackingField: Next Dialogue
-      <NodeID>k__BackingField: e815d00a-a12f-4b0c-baeb-65e6f2f714ae
-    <GroupID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
-    <DialogueType>k__BackingField: 0
-    <Speaker>k__BackingField: 0
-    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
-    <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: -101.6, y: 408.8}
   - <ID>k__BackingField: 7c433f14-8b21-4b8a-8a4a-e041c10435f7
     <Name>k__BackingField: 3
     <Text>k__BackingField: "\u5FEB\u6765\u6E05\u70B9\u4E00\u4E0B\u91C7\u8D2D\u7684\u7269\u54C1\uFF01"
@@ -480,10 +471,203 @@ MonoBehaviour:
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_intro]
     <Reward>k__BackingField: 
     <Position>k__BackingField: {x: 568.8, y: 53.600002}
+  - <ID>k__BackingField: cda3514e-b385-4701-8154-e3796a46c06c
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u62BD\u5956\u5B8C\u6210\uFF0C\u5956\u52B1\u5DF2\u53D1\u653E\u81F3\u4F60\u7684\u80CC\u5305\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: c5f9a9ad-5989-457e-8376-85d5cbc295ad
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: -8, y: 1333.6001}
+  - <ID>k__BackingField: c5f9a9ad-5989-457e-8376-85d5cbc295ad
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u8FD9\u5C31\u7ED3\u675F\u4E86\uFF1F\u6211\u8FD8\u51C6\u5907\u4E86\u4E00\u6BB5\u83B7\u5956\u611F\u8A00\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 82716b8f-d890-42e2-b961-9713604ac585
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 660, y: 1333.6001}
+  - <ID>k__BackingField: 82716b8f-d890-42e2-b961-9713604ac585
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u68C0\u6D4B\u5230\u611F\u8A00\u957F\u5EA6\u53EF\u80FD\u8D85\u8FC7\u5956\u52B1\u4EF7\u503C\uFF0C\u5DF2\u81EA\u52A8\u8DF3\u8FC7\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: fc97b698-ac5f-46e6-bda1-0ed91275b999
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1332.8, y: 1333.6001}
+  - <ID>k__BackingField: fc97b698-ac5f-46e6-bda1-0ed91275b999
+    <Name>k__BackingField: 4
+    <Text>k__BackingField: "......\u4F60\u8FD9\u4E2A\u7CFB\u7EDF\u8BF4\u8BDD\u4E00\u76F4\u8FD9\u4E48\u76F4\u63A5\u5417\uFF1F"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 2f9f70b1-5414-43b5-97f0-00a3189b2e31
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_worry]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2000, y: 1333.6001}
+  - <ID>k__BackingField: 2f9f70b1-5414-43b5-97f0-00a3189b2e31
+    <Name>k__BackingField: 5
+    <Text>k__BackingField: "\u662F\u7684\uFF0C\u59D4\u5A49\u8868\u8FBE\u529F\u80FD\u9700\u8981\u540E\u7EED\u89E3\u9501\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: a1677721-45a5-40db-9bd4-79279b8111f2
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2665.6, y: 1333.6001}
+  - <ID>k__BackingField: a1677721-45a5-40db-9bd4-79279b8111f2
+    <Name>k__BackingField: 6
+    <Text>k__BackingField: "\u90A3\u679A\u65F6\u95F4\u5E01\u5DF2\u7ECF\u6D88\u5931\u4E86\uFF1F"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 342e8c28-2884-490a-a77a-1b22fe9fa7bd
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_what]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 3344, y: 1333.6001}
+  - <ID>k__BackingField: 342e8c28-2884-490a-a77a-1b22fe9fa7bd
+    <Name>k__BackingField: 7
+    <Text>k__BackingField: "\u6BCF\u6B21\u62BD\u5956\u90FD\u4F1A\u6D88\u8017\u5BF9\u5E94\u7684\u4EE3\u5E01\u3002\u65F6\u95F4\u65E0\u6CD5\u5012\u6D41\uFF0C\u4EE3\u5E01\u4E5F\u4E0D\u652F\u6301\u9000\u6B3E\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 70477068-7c0a-46a0-86c7-df5c237f2407
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 4007.2, y: 1333.6001}
+  - <ID>k__BackingField: 7427357f-f2db-47b7-975a-56a7729af1f1
+    <Name>k__BackingField: 9
+    <Text>k__BackingField: "\u6240\u4EE5\u4E0D\u80FD\u6BCF\u5929\u8EBA\u5728\u5BB6\u91CC\uFF0C\u7B49\u65F6\u95F4\u5E01\u81EA\u5DF1\u6389\u4E0B\u6765\uFF1F"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: e924579e-9f13-403a-aa61-ec14b00969f8
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_shy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 5338.4, y: 1333.6001}
+  - <ID>k__BackingField: 70477068-7c0a-46a0-86c7-df5c237f2407
+    <Name>k__BackingField: 8
+    <Text>k__BackingField: "\u4ECA\u540E\uFF0C\u4F60\u53EF\u4EE5\u901A\u8FC7\u8BA4\u771F\u751F\u6D3B\u83B7\u5F97\u5404\u79CD\u4EE3\u5E01\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 7427357f-f2db-47b7-975a-56a7729af1f1
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 4675.2, y: 1333.6001}
+  - <ID>k__BackingField: e924579e-9f13-403a-aa61-ec14b00969f8
+    <Name>k__BackingField: 10
+    <Text>k__BackingField: "\u90A3\u4F60\u63A5\u4E0B\u6765\u8FD8\u4F1A\u53D1\u5E03\u4EFB\u52A1\u5417\uFF1F"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 831eb09f-655d-4a95-945c-3eccefe6777f
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_smile]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 6012.8, y: 1333.6001}
+  - <ID>k__BackingField: 831eb09f-655d-4a95-945c-3eccefe6777f
+    <Name>k__BackingField: 11
+    <Text>k__BackingField: "\u4F1A\u3002\u4F46\u8BF7\u8BB0\u4F4F\uFF0C\u672C\u7CFB\u7EDF\u53EA\u80FD\u63D0\u4F9B\u63D0\u793A\u548C\u673A\u4F1A\uFF0C\u4E0D\u80FD\u66FF\u4F60\u8FC7\u597D\u751F\u6D3B\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: d6b549d5-ab92-4d1b-8e2e-f2e2c3a40fbd
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 6688, y: 1333.6001}
+  - <ID>k__BackingField: d6b549d5-ab92-4d1b-8e2e-f2e2c3a40fbd
+    <Name>k__BackingField: 12
+    <Text>k__BackingField: "\u7A81\u7136\u8BF4\u7684\u8FD9\u4E48\u6B63\u7ECF\uFF0C\u6211\u8FD8\u6709\u70B9\u4E0D\u4E60\u60EF\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: e513982a-f5b6-41bd-892f-d025ce9e6e51
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_worry]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 7374.4, y: 1333.6001}
+  - <ID>k__BackingField: e513982a-f5b6-41bd-892f-d025ce9e6e51
+    <Name>k__BackingField: 13
+    <Text>k__BackingField: "\u65F6\u95F4\u5E01\u5F88\u73CD\u8D35\uFF0C\u4F46\u771F\u6B63\u73CD\u8D35\u7684\u662F\u4F60\u62E5\u6709\u7684\u65F6\u95F4\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: c12e25a7-4a06-4042-92bb-9558658ef272
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 8044.8, y: 1333.6001}
+  - <ID>k__BackingField: c12e25a7-4a06-4042-92bb-9558658ef272
+    <Name>k__BackingField: 14
+    <Text>k__BackingField: "\u63A5\u4E0B\u6765\uFF0C\u597D\u597D\u7167\u987E\u81EA\u5DF1\uFF0C\u4E5F\u597D\u597D\u7167\u987E\u6B63\u5728\u5BB6\u91CC\u7B49\u4F60\u7684\u4EBA\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 03ec0045-f89d-44dd-8a44-f088c8090f26
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 8713.6, y: 1333.6001}
+  - <ID>k__BackingField: 03ec0045-f89d-44dd-8a44-f088c8090f26
+    <Name>k__BackingField: 15
+    <Text>k__BackingField: "\u6536\u5230\uFF01"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_excited]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 9388.8, y: 1335.2001}
+  - <ID>k__BackingField: 6cfe8df0-8fc2-46cf-9c50-d28b286753f7
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u6211\u56DE\u6765\u5566\uFF0C\u96F6\u5DE5\u987A\u5229\u5B8C\u6210\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: e815d00a-a12f-4b0c-baeb-65e6f2f714ae
+    <GroupID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: -101.6, y: 408.8}
   <OldGroupNames>k__BackingField:
   - "\u521D\u51FA\u8305\u5E90\u5F00\u59CB"
   - "\u521D\u51FA\u8305\u5E90\u7ED3\u675F"
   - "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u5F00\u59CB"
+  - "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u7ED3\u675F"
   <OldUngroupedNodeNames>k__BackingField: []
   <OldGroupedNodeNames>k__BackingField:
     list:
@@ -505,7 +689,6 @@ MonoBehaviour:
     - Key: "\u521D\u51FA\u8305\u5E90\u7ED3\u675F"
       Value:
       - 2
-      - 1
       - 3
       - 4
       - 6
@@ -513,6 +696,7 @@ MonoBehaviour:
       - 8
       - 9
       - 10
+      - 1
     - Key: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u5F00\u59CB"
       Value:
       - 1
@@ -531,3 +715,20 @@ MonoBehaviour:
       - 15
       - 16
       - 6
+    - Key: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u7ED3\u675F"
+      Value:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 9
+      - 8
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15

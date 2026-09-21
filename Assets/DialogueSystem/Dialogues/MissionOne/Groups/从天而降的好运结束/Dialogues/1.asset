@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f262818b55b0f4418296bad0176bdab, type: 3}
+  m_Name: 1
+  m_EditorClassIdentifier: 
+  <DialogueName>k__BackingField: 1
+  <Text>k__BackingField: "\u62BD\u5956\u5B8C\u6210\uFF0C\u5956\u52B1\u5DF2\u53D1\u653E\u81F3\u4F60\u7684\u80CC\u5305\u3002"
+  <Choices>k__BackingField:
+  - <Text>k__BackingField: Next Dialogue
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: f5fb61bfac2fd4f4bab644dbb7e5b90f, type: 2}
+  <DialogueType>k__BackingField: 0
+  <Speaker>k__BackingField: 3
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+  <Reward>k__BackingField: 
+  <IsStartingDialogue>k__BackingField: 1

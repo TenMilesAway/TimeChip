@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f262818b55b0f4418296bad0176bdab, type: 3}
+  m_Name: 9
+  m_EditorClassIdentifier: 
+  <DialogueName>k__BackingField: 9
+  <Text>k__BackingField: "\u6240\u4EE5\u4E0D\u80FD\u6BCF\u5929\u8EBA\u5728\u5BB6\u91CC\uFF0C\u7B49\u65F6\u95F4\u5E01\u81EA\u5DF1\u6389\u4E0B\u6765\uFF1F"
+  <Choices>k__BackingField:
+  - <Text>k__BackingField: Next Dialogue
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: 176e827aa6ef6c245a82aebd146d4f95, type: 2}
+  <DialogueType>k__BackingField: 0
+  <Speaker>k__BackingField: 0
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_shy]
+  <Reward>k__BackingField: 
+  <IsStartingDialogue>k__BackingField: 0
