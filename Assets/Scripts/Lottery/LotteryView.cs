@@ -240,6 +240,7 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.NormalLottery));
         ApplyRewards(rewards);
         ScheduleRewardPresentation(rewards, LotteryDuration + LotteryRevealDuration + 0.01f);
 

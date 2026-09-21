@@ -16,8 +16,9 @@ MonoBehaviour:
   <Text>k__BackingField: "\u7C73\u3001\u725B\u5976\u3001\u6D17\u8863\u6DB2......\u5C0F\u9C7C\u5E72\u4E5F\u6709\uFF0C\u5B8C\u7F8E\uFF01"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 11400000, guid: c08482bbcabff4f4f9068fb69512cb96, type: 2}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: a378366cc1b54f14e90b785e8ae299f3, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 1
   <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_very_happy]
+  <Reward>k__BackingField: 
   <IsStartingDialogue>k__BackingField: 0

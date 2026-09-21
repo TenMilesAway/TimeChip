@@ -16,6 +16,7 @@ public class CommonRewardPanel : UIBasePanel
 
     private int _presentationVersion; // 当前展示版本号，用于处理异步加载和展示的顺序问题
     private bool _rewardsAlreadyGranted; // 奖励是否已在展示前结算
+    private System.Action _closeCallback;
 
     private void Awake()
     {
@@ -29,6 +30,7 @@ public class CommonRewardPanel : UIBasePanel
         GameManager.Audio.Play(AudioDefine.SFXGetReward);
 
         _rewardsAlreadyGranted = param != null && param.rewardsAlreadyGranted;
+        _closeCallback = param?.callback;
         ResetPresentation();
 
         if (!(param?.data is List<CommonRewardItemData> rewardDataList))
@@ -206,11 +208,29 @@ public class CommonRewardPanel : UIBasePanel
     {
         if (!_rewardsAlreadyGranted)
         {
+            GrantInventoryItemRewards();
             GrantNonSimulationCoinBasePropertyRewards();
             PlaySimulationCoinFlyAnimations();
         }
 
+        System.Action closeCallback = _closeCallback;
+        _closeCallback = null;
         UIManager.GetInstance().ClosePanel(GetPanelName());
+        closeCallback?.Invoke();
+    }
+
+    private void GrantInventoryItemRewards()
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+
+        for (int i = 0; i < _rewardItems.Count; i++)
+        {
+            CommonRewardItem rewardItem = _rewardItems[i];
+            if (DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(rewardItem.ItemId) != null)
+            {
+                playerInfoManager.AddItem(rewardItem.ItemId, rewardItem.Count);
+            }
+        }
     }
 
     /// <summary>
@@ -309,6 +329,9 @@ public class CommonRewardPanel : UIBasePanel
                     break;
                 case BasePropertyId.BoxCoin:
                     playerInfoManager.AddBoxCoins(rewardItem.Count);
+                    break;
+                case BasePropertyId.CardCoin:
+                    playerInfoManager.AddCardCoins(rewardItem.Count);
                     break;
             }
         }

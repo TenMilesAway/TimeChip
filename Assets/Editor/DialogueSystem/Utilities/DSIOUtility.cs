@@ -167,6 +167,7 @@ namespace DS.Utilities
                 DialogueType = node.DialogueType,
                 Speaker = node.Speaker,
                 SpeakerExpressionPath = node.SpeakerExpressionPath,
+                Reward = node.Reward,
                 Position = node.GetPosition().position
             };
 
@@ -197,6 +198,7 @@ namespace DS.Utilities
                 node.DialogueType,
                 node.Speaker,
                 node.SpeakerExpressionPath,
+                node.Reward,
                 node.IsStartingNode()
             );
 
@@ -331,6 +333,7 @@ namespace DS.Utilities
                 node.Text = nodeData.Text;
                 node.Speaker = nodeData.Speaker;
                 node.SpeakerExpressionPath = nodeData.SpeakerExpressionPath;
+                node.Reward = nodeData.Reward;
 
                 node.Draw();
 

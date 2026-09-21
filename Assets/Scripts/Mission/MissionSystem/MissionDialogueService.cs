@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DS.Data;
 using DS.ScriptableObjects;
 using UnityEngine;
 
@@ -11,18 +12,22 @@ public static class MissionDialogueService
 
     private static readonly Dictionary<string, DSDialogueContainerSO> ContainerCache =
         new Dictionary<string, DSDialogueContainerSO>();
+    private static readonly Queue<DialogueRequest> DialogueQueue = new Queue<DialogueRequest>();
+
+    private static bool isLoadingDialogue;
+    private static bool isPlayingDialogue;
 
     public static void TryPlayStartDialogue(cfg.Mission missionConfig)
     {
-        TryPlayDialogue(missionConfig, missionConfig?.DialogueStart, "开始");
+        EnqueueDialogue(missionConfig, missionConfig?.DialogueStart, "开始");
     }
 
     public static void TryPlayEndDialogue(cfg.Mission missionConfig)
     {
-        TryPlayDialogue(missionConfig, missionConfig?.DialogueEnd, "结束");
+        EnqueueDialogue(missionConfig, missionConfig?.DialogueEnd, "结束");
     }
 
-    private static async void TryPlayDialogue(
+    private static void EnqueueDialogue(
         cfg.Mission missionConfig,
         string dialogueConfig,
         string phase)
@@ -32,40 +37,80 @@ public static class MissionDialogueService
             return;
         }
 
-        if (!TryParseDialoguePointer(dialogueConfig, out string fileName, out int groupIndex))
+        DialogueQueue.Enqueue(new DialogueRequest
         {
-            Debug.LogWarning(
-                $"[任务系统] 任务[{missionConfig.Id}]对话配置格式错误({phase}): {dialogueConfig}");
+            MissionConfig = missionConfig,
+            DialogueConfig = dialogueConfig,
+            Phase = phase
+        });
+        PlayNextDialogue();
+    }
+
+    private static async void PlayNextDialogue()
+    {
+        if (isLoadingDialogue || isPlayingDialogue)
+        {
             return;
         }
 
-        DSDialogueContainerSO container = await LoadContainerAsync(fileName);
-        if (container == null)
+        while (DialogueQueue.Count > 0)
         {
-            Debug.LogWarning(
-                $"[任务系统] 任务[{missionConfig.Id}]无法加载对话文件({phase}): {fileName}");
-            return;
-        }
-
-        List<MissionDialogueLineData> lines = BuildDialogueLines(container, groupIndex, out string groupName);
-        if (lines.Count == 0)
-        {
-            Debug.LogWarning(
-                $"[任务系统] 任务[{missionConfig.Id}]对话组为空({phase}): {fileName},{groupIndex}");
-            return;
-        }
-
-        UIManager.GetInstance().OpenPanel(
-            GlobalDefine.DialogueView,
-            UILayer.System,
-            new OpenUIParam
+            DialogueRequest request = DialogueQueue.Dequeue();
+            if (!TryParseDialoguePointer(
+                    request.DialogueConfig,
+                    out string fileName,
+                    out int groupIndex))
             {
-                data = new MissionDialogueViewData
+                Debug.LogWarning(
+                    $"[任务系统] 任务[{request.MissionConfig.Id}]对话配置格式错误({request.Phase}): {request.DialogueConfig}");
+                continue;
+            }
+
+            isLoadingDialogue = true;
+            DSDialogueContainerSO container = await LoadContainerAsync(fileName);
+            isLoadingDialogue = false;
+            if (container == null)
+            {
+                Debug.LogWarning(
+                    $"[任务系统] 任务[{request.MissionConfig.Id}]无法加载对话文件({request.Phase}): {fileName}");
+                continue;
+            }
+
+            List<MissionDialogueLineData> lines =
+                BuildDialogueLines(container, groupIndex, out string groupName);
+            if (lines.Count == 0)
+            {
+                Debug.LogWarning(
+                    $"[任务系统] 任务[{request.MissionConfig.Id}]对话组为空({request.Phase}): {fileName},{groupIndex}");
+                continue;
+            }
+
+            isPlayingDialogue = true;
+            UIBasePanel dialogueView = await UIManager.GetInstance().OpenPanelAsync(
+                GlobalDefine.DialogueView,
+                UILayer.System,
+                new OpenUIParam
                 {
-                    title = groupName,
-                    lines = lines
-                }
-            });
+                    data = new MissionDialogueViewData
+                    {
+                        title = groupName,
+                        lines = lines,
+                        onCompleted = OnDialogueCompleted
+                    }
+                });
+            if (dialogueView != null)
+            {
+                return;
+            }
+
+            isPlayingDialogue = false;
+        }
+    }
+
+    private static void OnDialogueCompleted()
+    {
+        isPlayingDialogue = false;
+        PlayNextDialogue();
     }
 
     private static bool TryParseDialoguePointer(string value, out string fileName, out int groupIndex)
@@ -151,13 +196,26 @@ public static class MissionDialogueService
         DSDialogueSO current = startDialogue;
         while (current != null && visited.Add(current))
         {
-            if (!string.IsNullOrEmpty(current.Text))
+            if (!DSDialogueRewardParser.TryParse(
+                    current.Reward,
+                    out List<DSDialogueRewardData> rewards,
+                    out string rewardError))
+            {
+                Debug.LogError(
+                    $"[对话系统] 对话节点[{current.DialogueName}]奖励配置无效: {rewardError}");
+                rewards = new List<DSDialogueRewardData>();
+            }
+
+            List<CommonRewardItemData> convertedRewards =
+                ConvertRewards(current.DialogueName, rewards);
+            if (!string.IsNullOrEmpty(current.Text) || convertedRewards.Count > 0)
             {
                 lines.Add(new MissionDialogueLineData
                 {
                     speaker = current.Speaker,
                     expressionPath = current.SpeakerExpressionPath,
-                    text = current.Text
+                    text = current.Text,
+                    rewards = convertedRewards
                 });
             }
 
@@ -172,5 +230,39 @@ public static class MissionDialogueService
         }
 
         return lines;
+    }
+
+    private static List<CommonRewardItemData> ConvertRewards(
+        string dialogueName,
+        List<DSDialogueRewardData> rewards)
+    {
+        List<CommonRewardItemData> convertedRewards = new List<CommonRewardItemData>();
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            DSDialogueRewardData reward = rewards[i];
+            if (tables.BaseTable.GetOrDefault(reward.ItemID) == null &&
+                tables.ItemTable.GetOrDefault(reward.ItemID) == null)
+            {
+                Debug.LogError(
+                    $"[对话系统] 对话节点[{dialogueName}]奖励物品不存在: [{reward.ItemID}]");
+                continue;
+            }
+
+            convertedRewards.Add(new CommonRewardItemData
+            {
+                itemId = reward.ItemID,
+                itemCount = reward.Amount
+            });
+        }
+
+        return convertedRewards;
+    }
+
+    private sealed class DialogueRequest
+    {
+        public cfg.Mission MissionConfig;
+        public string DialogueConfig;
+        public string Phase;
     }
 }

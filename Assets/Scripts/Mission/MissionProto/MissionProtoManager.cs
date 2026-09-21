@@ -48,50 +48,68 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireWork(target);
         }
+        else if (missionConfig.Message == "NormalLottery")
+        {
+            missionRequire = new MissionRequireNormalLottery(target);
+        }
         else
         {
             Debug.LogWarning("[任务系统] 不支持的任务消息类型: " + missionConfig.Message);
             return false;
         }
 
+        if (!TryCreateRewards(missionConfig.Reward, out MissionReward[] rewards))
+        {
+            Debug.LogWarning(
+                $"[任务系统] 任务奖励配置无效: [{missionConfig.Id}], [{missionConfig.Reward}]");
+            return false;
+        }
+
         missionProto = new MissionPrototype<MissionMessage>(
             missionConfig.Id.ToString(),
             new MissionRequire<MissionMessage>[] { missionRequire },
-            CreateRewards(missionConfig.Reward));
+            rewards);
         return true;
     }
 
-    private static MissionReward[] CreateRewards(string rewardText)
+    private static bool TryCreateRewards(
+        string rewardText,
+        out MissionReward[] missionRewards)
     {
-        if (string.IsNullOrEmpty(rewardText))
+        missionRewards = null;
+        if (!MissionRewardCommon.TryParseRewards(
+                rewardText,
+                out List<CommonRewardItemData> rewards,
+                out string errorMessage))
         {
-            return null;
+            Debug.LogWarning($"[任务系统] {errorMessage}");
+            return false;
         }
 
-        string[] values = rewardText.Split(',');
-        int simulationCoins = ParseNonNegativeInt(values, 0);
-        int timeCoins = ParseNonNegativeInt(values, 1);
-        int health = ParseNonNegativeInt(values, 2);
-        if (simulationCoins == 0 && timeCoins == 0 && health == 0)
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        for (int i = 0; i < rewards.Count; i++)
         {
-            return null;
+            CommonRewardItemData reward = rewards[i];
+            if (tables.BaseTable.GetOrDefault(reward.itemId) == null &&
+                tables.ItemTable.GetOrDefault(reward.itemId) == null)
+            {
+                Debug.LogWarning($"[任务系统] 奖励物品不存在: [{reward.itemId}]");
+                return false;
+            }
         }
 
-        return new MissionReward[]
+        if (rewards.Count == 0)
+        {
+            return true;
+        }
+
+        missionRewards = new MissionReward[]
         {
             new MissionRewardCommon
             {
-                simulationCoinAmount = simulationCoins,
-                timeCoinAmount = timeCoins,
-                healthAmount = health
+                rewards = rewards
             }
         };
-    }
-
-    private static int ParseNonNegativeInt(string[] values, int index)
-    {
-        return index < values.Length && int.TryParse(values[index], out int value)
-            ? Mathf.Max(0, value)
-            : 0;
+        return true;
     }
 }

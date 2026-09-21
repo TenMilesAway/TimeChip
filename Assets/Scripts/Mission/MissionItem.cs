@@ -63,6 +63,7 @@ public class MissionItem : MonoBehaviour
         if (itemConfig == null || scaleConfig == null)
         {
             _imgIcon.sprite = null;
+            gameObject.SetActive(true);
             return;
         }
 
@@ -77,6 +78,7 @@ public class MissionItem : MonoBehaviour
         if (icon == null)
         {
             Debug.LogError($"任务图标加载失败: [{missionConfig.Id}], [{itemConfig.Icon}]", this);
+            gameObject.SetActive(true);
             return;
         }
 
@@ -101,33 +103,31 @@ public class MissionItem : MonoBehaviour
             return;
         }
 
-        string[] rewardValues = missionConfig.Reward.Split(',');
-        int[] rewardIds =
+        if (!MissionRewardCommon.TryParseRewards(
+                missionConfig.Reward,
+                out System.Collections.Generic.List<CommonRewardItemData> rewards,
+                out string errorMessage))
         {
-            BasePropertyId.SimulationCoin,
-            BasePropertyId.TimeCoin,
-            BasePropertyId.Health
-        };
+            Debug.LogError($"任务奖励配置无效: [{missionConfig.Id}], {errorMessage}", this);
+            return;
+        }
 
         int slotIndex = 0;
-        for (int i = 0; i < rewardIds.Length && slotIndex < _rewardItems.Length; i++)
+        for (int i = 0; i < rewards.Count && slotIndex < _rewardItems.Length; i++)
         {
-            if (i >= rewardValues.Length ||
-                !int.TryParse(rewardValues[i], out int amount) ||
-                amount <= 0)
+            CommonRewardItemData reward = rewards[i];
+            cfg.Base baseConfig = DataTableMananger.GetInstance().Tables.BaseTable.GetOrDefault(reward.itemId);
+            cfg.Item itemConfig = baseConfig == null
+                ? DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(reward.itemId)
+                : null;
+            if (baseConfig == null && itemConfig == null)
             {
-                continue;
-            }
-
-            cfg.Base rewardConfig = DataTableMananger.GetInstance().Tables.BaseTable.GetOrDefault(rewardIds[i]);
-            if (rewardConfig == null)
-            {
-                Debug.LogError($"任务奖励配置不存在: [{rewardIds[i]}]", this);
+                Debug.LogError($"任务奖励配置不存在: [{reward.itemId}]", this);
                 continue;
             }
 
             Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
-                rewardConfig.Icon,
+                baseConfig == null ? itemConfig.Icon : baseConfig.Icon,
                 GetInstanceID().ToString());
             if (requestVersion != _requestVersion)
             {
@@ -136,14 +136,14 @@ public class MissionItem : MonoBehaviour
 
             if (icon == null)
             {
-                Debug.LogError($"任务奖励图标加载失败: [{rewardIds[i]}], [{rewardConfig.Icon}]", this);
+                Debug.LogError($"任务奖励图标加载失败: [{reward.itemId}]", this);
                 continue;
             }
 
             _rewardItems[slotIndex].SetData(
                 icon,
-                amount,
-                (rewardConfig.RewardScale / ScaleDivisor) *
+                reward.itemCount,
+                ((baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale) / ScaleDivisor) *
                 (scaleConfig.ScaleValue / ScaleDivisor));
             slotIndex++;
         }

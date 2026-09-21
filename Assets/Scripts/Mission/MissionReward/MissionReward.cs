@@ -1,47 +1,65 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RedSaw.MissionSystem;
 
 public class MissionRewardCommon : MissionReward
 {
-    public int simulationCoinAmount;
-    public int timeCoinAmount;
-    public int healthAmount;
+    public List<CommonRewardItemData> rewards;
 
     public override void ApplyReward()
     {
-        List<CommonRewardItemData> data = new List<CommonRewardItemData>();
-
-        AddBasePropertyReward(data, BasePropertyId.SimulationCoin, simulationCoinAmount);
-        AddBasePropertyReward(data, BasePropertyId.TimeCoin, timeCoinAmount);
-        AddBasePropertyReward(data, BasePropertyId.Health, healthAmount);
-
-        if (data.Count == 0)
+        if (rewards == null || rewards.Count == 0)
         {
             return;
         }
 
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
         {
-            data = data
+            data = rewards
         });
     }
 
-    private static void AddBasePropertyReward(
-        List<CommonRewardItemData> rewards,
-        int propertyId,
-        int amount)
+    public static bool TryParseRewards(
+        string rewardText,
+        out List<CommonRewardItemData> rewards,
+        out string errorMessage)
     {
-        if (amount <= 0)
+        rewards = new List<CommonRewardItemData>();
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(rewardText))
         {
-            return;
+            return true;
         }
 
-        rewards.Add(new CommonRewardItemData
+        string[] entries = rewardText.Split(new[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < entries.Length; i++)
         {
-            itemId = propertyId,
-            itemCount = amount
-        });
+            string[] values = entries[i].Split(',');
+            if (values.Length != 2 ||
+                !int.TryParse(values[0].Trim(), out int itemId) ||
+                !int.TryParse(values[1].Trim(), out int itemCount) ||
+                itemId <= 0 ||
+                itemCount <= 0)
+            {
+                errorMessage = $"奖励条目格式无效: {entries[i]}";
+                rewards.Clear();
+                return false;
+            }
+
+            rewards.Add(new CommonRewardItemData
+            {
+                itemId = itemId,
+                itemCount = itemCount
+            });
+        }
+
+        if (rewards.Count == 0)
+        {
+            errorMessage = "奖励格式无效，请使用 ItemID,num;ItemID,num。";
+            return false;
+        }
+
+        return true;
     }
 }

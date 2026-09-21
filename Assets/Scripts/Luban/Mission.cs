@@ -71,7 +71,7 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string Target;
     /// <summary>
-    /// 任务奖励
+    /// 任务奖励（ItemID,num;ItemID,num）
     /// </summary>
     public readonly string Reward;
     /// <summary>

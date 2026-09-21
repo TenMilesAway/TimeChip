@@ -20,4 +20,5 @@ MonoBehaviour:
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 0
   <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
+  <Reward>k__BackingField: 
   <IsStartingDialogue>k__BackingField: 0

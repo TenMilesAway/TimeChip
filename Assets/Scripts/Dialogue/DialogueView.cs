@@ -10,12 +10,14 @@ public sealed class MissionDialogueLineData
     public DSDialogueSpeaker speaker;
     public string expressionPath;
     public string text;
+    public List<CommonRewardItemData> rewards;
 }
 
 public sealed class MissionDialogueViewData
 {
     public string title;
     public List<MissionDialogueLineData> lines;
+    public System.Action onCompleted;
 }
 
 public class DialogueView : UIBasePanel
@@ -23,6 +25,7 @@ public class DialogueView : UIBasePanel
     private const string MeAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me]";
     private const string GirlfriendAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend]";
     private const string DaughterAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_daughter]";
+    private const string SystemAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]";
     private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
 
     [SerializeField] private Text _txtName;
@@ -36,6 +39,7 @@ public class DialogueView : UIBasePanel
     private int _presentationVersion;
     private Tween _typewriterTween;
     private bool _isTyping;
+    private bool _isWaitingForRewardPanel;
     private string _currentLineText;
 
     private void Awake()
@@ -100,10 +104,21 @@ public class DialogueView : UIBasePanel
             return;
         }
 
+        if (HasCurrentLineRewards())
+        {
+            OpenCurrentLineRewardPanel();
+            return;
+        }
+
+        AdvanceToNextLine();
+    }
+
+    private void AdvanceToNextLine()
+    {
         _currentIndex++;
         if (_currentIndex >= _viewData.lines.Count)
         {
-            UIManager.GetInstance().ClosePanel(GetPanelName());
+            CompleteDialogue();
             return;
         }
 
@@ -130,6 +145,46 @@ public class DialogueView : UIBasePanel
             lineData?.speaker ?? DSDialogueSpeaker.Me,
             lineData?.expressionPath,
             _presentationVersion);
+    }
+
+    private bool HasCurrentLineRewards()
+    {
+        MissionDialogueLineData lineData = _viewData.lines[_currentIndex];
+        return !_isWaitingForRewardPanel &&
+            lineData?.rewards != null &&
+            lineData.rewards.Count > 0;
+    }
+
+    private async void OpenCurrentLineRewardPanel()
+    {
+        _isWaitingForRewardPanel = true;
+        MissionDialogueLineData lineData = _viewData.lines[_currentIndex];
+        UIBasePanel rewardPanel = await UIManager.GetInstance().OpenPanelAsync(
+            GlobalDefine.CommonRewardPanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = lineData.rewards,
+                callback = OnCurrentLineRewardsCompleted
+            });
+        if (rewardPanel == null)
+        {
+            _isWaitingForRewardPanel = false;
+            Debug.LogError("[对话系统] 奖励面板打开失败，无法继续当前对话。", this);
+        }
+    }
+
+    private void OnCurrentLineRewardsCompleted()
+    {
+        _isWaitingForRewardPanel = false;
+        AdvanceToNextLine();
+    }
+
+    private void CompleteDialogue()
+    {
+        System.Action onCompleted = _viewData?.onCompleted;
+        UIManager.GetInstance().ClosePanel(GetPanelName());
+        onCompleted?.Invoke();
     }
 
     private void EnsureReferences()
@@ -193,6 +248,10 @@ public class DialogueView : UIBasePanel
                 return "喵夫人";
             case DSDialogueSpeaker.Daughter:
                 return "女儿";
+            case DSDialogueSpeaker.System:
+                return "系统";
+            case DSDialogueSpeaker.Narrator:
+                return "旁白";
             default:
                 return "我";
         }
@@ -208,6 +267,13 @@ public class DialogueView : UIBasePanel
             return;
         }
 
+        if (speaker == DSDialogueSpeaker.Narrator)
+        {
+            _imgAvatar.gameObject.SetActive(false);
+            return;
+        }
+
+        _imgAvatar.gameObject.SetActive(true);
         string avatarPath = string.IsNullOrEmpty(expressionPath)
             ? GetAvatarPath(speaker)
             : NormalizeExpressionReference(expressionPath);
@@ -295,6 +361,8 @@ public class DialogueView : UIBasePanel
                 return GirlfriendAvatarPath;
             case DSDialogueSpeaker.Daughter:
                 return DaughterAvatarPath;
+            case DSDialogueSpeaker.System:
+                return SystemAvatarPath;
             default:
                 return MeAvatarPath;
         }

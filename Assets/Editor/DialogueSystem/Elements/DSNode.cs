@@ -25,6 +25,7 @@ namespace DS.Elements
         public DSDialogueType DialogueType { get; set; }
         public DSDialogueSpeaker Speaker { get; set; }
         public string SpeakerExpressionPath { get; set; }
+        public string Reward { get; set; }
         public DSGroup Group { get; set; }
 
         protected DSGraphView graphView;
@@ -47,6 +48,7 @@ namespace DS.Elements
             Text = "Dialogue text.";
             Speaker = DSDialogueSpeaker.Me;
             SpeakerExpressionPath = GetDefaultExpressionPath(Speaker);
+            Reward = string.Empty;
 
             SetPosition(new Rect(position, Vector2.zero));
 
@@ -135,6 +137,13 @@ namespace DS.Elements
 
             customDataContainer.Add(textFoldout);
 
+            TextField rewardTextField = DSElementUtility.CreateTextField(
+                Reward,
+                "奖励",
+                callback => Reward = callback.newValue);
+            rewardTextField.tooltip = "格式：itemID,num;itemID,num，例如：1001,2;1002,1";
+            customDataContainer.Add(rewardTextField);
+
             if (DialogueType == DSDialogueType.SingleChoice)
             {
                 List<string> currentExpressionReferences = GetExpressionReferences(Speaker);
@@ -169,7 +178,7 @@ namespace DS.Elements
                         : string.Empty;
                 });
 
-                List<string> speakerOptions = new List<string> { "我", "喵夫人", "女儿" };
+                List<string> speakerOptions = new List<string> { "我", "喵夫人", "女儿", "系统", "旁白" };
                 PopupField<string> speakerField = new PopupField<string>(
                     "Speaker",
                     speakerOptions,
@@ -255,6 +264,10 @@ namespace DS.Elements
                     return 1;
                 case DSDialogueSpeaker.Daughter:
                     return 2;
+                case DSDialogueSpeaker.System:
+                    return 3;
+                case DSDialogueSpeaker.Narrator:
+                    return 4;
                 default:
                     return 0;
             }
@@ -268,6 +281,10 @@ namespace DS.Elements
                     return DSDialogueSpeaker.Girlfriend;
                 case "女儿":
                     return DSDialogueSpeaker.Daughter;
+                case "系统":
+                    return DSDialogueSpeaker.System;
+                case "旁白":
+                    return DSDialogueSpeaker.Narrator;
                 default:
                     return DSDialogueSpeaker.Me;
             }
@@ -275,6 +292,11 @@ namespace DS.Elements
 
         private static List<string> GetExpressionReferences(DSDialogueSpeaker speaker)
         {
+            if (speaker == DSDialogueSpeaker.Narrator)
+            {
+                return new List<string>();
+            }
+
             string folderPath = $"Assets/Art/Role/Sprites/{GetSpeakerFolderName(speaker)}";
             string[] expressionGuids = AssetDatabase.FindAssets("t:Sprite", new[] { folderPath });
             List<string> expressionReferences = new List<string>(expressionGuids.Length);
@@ -364,6 +386,8 @@ namespace DS.Elements
                     return "girlfriend";
                 case DSDialogueSpeaker.Daughter:
                     return "daughter";
+                case DSDialogueSpeaker.System:
+                    return "system";
                 default:
                     return "me";
             }

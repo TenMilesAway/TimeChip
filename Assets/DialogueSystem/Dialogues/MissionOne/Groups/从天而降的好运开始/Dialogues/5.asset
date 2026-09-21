@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: 5
   m_EditorClassIdentifier: 
   <DialogueName>k__BackingField: 5
-  <Text>k__BackingField: "\u6211\u539F\u672C\u4EE5\u4E3A\uFF0C\u53EA\u6709\u91CD\u65B0\u627E\u5230\u7A0B\u5E8F\u5458\u7684\u5DE5\u4F5C\uFF0C\u624D\u7B97\u771F\u6B63\u8D70\u51FA\u6765\u3002\u4F46\u4ECA\u5929\u6211\u51FA\u95E8\u63A5\u4E0B\u96F6\u5DE5\uFF0C\u4E5F\u662F\u5728\u5F80\u524D\u8D70\uFF0C\u8FD9\u4E5F\u7B97\u662F\u4E00\u4E2A\u65B0\u7684\u5F00\u59CB\u5427\uFF01"
+  <Text>k__BackingField: "\u7B49\u7B49\uFF0C\u6C99\u53D1\u5F00\u59CB\u6389\u94B1\u4E86\uFF1F"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 11400000, guid: a378366cc1b54f14e90b785e8ae299f3, type: 2}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: be7b21da39369ab4bad43269566ddcfd, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 0
-  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_smile]
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_oh]
+  <Reward>k__BackingField: 
   <IsStartingDialogue>k__BackingField: 0

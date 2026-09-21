@@ -31,4 +31,5 @@ public enum MissionEventType
     Coin,
     Health,
     Work,
+    NormalLottery,
 }

@@ -10,6 +10,8 @@ namespace DS.Enumerations
     {
         Me,
         Girlfriend,
-        Daughter
+        Daughter,
+        System,
+        Narrator
     }
 }
