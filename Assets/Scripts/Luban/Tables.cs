@@ -65,6 +65,10 @@ public partial class Tables
     /// 捕鱼商店配置
     /// </summary>
     public FishStoreTable FishStoreTable {get; }
+    /// <summary>
+    /// 引导配置
+    /// </summary>
+    public GuideTable GuideTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -82,6 +86,7 @@ public partial class Tables
         CommunityCentreTable = new CommunityCentreTable(loader("communityCentre"));
         SubwayTable = new SubwayTable(loader("subway"));
         FishStoreTable = new FishStoreTable(loader("fishStore"));
+        GuideTable = new GuideTable(loader("guide"));
         ResolveRef();
     }
     
@@ -100,6 +105,7 @@ public partial class Tables
         CommunityCentreTable.ResolveRef(this);
         SubwayTable.ResolveRef(this);
         FishStoreTable.ResolveRef(this);
+        GuideTable.ResolveRef(this);
     }
 }
 

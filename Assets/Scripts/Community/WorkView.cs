@@ -348,6 +348,26 @@ public class WorkView : UIBasePanel
         }
     }
 
+    public bool TryGetFirstWorkGuideTarget(
+        out RectTransform guideTarget,
+        out Button completionButton)
+    {
+        if (_workItems != null &&
+            _workItems.Length > 0 &&
+            _workItems[0] != null &&
+            _workItems[0].TryGetWorkGuideTarget(
+                out guideTarget,
+                out completionButton))
+        {
+            return true;
+        }
+
+        guideTarget = null;
+        completionButton = null;
+        Debug.LogError("WorkView 的第一个零工没有可点击的接取按钮。", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.WorkView;

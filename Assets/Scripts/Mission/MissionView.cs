@@ -164,6 +164,21 @@ public class MissionView : UIBasePanel
         return Mathf.Max(1, Mathf.CeilToInt((float)_missions.Count / _missionItems.Length));
     }
 
+    public bool TryGetFirstMissionClaimButton(out Button claimButton)
+    {
+        if (_missionItems != null &&
+            _missionItems.Length > 0 &&
+            _missionItems[0] != null &&
+            _missionItems[0].TryGetClaimButton(out claimButton))
+        {
+            return true;
+        }
+
+        claimButton = null;
+        Debug.LogError("MissionView 的第一个任务没有可点击的领奖按钮。", this);
+        return false;
+    }
+
     private bool HasValidUiReferences()
     {
         if (_txtCurrentPage == null ||

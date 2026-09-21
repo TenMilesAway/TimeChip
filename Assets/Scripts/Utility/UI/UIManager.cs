@@ -82,9 +82,6 @@ public class UIManager : Singleton<UIManager>
             }
 
             panelGO.transform.SetParent(_uiRoot, false);
-            RectTransform panelTransform = panelGO.transform as RectTransform;
-            panelTransform.offsetMax = Vector2.zero;
-            panelTransform.offsetMin = Vector2.zero;
 
             UIBasePanel panelComponent = panelGO.GetComponent<UIBasePanel>();
             if (panelComponent == null)

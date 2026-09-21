@@ -78,6 +78,24 @@ public class WorkItem : MonoBehaviour
         _txtTip.text = workedThisTurn ? "本回合已工作" : _unlockTip;
     }
 
+    public bool TryGetWorkGuideTarget(
+        out RectTransform guideTarget,
+        out Button completionButton)
+    {
+        if (_btnGetAll != null &&
+            _btnGetAll.interactable &&
+            _btnGetAll.gameObject.activeInHierarchy)
+        {
+            guideTarget = transform as RectTransform;
+            completionButton = _btnGetAll;
+            return true;
+        }
+
+        guideTarget = null;
+        completionButton = null;
+        return false;
+    }
+
     private async void SetIconAsync(cfg.Work workConfig, int requestVersion)
     {
         _imgIcon.sprite = null;

@@ -358,6 +358,19 @@ public class MainMenuView : UIBasePanel
         get { return _simulationCoinIcon; }
     }
 
+    public bool TryGetMissionButton(out Button missionButton)
+    {
+        if (_missionButton != null && _missionButton.gameObject.activeInHierarchy)
+        {
+            missionButton = _missionButton;
+            return true;
+        }
+
+        missionButton = null;
+        Debug.LogError("MainMenuView 未绑定任务按钮。", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.MainMenuView;

@@ -16,6 +16,7 @@ public static class MissionDialogueService
 
     private static bool isLoadingDialogue;
     private static bool isPlayingDialogue;
+    private static bool isPlayingGuide;
 
     public static void TryPlayStartDialogue(cfg.Mission missionConfig)
     {
@@ -48,7 +49,7 @@ public static class MissionDialogueService
 
     private static async void PlayNextDialogue()
     {
-        if (isLoadingDialogue || isPlayingDialogue)
+        if (isLoadingDialogue || isPlayingDialogue || isPlayingGuide)
         {
             return;
         }
@@ -95,7 +96,7 @@ public static class MissionDialogueService
                     {
                         title = groupName,
                         lines = lines,
-                        onCompleted = OnDialogueCompleted
+                        onCompleted = () => OnDialogueCompleted(request)
                     }
                 });
             if (dialogueView != null)
@@ -107,9 +108,24 @@ public static class MissionDialogueService
         }
     }
 
-    private static void OnDialogueCompleted()
+    private static void OnDialogueCompleted(DialogueRequest request)
     {
         isPlayingDialogue = false;
+        if (request.Phase == "开始")
+        {
+            isPlayingGuide = true;
+            GuideService.TryRunMissionGuides(
+                request.MissionConfig.Id,
+                OnMissionGuidesCompleted);
+            return;
+        }
+
+        PlayNextDialogue();
+    }
+
+    private static void OnMissionGuidesCompleted()
+    {
+        isPlayingGuide = false;
         PlayNextDialogue();
     }
 

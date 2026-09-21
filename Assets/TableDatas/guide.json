@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1000,
+    "missionId": 1000,
+    "step": 1,
+    "target": "WorkCenter"
+  },
+  {
+    "id": 1001,
+    "missionId": 1000,
+    "step": 2,
+    "target": "FirstWorkItem"
+  },
+  {
+    "id": 1002,
+    "missionId": 1000,
+    "step": 3,
+    "target": "MissionButton"
+  },
+  {
+    "id": 1003,
+    "missionId": 1000,
+    "step": 4,
+    "target": "FirstMissionReward"
+  }
+]

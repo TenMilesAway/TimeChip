@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -84,6 +85,33 @@ public class CommunityView : UIBasePanel
     {
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.SubwayView);
+    }
+
+    public bool TryGetWorkButton(out Button workButton)
+    {
+        if (_btnWork != null)
+        {
+            workButton = _btnWork;
+            return true;
+        }
+
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            for (int listenerIndex = 0; listenerIndex < button.onClick.GetPersistentEventCount(); listenerIndex++)
+            {
+                if (button.onClick.GetPersistentMethodName(listenerIndex) == nameof(OnClickWork))
+                {
+                    workButton = button;
+                    return true;
+                }
+            }
+        }
+
+        workButton = null;
+        Debug.LogError("CommunityView 未绑定零工中心按钮", this);
+        return false;
     }
 
     public override string GetPanelName()

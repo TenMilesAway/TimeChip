@@ -56,6 +56,20 @@ public class MissionItem : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public bool TryGetClaimButton(out Button claimButton)
+    {
+        if (_btnGet != null &&
+            _btnGet.interactable &&
+            _btnGet.gameObject.activeInHierarchy)
+        {
+            claimButton = _btnGet;
+            return true;
+        }
+
+        claimButton = null;
+        return false;
+    }
+
     private async void SetIconAsync(cfg.Mission missionConfig, int requestVersion)
     {
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(missionConfig.Icon);
