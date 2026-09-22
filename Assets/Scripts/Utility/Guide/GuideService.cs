@@ -11,6 +11,8 @@ public static class GuideService
     private const string FirstWorkItemTarget = "FirstWorkItem";
     private const string MissionButtonTarget = "MissionButton";
     private const string FirstMissionRewardTarget = "FirstMissionReward";
+    private const string LotteryButtonTarget = "LotteryButton";
+    private const string SingleLotteryButtonTarget = "SingleLotteryButton";
     private const float PanelWaitTimeout = 5f;
 
     public static void TryRunMissionGuides(int missionId, Action onCompleted)
@@ -73,6 +75,12 @@ public static class GuideService
                 break;
             case FirstMissionRewardTarget:
                 ShowFirstMissionRewardGuide(onCompleted);
+                break;
+            case LotteryButtonTarget:
+                ShowLotteryButtonGuide(onCompleted);
+                break;
+            case SingleLotteryButtonTarget:
+                ShowSingleLotteryButtonGuide(onCompleted);
                 break;
             default:
                 Debug.LogError($"引导目标未实现: [{guide.Id}], [{guide.Target}]");
@@ -143,6 +151,33 @@ public static class GuideService
         }
 
         ShowButtonGuide(claimButton, onCompleted);
+    }
+
+    private static void ShowLotteryButtonGuide(Action<bool> onCompleted)
+    {
+        MainMenuView mainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (mainMenuView == null || !mainMenuView.TryGetLotteryButton(out Button lotteryButton))
+        {
+            Debug.LogError("无法启动抽奖入口引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(lotteryButton, onCompleted);
+    }
+
+    private static async void ShowSingleLotteryButtonGuide(Action<bool> onCompleted)
+    {
+        LotteryView lotteryView = await GetOrOpenPanelAsync<LotteryView>(GlobalDefine.LotteryView);
+        if (lotteryView == null || !lotteryView.TryGetSingleLotteryButton(out Button lotteryButton))
+        {
+            Debug.LogError("无法启动单次抽奖引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(lotteryButton, onCompleted);
     }
 
     private static void ShowButtonGuide(Button targetButton, Action<bool> onCompleted)

@@ -371,6 +371,19 @@ public class MainMenuView : UIBasePanel
         return false;
     }
 
+    public bool TryGetLotteryButton(out Button lotteryButton)
+    {
+        if (_lotteryButton != null && _lotteryButton.gameObject.activeInHierarchy)
+        {
+            lotteryButton = _lotteryButton;
+            return true;
+        }
+
+        lotteryButton = null;
+        Debug.LogError("MainMenuView 未绑定抽奖按钮。", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.MainMenuView;

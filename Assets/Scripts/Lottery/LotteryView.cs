@@ -191,6 +191,19 @@ public class LotteryView : UIBasePanel
         return GlobalDefine.LotteryView;
     }
 
+    public bool TryGetSingleLotteryButton(out Button lotteryButton)
+    {
+        if (_normalButton != null && _normalButton.gameObject.activeInHierarchy)
+        {
+            lotteryButton = _normalButton;
+            return true;
+        }
+
+        lotteryButton = null;
+        Debug.LogError("LotteryView 未绑定开启一次按钮。", this);
+        return false;
+    }
+
     private void RegisterButtonListener()
     {
         if (_hasRegisteredButtonListener) return;
