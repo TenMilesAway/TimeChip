@@ -36,4 +36,5 @@ public class GlobalDefine
     public const string CommonTip = "Assets/Art/Common/Prefab/CommonTip.prefab";
     public const string HomeItem = "Assets/Art/Community/Prefab/HomeItem.prefab";
     public const string BuffItem = "Assets/Art/MainMenu/Prefab/BuffItem.prefab";
+    public const string MainMenuMissionItem = "Assets/Art/MainMenu/Prefab/MainMenuMissionItem.prefab";
 }

@@ -74,6 +74,25 @@ public static class MissionAPI
         return _isInitialized ? MissionManager.GetMissions() : Array.Empty<Mission<MissionMessage>>();
     }
 
+    /// <summary>尝试获取任务的截止日期；未设置截止日期时返回 false。</summary>
+    public static bool TryGetMissionDeadline(string missionId, out int deadlineAge, out int deadlineMonth)
+    {
+        deadlineAge = 0;
+        deadlineMonth = 0;
+        if (!_isInitialized ||
+            !MissionTimings.TryGetValue(missionId, out PlayerMissionData missionData) ||
+            missionData.deadlineAge <= 0 ||
+            missionData.deadlineMonth < 1 ||
+            missionData.deadlineMonth > 12)
+        {
+            return false;
+        }
+
+        deadlineAge = missionData.deadlineAge;
+        deadlineMonth = missionData.deadlineMonth;
+        return true;
+    }
+
     private static void RestoreMissions(List<PlayerMissionData> missionData)
     {
         if (missionData == null)
