@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MainMenuMissionItem : MonoBehaviour
 {
     private const float CompleteBreathingDuration = 0.8f;
-    private const float CompleteBreathingAlpha = 0.55f;
+    private const float CompleteBreathingScale = 1.15f;
 
     [SerializeField] private Text _txtTitle;         // 任务名称
     [SerializeField] private Text _txtDes;           // 任务描述
@@ -16,6 +16,9 @@ public class MainMenuMissionItem : MonoBehaviour
     [SerializeField] private Button _btnComplete;    // 任务完成按钮
     [SerializeField] private Slider _sliderProgress; // 任务进度条
     [SerializeField] private GameObject _goCompleteGroup; // 完成
+
+    private Vector3 _completeIconInitialScale;
+    private bool _hasCompleteIconInitialScale;
 
     public void SetData(
         cfg.Mission missionConfig,
@@ -73,14 +76,20 @@ public class MainMenuMissionItem : MonoBehaviour
 
     private void PlayCompleteBreathingAnimation()
     {
-        DOTween.Kill(_imgComplete);
-        Color color = _imgComplete.color;
-        color.a = 1f;
-        _imgComplete.color = color;
-        _imgComplete.DOFade(CompleteBreathingAlpha, CompleteBreathingDuration)
+        if (!_hasCompleteIconInitialScale)
+        {
+            _completeIconInitialScale = _imgComplete.rectTransform.localScale;
+            _hasCompleteIconInitialScale = true;
+        }
+
+        DOTween.Kill(_imgComplete.rectTransform);
+        _imgComplete.rectTransform.localScale = _completeIconInitialScale;
+        _imgComplete.rectTransform.DOScale(
+            _completeIconInitialScale * CompleteBreathingScale,
+            CompleteBreathingDuration)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1, LoopType.Yoyo)
-            .SetTarget(_imgComplete);
+            .SetTarget(_imgComplete.rectTransform);
     }
 
     private void StopCompleteBreathingAnimation()
@@ -90,9 +99,10 @@ public class MainMenuMissionItem : MonoBehaviour
             return;
         }
 
-        DOTween.Kill(_imgComplete);
-        Color color = _imgComplete.color;
-        color.a = 1f;
-        _imgComplete.color = color;
+        DOTween.Kill(_imgComplete.rectTransform);
+        if (_hasCompleteIconInitialScale)
+        {
+            _imgComplete.rectTransform.localScale = _completeIconInitialScale;
+        }
     }
 }
