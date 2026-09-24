@@ -22,17 +22,5 @@
     "missionId": 1000,
     "step": 4,
     "target": "FirstMissionReward"
-  },
-  {
-    "id": 1004,
-    "missionId": 1001,
-    "step": 1,
-    "target": "LotteryButton"
-  },
-  {
-    "id": 1005,
-    "missionId": 1001,
-    "step": 2,
-    "target": "SingleLotteryButton"
   }
 ]

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f262818b55b0f4418296bad0176bdab, type: 3}
+  m_Name: 4
+  m_EditorClassIdentifier: 
+  <DialogueName>k__BackingField: 4
+  <Text>k__BackingField: "\u4E0D\u9519\uFF0C\u521A\u597D\u628A\u6211\u4EEC\u4E00\u5BB6\u4EBA\u90FD\u88C5\u4E0B\u4E86\u3002"
+  <Choices>k__BackingField:
+  - <Text>k__BackingField: Next Dialogue
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: d9793e15a1ffb504bb88ca6f5908237a, type: 2}
+  <DialogueType>k__BackingField: 0
+  <Speaker>k__BackingField: 1
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_happy]
+  <Reward>k__BackingField: 
+  <IsStartingDialogue>k__BackingField: 0

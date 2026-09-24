@@ -52,6 +52,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireNormalLottery(target);
         }
+        else if (missionConfig.Message == "HomePurchase" && missionConfig.Icon > 0)
+        {
+            missionRequire = new MissionRequireHomePurchase(missionConfig.Icon, target);
+        }
         else
         {
             Debug.LogWarning("[任务系统] 不支持的任务消息类型: " + missionConfig.Message);

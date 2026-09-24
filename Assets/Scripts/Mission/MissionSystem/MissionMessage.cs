@@ -32,4 +32,5 @@ public enum MissionEventType
     Health,
     Work,
     NormalLottery,
+    HomePurchase,
 }

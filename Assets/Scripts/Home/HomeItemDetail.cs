@@ -102,6 +102,9 @@ public class HomeItemDetail : UIBasePanel
         }
 
         playerInfoManager.UnlockHome(_homeConfig.Id);
+        MissionAPI.Broadcast(new MissionMessage(
+            MissionEventType.HomePurchase,
+            args: _homeConfig.Id.ToString()));
         _prerequisiteConfig = null;
         _imageTip.SetActive(false);
         _priceText.text = $"-{_homeConfig.Price}";

@@ -40,8 +40,8 @@ public class HomeItem : MonoBehaviour
         RefreshPurchaseState();
 
         if (_nameText != null) _nameText.text = $"{homeConfig.Name}";
-        if (_satisfactionText != null) _satisfactionText.text = $"+{homeConfig.Satisfaction:0.##}";
-        if (_priceText != null) _priceText.text = $"-{homeConfig.Price}";
+        if (_satisfactionText != null) _satisfactionText.text = $"{homeConfig.Satisfaction:0.##}";
+        if (_priceText != null) _priceText.text = $"{homeConfig.Price}";
 
         LoadIconAsync(homeConfig, resourceTag, _presentationVersion);
     }
