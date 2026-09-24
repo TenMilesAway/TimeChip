@@ -32,6 +32,7 @@ public class DialogueView : UIBasePanel
     [SerializeField] private Text _txtDialogue;
     [SerializeField] private Image _imgAvatar;
     [SerializeField] private Button _btnShowOrNext;
+    [SerializeField] private Button _btnSkip;        // 跳过对话
     [SerializeField, Min(0.01f)] private float _typewriterSecondsPerChar = 0.05f;
 
     private MissionDialogueViewData _viewData;
@@ -40,6 +41,8 @@ public class DialogueView : UIBasePanel
     private Tween _typewriterTween;
     private bool _isTyping;
     private bool _isWaitingForRewardPanel;
+    private bool _isSkipping;
+    private bool _isCompleting;
     private string _currentLineText;
 
     private void Awake()
@@ -48,6 +51,11 @@ public class DialogueView : UIBasePanel
         if (_btnShowOrNext != null)
         {
             _btnShowOrNext.onClick.AddListener(ShowNextLine);
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.onClick.AddListener(SkipDialogue);
         }
     }
 
@@ -68,6 +76,18 @@ public class DialogueView : UIBasePanel
 
         _viewData = viewData;
         _currentIndex = 0;
+        _isSkipping = false;
+        _isCompleting = false;
+        _isWaitingForRewardPanel = false;
+        if (_btnShowOrNext != null)
+        {
+            _btnShowOrNext.interactable = true;
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.interactable = true;
+        }
 
         ShowCurrentLine();
     }
@@ -79,6 +99,11 @@ public class DialogueView : UIBasePanel
         if (_btnShowOrNext != null)
         {
             _btnShowOrNext.onClick.RemoveListener(ShowNextLine);
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.onClick.RemoveListener(SkipDialogue);
         }
 
         base.OnDestroy();
@@ -123,6 +148,93 @@ public class DialogueView : UIBasePanel
         }
 
         ShowCurrentLine();
+    }
+
+    private void SkipDialogue()
+    {
+        if (_isSkipping ||
+            _isCompleting ||
+            _isWaitingForRewardPanel ||
+            _viewData?.lines == null ||
+            _currentIndex < 0 ||
+            _currentIndex >= _viewData.lines.Count)
+        {
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        _isSkipping = true;
+        StopTypewriter();
+        if (_btnShowOrNext != null)
+        {
+            _btnShowOrNext.interactable = false;
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.interactable = false;
+        }
+
+        List<CommonRewardItemData> rewards = CollectRemainingRewards();
+        if (rewards.Count == 0)
+        {
+            CompleteDialogue();
+            return;
+        }
+
+        OpenSkippedDialogueRewardPanel(rewards);
+    }
+
+    private List<CommonRewardItemData> CollectRemainingRewards()
+    {
+        List<CommonRewardItemData> rewards = new List<CommonRewardItemData>();
+        for (int i = _currentIndex; i < _viewData.lines.Count; i++)
+        {
+            List<CommonRewardItemData> lineRewards = _viewData.lines[i]?.rewards;
+            if (lineRewards == null || lineRewards.Count == 0)
+            {
+                continue;
+            }
+
+            rewards.AddRange(lineRewards);
+        }
+
+        return rewards;
+    }
+
+    private async void OpenSkippedDialogueRewardPanel(
+        List<CommonRewardItemData> rewards)
+    {
+        _isWaitingForRewardPanel = true;
+        UIBasePanel rewardPanel = await UIManager.GetInstance().OpenPanelAsync(
+            GlobalDefine.CommonRewardPanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = rewards,
+                callback = OnSkippedDialogueRewardsCompleted
+            });
+        if (rewardPanel == null)
+        {
+            _isWaitingForRewardPanel = false;
+            _isSkipping = false;
+            if (_btnShowOrNext != null)
+            {
+                _btnShowOrNext.interactable = true;
+            }
+
+            if (_btnSkip != null)
+            {
+                _btnSkip.interactable = true;
+            }
+            Debug.LogError("[对话系统] 跳过奖励面板打开失败，无法跳过当前对话。", this);
+        }
+    }
+
+    private void OnSkippedDialogueRewardsCompleted()
+    {
+        _isWaitingForRewardPanel = false;
+        CompleteDialogue();
     }
 
     private void ShowCurrentLine()
@@ -182,6 +294,13 @@ public class DialogueView : UIBasePanel
 
     private void CompleteDialogue()
     {
+        if (_isCompleting)
+        {
+            return;
+        }
+
+        _isCompleting = true;
+        StopTypewriter();
         System.Action onCompleted = _viewData?.onCompleted;
         UIManager.GetInstance().ClosePanel(GetPanelName());
         onCompleted?.Invoke();
@@ -207,6 +326,11 @@ public class DialogueView : UIBasePanel
         if (_btnShowOrNext == null)
         {
             _btnShowOrNext = FindInChildren<Button>("Next Dialogue Button");
+        }
+
+        if (_btnSkip == null)
+        {
+            _btnSkip = FindInChildren<Button>("Button Skip");
         }
     }
 

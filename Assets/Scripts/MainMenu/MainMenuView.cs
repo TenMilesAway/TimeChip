@@ -509,7 +509,7 @@ public class MainMenuView : UIBasePanel
         ClearMissionItems();
         if (_missionParent == null)
         {
-            Debug.LogError("MainMenuView 的任务挂载节点未在 Inspector 中配置。", this);
+            Debug.LogError("MainMenuView 的任务挂载节点未在 Inspector 中配置", this);
             return;
         }
 
