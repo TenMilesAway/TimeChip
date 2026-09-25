@@ -163,4 +163,27 @@ public class HomeItem : MonoBehaviour
             !playerInfoManager.IsHomeUnlocked(_homeConfig.UnlockId));
     }
 
+    public bool TryGetGuideTarget(out RectTransform guideTarget, out Button itemButton)
+    {
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            for (int listenerIndex = 0; listenerIndex < button.onClick.GetPersistentEventCount(); listenerIndex++)
+            {
+                if (button.onClick.GetPersistentMethodName(listenerIndex) == nameof(OpenDetail))
+                {
+                    guideTarget = button.transform as RectTransform;
+                    itemButton = button;
+                    return guideTarget != null;
+                }
+            }
+        }
+
+        guideTarget = null;
+        itemButton = null;
+        Debug.LogError("HomeItem 未绑定打开详情按钮", this);
+        return false;
+    }
+
 }

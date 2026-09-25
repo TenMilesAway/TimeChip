@@ -217,9 +217,15 @@ public class ClinicView : UIBasePanel
         _txtHealth.text = playerInfoManager.Health.ToString();
         _txtCureService1.text = playerInfoManager.CureService1Price.ToString();
         _txtCureService2.text = playerInfoManager.CureService2Price.ToString();
-        _txtCureItem1.text = CureItem1Price.ToString();
-        _txtCureItem2.text = CureItem2Price.ToString();
-        _txtCureItem3.text = CureItem3Price.ToString();
+        _txtCureItem1.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(CureItem1Price)
+            .ToString();
+        _txtCureItem2.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(CureItem2Price)
+            .ToString();
+        _txtCureItem3.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(CureItem3Price)
+            .ToString();
 
         _btnExamination.interactable = !playerInfoManager.ExaminedThisTurn;
         bool canTreat = !playerInfoManager.TreatedThisTurn;

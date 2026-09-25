@@ -280,6 +280,43 @@ public class HomeStoreView : UIBasePanel
         }
     }
 
+    public bool TryGetTagButton(int displayIndex, out Button tagButton)
+    {
+        int index = displayIndex - 1;
+        if (index >= 0 &&
+            _tagButtons != null &&
+            index < _tagButtons.Length &&
+            _tagButtons[index] != null &&
+            _tagButtons[index].gameObject.activeInHierarchy)
+        {
+            tagButton = _tagButtons[index];
+            return true;
+        }
+
+        tagButton = null;
+        Debug.LogError($"HomeStoreView 未绑定第 {displayIndex} 个标签按钮", this);
+        return false;
+    }
+
+    public bool TryGetHomeItemGuideTarget(
+        int displayIndex,
+        out RectTransform guideTarget,
+        out Button itemButton)
+    {
+        int index = displayIndex - 1;
+        if (index >= 0 &&
+            index < _homeItems.Count &&
+            _homeItems[index] != null &&
+            _homeItems[index].TryGetGuideTarget(out guideTarget, out itemButton))
+        {
+            return true;
+        }
+
+        guideTarget = null;
+        itemButton = null;
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.HomeStoreView;

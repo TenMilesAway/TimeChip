@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "minSatisfaction": 10,
+    "buffId": 3001
+  },
+  {
+    "id": 2,
+    "minSatisfaction": 20,
+    "buffId": 3002
+  },
+  {
+    "id": 3,
+    "minSatisfaction": 30,
+    "buffId": 3003
+  },
+  {
+    "id": 4,
+    "minSatisfaction": 40,
+    "buffId": 3004
+  },
+  {
+    "id": 5,
+    "minSatisfaction": 50,
+    "buffId": 3005
+  },
+  {
+    "id": 6,
+    "minSatisfaction": 60,
+    "buffId": 3006
+  },
+  {
+    "id": 7,
+    "minSatisfaction": 70,
+    "buffId": 3007
+  },
+  {
+    "id": 8,
+    "minSatisfaction": 80,
+    "buffId": 3008
+  },
+  {
+    "id": 9,
+    "minSatisfaction": 90,
+    "buffId": 3009
+  },
+  {
+    "id": 10,
+    "minSatisfaction": 100,
+    "buffId": 3010
+  }
+]

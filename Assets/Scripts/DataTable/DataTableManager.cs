@@ -27,7 +27,8 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "communityCentre",
         "subway",
         "fishStore",
-        "guide"
+        "guide",
+        "homeSatisfactionBuff",
     };
 
     #region Getter

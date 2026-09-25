@@ -44,7 +44,9 @@ public class FishStoreItem : MonoBehaviour
 
         gameObject.SetActive(true);
         _txtName.text = storeConfig.Name;
-        _txtPrice.text = storeConfig.Price.ToString();
+        _txtPrice.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(storeConfig.Price)
+            .ToString();
         bool isSoldOut = remainingCount <= 0;
         _txtCharge.text = isSoldOut ? "购买上限" : "购买";
         _btnCharge.interactable = !isSoldOut;

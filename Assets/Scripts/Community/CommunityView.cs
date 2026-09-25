@@ -114,6 +114,33 @@ public class CommunityView : UIBasePanel
         return false;
     }
 
+    public bool TryGetHomeStoreButton(out Button homeStoreButton)
+    {
+        if (_btnHomeStore != null && _btnHomeStore.gameObject.activeInHierarchy)
+        {
+            homeStoreButton = _btnHomeStore;
+            return true;
+        }
+
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            for (int listenerIndex = 0; listenerIndex < button.onClick.GetPersistentEventCount(); listenerIndex++)
+            {
+                if (button.onClick.GetPersistentMethodName(listenerIndex) == nameof(OnClickHomeStore))
+                {
+                    homeStoreButton = button;
+                    return true;
+                }
+            }
+        }
+
+        homeStoreButton = null;
+        Debug.LogError("CommunityView 未绑定家具店按钮", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.CommunityView;

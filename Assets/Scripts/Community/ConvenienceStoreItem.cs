@@ -50,7 +50,9 @@ public class ConvenienceStoreItem : MonoBehaviour
         gameObject.SetActive(true);
         _txtName.text = convenienceConfig.Name;
         _txtTag.text = $"限购{convenienceConfig.Num}份";
-        _txtPrice.text = convenienceConfig.Price.ToString();
+        _txtPrice.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(convenienceConfig.Price)
+            .ToString();
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
         _imgIcon.sprite = null;
         LoadIconAsync(convenienceConfig.Id, iconPath, iconScale, scaleMultiplier, _presentationVersion);

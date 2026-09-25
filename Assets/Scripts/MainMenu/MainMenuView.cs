@@ -692,6 +692,19 @@ public class MainMenuView : UIBasePanel
         return false;
     }
 
+    public bool TryGetCommunityButton(out Button communityButton)
+    {
+        if (_communityButton != null && _communityButton.gameObject.activeInHierarchy)
+        {
+            communityButton = _communityButton;
+            return true;
+        }
+
+        communityButton = null;
+        Debug.LogError("MainMenuView 未绑定社区按钮。", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.MainMenuView;

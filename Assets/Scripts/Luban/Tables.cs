@@ -69,6 +69,10 @@ public partial class Tables
     /// 引导配置
     /// </summary>
     public GuideTable GuideTable {get; }
+    /// <summary>
+    /// 小屋满意度档位 BUFF 配置
+    /// </summary>
+    public HomeSatisfactionBuffTable HomeSatisfactionBuffTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -87,6 +91,7 @@ public partial class Tables
         SubwayTable = new SubwayTable(loader("subway"));
         FishStoreTable = new FishStoreTable(loader("fishStore"));
         GuideTable = new GuideTable(loader("guide"));
+        HomeSatisfactionBuffTable = new HomeSatisfactionBuffTable(loader("homeSatisfactionBuff"));
         ResolveRef();
     }
     
@@ -106,6 +111,7 @@ public partial class Tables
         SubwayTable.ResolveRef(this);
         FishStoreTable.ResolveRef(this);
         GuideTable.ResolveRef(this);
+        HomeSatisfactionBuffTable.ResolveRef(this);
     }
 }
 

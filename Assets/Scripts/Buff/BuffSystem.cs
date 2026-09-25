@@ -7,7 +7,10 @@ using UnityEngine;
 /// </summary>
 public sealed class BuffSystem : Singleton<BuffSystem>
 {
+    private const int HomeSatisfactionBuffSourceId = -1;
+
     private PlayerInfoManager _playerInfoManager;
+    private bool _isSynchronizingHomeSatisfactionBuff;
 
     /// <summary>激活 BUFF 列表变化时触发，供表现层刷新图标。</summary>
     public event Action BuffsChanged;
@@ -23,12 +26,15 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         {
             _playerInfoManager.TurnEnding -= OnTurnEnding;
             _playerInfoManager.TurnAdvanced -= OnTurnAdvanced;
+            _playerInfoManager.PlayerInfoChanged -= SynchronizeHomeSatisfactionBuff;
         }
 
         _playerInfoManager = playerInfoManager;
         _playerInfoManager.TurnEnding += OnTurnEnding;
         _playerInfoManager.TurnAdvanced += OnTurnAdvanced;
+        _playerInfoManager.PlayerInfoChanged += SynchronizeHomeSatisfactionBuff;
         RemoveMissingConfigurations();
+        SynchronizeHomeSatisfactionBuff(_playerInfoManager);
     }
 
     /// <summary>按配置添加 BUFF。即时 BUFF 会立刻结算而不会写入存档。</summary>
@@ -102,26 +108,99 @@ public sealed class BuffSystem : Singleton<BuffSystem>
                 continue;
             }
 
-            switch (config.EffectType)
-            {
-                case "WorkCoinFlat":
-                    coinReward += Mathf.RoundToInt(config.EffectValue * activeBuff.stacks);
-                    break;
-                case "WorkCoinMultiplier":
-                    coinMultiplier *= 1f + config.EffectValue * activeBuff.stacks;
-                    break;
-                case "WorkHealthCostFlat":
-                    healthCost += Mathf.RoundToInt(config.EffectValue * activeBuff.stacks);
-                    break;
-                case "WorkHealthCostMultiplier":
-                    healthCostMultiplier *= 1f + config.EffectValue * activeBuff.stacks;
-                    break;
-            }
+            ApplyWorkEffect(
+                config.EffectType,
+                config.EffectValue,
+                activeBuff.stacks,
+                ref coinReward,
+                ref healthCost,
+                ref coinMultiplier,
+                ref healthCostMultiplier);
+            ApplyWorkEffect(
+                config.ExtraEffectType,
+                config.ExtraEffectValue,
+                activeBuff.stacks,
+                ref coinReward,
+                ref healthCost,
+                ref coinMultiplier,
+                ref healthCostMultiplier);
         }
 
         return new WorkBuffResult(
             Mathf.Max(0, Mathf.RoundToInt(coinReward * coinMultiplier)),
             Mathf.Max(0, Mathf.RoundToInt(healthCost * healthCostMultiplier)));
+    }
+
+    /// <summary>计算受当前永久 BUFF 影响后的商店价格。</summary>
+    public int CalculateShopPrice(int basePrice)
+    {
+        return Mathf.Max(
+            0,
+            Mathf.CeilToInt(Mathf.Max(0, basePrice) * GetEffectMultiplier("ShopPriceMultiplier")));
+    }
+
+    /// <summary>返回指定倍率效果的最终乘数。</summary>
+    public float GetEffectMultiplier(string effectType)
+    {
+        float multiplier = 1f;
+        List<ActiveBuffData> activeBuffs = _playerInfoManager.GetActiveBuffs();
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuffData activeBuff = activeBuffs[i];
+            cfg.BuffConfig config = GetConfig(activeBuff.buffId);
+            if (config == null || !MeetsSatisfactionRequirement(config))
+            {
+                continue;
+            }
+
+            multiplier *= GetMultiplierContribution(
+                config.EffectType,
+                config.EffectValue,
+                activeBuff.stacks,
+                effectType);
+            multiplier *= GetMultiplierContribution(
+                config.ExtraEffectType,
+                config.ExtraEffectValue,
+                activeBuff.stacks,
+                effectType);
+        }
+
+        return Mathf.Max(0f, multiplier);
+    }
+
+    /// <summary>判断指定解锁效果是否处于生效状态。</summary>
+    public bool HasActiveEffect(string effectType)
+    {
+        List<ActiveBuffData> activeBuffs = _playerInfoManager.GetActiveBuffs();
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuffData activeBuff = activeBuffs[i];
+            cfg.BuffConfig config = GetConfig(activeBuff.buffId);
+            if (config == null || !MeetsSatisfactionRequirement(config))
+            {
+                continue;
+            }
+
+            if ((config.EffectType == effectType && config.EffectValue > 0f) ||
+                (config.ExtraEffectType == effectType && config.ExtraEffectValue > 0f))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>按当前小屋满意度同步唯一生效的档位 BUFF。</summary>
+    public void RefreshHomeSatisfactionBuff()
+    {
+        if (_playerInfoManager == null)
+        {
+            Debug.LogError("BUFF 系统尚未初始化，无法同步小屋满意度 BUFF。");
+            return;
+        }
+
+        SynchronizeHomeSatisfactionBuff(_playerInfoManager);
     }
 
     private void OnTurnAdvanced()
@@ -233,6 +312,99 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         List<ActiveBuffData> activeBuffs = _playerInfoManager.GetActiveBuffs();
         activeBuffs.RemoveAll(activeBuff => GetConfig(activeBuff.buffId) == null);
         _playerInfoManager.SetActiveBuffs(activeBuffs);
+    }
+
+    private void SynchronizeHomeSatisfactionBuff(PlayerInfoManager playerInfoManager)
+    {
+        if (_isSynchronizingHomeSatisfactionBuff || playerInfoManager == null)
+        {
+            return;
+        }
+
+        cfg.HomeSatisfactionBuff selectedTier = null;
+        IReadOnlyList<cfg.HomeSatisfactionBuff> tiers = DataTableMananger.GetInstance()
+            .Tables.HomeSatisfactionBuffTable.DataList;
+        for (int i = 0; i < tiers.Count; i++)
+        {
+            cfg.HomeSatisfactionBuff tier = tiers[i];
+            if (tier.MinSatisfaction <= playerInfoManager.Satisfaction &&
+                (selectedTier == null || tier.MinSatisfaction > selectedTier.MinSatisfaction))
+            {
+                selectedTier = tier;
+            }
+        }
+
+        List<ActiveBuffData> activeBuffs = playerInfoManager.GetActiveBuffs();
+        ActiveBuffData currentTierBuff = activeBuffs.Find(
+            activeBuff => activeBuff.sourceId == HomeSatisfactionBuffSourceId);
+        if ((selectedTier == null && currentTierBuff == null) ||
+            (selectedTier != null &&
+             currentTierBuff != null &&
+             currentTierBuff.buffId == selectedTier.BuffId))
+        {
+            return;
+        }
+
+        activeBuffs.RemoveAll(
+            activeBuff => activeBuff.sourceId == HomeSatisfactionBuffSourceId);
+        if (selectedTier != null)
+        {
+            if (GetConfig(selectedTier.BuffId) == null)
+            {
+                Debug.LogError($"小屋满意度 BUFF 配置不存在: [{selectedTier.BuffId}]");
+                return;
+            }
+
+            activeBuffs.Add(new ActiveBuffData
+            {
+                buffId = selectedTier.BuffId,
+                remainingTurns = -1,
+                stacks = 1,
+                sourceId = HomeSatisfactionBuffSourceId
+            });
+        }
+
+        _isSynchronizingHomeSatisfactionBuff = true;
+        playerInfoManager.SetActiveBuffs(activeBuffs);
+        _isSynchronizingHomeSatisfactionBuff = false;
+        BuffsChanged?.Invoke();
+    }
+
+    private static void ApplyWorkEffect(
+        string effectType,
+        float effectValue,
+        int stacks,
+        ref int coinReward,
+        ref int healthCost,
+        ref float coinMultiplier,
+        ref float healthCostMultiplier)
+    {
+        switch (effectType)
+        {
+            case "WorkCoinFlat":
+                coinReward += Mathf.RoundToInt(effectValue * stacks);
+                break;
+            case "WorkCoinMultiplier":
+                coinMultiplier *= 1f + effectValue * stacks;
+                break;
+            case "WorkHealthCostFlat":
+                healthCost += Mathf.RoundToInt(effectValue * stacks);
+                break;
+            case "WorkHealthCostMultiplier":
+                healthCostMultiplier *= 1f + effectValue * stacks;
+                break;
+        }
+    }
+
+    private static float GetMultiplierContribution(
+        string configuredEffectType,
+        float effectValue,
+        int stacks,
+        string requestedEffectType)
+    {
+        return configuredEffectType == requestedEffectType
+            ? 1f + effectValue * stacks
+            : 1f;
     }
 
     private static ActiveBuffData FindActiveBuff(List<ActiveBuffData> activeBuffs, int buffId)

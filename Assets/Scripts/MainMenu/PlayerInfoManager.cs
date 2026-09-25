@@ -9,8 +9,6 @@ using UnityEngine;
 [Serializable]
 public sealed class PlayerInfoData
 {
-    public const int DefaultFishHookItemId = 6025;
-
     /// <summary>玩家的当前年龄</summary>
     public int currentAge = 18;
 
@@ -36,7 +34,7 @@ public sealed class PlayerInfoData
     public int boxCoins;
 
     /// <summary>玩家持有的星阵币数量</summary>
-    public int cardCoins = 16;
+    public int cardCoins;
 
     /// <summary>社区中心等级，范围为 1 至 6</summary>
     public int communityCentreLevel = 1;
@@ -85,7 +83,7 @@ public sealed class PlayerInfoData
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
 
     /// <summary>当前装备的鱼钩道具 ID</summary>
-    public int equippedFishHookItemId = DefaultFishHookItemId;
+    public int equippedFishHookItemId;
 
     /// <summary>当前装备的鱼饵道具 ID，零表示未装备</summary>
     public int equippedFishBaitItemId;
@@ -556,10 +554,16 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public bool PurchasedClinicItemThisTurn { get { return _data.purchasedClinicItemThisTurn; } }
 
     /// <summary>获取治疗服务一当前价格</summary>
-    public int CureService1Price { get { return _data.cureService1Price; } }
+    public int CureService1Price
+    {
+        get { return BuffSystem.GetInstance().CalculateShopPrice(_data.cureService1Price); }
+    }
 
     /// <summary>获取治疗服务二当前价格</summary>
-    public int CureService2Price { get { return _data.cureService2Price; } }
+    public int CureService2Price
+    {
+        get { return BuffSystem.GetInstance().CalculateShopPrice(_data.cureService2Price); }
+    }
 
     /// <summary>已购家具提供的满意度总和</summary>
     public float Satisfaction
@@ -1240,12 +1244,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return ConveniencePurchaseResult.InvalidOffer;
         }
 
-        if (offerConfig.Price < 0 || _data.simulationCoins < offerConfig.Price)
+        int price = BuffSystem.GetInstance().CalculateShopPrice(offerConfig.Price);
+        if (offerConfig.Price < 0 || _data.simulationCoins < price)
         {
             return ConveniencePurchaseResult.InsufficientCoins;
         }
 
-        _data.simulationCoins -= offerConfig.Price;
+        _data.simulationCoins -= price;
         offer.remainingCount--;
         if (itemConfig != null)
         {
@@ -1333,7 +1338,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return FishStorePurchaseResult.SoldOut;
         }
 
-        if (_data.simulationCoins < offerConfig.Price)
+        int price = BuffSystem.GetInstance().CalculateShopPrice(offerConfig.Price);
+        if (_data.simulationCoins < price)
         {
             return FishStorePurchaseResult.InsufficientCoins;
         }
@@ -1345,7 +1351,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return FishStorePurchaseResult.InvalidOffer;
         }
 
-        _data.simulationCoins -= offerConfig.Price;
+        _data.simulationCoins -= price;
         offer.remainingCount--;
         AddInventoryItem(itemConfig.Id, 1);
         NotifyPlayerInfoChanged();
@@ -1399,6 +1405,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return ClinicTreatmentResult.HealthFull;
         }
 
+        price = BuffSystem.GetInstance().CalculateShopPrice(price);
         if (_data.simulationCoins < price)
         {
             return ClinicTreatmentResult.InsufficientCoins;
@@ -1440,6 +1447,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return ClinicItemPurchaseResult.InvalidItem;
         }
 
+        price = BuffSystem.GetInstance().CalculateShopPrice(price);
         if (_data.simulationCoins < price)
         {
             return ClinicItemPurchaseResult.InsufficientCoins;
@@ -1710,14 +1718,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.inventory.RemoveAll(item => item == null || item.itemId <= 0 || item.amount <= 0);
 
-        if (_data.equippedFishHookItemId <= 0)
-        {
-            _data.equippedFishHookItemId = PlayerInfoData.DefaultFishHookItemId;
-        }
-
         if (GetItemCount(_data.equippedFishHookItemId) <= 0)
         {
-            AddInventoryItem(_data.equippedFishHookItemId, 1);
+            _data.equippedFishHookItemId = 0;
         }
 
         if (_data.equippedFishBaitItemId < 0 ||

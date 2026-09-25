@@ -197,6 +197,13 @@ public class FishView : UIBasePanel
         }
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.EquippedFishHookItemId <= 0 ||
+            playerInfoManager.GetItemCount(playerInfoManager.EquippedFishHookItemId) <= 0)
+        {
+            CommonTipView.Show("请先装备鱼钩");
+            return;
+        }
+
         if (playerInfoManager.EquippedFishBaitItemId <= 0 ||
             playerInfoManager.GetItemCount(playerInfoManager.EquippedFishBaitItemId) <= 0)
         {
@@ -369,13 +376,15 @@ public class FishView : UIBasePanel
             .GetOrDefault(playerInfoManager.EquippedFishHookItemId);
         if (hookConfig == null || hookConfig.Category != FishHookCategory)
         {
-            Debug.LogError("当前装备的鱼钩配置无效", this);
-            return;
+            _txtEquipedHookName.text = "未装备鱼钩";
+            _imgEquipedHookIcon.sprite = null;
         }
-
-        _txtEquipedHookName.text = hookConfig.Name;
-        _imgEquipedHookIcon.sprite = null;
-        LoadEquippedIconAsync(_imgEquipedHookIcon, hookConfig, presentationVersion);
+        else
+        {
+            _txtEquipedHookName.text = hookConfig.Name;
+            _imgEquipedHookIcon.sprite = null;
+            LoadEquippedIconAsync(_imgEquipedHookIcon, hookConfig, presentationVersion);
+        }
 
         cfg.Item baitConfig = tables.ItemTable
             .GetOrDefault(playerInfoManager.EquippedFishBaitItemId);
@@ -571,7 +580,8 @@ public class FishView : UIBasePanel
             _rectCatch.rect.height * (1f - _rectCatch.pivot.y);
         float targetFillAmount = isFishCaught ? 1f : 0f;
         float changeSpeed = isFishCaught
-            ? ProgressIncreasePerSecond
+            ? ProgressIncreasePerSecond * BuffSystem.GetInstance()
+                .GetEffectMultiplier("FishCatchProgressMultiplier")
             : ProgressDecreasePerSecond;
         _imgFishProgress.fillAmount = Mathf.MoveTowards(
             _imgFishProgress.fillAmount,

@@ -16,9 +16,6 @@ public class Launcher : SingletonMono<Launcher>
     /// 唯一玩家存档使用的固定槽位编号
     /// </summary>
     private const int PlayerSaveSlotId = 0;
-    private const int NewGameTestBuffId = 1001;
-    private const int NewLifeMemoryPointReward = 30000;
-    private const int NewLifeGrowCardUnlockCount = 3;
     private const string PreloadGameContentLabel = "preload-game-content";
 
     [SerializeField] private Button _newGameButton;               // 新游戏按钮
@@ -237,7 +234,6 @@ public class Launcher : SingletonMono<Launcher>
         }
 
         _gameSaveData = CreateDefaultGameSaveData();
-        // await GrantNewLifeGrowRewardAsync();
         SaveGameData();
         BeginLaunch(_gameSaveData, true);
     }
@@ -325,10 +321,6 @@ public class Launcher : SingletonMono<Launcher>
         GlobalInfoManager.GetInstance().EnsureGrowCards(
             tables.GrowTable.DataMap.Keys);
         BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
-        if (_isNewGame)
-        {
-            BuffSystem.GetInstance().TryAddBuff(NewGameTestBuffId);
-        }
 
         MissionAPI.Initialize(PlayerInfoManager.GetInstance(), _isNewGame);
         _isNewGame = false;
@@ -476,25 +468,6 @@ public class Launcher : SingletonMono<Launcher>
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
     }
 
-    private async Task GrantNewLifeGrowRewardAsync()
-    {
-        await DataTableMananger.GetInstance().Init();
-        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
-        if (tables == null)
-        {
-            Debug.LogError("数据表初始化失败，无法发放新生奖励", this);
-            return;
-        }
-
-        GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
-        globalInfoManager.Init();
-        globalInfoManager.EnsureGrowCards(
-            tables.GrowTable.DataMap.Keys);
-        globalInfoManager.GrantNewLifeReward(
-            NewLifeMemoryPointReward,
-            NewLifeGrowCardUnlockCount);
-    }
-
     /// <summary>保存当前存档并返回启动主界面</summary>
     public void SaveAndReturnToMainInterface()
     {
@@ -544,10 +517,7 @@ public class Launcher : SingletonMono<Launcher>
             currentMonth = 1,
             health = 100,
             maxHealth = 100,
-            simulationCoins = 2000,
-            timeCoins = 10,
-            wheelCoins = 10,
-            boxCoins = 10,
+            simulationCoins = 100,
             workedThisTurn = false
         };
     }

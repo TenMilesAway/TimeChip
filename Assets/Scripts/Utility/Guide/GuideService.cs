@@ -13,6 +13,11 @@ public static class GuideService
     private const string FirstMissionRewardTarget = "FirstMissionReward";
     private const string LotteryButtonTarget = "LotteryButton";
     private const string SingleLotteryButtonTarget = "SingleLotteryButton";
+    private const string CommunityButtonTarget = "CommunityButton";
+    private const string HomeStoreButtonTarget = "HomeStoreButton";
+    private const string SixthHomeStoreTagTarget = "SixthHomeStoreTag";
+    private const string ThirdHomeStoreItemTarget = "ThirdHomeStoreItem";
+    private const string HomePurchaseButtonTarget = "HomePurchaseButton";
     private const float PanelWaitTimeout = 5f;
 
     public static void TryRunMissionGuides(int missionId, Action onCompleted)
@@ -81,6 +86,21 @@ public static class GuideService
                 break;
             case SingleLotteryButtonTarget:
                 ShowSingleLotteryButtonGuide(onCompleted);
+                break;
+            case CommunityButtonTarget:
+                ShowCommunityButtonGuide(onCompleted);
+                break;
+            case HomeStoreButtonTarget:
+                ShowHomeStoreButtonGuide(onCompleted);
+                break;
+            case SixthHomeStoreTagTarget:
+                ShowSixthHomeStoreTagGuide(onCompleted);
+                break;
+            case ThirdHomeStoreItemTarget:
+                ShowThirdHomeStoreItemGuide(onCompleted);
+                break;
+            case HomePurchaseButtonTarget:
+                ShowHomePurchaseButtonGuide(onCompleted);
                 break;
             default:
                 Debug.LogError($"引导目标未实现: [{guide.Id}], [{guide.Target}]");
@@ -178,6 +198,98 @@ public static class GuideService
         }
 
         ShowButtonGuide(lotteryButton, onCompleted);
+    }
+
+    private static void ShowCommunityButtonGuide(Action<bool> onCompleted)
+    {
+        MainMenuView mainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (mainMenuView == null || !mainMenuView.TryGetCommunityButton(out Button communityButton))
+        {
+            Debug.LogError("无法启动社区按钮引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(communityButton, onCompleted);
+    }
+
+    private static async void ShowHomeStoreButtonGuide(Action<bool> onCompleted)
+    {
+        CommunityView communityView = await GetOrOpenPanelAsync<CommunityView>(
+            GlobalDefine.CommunityView);
+        if (communityView == null ||
+            !communityView.TryGetHomeStoreButton(out Button homeStoreButton))
+        {
+            Debug.LogError("无法启动家具店按钮引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(homeStoreButton, onCompleted);
+    }
+
+    private static async void ShowSixthHomeStoreTagGuide(Action<bool> onCompleted)
+    {
+        HomeStoreView homeStoreView = await GetOrOpenPanelAsync<HomeStoreView>(
+            GlobalDefine.HomeStoreView);
+        if (homeStoreView == null ||
+            !homeStoreView.TryGetTagButton(6, out Button tagButton))
+        {
+            Debug.LogError("无法启动家具店第六个分类标签引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(tagButton, onCompleted);
+    }
+
+    private static async void ShowThirdHomeStoreItemGuide(Action<bool> onCompleted)
+    {
+        HomeStoreView homeStoreView = await GetOrOpenPanelAsync<HomeStoreView>(
+            GlobalDefine.HomeStoreView);
+        if (homeStoreView == null)
+        {
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        float deadline = Time.realtimeSinceStartup + PanelWaitTimeout;
+        while (Time.realtimeSinceStartup < deadline)
+        {
+            if (homeStoreView.TryGetHomeItemGuideTarget(
+                    3,
+                    out RectTransform guideTarget,
+                    out Button itemButton))
+            {
+                if (GuideMask.Show(guideTarget, itemButton, () => onCompleted?.Invoke(true)) == null)
+                {
+                    onCompleted?.Invoke(false);
+                }
+
+                return;
+            }
+
+            await Task.Yield();
+        }
+
+        Debug.LogError("等待家具店第三个商品加载超时。");
+        onCompleted?.Invoke(false);
+    }
+
+    private static async void ShowHomePurchaseButtonGuide(Action<bool> onCompleted)
+    {
+        HomeItemDetail detailView = await GetOrOpenPanelAsync<HomeItemDetail>(
+            GlobalDefine.HomeItemDetail);
+        if (detailView == null ||
+            !detailView.TryGetPurchaseButton(out Button purchaseButton))
+        {
+            Debug.LogError("无法启动家具购买按钮引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(purchaseButton, onCompleted);
     }
 
     private static void ShowButtonGuide(Button targetButton, Action<bool> onCompleted)

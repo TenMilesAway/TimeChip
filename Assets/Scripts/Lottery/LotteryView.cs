@@ -116,6 +116,7 @@ public class LotteryView : UIBasePanel
         }
 
         SwitchLotteryMode(GetActiveLotteryMode());
+        RefreshLotteryModeAvailability();
     }
 
     protected override void HideHandle()
@@ -300,6 +301,7 @@ public class LotteryView : UIBasePanel
     {
         if (!_isLotteryInProgress)
         {
+            RefreshLotteryModeAvailability();
             _selection.SetActive(true);
         }
     }
@@ -351,6 +353,12 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        if (!IsLotteryModeUnlocked(lotteryMode))
+        {
+            CommonTipView.Show("提升小屋满意度可解锁该高级抽奖");
+            return;
+        }
+
         DOTween.Kill(this);
         RestoreAnimationState();
         _normal.SetActive(lotteryMode == LotteryMode.Normal);
@@ -363,6 +371,7 @@ public class LotteryView : UIBasePanel
         {
             RefreshMysteryWheelRewards();
         }
+
         else if (lotteryMode == LotteryMode.Box)
         {
             RefreshBoxLotteryRewards();
@@ -374,6 +383,29 @@ public class LotteryView : UIBasePanel
         else
         {
             PlayIdleAnimations();
+        }
+    }
+
+    private void RefreshLotteryModeAvailability()
+    {
+        _btnChangeNormal.interactable = true;
+        _btnChangeMys.interactable = IsLotteryModeUnlocked(LotteryMode.MysteryWheel);
+        _btnChangeBox.interactable = IsLotteryModeUnlocked(LotteryMode.Box);
+        _btnChangeCard.interactable = IsLotteryModeUnlocked(LotteryMode.Card);
+    }
+
+    private static bool IsLotteryModeUnlocked(LotteryMode lotteryMode)
+    {
+        switch (lotteryMode)
+        {
+            case LotteryMode.MysteryWheel:
+                return BuffSystem.GetInstance().HasActiveEffect("UnlockMysteryWheelLottery");
+            case LotteryMode.Box:
+                return BuffSystem.GetInstance().HasActiveEffect("UnlockBoxLottery");
+            case LotteryMode.Card:
+                return BuffSystem.GetInstance().HasActiveEffect("UnlockCardLottery");
+            default:
+                return true;
         }
     }
 

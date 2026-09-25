@@ -141,7 +141,9 @@ public class HomeItemDetail : UIBasePanel
     /// </summary>
     private int GetPurchaseCost()
     {
-        return _homeConfig.Price + (_prerequisiteConfig == null ? 0 : _prerequisiteConfig.Price);
+        int basePrice = _homeConfig.Price +
+            (_prerequisiteConfig == null ? 0 : _prerequisiteConfig.Price);
+        return BuffSystem.GetInstance().CalculateShopPrice(basePrice);
     }
 
     /// <summary>
@@ -161,6 +163,19 @@ public class HomeItemDetail : UIBasePanel
         }
 
         Debug.LogError("HomeItemDetail 的 UI 引用未在 Inspector 中完整配置");
+        return false;
+    }
+
+    public bool TryGetPurchaseButton(out Button purchaseButton)
+    {
+        if (_purchaseButton != null && _purchaseButton.gameObject.activeInHierarchy)
+        {
+            purchaseButton = _purchaseButton;
+            return true;
+        }
+
+        purchaseButton = null;
+        Debug.LogError("HomeItemDetail 未绑定购买按钮", this);
         return false;
     }
 
