@@ -13,7 +13,7 @@ public class MissionRewardCommon : MissionReward
             return;
         }
 
-        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = rewards
         });

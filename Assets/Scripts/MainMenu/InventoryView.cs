@@ -337,7 +337,7 @@ public class InventoryView : UIBasePanel
             playerInfoManager.AddItem(reward.itemId, reward.itemCount);
         }
 
-        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = new List<CommonRewardItemData> { reward }
         });

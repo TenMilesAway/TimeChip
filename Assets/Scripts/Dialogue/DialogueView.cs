@@ -206,9 +206,7 @@ public class DialogueView : UIBasePanel
         List<CommonRewardItemData> rewards)
     {
         _isWaitingForRewardPanel = true;
-        UIBasePanel rewardPanel = await UIManager.GetInstance().OpenPanelAsync(
-            GlobalDefine.CommonRewardPanel,
-            UILayer.System,
+        UIBasePanel rewardPanel = await UIManager.GetInstance().EnqueueRewardPanel(
             new OpenUIParam
             {
                 data = rewards,
@@ -271,9 +269,7 @@ public class DialogueView : UIBasePanel
     {
         _isWaitingForRewardPanel = true;
         MissionDialogueLineData lineData = _viewData.lines[_currentIndex];
-        UIBasePanel rewardPanel = await UIManager.GetInstance().OpenPanelAsync(
-            GlobalDefine.CommonRewardPanel,
-            UILayer.System,
+        UIBasePanel rewardPanel = await UIManager.GetInstance().EnqueueRewardPanel(
             new OpenUIParam
             {
                 data = lineData.rewards,

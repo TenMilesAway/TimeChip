@@ -29,6 +29,7 @@ public class MissionMessage
 public enum MissionEventType
 {
     Coin,
+    SimulationCoinBalance,
     Health,
     Work,
     NormalLottery,

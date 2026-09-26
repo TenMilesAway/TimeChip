@@ -1,7 +1,21 @@
 [
   {
-    "id": 1000,
+    "id": 100,
     "name": "第一桶金",
+    "desc": "在25岁前积累5000模拟币",
+    "message": "SimulationCoinBalance",
+    "icon": 3000,
+    "condition": "mission:1003",
+    "target": "5000",
+    "reward": "",
+    "deadline": "25,1",
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
+  },
+  {
+    "id": 1000,
+    "name": "外出捕食",
     "desc": "完成一次零工",
     "message": "Work",
     "icon": 1000,
@@ -42,20 +56,6 @@
     "dialogueEnd": "MissionOne,5"
   },
   {
-    "id": 2000,
-    "name": "生病啦",
-    "desc": "你的基础生命过低",
-    "message": "Health",
-    "icon": 0,
-    "condition": "healthBelow:95",
-    "target": "100",
-    "reward": "",
-    "deadline": "6",
-    "failure": "gameover",
-    "dialogueStart": "",
-    "dialogueEnd": ""
-  },
-  {
     "id": 1003,
     "name": "温馨小屋",
     "desc": "查看小屋满意度面板",
@@ -65,6 +65,20 @@
     "target": "1",
     "reward": "101,500",
     "deadline": "",
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
+  },
+  {
+    "id": 2000,
+    "name": "生病啦",
+    "desc": "你的基础生命过低",
+    "message": "Health",
+    "icon": 0,
+    "condition": "healthBelow:95",
+    "target": "100",
+    "reward": "",
+    "deadline": "6",
     "failure": "gameover",
     "dialogueStart": "",
     "dialogueEnd": ""

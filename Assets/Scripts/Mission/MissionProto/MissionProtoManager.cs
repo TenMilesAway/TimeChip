@@ -40,6 +40,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireCoin(target);
         }
+        else if (missionConfig.Message == "SimulationCoinBalance")
+        {
+            missionRequire = new MissionRequireSimulationCoinBalance(target);
+        }
         else if (missionConfig.Message == "Health")
         {
             missionRequire = new MissionRequireHealth(target);

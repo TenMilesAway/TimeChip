@@ -20,6 +20,8 @@ public static class MissionAPI
     private static bool _isRestoringMissions;
     private static bool _isSynchronizingMissions;
     private static bool _isEvaluatingMissions;
+    private static bool _hasBroadcastSimulationCoinBalance;
+    private static int _lastBroadcastSimulationCoinBalance;
 
     /// <summary>由玩家存档初始化任务，并恢复未完成任务。</summary>
     public static void Initialize(PlayerInfoManager playerInfoManager, bool isNewGame)
@@ -31,6 +33,7 @@ public static class MissionAPI
 
         UnsubscribePlayerEvents();
         _playerInfoManager = playerInfoManager;
+        _hasBroadcastSimulationCoinBalance = false;
         _playerInfoManager.TurnAdvanced += OnTurnAdvanced;
         _playerInfoManager.PlayerInfoChanged += OnPlayerInfoChanged;
         MissionManager.AddComponent(SaveComponent);
@@ -48,6 +51,7 @@ public static class MissionAPI
         }
 
         EvaluateAvailableMissions(isNewGame);
+        BroadcastSimulationCoinBalance(force: true);
         CheckDeadlines();
     }
 
@@ -134,6 +138,8 @@ public static class MissionAPI
         {
             EvaluateAvailableMissions(false);
         }
+
+        BroadcastSimulationCoinBalance();
     }
 
     private static void EvaluateAvailableMissions(bool allowInitialMissions)
@@ -219,6 +225,7 @@ public static class MissionAPI
         {
             Debug.Log("[任务系统] 开启任务: " + missionConfig.Id + " - " + missionConfig.Name);
             MissionDialogueService.TryPlayStartDialogue(missionConfig);
+            BroadcastSimulationCoinBalance(force: true);
             return;
         }
 
@@ -253,6 +260,28 @@ public static class MissionAPI
                 return;
             }
         }
+    }
+
+    private static void BroadcastSimulationCoinBalance(bool force = false)
+    {
+        if (!_isInitialized || _playerInfoManager == null)
+        {
+            return;
+        }
+
+        int simulationCoins = _playerInfoManager.SimulationCoins;
+        if (!force &&
+            _hasBroadcastSimulationCoinBalance &&
+            _lastBroadcastSimulationCoinBalance == simulationCoins)
+        {
+            return;
+        }
+
+        _hasBroadcastSimulationCoinBalance = true;
+        _lastBroadcastSimulationCoinBalance = simulationCoins;
+        Broadcast(new MissionMessage(
+            MissionEventType.SimulationCoinBalance,
+            simulationCoins));
     }
 
     private static void ResolveFailedMission(string missionId)

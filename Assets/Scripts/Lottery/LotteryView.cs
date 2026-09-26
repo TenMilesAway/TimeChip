@@ -1410,7 +1410,7 @@ public class LotteryView : UIBasePanel
 
     private static void PresentRewards(List<CommonRewardItemData> rewards)
     {
-        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonRewardPanel, param: new OpenUIParam
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = rewards,
             rewardsAlreadyGranted = true

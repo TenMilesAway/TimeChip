@@ -26,6 +26,7 @@ public class UIManager : Singleton<UIManager>
     private readonly Dictionary<string, UIBasePanel> _panelDic = new Dictionary<string, UIBasePanel>();
     private readonly Dictionary<string, UIBasePanel> _blockingWindows = new Dictionary<string, UIBasePanel>();
     private readonly List<string> _loadingPanels = new List<string>();
+    private readonly Queue<RewardPanelRequest> _rewardPanelQueue = new Queue<RewardPanelRequest>();
 
     private RectTransform _uiRoot;
     private int _loadingOverlayCount;
@@ -45,6 +46,26 @@ public class UIManager : Singleton<UIManager>
     public async void OpenPanel(string panelName, UILayer layer = UILayer.Mid, OpenUIParam param = null, Action action = null)
     {
         await OpenPanelAsync(panelName, layer, param, action);
+    }
+
+    /// <summary>
+    /// 将奖励展示请求加入队列，避免多个奖励同时打开同一个面板时覆盖彼此。
+    /// </summary>
+    public Task<UIBasePanel> EnqueueRewardPanel(OpenUIParam param)
+    {
+        TaskCompletionSource<UIBasePanel> completionSource =
+            new TaskCompletionSource<UIBasePanel>();
+        _rewardPanelQueue.Enqueue(new RewardPanelRequest(param, completionSource));
+        OpenNextRewardPanel();
+        return completionSource.Task;
+    }
+
+    /// <summary>
+    /// 排队展示奖励，不需要等待面板打开完成时使用。
+    /// </summary>
+    public void QueueRewardPanel(OpenUIParam param)
+    {
+        _ = EnqueueRewardPanel(param);
     }
 
     /// <summary>
@@ -202,6 +223,7 @@ public class UIManager : Singleton<UIManager>
         List<KeyValuePair<string, UIBasePanel>> panels = new List<KeyValuePair<string, UIBasePanel>>(_panelDic);
         _panelDic.Clear();
         _blockingWindows.Clear();
+        CancelQueuedRewardPanels();
 
         foreach (KeyValuePair<string, UIBasePanel> panelEntry in panels)
         {
@@ -222,6 +244,59 @@ public class UIManager : Singleton<UIManager>
             _panelDic[panelName].OnClose();
             GameObject.Destroy(_panelDic[panelName].gameObject);
             _panelDic.Remove(panelName);
+        }
+    }
+
+    private async void OpenNextRewardPanel()
+    {
+        if (_rewardPanelQueue.Count == 0 ||
+            _loadingPanels.Contains(GlobalDefine.CommonRewardPanel) ||
+            _panelDic.ContainsKey(GlobalDefine.CommonRewardPanel))
+        {
+            return;
+        }
+
+        RewardPanelRequest request = _rewardPanelQueue.Dequeue();
+        Action previousCloseCallback = request.Param?.callback;
+        OpenUIParam param = request.Param ?? new OpenUIParam();
+        param.callback = () =>
+        {
+            previousCloseCallback?.Invoke();
+            OpenNextRewardPanel();
+        };
+
+        UIBasePanel rewardPanel = await OpenPanelAsync(
+            GlobalDefine.CommonRewardPanel,
+            UILayer.System,
+            param);
+        request.CompletionSource.TrySetResult(rewardPanel);
+
+        if (rewardPanel == null)
+        {
+            OpenNextRewardPanel();
+        }
+    }
+
+    private void CancelQueuedRewardPanels()
+    {
+        while (_rewardPanelQueue.Count > 0)
+        {
+            RewardPanelRequest request = _rewardPanelQueue.Dequeue();
+            request.CompletionSource.TrySetResult(null);
+        }
+    }
+
+    private sealed class RewardPanelRequest
+    {
+        public OpenUIParam Param { get; }
+        public TaskCompletionSource<UIBasePanel> CompletionSource { get; }
+
+        public RewardPanelRequest(
+            OpenUIParam param,
+            TaskCompletionSource<UIBasePanel> completionSource)
+        {
+            Param = param;
+            CompletionSource = completionSource;
         }
     }
 
