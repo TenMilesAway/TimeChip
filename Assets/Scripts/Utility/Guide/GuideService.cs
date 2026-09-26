@@ -18,6 +18,8 @@ public static class GuideService
     private const string SixthHomeStoreTagTarget = "SixthHomeStoreTag";
     private const string ThirdHomeStoreItemTarget = "ThirdHomeStoreItem";
     private const string HomePurchaseButtonTarget = "HomePurchaseButton";
+    private const string HomeButtonTarget = "HomeButton";
+    private const string HomeSatisfactionDetailButtonTarget = "HomeSatisfactionDetailButton";
     private const float PanelWaitTimeout = 5f;
 
     public static void TryRunMissionGuides(int missionId, Action onCompleted)
@@ -70,37 +72,43 @@ public static class GuideService
         switch (guide.Target)
         {
             case WorkCenterTarget:
-                ShowWorkCenterGuide(onCompleted);
+                ShowWorkCenterGuide(guide.Content, onCompleted);
                 break;
             case FirstWorkItemTarget:
-                ShowFirstWorkItemGuide(onCompleted);
+                ShowFirstWorkItemGuide(guide.Content, onCompleted);
                 break;
             case MissionButtonTarget:
-                ShowMissionButtonGuide(onCompleted);
+                ShowMissionButtonGuide(guide.Content, onCompleted);
                 break;
             case FirstMissionRewardTarget:
-                ShowFirstMissionRewardGuide(onCompleted);
+                ShowFirstMissionRewardGuide(guide.Content, onCompleted);
                 break;
             case LotteryButtonTarget:
-                ShowLotteryButtonGuide(onCompleted);
+                ShowLotteryButtonGuide(guide.Content, onCompleted);
                 break;
             case SingleLotteryButtonTarget:
-                ShowSingleLotteryButtonGuide(onCompleted);
+                ShowSingleLotteryButtonGuide(guide.Content, onCompleted);
                 break;
             case CommunityButtonTarget:
-                ShowCommunityButtonGuide(onCompleted);
+                ShowCommunityButtonGuide(guide.Content, onCompleted);
                 break;
             case HomeStoreButtonTarget:
-                ShowHomeStoreButtonGuide(onCompleted);
+                ShowHomeStoreButtonGuide(guide.Content, onCompleted);
                 break;
             case SixthHomeStoreTagTarget:
-                ShowSixthHomeStoreTagGuide(onCompleted);
+                ShowSixthHomeStoreTagGuide(guide.Content, onCompleted);
                 break;
             case ThirdHomeStoreItemTarget:
-                ShowThirdHomeStoreItemGuide(onCompleted);
+                ShowThirdHomeStoreItemGuide(guide.Content, onCompleted);
                 break;
             case HomePurchaseButtonTarget:
-                ShowHomePurchaseButtonGuide(onCompleted);
+                ShowHomePurchaseButtonGuide(guide.Content, onCompleted);
+                break;
+            case HomeButtonTarget:
+                ShowHomeButtonGuide(guide.Content, onCompleted);
+                break;
+            case HomeSatisfactionDetailButtonTarget:
+                ShowHomeSatisfactionDetailButtonGuide(guide.Content, onCompleted);
                 break;
             default:
                 Debug.LogError($"引导目标未实现: [{guide.Id}], [{guide.Target}]");
@@ -109,7 +117,7 @@ public static class GuideService
         }
     }
 
-    private static async void ShowWorkCenterGuide(Action<bool> onCompleted)
+    private static async void ShowWorkCenterGuide(string instruction, Action<bool> onCompleted)
     {
         UIBasePanel panel = await UIManager.GetInstance().OpenPanelAsync(GlobalDefine.CommunityView);
         CommunityView communityView = panel as CommunityView;
@@ -120,13 +128,13 @@ public static class GuideService
             return;
         }
 
-        if (GuideMask.Show(workButton, () => onCompleted?.Invoke(true)) == null)
+        if (GuideMask.Show(workButton, instruction, () => onCompleted?.Invoke(true)) == null)
         {
             onCompleted?.Invoke(false);
         }
     }
 
-    private static async void ShowFirstWorkItemGuide(Action<bool> onCompleted)
+    private static async void ShowFirstWorkItemGuide(string instruction, Action<bool> onCompleted)
     {
         WorkView workView = await GetOrOpenPanelAsync<WorkView>(GlobalDefine.WorkView);
         if (workView == null ||
@@ -139,13 +147,13 @@ public static class GuideService
             return;
         }
 
-        if (GuideMask.Show(guideTarget, completionButton, () => onCompleted?.Invoke(true)) == null)
+        if (GuideMask.Show(guideTarget, completionButton, instruction, () => onCompleted?.Invoke(true)) == null)
         {
             onCompleted?.Invoke(false);
         }
     }
 
-    private static void ShowMissionButtonGuide(Action<bool> onCompleted)
+    private static void ShowMissionButtonGuide(string instruction, Action<bool> onCompleted)
     {
         UIManager.GetInstance().ClosePanel(GlobalDefine.WorkView);
         MainMenuView mainMenuView = UIManager.GetInstance()
@@ -157,10 +165,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(missionButton, onCompleted);
+        ShowButtonGuide(missionButton, instruction, onCompleted);
     }
 
-    private static async void ShowFirstMissionRewardGuide(Action<bool> onCompleted)
+    private static async void ShowFirstMissionRewardGuide(string instruction, Action<bool> onCompleted)
     {
         MissionView missionView = await GetOrOpenPanelAsync<MissionView>(GlobalDefine.MissionView);
         if (missionView == null || !missionView.TryGetFirstMissionClaimButton(out Button claimButton))
@@ -170,10 +178,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(claimButton, onCompleted);
+        ShowButtonGuide(claimButton, instruction, onCompleted);
     }
 
-    private static void ShowLotteryButtonGuide(Action<bool> onCompleted)
+    private static void ShowLotteryButtonGuide(string instruction, Action<bool> onCompleted)
     {
         MainMenuView mainMenuView = UIManager.GetInstance()
             .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
@@ -184,10 +192,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(lotteryButton, onCompleted);
+        ShowButtonGuide(lotteryButton, instruction, onCompleted);
     }
 
-    private static async void ShowSingleLotteryButtonGuide(Action<bool> onCompleted)
+    private static async void ShowSingleLotteryButtonGuide(string instruction, Action<bool> onCompleted)
     {
         LotteryView lotteryView = await GetOrOpenPanelAsync<LotteryView>(GlobalDefine.LotteryView);
         if (lotteryView == null || !lotteryView.TryGetSingleLotteryButton(out Button lotteryButton))
@@ -197,10 +205,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(lotteryButton, onCompleted);
+        ShowButtonGuide(lotteryButton, instruction, onCompleted);
     }
 
-    private static void ShowCommunityButtonGuide(Action<bool> onCompleted)
+    private static void ShowCommunityButtonGuide(string instruction, Action<bool> onCompleted)
     {
         MainMenuView mainMenuView = UIManager.GetInstance()
             .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
@@ -211,10 +219,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(communityButton, onCompleted);
+        ShowButtonGuide(communityButton, instruction, onCompleted);
     }
 
-    private static async void ShowHomeStoreButtonGuide(Action<bool> onCompleted)
+    private static async void ShowHomeStoreButtonGuide(string instruction, Action<bool> onCompleted)
     {
         CommunityView communityView = await GetOrOpenPanelAsync<CommunityView>(
             GlobalDefine.CommunityView);
@@ -226,10 +234,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(homeStoreButton, onCompleted);
+        ShowButtonGuide(homeStoreButton, instruction, onCompleted);
     }
 
-    private static async void ShowSixthHomeStoreTagGuide(Action<bool> onCompleted)
+    private static async void ShowSixthHomeStoreTagGuide(string instruction, Action<bool> onCompleted)
     {
         HomeStoreView homeStoreView = await GetOrOpenPanelAsync<HomeStoreView>(
             GlobalDefine.HomeStoreView);
@@ -241,10 +249,10 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(tagButton, onCompleted);
+        ShowButtonGuide(tagButton, instruction, onCompleted);
     }
 
-    private static async void ShowThirdHomeStoreItemGuide(Action<bool> onCompleted)
+    private static async void ShowThirdHomeStoreItemGuide(string instruction, Action<bool> onCompleted)
     {
         HomeStoreView homeStoreView = await GetOrOpenPanelAsync<HomeStoreView>(
             GlobalDefine.HomeStoreView);
@@ -262,7 +270,11 @@ public static class GuideService
                     out RectTransform guideTarget,
                     out Button itemButton))
             {
-                if (GuideMask.Show(guideTarget, itemButton, () => onCompleted?.Invoke(true)) == null)
+                if (GuideMask.Show(
+                        guideTarget,
+                        itemButton,
+                        instruction,
+                        () => onCompleted?.Invoke(true)) == null)
                 {
                     onCompleted?.Invoke(false);
                 }
@@ -277,7 +289,7 @@ public static class GuideService
         onCompleted?.Invoke(false);
     }
 
-    private static async void ShowHomePurchaseButtonGuide(Action<bool> onCompleted)
+    private static async void ShowHomePurchaseButtonGuide(string instruction, Action<bool> onCompleted)
     {
         HomeItemDetail detailView = await GetOrOpenPanelAsync<HomeItemDetail>(
             GlobalDefine.HomeItemDetail);
@@ -289,12 +301,44 @@ public static class GuideService
             return;
         }
 
-        ShowButtonGuide(purchaseButton, onCompleted);
+        ShowButtonGuide(purchaseButton, instruction, onCompleted);
     }
 
-    private static void ShowButtonGuide(Button targetButton, Action<bool> onCompleted)
+    private static void ShowHomeButtonGuide(string instruction, Action<bool> onCompleted)
     {
-        if (GuideMask.Show(targetButton, () => onCompleted?.Invoke(true)) == null)
+        MainMenuView mainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (mainMenuView == null || !mainMenuView.TryGetHomeButton(out Button homeButton))
+        {
+            Debug.LogError("无法启动小屋按钮引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(homeButton, instruction, onCompleted);
+    }
+
+    private static async void ShowHomeSatisfactionDetailButtonGuide(
+        string instruction,
+        Action<bool> onCompleted)
+    {
+        HomeView homeView = await GetOrOpenPanelAsync<HomeView>(GlobalDefine.HomeView);
+        if (homeView == null || !homeView.TryGetHomeDetailButton(out Button detailButton))
+        {
+            Debug.LogError("无法启动满意度面板引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(detailButton, instruction, onCompleted);
+    }
+
+    private static void ShowButtonGuide(
+        Button targetButton,
+        string instruction,
+        Action<bool> onCompleted)
+    {
+        if (GuideMask.Show(targetButton, instruction, () => onCompleted?.Invoke(true)) == null)
         {
             onCompleted?.Invoke(false);
         }

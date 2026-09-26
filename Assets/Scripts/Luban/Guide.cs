@@ -27,6 +27,7 @@ public sealed partial class Guide : Luban.BeanBase
         MissionId = (int)_obj.GetValue("missionId");
         Step = (int)_obj.GetValue("step");
         Target = (string)_obj.GetValue("target");
+        Content = (string)_obj.GetValue("content");
     }
 
     public static Guide DeserializeGuide(JToken _buf)
@@ -50,6 +51,10 @@ public sealed partial class Guide : Luban.BeanBase
     /// 引导目标
     /// </summary>
     public readonly string Target;
+    /// <summary>
+    /// 引导提示文案
+    /// </summary>
+    public readonly string Content;
 
 
     public const int __ID__ = 69159644;
@@ -66,6 +71,7 @@ public sealed partial class Guide : Luban.BeanBase
         + "missionId:" + MissionId + ","
         + "step:" + Step + ","
         + "target:" + Target + ","
+        + "content:" + Content + ","
         + "}";
     }
 }

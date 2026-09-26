@@ -528,6 +528,17 @@
     "useEffect": ""
   },
   {
+    "id": 5005,
+    "name": "超长长长蛋挞",
+    "level": 4,
+    "category": 5,
+    "desc": "60cm巨无霸，超长长长长长长长长长长长长蛋挞！",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[item_extra_long_egg_tart]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": ""
+  },
+  {
     "id": 6000,
     "name": "小白条",
     "level": 1,

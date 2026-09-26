@@ -54,5 +54,19 @@
     "failure": "gameover",
     "dialogueStart": "",
     "dialogueEnd": ""
+  },
+  {
+    "id": 1003,
+    "name": "温馨小屋",
+    "desc": "查看小屋满意度面板",
+    "message": "HomeSatisfactionView",
+    "icon": 0,
+    "condition": "mission:1002",
+    "target": "1",
+    "reward": "101,500",
+    "deadline": "",
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
   }
 ]

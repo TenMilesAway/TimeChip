@@ -33,7 +33,12 @@ public static class MissionDialogueService
         string dialogueConfig,
         string phase)
     {
-        if (missionConfig == null || string.IsNullOrEmpty(dialogueConfig))
+        if (missionConfig == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(dialogueConfig) && phase != "开始")
         {
             return;
         }
@@ -57,6 +62,15 @@ public static class MissionDialogueService
         while (DialogueQueue.Count > 0)
         {
             DialogueRequest request = DialogueQueue.Dequeue();
+            if (string.IsNullOrEmpty(request.DialogueConfig))
+            {
+                isPlayingGuide = true;
+                GuideService.TryRunMissionGuides(
+                    request.MissionConfig.Id,
+                    OnMissionGuidesCompleted);
+                return;
+            }
+
             if (!TryParseDialoguePointer(
                     request.DialogueConfig,
                     out string fileName,

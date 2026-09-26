@@ -61,6 +61,15 @@ public sealed class PlayerInfoData
     /// <summary>当月全部社区需求的额外经验是否已领取</summary>
     public bool communityCentreAllNeedsBonusGranted;
 
+    /// <summary>垃圾桶上次刷新的年龄</summary>
+    public int trashCanRefreshAge = -1;
+
+    /// <summary>垃圾桶上次刷新的月份</summary>
+    public int trashCanRefreshMonth = -1;
+
+    /// <summary>每个垃圾桶点位当前显示的子物体索引，-1 表示未显示或已翻取</summary>
+    public List<int> trashCanChildIndices = new List<int>();
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -598,6 +607,56 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>当前回合结束、月份切换前触发，用于结算回合末效果。</summary>
     public event Action TurnEnding;
+
+    public bool TryGetCurrentTurnTrashCanChildIndices(
+        int expectedPointCount,
+        out List<int> childIndices)
+    {
+        childIndices = null;
+        if (expectedPointCount <= 0 ||
+            _data.trashCanRefreshAge != _data.currentAge ||
+            _data.trashCanRefreshMonth != _data.currentMonth ||
+            _data.trashCanChildIndices == null ||
+            _data.trashCanChildIndices.Count != expectedPointCount)
+        {
+            return false;
+        }
+
+        childIndices = new List<int>(_data.trashCanChildIndices);
+        return true;
+    }
+
+    public void SetCurrentTurnTrashCanChildIndices(IReadOnlyList<int> childIndices)
+    {
+        if (childIndices == null || childIndices.Count == 0)
+        {
+            Debug.LogError("垃圾桶点位状态不能为空。");
+            return;
+        }
+
+        _data.trashCanRefreshAge = _data.currentAge;
+        _data.trashCanRefreshMonth = _data.currentMonth;
+        _data.trashCanChildIndices = new List<int>(childIndices);
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool TryConsumeCurrentTurnTrashCan(int pointIndex, int childIndex)
+    {
+        if (!TryGetCurrentTurnTrashCanChildIndices(
+                _data.trashCanChildIndices == null ? 0 : _data.trashCanChildIndices.Count,
+                out List<int> childIndices) ||
+            pointIndex < 0 ||
+            pointIndex >= childIndices.Count ||
+            childIndices[pointIndex] != childIndex)
+        {
+            return false;
+        }
+
+        childIndices[pointIndex] = -1;
+        _data.trashCanChildIndices = childIndices;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
 
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
     public void Init(PlayerInfoData initialData = null)
@@ -1699,6 +1758,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.communityCentreNeeds = new List<PlayerCommunityCentreNeed>();
         }
 
+        if (_data.trashCanChildIndices == null)
+        {
+            _data.trashCanChildIndices = new List<int>();
+        }
+
         HashSet<int> communityCentreNeedItemIds = new HashSet<int>();
         for (int i = _data.communityCentreNeeds.Count - 1; i >= 0; i--)
         {
@@ -1887,6 +1951,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             communityCentreNeedMonth = source.communityCentreNeedMonth,
             communityCentreNeeds = CreateCommunityCentreNeedCopies(source.communityCentreNeeds),
             communityCentreAllNeedsBonusGranted = source.communityCentreAllNeedsBonusGranted,
+            trashCanRefreshAge = source.trashCanRefreshAge,
+            trashCanRefreshMonth = source.trashCanRefreshMonth,
+            trashCanChildIndices = source.trashCanChildIndices == null
+                ? new List<int>()
+                : new List<int>(source.trashCanChildIndices),
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,

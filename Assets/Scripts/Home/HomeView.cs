@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public sealed class HomeFurnitureBinding
@@ -89,6 +90,35 @@ public class HomeView : UIBasePanel
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.HomeDetailView);
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.HomeSatisfactionView));
+    }
+
+    public bool TryGetHomeDetailButton(out Button detailButton)
+    {
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            if (button == null || !button.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            for (int eventIndex = 0; eventIndex < button.onClick.GetPersistentEventCount(); eventIndex++)
+            {
+                if (button.onClick.GetPersistentTarget(eventIndex) == this &&
+                    button.onClick.GetPersistentMethodName(eventIndex) ==
+                    nameof(OpenHomeDetailView))
+                {
+                    detailButton = button;
+                    return true;
+                }
+            }
+        }
+
+        detailButton = null;
+        Debug.LogError("HomeView 未找到用于打开满意度面板的按钮。", this);
+        return false;
     }
 
     public override string GetPanelName()

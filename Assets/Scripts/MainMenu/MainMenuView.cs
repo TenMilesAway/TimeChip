@@ -705,6 +705,19 @@ public class MainMenuView : UIBasePanel
         return false;
     }
 
+    public bool TryGetHomeButton(out Button homeButton)
+    {
+        if (_homeButton != null && _homeButton.gameObject.activeInHierarchy)
+        {
+            homeButton = _homeButton;
+            return true;
+        }
+
+        homeButton = null;
+        Debug.LogError("MainMenuView 未绑定小屋按钮。", this);
+        return false;
+    }
+
     public override string GetPanelName()
     {
         return GlobalDefine.MainMenuView;

@@ -3,66 +3,91 @@
     "id": 1000,
     "missionId": 1000,
     "step": 1,
-    "target": "WorkCenter"
+    "target": "WorkCenter",
+    "content": "点击零工中心，开始打零工"
   },
   {
     "id": 1001,
     "missionId": 1000,
     "step": 2,
-    "target": "FirstWorkItem"
+    "target": "FirstWorkItem",
+    "content": "接取零工"
   },
   {
     "id": 1002,
     "missionId": 1000,
     "step": 3,
-    "target": "MissionButton"
+    "target": "MissionButton",
+    "content": "点击任务按钮"
   },
   {
     "id": 1003,
     "missionId": 1000,
     "step": 4,
-    "target": "FirstMissionReward"
+    "target": "FirstMissionReward",
+    "content": "领取任务奖励，别忘了后续任务也来这里领奖噢~"
   },
   {
     "id": 1004,
     "missionId": 1001,
     "step": 1,
-    "target": "LotteryButton"
+    "target": "LotteryButton",
+    "content": "点击抽奖按钮"
   },
   {
     "id": 1005,
     "missionId": 1001,
     "step": 2,
-    "target": "SingleLotteryButton"
+    "target": "SingleLotteryButton",
+    "content": "点击抽取一次"
   },
   {
     "id": 1006,
     "missionId": 1002,
     "step": 1,
-    "target": "CommunityButton"
+    "target": "CommunityButton",
+    "content": "点击社区按钮"
   },
   {
     "id": 1007,
     "missionId": 1002,
     "step": 2,
-    "target": "HomeStoreButton"
+    "target": "HomeStoreButton",
+    "content": "点击家具店"
   },
   {
     "id": 1008,
     "missionId": 1002,
     "step": 3,
-    "target": "SixthHomeStoreTag"
+    "target": "SixthHomeStoreTag",
+    "content": "选择客厅类"
   },
   {
     "id": 1009,
     "missionId": 1002,
     "step": 4,
-    "target": "ThirdHomeStoreItem"
+    "target": "ThirdHomeStoreItem",
+    "content": "点击三人沙发"
   },
   {
     "id": 1010,
     "missionId": 1002,
     "step": 5,
-    "target": "HomePurchaseButton"
+    "target": "HomePurchaseButton",
+    "content": "点击购买按钮"
+  },
+  {
+    "id": 1011,
+    "missionId": 1003,
+    "step": 1,
+    "target": "HomeButton",
+    "content": "点击小屋按钮"
+  },
+  {
+    "id": 1012,
+    "missionId": 1003,
+    "step": 2,
+    "target": "HomeSatisfactionDetailButton",
+    "content": "点击满意度面板"
   }
 ]

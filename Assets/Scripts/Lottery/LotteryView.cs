@@ -446,6 +446,18 @@ public class LotteryView : UIBasePanel
         }
     }
 
+    public static void GrantAndPresentReward(CommonRewardItemData reward)
+    {
+        if (reward == null)
+        {
+            Debug.LogError("无法发放空的抽奖奖励。");
+            return;
+        }
+
+        ApplyReward(reward);
+        PresentRewards(new List<CommonRewardItemData> { reward });
+    }
+
     /// <summary>
     /// 将玩家当前持有的时间币数量显示在抽奖界面
     /// </summary>
@@ -847,7 +859,7 @@ public class LotteryView : UIBasePanel
             _cardButton.interactable = HasUnopenedCardLotteryItem();
         }
 
-    private bool TryDrawReward(int lotteryPoolId, out CommonRewardItemData reward)
+    public static bool TryDrawReward(int lotteryPoolId, out CommonRewardItemData reward)
     {
         reward = null;
 
@@ -1093,7 +1105,7 @@ public class LotteryView : UIBasePanel
         return rewards.Count > 0;
     }
 
-    private List<LotteryReward> ParseRewards(string rewardConfig)
+    private static List<LotteryReward> ParseRewards(string rewardConfig)
     {
         List<LotteryReward> rewards = new List<LotteryReward>();
         string[] rewardEntries = rewardConfig.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);

@@ -13,11 +13,15 @@ public sealed class GuideMask : MonoBehaviour
 
     private RectTransform maskRectTransform;
     private RectTransform targetRectTransform;
+    private Text instructionText;
     private Button targetButton;
     private Action onCompleted;
     private bool isClosed;
 
-    public static GuideMask Show(RectTransform target, Action onCompleted = null)
+    public static GuideMask Show(
+        RectTransform target,
+        string instruction,
+        Action onCompleted = null)
     {
         Canvas canvas = target == null ? null : target.GetComponentInParent<Canvas>();
         if (canvas == null)
@@ -40,24 +44,29 @@ public sealed class GuideMask : MonoBehaviour
         maskCanvas.sortingOrder = SystemSortingOrder;
 
         GuideMask guideMask = maskObject.GetComponent<GuideMask>();
-        guideMask.Initialize(target, onCompleted);
+        guideMask.Initialize(target, instruction, onCompleted);
         return guideMask;
     }
 
-    public static GuideMask Show(Button targetButton, Action onCompleted)
+    public static GuideMask Show(
+        Button targetButton,
+        string instruction,
+        Action onCompleted)
     {
         return Show(
             targetButton == null ? null : targetButton.transform as RectTransform,
             targetButton,
+            instruction,
             onCompleted);
     }
 
     public static GuideMask Show(
         RectTransform target,
         Button completionButton,
+        string instruction,
         Action onCompleted)
     {
-        GuideMask guideMask = Show(target, onCompleted);
+        GuideMask guideMask = Show(target, instruction, onCompleted);
         if (guideMask == null)
         {
             return null;
@@ -75,7 +84,7 @@ public sealed class GuideMask : MonoBehaviour
         return guideMask;
     }
 
-    private void Initialize(RectTransform target, Action completed)
+    private void Initialize(RectTransform target, string instruction, Action completed)
     {
         targetRectTransform = target;
         onCompleted = completed;
@@ -87,6 +96,7 @@ public sealed class GuideMask : MonoBehaviour
             blockers.Add(CreateBlocker());
         }
 
+        instructionText = CreateInstructionText(instruction);
         UpdateBlockers();
     }
 
@@ -112,6 +122,51 @@ public sealed class GuideMask : MonoBehaviour
         return blocker;
     }
 
+    private Text CreateInstructionText(string instruction)
+    {
+        if (string.IsNullOrWhiteSpace(instruction))
+        {
+            return null;
+        }
+
+        GameObject instructionObject = new GameObject(
+            "Guide Instruction",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Text));
+        instructionObject.transform.SetParent(transform, false);
+
+        Text text = instructionObject.GetComponent<Text>();
+        text.font = GetGuideFont();
+        text.fontSize = 32;
+        text.fontStyle = FontStyle.Normal;
+        text.color = Color.white;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.raycastTarget = false;
+        text.text = instruction;
+        return text;
+    }
+
+    private Font GetGuideFont()
+    {
+        Text targetText = targetRectTransform.GetComponentInChildren<Text>(true);
+        if (targetText != null && targetText.font != null)
+        {
+            return targetText.font;
+        }
+
+        Text canvasText = targetRectTransform.GetComponentInParent<Canvas>()
+            .GetComponentInChildren<Text>(true);
+        if (canvasText != null && canvasText.font != null)
+        {
+            return canvasText.font;
+        }
+
+        return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+    }
+
     private void UpdateBlockers()
     {
         Bounds targetBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(
@@ -131,6 +186,59 @@ public sealed class GuideMask : MonoBehaviour
         SetBlocker(
             blockers[3],
             new Rect(targetBounds.min.x, maskRect.yMin, targetBounds.size.x, targetBounds.min.y - maskRect.yMin));
+
+        UpdateInstructionPosition(targetBounds, maskRect);
+    }
+
+    private void UpdateInstructionPosition(Bounds targetBounds, Rect maskRect)
+    {
+        if (instructionText == null)
+        {
+            return;
+        }
+
+        const float InstructionHeight = 42f;
+        const float InstructionMargin = 12f;
+        RectTransform instructionRectTransform = instructionText.rectTransform;
+        float maxWidth = Mathf.Max(0f, maskRect.width - InstructionMargin * 2f);
+        float instructionWidth = Mathf.Min(
+            Mathf.Max(targetBounds.size.x, instructionText.preferredWidth + 24f),
+            maxWidth);
+        float minX = maskRect.xMin + InstructionMargin + instructionWidth * 0.5f;
+        float maxX = maskRect.xMax - InstructionMargin - instructionWidth * 0.5f;
+        float xPosition = Mathf.Clamp(targetBounds.center.x, minX, maxX);
+        float minY = maskRect.yMin + InstructionMargin;
+        float maxY = maskRect.yMax - InstructionMargin;
+        bool placeBelow = targetBounds.max.y + InstructionMargin + InstructionHeight > maxY;
+
+        if (placeBelow &&
+            targetBounds.min.y - InstructionMargin - InstructionHeight < minY)
+        {
+            placeBelow = false;
+        }
+
+        instructionRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        instructionRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        instructionRectTransform.sizeDelta = new Vector2(instructionWidth, InstructionHeight);
+        if (placeBelow)
+        {
+            instructionRectTransform.pivot = new Vector2(0.5f, 1f);
+            instructionRectTransform.anchoredPosition = new Vector2(
+                xPosition,
+                Mathf.Clamp(
+                    targetBounds.min.y - InstructionMargin,
+                    minY + InstructionHeight,
+                    maxY));
+            return;
+        }
+
+        instructionRectTransform.pivot = new Vector2(0.5f, 0f);
+        instructionRectTransform.anchoredPosition = new Vector2(
+            xPosition,
+            Mathf.Clamp(
+                targetBounds.max.y + InstructionMargin,
+                minY,
+                maxY - InstructionHeight));
     }
 
     private static void SetBlocker(Image blocker, Rect rect)

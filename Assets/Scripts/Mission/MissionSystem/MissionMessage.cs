@@ -33,4 +33,5 @@ public enum MissionEventType
     Work,
     NormalLottery,
     HomePurchase,
+    HomeSatisfactionView,
 }

@@ -56,6 +56,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireHomePurchase(missionConfig.Icon, target);
         }
+        else if (missionConfig.Message == "HomeSatisfactionView")
+        {
+            missionRequire = new MissionRequireHomeSatisfactionView(target);
+        }
         else
         {
             Debug.LogWarning("[任务系统] 不支持的任务消息类型: " + missionConfig.Message);
