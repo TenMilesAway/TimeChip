@@ -499,11 +499,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isBlockingWindow: 1
-  _btnWork: {fileID: 0}
-  _btnHomeStore: {fileID: 0}
+  _btnWork: {fileID: 7881164513933189371}
+  _btnHomeStore: {fileID: 6502808194880385213}
   _btnConvenienceStore: {fileID: 3025033739506808880}
-  _btnCilinic: {fileID: 0}
-  _btnCommunityCentre: {fileID: 0}
+  _btnCilinic: {fileID: 12699611634720750}
+  _btnCommunityCentre: {fileID: 7661431233258023411}
   _btnSubway: {fileID: 3010212295998737396}
   _goTrashCans:
   - {fileID: 882715165700397692}

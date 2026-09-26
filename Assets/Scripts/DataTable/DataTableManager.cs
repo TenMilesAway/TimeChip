@@ -29,6 +29,7 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "fishStore",
         "guide",
         "homeSatisfactionBuff",
+        "function",
     };
 
     #region Getter

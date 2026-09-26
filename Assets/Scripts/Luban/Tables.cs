@@ -73,6 +73,10 @@ public partial class Tables
     /// 小屋满意度档位 BUFF 配置
     /// </summary>
     public HomeSatisfactionBuffTable HomeSatisfactionBuffTable {get; }
+    /// <summary>
+    /// 功能解锁配置
+    /// </summary>
+    public FunctionTable FunctionTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -92,6 +96,7 @@ public partial class Tables
         FishStoreTable = new FishStoreTable(loader("fishStore"));
         GuideTable = new GuideTable(loader("guide"));
         HomeSatisfactionBuffTable = new HomeSatisfactionBuffTable(loader("homeSatisfactionBuff"));
+        FunctionTable = new FunctionTable(loader("function"));
         ResolveRef();
     }
     
@@ -112,6 +117,7 @@ public partial class Tables
         FishStoreTable.ResolveRef(this);
         GuideTable.ResolveRef(this);
         HomeSatisfactionBuffTable.ResolveRef(this);
+        FunctionTable.ResolveRef(this);
     }
 }
 

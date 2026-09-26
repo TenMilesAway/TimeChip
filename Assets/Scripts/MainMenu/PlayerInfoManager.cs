@@ -690,6 +690,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
+    /// <summary>判断指定任务是否已经完成。</summary>
+    public bool HasCompletedMission(int missionId)
+    {
+        return missionId > 0 &&
+            _data != null &&
+            _data.completedMissionIds != null &&
+            _data.completedMissionIds.Contains(missionId.ToString());
+    }
+
     /// <summary>获取激活 BUFF 的独立副本。</summary>
     public List<ActiveBuffData> GetActiveBuffs()
     {

@@ -473,6 +473,17 @@
     "useEffect": ""
   },
   {
+    "id": 4028,
+    "name": "地铁卡",
+    "level": 3,
+    "category": 4,
+    "desc": "有了这张卡，就可以去你想去的地方",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[time_chip_metro_card]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": ""
+  },
+  {
     "id": 5000,
     "name": "野生狗奶",
     "level": 3,

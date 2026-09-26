@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ConvenienceStore",
+    "name": "便利店",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "TrashCan",
+    "name": "垃圾桶",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "HomeStore",
+    "name": "家具店",
+    "unlockMissionId": 1001,
+    "unlockItemId": 0
+  },
+  {
+    "id": "Clinic",
+    "name": "医务室",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "CommunityCentre",
+    "name": "社区中心",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "Subway",
+    "name": "地铁站",
+    "unlockMissionId": 0,
+    "unlockItemId": 4028
+  }
+]

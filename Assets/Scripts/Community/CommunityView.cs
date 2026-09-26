@@ -10,6 +10,12 @@ public class CommunityView : UIBasePanel
     private const int MinimumTrashCanHealthCost = 3;
     private const int MaximumTrashCanHealthCost = 5;
     private static readonly int[] TrashCanLotteryPoolIds = { 5, 6, 7 };
+    private const string HomeStoreFunctionId = "HomeStore";
+    private const string ConvenienceStoreFunctionId = "ConvenienceStore";
+    private const string ClinicFunctionId = "Clinic";
+    private const string CommunityCentreFunctionId = "CommunityCentre";
+    private const string TrashCanFunctionId = "TrashCan";
+    private const string SubwayFunctionId = "Subway";
 
     [SerializeField] private Button _btnWork;             // 零工中心
     [SerializeField] private Button _btnHomeStore;        // 家具店
@@ -53,12 +59,15 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         playerInfoManager.TurnAdvanced -= RefreshTrashCanSpawns;
         playerInfoManager.TurnAdvanced += RefreshTrashCanSpawns;
-        RefreshTrashCanSpawns();
+        playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
+        playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
+        RefreshFunctionUnlocks(playerInfoManager);
     }
 
     protected override void HideHandle()
     {
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
     }
 
@@ -70,6 +79,7 @@ public class CommunityView : UIBasePanel
     protected override void OnDestroy()
     {
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
+        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
 
         if (_btnConvenienceStore != null)
         {
@@ -91,26 +101,51 @@ public class CommunityView : UIBasePanel
 
     public void OnClickHomeStore()
     {
+        if (!FunctionUnlockService.IsUnlocked(HomeStoreFunctionId))
+        {
+            return;
+        }
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.HomeStoreView);
     }
 
     public void OnClickConvenienceStore()
     {
+        if (!FunctionUnlockService.IsUnlocked(ConvenienceStoreFunctionId))
+        {
+            return;
+        }
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
     }
 
     public void OnClickClinic()
     {
+        if (!FunctionUnlockService.IsUnlocked(ClinicFunctionId))
+        {
+            return;
+        }
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.ClinicView);
     }
 
     public void OnClickCommunityCentre()
     {
+        if (!FunctionUnlockService.IsUnlocked(CommunityCentreFunctionId))
+        {
+            return;
+        }
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityCentreView);
     }
 
     public void OnClickSubway()
     {
+        if (!FunctionUnlockService.IsUnlocked(SubwayFunctionId))
+        {
+            return;
+        }
+
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.SubwayView);
     }
@@ -158,6 +193,12 @@ public class CommunityView : UIBasePanel
             return;
         }
 
+        if (!FunctionUnlockService.IsUnlocked(TrashCanFunctionId))
+        {
+            HideTrashCans();
+            return;
+        }
+
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (!playerInfoManager.TryGetCurrentTurnTrashCanChildIndices(
                 _goTrashCans.Length,
@@ -170,6 +211,32 @@ public class CommunityView : UIBasePanel
         for (int pointIndex = 0; pointIndex < _goTrashCans.Length; pointIndex++)
         {
             SetTrashCanPointVisibility(_goTrashCans[pointIndex], childIndices[pointIndex]);
+        }
+    }
+
+    private void RefreshFunctionUnlocks(PlayerInfoManager playerInfoManager)
+    {
+        SetFunctionButtonVisibility(_btnHomeStore, HomeStoreFunctionId);
+        SetFunctionButtonVisibility(_btnConvenienceStore, ConvenienceStoreFunctionId);
+        SetFunctionButtonVisibility(_btnCilinic, ClinicFunctionId);
+        SetFunctionButtonVisibility(_btnCommunityCentre, CommunityCentreFunctionId);
+        SetFunctionButtonVisibility(_btnSubway, SubwayFunctionId);
+        RefreshTrashCanSpawns();
+    }
+
+    private static void SetFunctionButtonVisibility(Button button, string functionId)
+    {
+        if (button != null)
+        {
+            button.gameObject.SetActive(FunctionUnlockService.IsUnlocked(functionId));
+        }
+    }
+
+    private void HideTrashCans()
+    {
+        for (int pointIndex = 0; pointIndex < _goTrashCans.Length; pointIndex++)
+        {
+            SetTrashCanPointVisibility(_goTrashCans[pointIndex], -1);
         }
     }
 
@@ -202,6 +269,11 @@ public class CommunityView : UIBasePanel
 
     private void TrySearchTrashCan(int pointIndex, int childIndex, GameObject trashCan)
     {
+        if (!FunctionUnlockService.IsUnlocked(TrashCanFunctionId))
+        {
+            return;
+        }
+
         int healthCost = UnityEngine.Random.Range(
             MinimumTrashCanHealthCost,
             MaximumTrashCanHealthCost + 1);
