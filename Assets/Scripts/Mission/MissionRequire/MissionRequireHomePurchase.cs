@@ -3,12 +3,17 @@ using UnityEngine;
 
 public class MissionRequireHomePurchase : MissionRequire<MissionMessage>
 {
-    private readonly int _homeId;
+    private readonly int? _homeId;
     private readonly int _targetCount;
 
     public MissionRequireHomePurchase(int homeId, int targetCount)
     {
         _homeId = homeId;
+        _targetCount = targetCount;
+    }
+
+    public MissionRequireHomePurchase(int targetCount)
+    {
         _targetCount = targetCount;
     }
 
@@ -39,8 +44,12 @@ public class MissionRequireHomePurchase : MissionRequire<MissionMessage>
 
     public override bool CheckMessage(MissionMessage message)
     {
-        return message.type == MissionEventType.HomePurchase &&
-            int.TryParse(message.args, out int homeId) &&
-            homeId == _homeId;
+        if (message.type != MissionEventType.HomePurchase)
+        {
+            return false;
+        }
+
+        return !_homeId.HasValue ||
+            (int.TryParse(message.args, out int homeId) && homeId == _homeId.Value);
     }
 }

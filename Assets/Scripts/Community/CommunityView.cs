@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,14 @@ public class CommunityView : UIBasePanel
     private const float TrashCanSpawnChance = 0.1f;
     private const int MinimumTrashCanHealthCost = 3;
     private const int MaximumTrashCanHealthCost = 5;
+    private const float TrashCanReminderInterval = 5f;
+    private const float TrashCanReminderPeakScaleMultiplier = 1.15f;
+    private const float TrashCanReminderExpandDuration = 0.15f;
+    private const float TrashCanReminderRestoreDuration = 0.2f;
     private static readonly int[] TrashCanLotteryPoolIds = { 5, 6, 7 };
+    private readonly Dictionary<GameObject, Vector3> _trashCanOriginalScales = new Dictionary<GameObject, Vector3>();
+    private readonly Dictionary<GameObject, Tween> _trashCanReminderTweens = new Dictionary<GameObject, Tween>();
+    private Coroutine _trashCanReminderCoroutine;
     private const string HomeStoreFunctionId = "HomeStore";
     private const string ConvenienceStoreFunctionId = "ConvenienceStore";
     private const string ClinicFunctionId = "Clinic";
@@ -62,10 +70,12 @@ public class CommunityView : UIBasePanel
         playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
         playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
         RefreshFunctionUnlocks(playerInfoManager);
+        StartTrashCanReminder();
     }
 
     protected override void HideHandle()
     {
+        StopTrashCanReminder();
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
@@ -78,6 +88,7 @@ public class CommunityView : UIBasePanel
 
     protected override void OnDestroy()
     {
+        StopTrashCanReminder();
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
 
@@ -181,6 +192,7 @@ public class CommunityView : UIBasePanel
                 int capturedChildIndex = childIndex;
                 button.onClick.AddListener(() =>
                     TrySearchTrashCan(capturedPointIndex, capturedChildIndex, trashCan));
+                _trashCanOriginalScales[trashCan] = trashCan.transform.localScale;
                 trashCan.SetActive(false);
             }
         }
@@ -254,7 +266,7 @@ public class CommunityView : UIBasePanel
         return childIndices;
     }
 
-    private static void SetTrashCanPointVisibility(GameObject point, int visibleChildIndex)
+    private void SetTrashCanPointVisibility(GameObject point, int visibleChildIndex)
     {
         if (point == null)
         {
@@ -263,7 +275,101 @@ public class CommunityView : UIBasePanel
 
         for (int childIndex = 0; childIndex < point.transform.childCount; childIndex++)
         {
-            point.transform.GetChild(childIndex).gameObject.SetActive(childIndex == visibleChildIndex);
+            GameObject trashCan = point.transform.GetChild(childIndex).gameObject;
+            StopTrashCanReminderTween(trashCan);
+            trashCan.SetActive(childIndex == visibleChildIndex);
+        }
+    }
+
+    private void StartTrashCanReminder()
+    {
+        StopTrashCanReminder();
+        _trashCanReminderCoroutine = StartCoroutine(PlayTrashCanReminderPeriodically());
+    }
+
+    private void StopTrashCanReminder()
+    {
+        if (_trashCanReminderCoroutine != null)
+        {
+            StopCoroutine(_trashCanReminderCoroutine);
+            _trashCanReminderCoroutine = null;
+        }
+
+        foreach (GameObject trashCan in new List<GameObject>(_trashCanReminderTweens.Keys))
+        {
+            StopTrashCanReminderTween(trashCan);
+        }
+    }
+
+    private IEnumerator PlayTrashCanReminderPeriodically()
+    {
+        WaitForSeconds wait = new WaitForSeconds(TrashCanReminderInterval);
+        while (true)
+        {
+            yield return wait;
+            PlayTrashCanReminder();
+        }
+    }
+
+    private void PlayTrashCanReminder()
+    {
+        if (_goTrashCans == null)
+        {
+            return;
+        }
+
+        for (int pointIndex = 0; pointIndex < _goTrashCans.Length; pointIndex++)
+        {
+            GameObject point = _goTrashCans[pointIndex];
+            if (point == null)
+            {
+                continue;
+            }
+
+            for (int childIndex = 0; childIndex < point.transform.childCount; childIndex++)
+            {
+                GameObject trashCan = point.transform.GetChild(childIndex).gameObject;
+                if (trashCan.activeInHierarchy)
+                {
+                    PlayTrashCanReminderTween(trashCan);
+                }
+            }
+        }
+    }
+
+    private void PlayTrashCanReminderTween(GameObject trashCan)
+    {
+        StopTrashCanReminderTween(trashCan);
+
+        if (!_trashCanOriginalScales.TryGetValue(trashCan, out Vector3 originalScale))
+        {
+            originalScale = trashCan.transform.localScale;
+            _trashCanOriginalScales[trashCan] = originalScale;
+        }
+
+        _trashCanReminderTweens[trashCan] = DOTween.Sequence()
+            .Append(trashCan.transform.DOScale(
+                originalScale * TrashCanReminderPeakScaleMultiplier,
+                TrashCanReminderExpandDuration))
+            .Append(trashCan.transform.DOScale(originalScale, TrashCanReminderRestoreDuration));
+    }
+
+    private void StopTrashCanReminderTween(GameObject trashCan)
+    {
+        if (trashCan == null)
+        {
+            return;
+        }
+
+        if (_trashCanReminderTweens.TryGetValue(trashCan, out Tween tween))
+        {
+            tween.Kill();
+            _trashCanReminderTweens.Remove(trashCan);
+        }
+
+        if (_trashCanOriginalScales.TryGetValue(trashCan, out Vector3 originalScale))
+        {
+            trashCan.transform.localScale = originalScale;
         }
     }
 
@@ -299,6 +405,7 @@ public class CommunityView : UIBasePanel
         }
 
         playerInfoManager.ChangeHealth(-healthCost);
+        CommonTipView.Show($"翻找垃圾桶消耗 {healthCost} 点健康值");
         trashCan.SetActive(false);
         LotteryView.GrantAndPresentReward(reward);
     }

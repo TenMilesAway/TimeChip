@@ -60,6 +60,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireHomePurchase(missionConfig.Icon, target);
         }
+        else if (missionConfig.Message == "HomePurchaseAny")
+        {
+            missionRequire = new MissionRequireHomePurchase(target);
+        }
         else if (missionConfig.Message == "HomeSatisfactionView")
         {
             missionRequire = new MissionRequireHomeSatisfactionView(target);

@@ -312,6 +312,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
+    private const int MonthlyTimeCoinReward = 1;
     private const int MinCommunityCentreLevel = 1;
     private const int MaxCommunityCentreLevel = 6;
     private const int CureService1PriceIncrease = 30;
@@ -1634,7 +1635,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return true;
     }
 
-    /// <summary>推进至下一回合, 重置本回合状态并更新月份; 跨年时年龄增加一岁</summary>
+    /// <summary>推进至下一回合, 重置本回合状态、更新月份并发放时间币; 跨年时年龄增加一岁</summary>
     public void AdvanceTurn()
     {
         TurnEnding?.Invoke();
@@ -1649,6 +1650,22 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.currentMonth = 1;
             _data.currentAge++;
         }
+
+        _data.timeCoins = (int)Math.Min(
+            int.MaxValue,
+            (long)_data.timeCoins + MonthlyTimeCoinReward);
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+        {
+            data = new List<CommonRewardItemData>
+            {
+                new CommonRewardItemData
+                {
+                    itemId = BasePropertyId.TimeCoin,
+                    itemCount = MonthlyTimeCoinReward
+                }
+            },
+            rewardsAlreadyGranted = true
+        });
 
         cfg.Tables tables = DataTableMananger.GetInstance().Tables;
         if (tables != null)
