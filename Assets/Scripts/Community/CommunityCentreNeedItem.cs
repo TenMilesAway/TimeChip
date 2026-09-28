@@ -8,6 +8,7 @@ public class CommunityCentreNeedItem : MonoBehaviour
 
     [SerializeField] private Text _txtName;     // 物品名称
     [SerializeField] private Text _txtNum;      // 数量, 例: 10 / <color=white>3</color>
+    [SerializeField] private Text _txtType;     // 物品类型
     [SerializeField] private Image _imgIcon;    // 物品图标
     [SerializeField] private Button _btnSubmit; // 提交按钮
 
@@ -50,6 +51,7 @@ public class CommunityCentreNeedItem : MonoBehaviour
         gameObject.SetActive(true);
         _txtName.text = itemConfig.Name;
         _txtNum.text = $"拥有 {ownedCount}/1";
+        _txtType.text = itemConfig.Type;
         _goUnSubmit.SetActive(!submitted);
         _goSubmit.SetActive(submitted);
         _btnSubmit.interactable = !submitted;

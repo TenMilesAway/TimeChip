@@ -8,6 +8,7 @@ public class FishStoreItem : MonoBehaviour
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtPrice;
     [SerializeField] private Text _txtCharge;
+    [SerializeField] private Text _txtType;
     [SerializeField] private Button _btnCharge;
 
     private int _presentationVersion;
@@ -47,6 +48,7 @@ public class FishStoreItem : MonoBehaviour
         _txtPrice.text = BuffSystem.GetInstance()
             .CalculateShopPrice(storeConfig.Price)
             .ToString();
+        _txtType.text = itemConfig.Type;
         bool isSoldOut = remainingCount <= 0;
         _txtCharge.text = isSoldOut ? "购买上限" : "购买";
         _btnCharge.interactable = !isSoldOut;

@@ -39,7 +39,7 @@ public sealed class GMPanel : MonoBehaviour
 
     private void DrawWindow(int windowId)
     {
-        GUI.Label(new Rect(16f, 34f, 92f, 24f), "物品 ID");
+        GUI.Label(new Rect(16f, 34f, 92f, 24f), "物品 / 属性 ID");
         _itemIdInput = GUI.TextField(
             new Rect(110f, 34f, 200f, 24f),
             _itemIdInput);
@@ -49,7 +49,7 @@ public sealed class GMPanel : MonoBehaviour
             new Rect(110f, 68f, 200f, 24f),
             _countInput);
 
-        if (GUI.Button(new Rect(16f, 104f, 294f, 30f), "发放物品"))
+        if (GUI.Button(new Rect(16f, 104f, 294f, 30f), "发放"))
         {
             TryGrantItem();
         }
@@ -82,13 +82,48 @@ public sealed class GMPanel : MonoBehaviour
         }
 
         cfg.Item itemConfig = tables.ItemTable.GetOrDefault(itemId);
-        if (itemConfig == null)
+        if (itemConfig != null)
         {
-            _message = $"未找到物品 ID：{itemId}。";
+            PlayerInfoManager.GetInstance().AddItem(itemId, count);
+            _message = $"已获得 {itemConfig.Name} × {count}。";
             return;
         }
 
-        PlayerInfoManager.GetInstance().AddItem(itemId, count);
-        _message = $"已获得 {itemConfig.Name} × {count}。";
+        cfg.Base baseConfig = tables.BaseTable.GetOrDefault(itemId);
+        if (baseConfig == null || !TryGrantBaseProperty(itemId, count))
+        {
+            _message = $"未找到可发放的物品或属性 ID：{itemId}。";
+            return;
+        }
+
+        _message = $"已获得 {baseConfig.Name} × {count}。";
+    }
+
+    private static bool TryGrantBaseProperty(int basePropertyId, int count)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        switch (basePropertyId)
+        {
+            case BasePropertyId.SimulationCoin:
+                playerInfoManager.AddSimulationCoins(count);
+                return true;
+            case BasePropertyId.TimeCoin:
+                playerInfoManager.AddTimeCoins(count);
+                return true;
+            case BasePropertyId.Health:
+                playerInfoManager.ChangeHealth(count);
+                return true;
+            case BasePropertyId.WheelCoin:
+                playerInfoManager.AddWheelCoins(count);
+                return true;
+            case BasePropertyId.BoxCoin:
+                playerInfoManager.AddBoxCoins(count);
+                return true;
+            case BasePropertyId.CardCoin:
+                playerInfoManager.AddCardCoins(count);
+                return true;
+            default:
+                return false;
+        }
     }
 }

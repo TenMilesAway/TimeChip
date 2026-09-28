@@ -12,7 +12,9 @@ public class CommonItemDetailView : UIBasePanel
     [SerializeField] private Text _txtName;      // 物品名称
     [SerializeField] private Text _txtLevel;     // 物品品质
     [SerializeField] private Text _txtDetail;    // 物品描述
+    [SerializeField] private Text _txtType;      // 物品类型
     [SerializeField] private Image _imgIcon;     // 物品图标
+    [SerializeField] private GameObject _goType;
 
     private int _iconRequestVersion;
 
@@ -22,21 +24,28 @@ public class CommonItemDetailView : UIBasePanel
 
         if (!(param?.data is int itemId))
         {
-            Debug.LogError("CommonItemDetailView 需要通过 OpenUIParam.data 传入道具 ID。", this);
+            Debug.LogError("CommonItemDetailView 需要通过 OpenUIParam.data 传入道具 ID", this);
             ClearData();
             return;
         }
 
-        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
-            .GetOrDefault(itemId);
-        if (itemConfig == null)
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        cfg.Item itemConfig = tables.ItemTable.GetOrDefault(itemId);
+        if (itemConfig != null)
+        {
+            SetData(itemConfig);
+            return;
+        }
+
+        cfg.Base baseConfig = tables.BaseTable.GetOrDefault(itemId);
+        if (baseConfig == null)
         {
             Debug.LogError($"道具详情配置不存在: [{itemId}]", this);
             ClearData();
             return;
         }
 
-        SetData(itemConfig);
+        SetData(baseConfig);
     }
 
     public override string GetPanelName()
@@ -48,18 +57,44 @@ public class CommonItemDetailView : UIBasePanel
     {
         _txtName.text = itemConfig.Name;
         _txtDetail.text = itemConfig.Desc;
+        _txtType.text = itemConfig.Type;
+        _goType.SetActive(true);
         SetLevel(itemConfig.Level);
 
         int requestVersion = ++_iconRequestVersion;
-        SetIconAsync(itemConfig, requestVersion);
+        SetIconAsync(
+            itemConfig.Id,
+            itemConfig.Icon,
+            itemConfig.RewardScale,
+            requestVersion);
     }
 
-    private async void SetIconAsync(cfg.Item itemConfig, int requestVersion)
+    private void SetData(cfg.Base baseConfig)
+    {
+        _txtName.text = baseConfig.Name;
+        _txtDetail.text = baseConfig.Desc;
+        _txtType.text = string.Empty;
+        _goType.SetActive(false);
+        SetLevel(1);
+
+        int requestVersion = ++_iconRequestVersion;
+        SetIconAsync(
+            baseConfig.Id,
+            baseConfig.Icon,
+            baseConfig.RewardScale,
+            requestVersion);
+    }
+
+    private async void SetIconAsync(
+        int itemId,
+        string iconPath,
+        int rewardScale,
+        int requestVersion)
     {
         _imgIcon.sprite = null;
 
         Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
-            itemConfig.Icon,
+            iconPath,
             GetInstanceID().ToString());
         if (requestVersion != _iconRequestVersion)
         {
@@ -68,14 +103,14 @@ public class CommonItemDetailView : UIBasePanel
 
         if (icon == null)
         {
-            Debug.LogError($"道具详情图标加载失败: [{itemConfig.Id}], [{itemConfig.Icon}]", this);
+            Debug.LogError($"道具详情图标加载失败: [{itemId}], [{iconPath}]", this);
             return;
         }
 
         _imgIcon.sprite = icon;
         _imgIcon.SetNativeSize();
         _imgIcon.rectTransform.localScale = Vector3.one *
-            (itemConfig.RewardScale / RewardScaleDivisor);
+            (rewardScale / RewardScaleDivisor);
     }
 
     private void SetLevel(int level)
@@ -116,5 +151,7 @@ public class CommonItemDetailView : UIBasePanel
         _txtName.text = string.Empty;
         _txtLevel.text = string.Empty;
         _txtDetail.text = string.Empty;
+        _txtType.text = string.Empty;
+        _goType.SetActive(false);
     }
 }

@@ -10,6 +10,7 @@ public class ConvenienceStoreItem : MonoBehaviour
     [SerializeField] private Text _txtTag;      // 商品标签
     [SerializeField] private Text _txtPrice;    // 商品价格
     [SerializeField] private Text _txtNum;      // 商品剩余数量：剩余   {0}/{1}
+    [SerializeField] private Text _txtType;     // 商品类型
     [SerializeField] private Button _btnCharge; // 购买按钮
     [SerializeField] private Image _imgIcon;    // 商品图标
 
@@ -54,6 +55,10 @@ public class ConvenienceStoreItem : MonoBehaviour
             .CalculateShopPrice(convenienceConfig.Price)
             .ToString();
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(convenienceConfig.ItemId);
+        _txtType.text = itemConfig == null ? string.Empty : itemConfig.Type;
+
         _imgIcon.sprite = null;
         LoadIconAsync(convenienceConfig.Id, iconPath, iconScale, scaleMultiplier, _presentationVersion);
     }
