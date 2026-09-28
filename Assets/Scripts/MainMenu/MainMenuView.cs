@@ -24,6 +24,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _homeButton;
     [SerializeField] private Button _inventoryButton;
     [SerializeField] private Button _settingButton;
+    [SerializeField] private Button _saveButton;
 
     [SerializeField] private Transform _buffParent;
     [SerializeField] private GameObject _goLoad;
@@ -65,6 +66,7 @@ public class MainMenuView : UIBasePanel
         _homeButton.onClick.AddListener(OpenHome);
         _inventoryButton.onClick.AddListener(OpenInventory);
         _settingButton.onClick.AddListener(OpenSetting);
+        _saveButton.onClick.AddListener(SaveGame);
         _btnShowMission.onClick.AddListener(ToggleMissions);
 
         _beginMoveAction = BeginMoveMissionPanel;
@@ -152,6 +154,11 @@ public class MainMenuView : UIBasePanel
             _settingButton.onClick.RemoveListener(OpenSetting);
         }
 
+        if (_saveButton != null)
+        {
+            _saveButton.onClick.RemoveListener(SaveGame);
+        }
+
         if (_btnShowMission != null)
         {
             _btnShowMission.onClick.RemoveListener(ToggleMissions);
@@ -220,6 +227,18 @@ public class MainMenuView : UIBasePanel
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
             param: new OpenUIParam { data = true });
+    }
+
+    private void SaveGame()
+    {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        if (Launcher.Instance == null || !Launcher.Instance.SaveCurrentGame())
+        {
+            Debug.LogError("当前没有可保存的游戏数据。", this);
+            return;
+        }
+
+        CommonTipView.Show("存档已保存");
     }
 
     /// <summary>

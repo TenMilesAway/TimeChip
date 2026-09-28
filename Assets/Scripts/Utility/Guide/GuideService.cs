@@ -30,7 +30,7 @@ public static class GuideService
         for (int i = 0; i < configuredGuides.Count; i++)
         {
             cfg.Guide guide = configuredGuides[i];
-            if (guide.MissionId == missionId && !IsCompleted(guide.Id))
+            if (guide.MissionId == missionId)
             {
                 guides.Add(guide);
             }
@@ -41,6 +41,13 @@ public static class GuideService
             int stepComparison = left.Step.CompareTo(right.Step);
             return stepComparison != 0 ? stepComparison : left.Id.CompareTo(right.Id);
         });
+
+        if (IsMissionCompleted(missionId, guides))
+        {
+            onCompleted?.Invoke();
+            return;
+        }
+
         RunNextGuide(guides, 0, onCompleted);
     }
 
@@ -51,6 +58,11 @@ public static class GuideService
     {
         if (index >= guides.Count)
         {
+            if (guides.Count > 0)
+            {
+                MarkMissionCompleted(guides[0].MissionId);
+            }
+
             onCompleted?.Invoke();
             return;
         }
@@ -58,9 +70,10 @@ public static class GuideService
         cfg.Guide guide = guides[index];
         StartGuide(guide, isCompleted =>
         {
-            if (isCompleted)
+            if (!isCompleted)
             {
-                MarkCompleted(guide.Id);
+                onCompleted?.Invoke();
+                return;
             }
 
             RunNextGuide(guides, index + 1, onCompleted);
@@ -153,11 +166,11 @@ public static class GuideService
         }
     }
 
-    private static void ShowMissionButtonGuide(string instruction, Action<bool> onCompleted)
+    private static async void ShowMissionButtonGuide(string instruction, Action<bool> onCompleted)
     {
         UIManager.GetInstance().ClosePanel(GlobalDefine.WorkView);
-        MainMenuView mainMenuView = UIManager.GetInstance()
-            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        MainMenuView mainMenuView = await WaitForOpeningPanelAsync<MainMenuView>(
+            GlobalDefine.MainMenuView);
         if (mainMenuView == null || !mainMenuView.TryGetMissionButton(out Button missionButton))
         {
             Debug.LogError("无法启动任务按钮引导。");
@@ -181,10 +194,10 @@ public static class GuideService
         ShowButtonGuide(claimButton, instruction, onCompleted);
     }
 
-    private static void ShowLotteryButtonGuide(string instruction, Action<bool> onCompleted)
+    private static async void ShowLotteryButtonGuide(string instruction, Action<bool> onCompleted)
     {
-        MainMenuView mainMenuView = UIManager.GetInstance()
-            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        MainMenuView mainMenuView = await WaitForOpeningPanelAsync<MainMenuView>(
+            GlobalDefine.MainMenuView);
         if (mainMenuView == null || !mainMenuView.TryGetLotteryButton(out Button lotteryButton))
         {
             Debug.LogError("无法启动抽奖入口引导。");
@@ -208,10 +221,10 @@ public static class GuideService
         ShowButtonGuide(lotteryButton, instruction, onCompleted);
     }
 
-    private static void ShowCommunityButtonGuide(string instruction, Action<bool> onCompleted)
+    private static async void ShowCommunityButtonGuide(string instruction, Action<bool> onCompleted)
     {
-        MainMenuView mainMenuView = UIManager.GetInstance()
-            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        MainMenuView mainMenuView = await WaitForOpeningPanelAsync<MainMenuView>(
+            GlobalDefine.MainMenuView);
         if (mainMenuView == null || !mainMenuView.TryGetCommunityButton(out Button communityButton))
         {
             Debug.LogError("无法启动社区按钮引导。");
@@ -304,10 +317,10 @@ public static class GuideService
         ShowButtonGuide(purchaseButton, instruction, onCompleted);
     }
 
-    private static void ShowHomeButtonGuide(string instruction, Action<bool> onCompleted)
+    private static async void ShowHomeButtonGuide(string instruction, Action<bool> onCompleted)
     {
-        MainMenuView mainMenuView = UIManager.GetInstance()
-            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        MainMenuView mainMenuView = await WaitForOpeningPanelAsync<MainMenuView>(
+            GlobalDefine.MainMenuView);
         if (mainMenuView == null || !mainMenuView.TryGetHomeButton(out Button homeButton))
         {
             Debug.LogError("无法启动小屋按钮引导。");
@@ -376,18 +389,38 @@ public static class GuideService
         return panel ?? await WaitForOpeningPanelAsync<T>(panelName);
     }
 
-    private static bool IsCompleted(int guideId)
+    private static bool IsMissionCompleted(int missionId, List<cfg.Guide> guides)
     {
-        return PlayerPrefs.GetInt(GetCompletionKey(guideId), 0) == 1;
+        if (PlayerPrefs.GetInt(GetMissionCompletionKey(missionId), 0) == 1)
+        {
+            return true;
+        }
+
+        if (guides.Count == 0 || !guides.TrueForAll(IsLegacyGuideCompleted))
+        {
+            return false;
+        }
+
+        MarkMissionCompleted(missionId);
+        return true;
     }
 
-    private static void MarkCompleted(int guideId)
+    private static bool IsLegacyGuideCompleted(cfg.Guide guide)
     {
-        PlayerPrefs.SetInt(GetCompletionKey(guideId), 1);
-        PlayerPrefs.Save();
+        return PlayerPrefs.GetInt(GetLegacyCompletionKey(guide.Id), 0) == 1;
     }
 
-    private static string GetCompletionKey(int guideId)
+    private static void MarkMissionCompleted(int missionId)
+    {
+        PlayerPrefs.SetInt(GetMissionCompletionKey(missionId), 1);
+    }
+
+    private static string GetMissionCompletionKey(int missionId)
+    {
+        return $"{CompletionKeyPrefix}Mission.{missionId}";
+    }
+
+    private static string GetLegacyCompletionKey(int guideId)
     {
         return CompletionKeyPrefix + guideId;
     }

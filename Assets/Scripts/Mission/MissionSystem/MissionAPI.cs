@@ -122,6 +122,7 @@ public static class MissionAPI
                 MissionManager
                     .GetMission(data.missionId)
                     .RestoreProgress(data.requirementProgress);
+                MissionDialogueService.TryPlayMissionGuides(missionConfig);
             }
         }
     }

@@ -606,6 +606,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>回合推进完成时触发, 其他系统可订阅此事件执行回合状态重置</summary>
     public event Action TurnAdvanced;
 
+    /// <summary>全部回合逻辑和状态通知完成后触发，用于保存最终状态。</summary>
+    public event Action TurnCompleted;
+
     /// <summary>当前回合结束、月份切换前触发，用于结算回合末效果。</summary>
     public event Action TurnEnding;
 
@@ -1675,6 +1678,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         TurnAdvanced?.Invoke();
         NotifyPlayerInfoChanged();
+        TurnCompleted?.Invoke();
     }
 
     /// <summary>当整数值发生变化时写入新值并通知订阅者</summary>

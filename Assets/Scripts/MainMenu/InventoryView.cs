@@ -22,11 +22,13 @@ public class InventoryView : UIBasePanel
     [SerializeField] private Text _txtNumPrefix;
     [SerializeField] private Text _currentPageText;
     [SerializeField] private Text _maxPageText;
+    [SerializeField] private Text _txtType;
     [SerializeField] private Button _btnUse;
     [SerializeField] private Button _previousPageButton;
     [SerializeField] private Button _nextPageButton;
 
     [SerializeField] private InventoryItem[] _inventoryItems;
+    [SerializeField] private GameObject _goType;
 
     private readonly List<InventoryEntry> _items = new List<InventoryEntry>();
 
@@ -221,6 +223,7 @@ public class InventoryView : UIBasePanel
             _inventoryItems[slotIndex].SetData(
                 icon,
                 entry.Amount,
+                entry.Item.Type,
                 entry.Item.RewardScale,
                 () => SelectItem(selectedItemIndex));
         }
@@ -246,6 +249,7 @@ public class InventoryView : UIBasePanel
         _txtDetail.text = entry.Item.Desc;
         _txtNum.text = entry.Amount.ToString();
         SetLevel(entry.Item.Level);
+        _txtType.text = entry.Item.Type;
         _txtName.gameObject.SetActive(true);
         _txtLevel.gameObject.SetActive(true);
         _txtDetail.gameObject.SetActive(true);
@@ -253,6 +257,7 @@ public class InventoryView : UIBasePanel
         _txtNumSplit.gameObject.SetActive(true);
         _txtNumPrefix.gameObject.SetActive(true);
         _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
+        _goType.SetActive(true);
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(true);
 
@@ -307,6 +312,7 @@ public class InventoryView : UIBasePanel
         _txtNumPrefix.gameObject.SetActive(false);
         _txtNum.gameObject.SetActive(false);
         _btnUse.gameObject.SetActive(false);
+        _goType.SetActive(false);
     }
 
     private void UseSelectedItem()

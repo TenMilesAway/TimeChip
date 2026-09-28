@@ -9,6 +9,8 @@ public class InventoryItem : MonoBehaviour
     [SerializeField] private Image _imgIcon;
     [SerializeField] private Image _imgNumBg;
     [SerializeField] private Text _txtNum;
+    [SerializeField] private Text _txtType;    // 物品类型
+    [SerializeField] private GameObject _goType;
 
     private Button _button;
 
@@ -22,12 +24,13 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    public void SetData(Sprite icon, int amount, int rewardScale, UnityAction clickHandler)
+    public void SetData(Sprite icon, int amount, string type, int rewardScale, UnityAction clickHandler)
     {
         bool hasItem = icon != null && amount > 0;
         _imgIcon.gameObject.SetActive(hasItem);
         _txtNum.gameObject.SetActive(hasItem);
         _imgNumBg.gameObject.SetActive(hasItem);
+        _goType.SetActive(hasItem);
         _button.interactable = hasItem;
         _button.onClick.RemoveAllListeners();
 
@@ -42,11 +45,12 @@ public class InventoryItem : MonoBehaviour
         _imgIcon.SetNativeSize();
         _imgIcon.rectTransform.localScale = Vector3.one * (rewardScale / RewardScaleDivisor);
         _txtNum.text = "×" + amount.ToString();
+        _txtType.text = type;
         _button.onClick.AddListener(clickHandler);
     }
 
     public void Clear()
     {
-        SetData(null, 0, 0, null);
+        SetData(null, 0, string.Empty, 0, null);
     }
 }

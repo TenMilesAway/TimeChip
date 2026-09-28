@@ -302,7 +302,6 @@ public class AudioComponent : BaseComponent
     {
         _isVibrationEnabled = enabled;
         PlayerPrefs.SetInt(_VibrationKey, enabled ? 1 : 0);
-        PlayerPrefs.Save();
     }
 
     public void Vibrate()

@@ -109,7 +109,7 @@ public class Launcher : SingletonMono<Launcher>
             _settingButton.onClick.RemoveListener(OpenSettingView);
         }
 
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
+        PlayerInfoManager.GetInstance().TurnCompleted -= SaveAfterTurnCompleted;
         MissionAPI.GameOverRequested -= ShowGameOverPanel;
         DestroyGmPanel();
     }
@@ -322,7 +322,14 @@ public class Launcher : SingletonMono<Launcher>
             tables.GrowTable.DataMap.Keys);
         BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
 
-        MissionAPI.Initialize(PlayerInfoManager.GetInstance(), _isNewGame);
+        bool isNewGame = _isNewGame;
+        MissionAPI.Initialize(PlayerInfoManager.GetInstance(), isNewGame);
+        if (isNewGame)
+        {
+            _gameSaveData.playerInfo = PlayerInfoManager.GetInstance().GetSnapshot();
+            SaveAllGameData();
+        }
+
         _isNewGame = false;
     }
 
@@ -473,24 +480,39 @@ public class Launcher : SingletonMono<Launcher>
     {
         if (_gameSaveData != null)
         {
-            _gameSaveData.playerInfo = PlayerInfoManager.GetInstance().GetSnapshot();
-            SaveGameData();
+            SaveCurrentGame();
         }
 
         ReturnToStartMenuInternal(deleteSave: false);
     }
 
     /// <summary>
-    /// 使用存档中的玩家数据初始化玩家数据管理器并启用自动保存
+    /// 保存当前游戏数据但不改变界面状态
+    /// </summary>
+    /// <returns>存在可保存的游戏数据时返回 true</returns>
+    public bool SaveCurrentGame()
+    {
+        if (_gameSaveData == null)
+        {
+            return false;
+        }
+
+        _gameSaveData.playerInfo = PlayerInfoManager.GetInstance().GetSnapshot();
+        SaveAllGameData();
+        return true;
+    }
+
+    /// <summary>
+    /// 使用存档中的玩家数据初始化玩家数据管理器并注册回合保存
     /// </summary>
     /// <param name="saveData">包含玩家数据的当前存档</param>
     /// <param name="isNewGame">是否由本次操作新建存档</param>
     private void InitializePlayerInfo(GameSaveData saveData, bool isNewGame)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        playerInfoManager.PlayerInfoChanged -= SaveCurrentPlayerInfo;
+        playerInfoManager.TurnCompleted -= SaveAfterTurnCompleted;
         playerInfoManager.Init(saveData.playerInfo);
-        playerInfoManager.PlayerInfoChanged += SaveCurrentPlayerInfo;
+        playerInfoManager.TurnCompleted += SaveAfterTurnCompleted;
         _isNewGame = isNewGame;
     }
 
@@ -523,12 +545,25 @@ public class Launcher : SingletonMono<Launcher>
     }
 
     /// <summary>
-    /// 将管理器中的最新玩家数据写入唯一存档
+    /// 推进至下一月后统一保存全部运行数据
     /// </summary>
-    /// <param name="playerInfoManager">触发数据变化的玩家数据管理器</param>
-    private void SaveCurrentPlayerInfo(PlayerInfoManager playerInfoManager)
+    private void SaveAfterTurnCompleted()
     {
-        _gameSaveData.playerInfo = playerInfoManager.GetSnapshot();
+        if (_gameSaveData == null)
+        {
+            return;
+        }
+
+        _gameSaveData.playerInfo = PlayerInfoManager.GetInstance().GetSnapshot();
+        SaveAllGameData();
+    }
+
+    /// <summary>
+    /// 保存玩家存档及独立的全局成长数据
+    /// </summary>
+    private void SaveAllGameData()
+    {
+        GlobalInfoManager.GetInstance().Save();
         SaveGameData();
     }
 
@@ -561,7 +596,7 @@ public class Launcher : SingletonMono<Launcher>
 
     private void ReturnToStartMenuInternal(bool deleteSave)
     {
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= SaveCurrentPlayerInfo;
+        PlayerInfoManager.GetInstance().TurnCompleted -= SaveAfterTurnCompleted;
 
         if (deleteSave)
         {

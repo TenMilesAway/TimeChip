@@ -78,6 +78,22 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         return CreateCopy(_data);
     }
 
+    /// <summary>
+    /// 将内存中的全局成长数据写入 PlayerPrefs，实际落盘由统一存档流程完成
+    /// </summary>
+    public void Save()
+    {
+        EnsureInitialized();
+
+        string existingJson = PlayerPrefs.GetString(SaveKey, string.Empty);
+        if (!string.IsNullOrEmpty(existingJson))
+        {
+            PlayerPrefs.SetString(BackupSaveKey, existingJson);
+        }
+
+        PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(_data));
+    }
+
     /// <summary>获取指定成长卡牌的独立副本；不存在时返回 null</summary>
     public GrowCardData GetGrowCard(int growId)
     {
@@ -111,7 +127,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
 
         EnsureInitialized();
         _data.memoryPoints = checked(_data.memoryPoints + amount);
-        SaveAndNotify();
+        NotifyChanged();
     }
 
     /// <summary>尝试消耗回忆点；余额不足时不会修改数据</summary>
@@ -129,7 +145,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         }
 
         _data.memoryPoints -= amount;
-        SaveAndNotify();
+        NotifyChanged();
         return true;
     }
 
@@ -159,7 +175,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
 
         if (changed)
         {
-            SaveAndNotify();
+            NotifyChanged();
         }
     }
 
@@ -174,7 +190,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         }
 
         card.isUnlocked = true;
-        SaveAndNotify();
+        NotifyChanged();
     }
 
     /// <summary>设置已解锁成长卡牌的星级</summary>
@@ -198,7 +214,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         }
 
         card.starLevel = starLevel;
-        SaveAndNotify();
+        NotifyChanged();
     }
 
     /// <summary>
@@ -224,7 +240,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
 
         _data.memoryPoints -= memoryPointCost;
         card.starLevel++;
-        SaveAndNotify();
+        NotifyChanged();
         return true;
     }
 
@@ -269,7 +285,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
             lockedCards[index].isUnlocked = true;
         }
 
-        SaveAndNotify();
+        NotifyChanged();
         return unlockedCount;
     }
 
@@ -290,8 +306,6 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
 
         if (TryLoad(BackupSaveKey, out data))
         {
-            PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
-            PlayerPrefs.Save();
             return data;
         }
 
@@ -363,16 +377,8 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         return null;
     }
 
-    private void SaveAndNotify()
+    private void NotifyChanged()
     {
-        string existingJson = PlayerPrefs.GetString(SaveKey, string.Empty);
-        if (!string.IsNullOrEmpty(existingJson))
-        {
-            PlayerPrefs.SetString(BackupSaveKey, existingJson);
-        }
-
-        PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(_data));
-        PlayerPrefs.Save();
         GlobalInfoChanged?.Invoke(this);
     }
 

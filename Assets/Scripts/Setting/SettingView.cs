@@ -43,7 +43,6 @@ public class SettingView : UIBasePanel
         base.CloseHandle();
 
         GameManager.Audio.Play(AudioDefine.SFXClose);
-        PlayerPrefs.Save();
 
         _sliderMusic.onValueChanged.RemoveListener(OnMusicVolumeChanged);
         _sliderSFX.onValueChanged.RemoveListener(OnSFXVolumeChanged);

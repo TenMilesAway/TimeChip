@@ -28,6 +28,22 @@ public static class MissionDialogueService
         EnqueueDialogue(missionConfig, missionConfig?.DialogueEnd, "结束");
     }
 
+    public static void TryPlayMissionGuides(cfg.Mission missionConfig)
+    {
+        if (missionConfig == null)
+        {
+            return;
+        }
+
+        DialogueQueue.Enqueue(new DialogueRequest
+        {
+            MissionConfig = missionConfig,
+            DialogueConfig = string.Empty,
+            Phase = "引导"
+        });
+        PlayNextDialogue();
+    }
+
     private static void EnqueueDialogue(
         cfg.Mission missionConfig,
         string dialogueConfig,
