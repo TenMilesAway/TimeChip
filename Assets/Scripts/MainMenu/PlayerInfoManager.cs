@@ -36,6 +36,15 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的星阵币数量</summary>
     public int cardCoins;
 
+    /// <summary>玩家是否曾获得过转盘币</summary>
+    public bool hasObtainedWheelCoin;
+
+    /// <summary>玩家是否曾获得过秘匣币</summary>
+    public bool hasObtainedBoxCoin;
+
+    /// <summary>玩家是否曾获得过星阵币</summary>
+    public bool hasObtainedCardCoin;
+
     /// <summary>社区中心等级，范围为 1 至 6</summary>
     public int communityCentreLevel = 1;
 
@@ -351,6 +360,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的星阵币数量</summary>
     public int CardCoins { get { return _data.cardCoins; } }
+
+    /// <summary>玩家是否已解锁神秘转盘</summary>
+    public bool HasUnlockedMysteryWheelLottery { get { return _data.hasObtainedWheelCoin; } }
+
+    /// <summary>玩家是否已解锁时光秘匣</summary>
+    public bool HasUnlockedBoxLottery { get { return _data.hasObtainedBoxCoin; } }
+
+    /// <summary>玩家是否已解锁时光星阵</summary>
+    public bool HasUnlockedCardLottery { get { return _data.hasObtainedCardCoin; } }
 
     /// <summary>当前装备的鱼钩道具 ID</summary>
     public int EquippedFishHookItemId { get { return _data.equippedFishHookItemId; } }
@@ -797,6 +815,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>按指定数值增加或减少转盘币, 转盘币不会低于零</summary>
     public void AddWheelCoins(int amount)
     {
+        if (amount > 0)
+        {
+            _data.hasObtainedWheelCoin = true;
+        }
+
         SetValue(ref _data.wheelCoins, Mathf.Max(0, _data.wheelCoins + amount));
     }
 
@@ -809,6 +832,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>按指定数值增加或减少秘匣币, 秘匣币不会低于零</summary>
     public void AddBoxCoins(int amount)
     {
+        if (amount > 0)
+        {
+            _data.hasObtainedBoxCoin = true;
+        }
+
         SetValue(ref _data.boxCoins, Mathf.Max(0, _data.boxCoins + amount));
     }
 
@@ -821,6 +849,11 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>按指定数值增减星阵币, 星阵币不会低于零</summary>
     public void AddCardCoins(int amount)
     {
+        if (amount > 0)
+        {
+            _data.hasObtainedCardCoin = true;
+        }
+
         SetValue(ref _data.cardCoins, Mathf.Max(0, _data.cardCoins + amount));
     }
 
@@ -1756,6 +1789,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.wheelCoins = Mathf.Max(0, _data.wheelCoins);
         _data.boxCoins = Mathf.Max(0, _data.boxCoins);
         _data.cardCoins = Mathf.Max(0, _data.cardCoins);
+        _data.hasObtainedWheelCoin |= _data.wheelCoins > 0;
+        _data.hasObtainedBoxCoin |= _data.boxCoins > 0;
+        _data.hasObtainedCardCoin |= _data.cardCoins > 0;
         _data.communityCentreLevel = Mathf.Clamp(
             _data.communityCentreLevel,
             MinCommunityCentreLevel,
@@ -1973,6 +2009,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
             cardCoins = source.cardCoins,
+            hasObtainedWheelCoin = source.hasObtainedWheelCoin,
+            hasObtainedBoxCoin = source.hasObtainedBoxCoin,
+            hasObtainedCardCoin = source.hasObtainedCardCoin,
             communityCentreLevel = source.communityCentreLevel,
             communityCentreExperience = source.communityCentreExperience,
             communityCentreProposalChoiceCount = source.communityCentreProposalChoiceCount,

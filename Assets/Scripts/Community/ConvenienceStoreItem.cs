@@ -13,6 +13,7 @@ public class ConvenienceStoreItem : MonoBehaviour
     [SerializeField] private Text _txtType;     // 商品类型
     [SerializeField] private Button _btnCharge; // 购买按钮
     [SerializeField] private Image _imgIcon;    // 商品图标
+    [SerializeField] private GameObject _goType;
 
     private int _presentationVersion;
     private cfg.Convenience _convenienceConfig;
@@ -57,6 +58,7 @@ public class ConvenienceStoreItem : MonoBehaviour
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(convenienceConfig.ItemId);
+        _goType.SetActive(itemConfig != null);
         _txtType.text = itemConfig == null ? string.Empty : itemConfig.Type;
 
         _imgIcon.sprite = null;

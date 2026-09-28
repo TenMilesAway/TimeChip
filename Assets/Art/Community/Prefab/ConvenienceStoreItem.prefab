@@ -666,6 +666,7 @@ MonoBehaviour:
   _txtType: {fileID: 1079031481760908896}
   _btnCharge: {fileID: 5952865507318660051}
   _imgIcon: {fileID: 6181819752757459474}
+  _goType: {fileID: 3675792418162190669}
 --- !u!114 &784662420110776294
 MonoBehaviour:
   m_ObjectHideFlags: 0

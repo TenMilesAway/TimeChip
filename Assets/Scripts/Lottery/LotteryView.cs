@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -58,7 +59,8 @@ public class LotteryView : UIBasePanel
     private bool _hasCachedAnimationState;                  // 是否缓存动画状态
     private bool _hasRegisteredButtonListener;              // 是否注册按钮监听
     private bool _isLotteryInProgress;                      // 是否正在抽奖
-    private Tween _rewardPresentationTween;                 // 延迟显示奖励的回调
+    private Coroutine _rewardPresentationCoroutine;         // 延迟显示奖励的协程
+    private List<CommonRewardItemData> _pendingRewards;     // 待展示的已结算奖励
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
     private readonly List<CommonRewardItemData> _boxRewards =
@@ -115,17 +117,19 @@ public class LotteryView : UIBasePanel
             _normal.SetActive(true);
         }
 
-        SwitchLotteryMode(GetActiveLotteryMode());
-        RefreshLotteryModeAvailability();
+        LotteryMode activeLotteryMode = GetActiveLotteryMode();
+        SwitchLotteryMode(IsLotteryModeUnlocked(activeLotteryMode)
+            ? activeLotteryMode
+            : LotteryMode.Normal);
     }
 
     protected override void HideHandle()
     {
+        PresentPendingRewards();
         base.HideHandle();
 
         _isLotteryInProgress = false;
         DOTween.Kill(this);
-        CancelRewardPresentation();
         RestoreAnimationState();
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         playerInfoManager.PlayerInfoChanged -= RefreshTimeCoins;
@@ -359,6 +363,7 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        PresentPendingRewards();
         DOTween.Kill(this);
         RestoreAnimationState();
         _normal.SetActive(lotteryMode == LotteryMode.Normal);
@@ -396,14 +401,15 @@ public class LotteryView : UIBasePanel
 
     private static bool IsLotteryModeUnlocked(LotteryMode lotteryMode)
     {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         switch (lotteryMode)
         {
             case LotteryMode.MysteryWheel:
-                return BuffSystem.GetInstance().HasActiveEffect("UnlockMysteryWheelLottery");
+                return playerInfoManager.HasUnlockedMysteryWheelLottery;
             case LotteryMode.Box:
-                return BuffSystem.GetInstance().HasActiveEffect("UnlockBoxLottery");
+                return playerInfoManager.HasUnlockedBoxLottery;
             case LotteryMode.Card:
-                return BuffSystem.GetInstance().HasActiveEffect("UnlockCardLottery");
+                return playerInfoManager.HasUnlockedCardLottery;
             default:
                 return true;
         }
@@ -468,6 +474,7 @@ public class LotteryView : UIBasePanel
         _wheelCoinText.text = $"{playerInfoManager.WheelCoins}";
         _boxCoinText.text = $"{playerInfoManager.GetConsumableCount(BoxCoinItemId)}";
         _cardCoinTest.text = $"{playerInfoManager.CardCoins}";
+        RefreshLotteryModeAvailability();
     }
 
     private void RefreshBoxLotteryRewards()
@@ -1392,20 +1399,47 @@ public class LotteryView : UIBasePanel
 
     private void ScheduleRewardPresentation(List<CommonRewardItemData> rewards, float delay)
     {
-        List<CommonRewardItemData> rewardsToPresent = new List<CommonRewardItemData>(rewards);
-        _rewardPresentationTween?.Kill();
-        _rewardPresentationTween = DOVirtual.DelayedCall(delay, () =>
-            {
-                _rewardPresentationTween = null;
-                PresentRewards(rewardsToPresent);
-            })
-            .SetUpdate(true);
+        CancelRewardPresentation();
+        _pendingRewards = new List<CommonRewardItemData>(rewards);
+        _rewardPresentationCoroutine = StartCoroutine(
+            PresentRewardsAfterDelay(delay));
+    }
+
+    private IEnumerator PresentRewardsAfterDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+
+        _rewardPresentationCoroutine = null;
+        PresentPendingRewards();
+    }
+
+    private void PresentPendingRewards()
+    {
+        if (_pendingRewards == null)
+        {
+            return;
+        }
+
+        List<CommonRewardItemData> rewards = _pendingRewards;
+        _pendingRewards = null;
+        if (_rewardPresentationCoroutine != null)
+        {
+            StopCoroutine(_rewardPresentationCoroutine);
+            _rewardPresentationCoroutine = null;
+        }
+
+        PresentRewards(rewards);
     }
 
     private void CancelRewardPresentation()
     {
-        _rewardPresentationTween?.Kill();
-        _rewardPresentationTween = null;
+        if (_rewardPresentationCoroutine != null)
+        {
+            StopCoroutine(_rewardPresentationCoroutine);
+            _rewardPresentationCoroutine = null;
+        }
+
+        _pendingRewards = null;
     }
 
     private static void PresentRewards(List<CommonRewardItemData> rewards)
