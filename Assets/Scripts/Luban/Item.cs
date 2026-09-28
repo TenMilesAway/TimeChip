@@ -33,6 +33,7 @@ public sealed partial class Item : Luban.BeanBase
         CanUse = (int)_obj.GetValue("canUse");
         RewardScale = (int)_obj.GetValue("rewardScale");
         UseEffect = (string)_obj.GetValue("useEffect");
+        Replace = (int)_obj.GetValue("replace");
     }
 
     public static Item DeserializeItem(JToken _buf)
@@ -80,6 +81,10 @@ public sealed partial class Item : Luban.BeanBase
     /// 使用奖池
     /// </summary>
     public readonly string UseEffect;
+    /// <summary>
+    /// Replacement base property ID; 0 means no replacement
+    /// </summary>
+    public readonly int Replace;
 
 
     public const int __ID__ = 2289459;
@@ -102,6 +107,7 @@ public sealed partial class Item : Luban.BeanBase
         + "canUse:" + CanUse + ","
         + "rewardScale:" + RewardScale + ","
         + "useEffect:" + UseEffect + ","
+        + "replace:" + Replace + ","
         + "}";
     }
 }

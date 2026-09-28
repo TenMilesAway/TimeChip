@@ -56,6 +56,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireNormalLottery(target);
         }
+        else if (missionConfig.Message == "MysteryWheelLottery")
+        {
+            missionRequire = new MissionRequireMysteryWheelLottery(target);
+        }
         else if (missionConfig.Message == "HomePurchase" && missionConfig.Icon > 0)
         {
             missionRequire = new MissionRequireHomePurchase(missionConfig.Icon, target);

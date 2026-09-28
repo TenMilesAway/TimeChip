@@ -922,6 +922,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
+        int replacementBasePropertyId = GetReplacementBasePropertyId(itemId);
+        if (replacementBasePropertyId > 0)
+        {
+            AddBaseProperty(replacementBasePropertyId, amount);
+            return;
+        }
+
         for (int i = 0; i < _data.inventory.Count; i++)
         {
             PlayerInventoryItem item = _data.inventory[i];
@@ -1359,14 +1366,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         offer.remainingCount--;
         if (itemConfig != null)
         {
-            AddInventoryItem(itemConfig.Id, 1);
+            AddItem(itemConfig.Id, 1);
         }
         else
         {
             AddBaseProperty(baseConfig.Id);
         }
 
-        NotifyPlayerInfoChanged();
         return ConveniencePurchaseResult.Success;
     }
 
@@ -1458,8 +1464,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.simulationCoins -= price;
         offer.remainingCount--;
-        AddInventoryItem(itemConfig.Id, 1);
-        NotifyPlayerInfoChanged();
+        AddItem(itemConfig.Id, 1);
         return FishStorePurchaseResult.Success;
     }
 
@@ -1559,9 +1564,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         _data.simulationCoins -= price;
-        AddInventoryItem(itemId, 1);
         _data.purchasedClinicItemThisTurn = true;
-        NotifyPlayerInfoChanged();
+        AddItem(itemId, 1);
         return ClinicItemPurchaseResult.Success;
     }
 
@@ -2427,23 +2431,23 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return fishStoreId >= 6 && fishStoreId <= 11;
     }
 
-    private void AddInventoryItem(int itemId, int amount)
+    private static int GetReplacementBasePropertyId(int itemId)
     {
-        for (int i = 0; i < _data.inventory.Count; i++)
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        cfg.Item itemConfig = tables.ItemTable.GetOrDefault(itemId);
+        if (itemConfig == null || itemConfig.Replace <= 0)
         {
-            PlayerInventoryItem item = _data.inventory[i];
-            if (item.itemId == itemId)
-            {
-                item.amount += amount;
-                return;
-            }
+            return 0;
         }
 
-        _data.inventory.Add(new PlayerInventoryItem
+        cfg.Base baseConfig = tables.BaseTable.GetOrDefault(itemConfig.Replace);
+        if (baseConfig == null || !IsSupportedBaseProperty(baseConfig.Id))
         {
-            itemId = itemId,
-            amount = amount
-        });
+            throw new InvalidOperationException(
+                $"道具替换目标不是受支持的基础属性: [{itemConfig.Id}] -> [{itemConfig.Replace}]");
+        }
+
+        return baseConfig.Id;
     }
 
     private static bool IsSupportedBaseProperty(int basePropertyId)
@@ -2456,27 +2460,27 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             basePropertyId == BasePropertyId.CardCoin;
     }
 
-    private void AddBaseProperty(int basePropertyId)
+    private void AddBaseProperty(int basePropertyId, int amount = 1)
     {
         switch (basePropertyId)
         {
             case BasePropertyId.SimulationCoin:
-                AddSimulationCoins(1);
+                AddSimulationCoins(amount);
                 break;
             case BasePropertyId.TimeCoin:
-                AddTimeCoins(1);
+                AddTimeCoins(amount);
                 break;
             case BasePropertyId.Health:
-                ChangeHealth(1);
+                ChangeHealth(amount);
                 break;
             case BasePropertyId.WheelCoin:
-                AddWheelCoins(1);
+                AddWheelCoins(amount);
                 break;
             case BasePropertyId.BoxCoin:
-                AddBoxCoins(1);
+                AddBoxCoins(amount);
                 break;
             case BasePropertyId.CardCoin:
-                AddCardCoins(1);
+                AddCardCoins(amount);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(basePropertyId));

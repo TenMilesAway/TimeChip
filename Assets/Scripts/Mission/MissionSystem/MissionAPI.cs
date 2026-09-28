@@ -202,6 +202,11 @@ public static class MissionAPI
                 _playerInfoManager.Health <= health;
         }
 
+        if (condition == "wheelCoinObtained")
+        {
+            return _playerInfoManager.HasUnlockedMysteryWheelLottery;
+        }
+
         if (missionConfig.Message == "Health" && int.TryParse(condition, out int legacyHealth))
         {
             return _playerInfoManager.Health <= legacyHealth;

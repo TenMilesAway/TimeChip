@@ -66,7 +66,7 @@ public class MysLotteryItem : MonoBehaviour
         Sprite icon = await GameManager.Resource.LoadResource<Sprite>(
             iconPath,
             $"{GetInstanceID()}_{presentationVersion}");
-        if (presentationVersion != _presentationVersion || !isActiveAndEnabled)
+        if (presentationVersion != _presentationVersion || this == null)
         {
             return;
         }

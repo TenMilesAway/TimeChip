@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caaa76378291a144d849f29230be0a5a, type: 3}
+  m_Name: MissionThree
+  m_EditorClassIdentifier: 
+  <FileName>k__BackingField: MissionThree
+  <DialogueGroups>k__BackingField:
+    list:
+    - Key: {fileID: 11400000, guid: 425bb30b750fc984ea1cffe05b78c325, type: 2}
+      Value:
+      - {fileID: 11400000, guid: 28b0089df4a9d384a969cddea6769ec0, type: 2}
+      - {fileID: 11400000, guid: 42d04aaa9942c4346bbba26289980426, type: 2}
+      - {fileID: 11400000, guid: 236eb1a4756c08e4ab110e810975ed93, type: 2}
+  <UngroupedDialogues>k__BackingField: []

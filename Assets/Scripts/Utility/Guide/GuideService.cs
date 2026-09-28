@@ -13,6 +13,8 @@ public static class GuideService
     private const string FirstMissionRewardTarget = "FirstMissionReward";
     private const string LotteryButtonTarget = "LotteryButton";
     private const string SingleLotteryButtonTarget = "SingleLotteryButton";
+    private const string LotteryPoolSwitchButtonTarget = "LotteryPoolSwitchButton";
+    private const string MysteryWheelPoolButtonTarget = "MysteryWheelPoolButton";
     private const string CommunityButtonTarget = "CommunityButton";
     private const string HomeStoreButtonTarget = "HomeStoreButton";
     private const string SixthHomeStoreTagTarget = "SixthHomeStoreTag";
@@ -21,6 +23,9 @@ public static class GuideService
     private const string HomeButtonTarget = "HomeButton";
     private const string HomeSatisfactionDetailButtonTarget = "HomeSatisfactionDetailButton";
     private const float PanelWaitTimeout = 5f;
+
+    private static MainMenuView guideMainMenuView;
+    private static bool missionPanelWasVisibleBeforeGuide;
 
     public static void TryRunMissionGuides(int missionId, Action onCompleted)
     {
@@ -48,7 +53,12 @@ public static class GuideService
             return;
         }
 
-        RunNextGuide(guides, 0, onCompleted);
+        HideMissionPanelForGuide();
+        RunNextGuide(guides, 0, () =>
+        {
+            RestoreMissionPanelAfterGuide();
+            onCompleted?.Invoke();
+        });
     }
 
     private static void RunNextGuide(
@@ -101,6 +111,12 @@ public static class GuideService
                 break;
             case SingleLotteryButtonTarget:
                 ShowSingleLotteryButtonGuide(guide.Content, onCompleted);
+                break;
+            case LotteryPoolSwitchButtonTarget:
+                ShowLotteryPoolSwitchButtonGuide(guide.Content, onCompleted);
+                break;
+            case MysteryWheelPoolButtonTarget:
+                ShowMysteryWheelPoolButtonGuide(guide.Content, onCompleted);
                 break;
             case CommunityButtonTarget:
                 ShowCommunityButtonGuide(guide.Content, onCompleted);
@@ -214,6 +230,38 @@ public static class GuideService
         if (lotteryView == null || !lotteryView.TryGetSingleLotteryButton(out Button lotteryButton))
         {
             Debug.LogError("无法启动单次抽奖引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(lotteryButton, instruction, onCompleted);
+    }
+
+    private static async void ShowLotteryPoolSwitchButtonGuide(
+        string instruction,
+        Action<bool> onCompleted)
+    {
+        LotteryView lotteryView = await GetOrOpenPanelAsync<LotteryView>(GlobalDefine.LotteryView);
+        if (lotteryView == null ||
+            !lotteryView.TryGetLotteryPoolSwitchButton(out Button lotteryButton))
+        {
+            Debug.LogError("无法启动切换奖池引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(lotteryButton, instruction, onCompleted);
+    }
+
+    private static async void ShowMysteryWheelPoolButtonGuide(
+        string instruction,
+        Action<bool> onCompleted)
+    {
+        LotteryView lotteryView = await GetOrOpenPanelAsync<LotteryView>(GlobalDefine.LotteryView);
+        if (lotteryView == null ||
+            !lotteryView.TryGetMysteryWheelPoolButton(out Button lotteryButton))
+        {
+            Debug.LogError("无法启动神秘转盘奖池引导。");
             onCompleted?.Invoke(false);
             return;
         }
@@ -355,6 +403,31 @@ public static class GuideService
         {
             onCompleted?.Invoke(false);
         }
+    }
+
+    private static void HideMissionPanelForGuide()
+    {
+        guideMainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (guideMainMenuView == null)
+        {
+            return;
+        }
+
+        missionPanelWasVisibleBeforeGuide = guideMainMenuView.IsMissionPanelVisible;
+        guideMainMenuView.HideMissionPanelForGuide();
+    }
+
+    private static void RestoreMissionPanelAfterGuide()
+    {
+        if (guideMainMenuView != null)
+        {
+            guideMainMenuView.RestoreMissionPanelAfterGuide(
+                missionPanelWasVisibleBeforeGuide);
+        }
+
+        guideMainMenuView = null;
+        missionPanelWasVisibleBeforeGuide = false;
     }
 
     private static async Task<T> WaitForOpeningPanelAsync<T>(string panelName)

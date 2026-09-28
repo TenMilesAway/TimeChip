@@ -63,6 +63,7 @@ public class LotteryView : UIBasePanel
     private List<CommonRewardItemData> _pendingRewards;     // 待展示的已结算奖励
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
+    private Coroutine _mysteryWheelRefreshCoroutine;
     private readonly List<CommonRewardItemData> _boxRewards =
         new List<CommonRewardItemData>(BoxRewardCount);
     private int _selectedBoxIndex = -1;
@@ -206,6 +207,32 @@ public class LotteryView : UIBasePanel
 
         lotteryButton = null;
         Debug.LogError("LotteryView 未绑定开启一次按钮。", this);
+        return false;
+    }
+
+    public bool TryGetLotteryPoolSwitchButton(out Button lotteryButton)
+    {
+        if (_btnChangeLottery != null && _btnChangeLottery.gameObject.activeInHierarchy)
+        {
+            lotteryButton = _btnChangeLottery;
+            return true;
+        }
+
+        lotteryButton = null;
+        Debug.LogError("LotteryView 未绑定切换奖池按钮。", this);
+        return false;
+    }
+
+    public bool TryGetMysteryWheelPoolButton(out Button lotteryButton)
+    {
+        if (_btnChangeMys != null && _btnChangeMys.gameObject.activeInHierarchy)
+        {
+            lotteryButton = _btnChangeMys;
+            return true;
+        }
+
+        lotteryButton = null;
+        Debug.LogError("LotteryView 未绑定神秘转盘奖池按钮。", this);
         return false;
     }
 
@@ -374,7 +401,7 @@ public class LotteryView : UIBasePanel
 
         if (lotteryMode == LotteryMode.MysteryWheel)
         {
-            RefreshMysteryWheelRewards();
+            RefreshMysteryWheelRewardsAfterPanelActivated();
         }
 
         else if (lotteryMode == LotteryMode.Box)
@@ -1172,6 +1199,28 @@ public class LotteryView : UIBasePanel
         _mysFiveButton.interactable = true;
     }
 
+    private void RefreshMysteryWheelRewardsAfterPanelActivated()
+    {
+        if (_mysteryWheelRefreshCoroutine != null)
+        {
+            StopCoroutine(_mysteryWheelRefreshCoroutine);
+        }
+
+        _mysteryWheelRefreshCoroutine = StartCoroutine(
+            RefreshMysteryWheelRewardsOnNextFrame());
+    }
+
+    private IEnumerator RefreshMysteryWheelRewardsOnNextFrame()
+    {
+        yield return null;
+        _mysteryWheelRefreshCoroutine = null;
+
+        if (_mys.activeInHierarchy)
+        {
+            RefreshMysteryWheelRewards();
+        }
+    }
+
     private bool TryLoadMonthlyMysteryWheelRewards()
     {
         cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
@@ -1302,6 +1351,7 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.MysteryWheelLottery));
         ApplyRewards(rewards);
         if (drawCount > 1)
         {

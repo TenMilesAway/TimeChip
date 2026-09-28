@@ -104,6 +104,11 @@ public static class MissionDialogueService
             {
                 Debug.LogWarning(
                     $"[任务系统] 任务[{request.MissionConfig.Id}]无法加载对话文件({request.Phase}): {fileName}");
+                if (TryStartGuidesAfterSkippedStartDialogue(request))
+                {
+                    return;
+                }
+
                 continue;
             }
 
@@ -113,6 +118,11 @@ public static class MissionDialogueService
             {
                 Debug.LogWarning(
                     $"[任务系统] 任务[{request.MissionConfig.Id}]对话组为空({request.Phase}): {fileName},{groupIndex}");
+                if (TryStartGuidesAfterSkippedStartDialogue(request))
+                {
+                    return;
+                }
+
                 continue;
             }
 
@@ -135,6 +145,10 @@ public static class MissionDialogueService
             }
 
             isPlayingDialogue = false;
+            if (TryStartGuidesAfterSkippedStartDialogue(request))
+            {
+                return;
+            }
         }
     }
 
@@ -157,6 +171,20 @@ public static class MissionDialogueService
     {
         isPlayingGuide = false;
         PlayNextDialogue();
+    }
+
+    private static bool TryStartGuidesAfterSkippedStartDialogue(DialogueRequest request)
+    {
+        if (request.Phase != "开始")
+        {
+            return false;
+        }
+
+        isPlayingGuide = true;
+        GuideService.TryRunMissionGuides(
+            request.MissionConfig.Id,
+            OnMissionGuidesCompleted);
+        return true;
     }
 
     private static bool TryParseDialoguePointer(string value, out string fileName, out int groupIndex)

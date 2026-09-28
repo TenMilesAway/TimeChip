@@ -82,5 +82,19 @@
     "failure": "gameover",
     "dialogueStart": "",
     "dialogueEnd": ""
+  },
+  {
+    "id": 3000,
+    "name": "神秘转盘！",
+    "desc": "获得了一枚<转盘币>，使用其进行一次抽奖",
+    "message": "MysteryWheelLottery",
+    "icon": 1011,
+    "condition": "wheelCoinObtained",
+    "target": "1",
+    "reward": "",
+    "deadline": "",
+    "failure": "",
+    "dialogueStart": "MissionThree,0",
+    "dialogueEnd": ""
   }
 ]

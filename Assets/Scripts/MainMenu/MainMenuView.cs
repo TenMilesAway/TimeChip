@@ -427,6 +427,21 @@ public class MainMenuView : UIBasePanel
         _goTip.SetActive(!visible);
     }
 
+    public bool IsMissionPanelVisible
+    {
+        get { return _missionPanel != null && _missionPanel.gameObject.activeSelf; }
+    }
+
+    public void HideMissionPanelForGuide()
+    {
+        _missionPanel.gameObject.SetActive(false);
+    }
+
+    public void RestoreMissionPanelAfterGuide(bool wasVisible)
+    {
+        _missionPanel.gameObject.SetActive(wasVisible);
+    }
+
     private void BeginMoveMissionPanel(BaseEventData eventData)
     {
         if (!(eventData is PointerEventData pointerEventData) ||

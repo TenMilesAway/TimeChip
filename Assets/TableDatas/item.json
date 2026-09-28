@@ -9,7 +9,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_1]",
     "canUse": 1,
     "rewardScale": 2500,
-    "useEffect": "101,100,100"
+    "useEffect": "101,100,100",
+    "replace": 0
   },
   {
     "id": 1001,
@@ -21,7 +22,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_2]",
     "canUse": 1,
     "rewardScale": 3000,
-    "useEffect": "101,300,100"
+    "useEffect": "101,300,100",
+    "replace": 0
   },
   {
     "id": 1002,
@@ -33,7 +35,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_3]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": "101,1000,100"
+    "useEffect": "101,1000,100",
+    "replace": 0
   },
   {
     "id": 1003,
@@ -45,7 +48,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_4]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": "101,2000,100"
+    "useEffect": "101,2000,100",
+    "replace": 0
   },
   {
     "id": 1004,
@@ -57,7 +61,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_5]",
     "canUse": 1,
     "rewardScale": 3200,
-    "useEffect": "101,5000,100"
+    "useEffect": "101,5000,100",
+    "replace": 0
   },
   {
     "id": 1010,
@@ -69,7 +74,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_coin]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 102
   },
   {
     "id": 1011,
@@ -81,7 +87,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_wheel_coin]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 104
   },
   {
     "id": 1012,
@@ -93,7 +100,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_secret_box_coin]",
     "canUse": 0,
     "rewardScale": 3500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 105
   },
   {
     "id": 1013,
@@ -105,7 +113,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_time_core_matrix_token]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 106
   },
   {
     "id": 1050,
@@ -117,7 +126,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_bandage]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": "103,5,100"
+    "useEffect": "103,5,100",
+    "replace": 0
   },
   {
     "id": 1051,
@@ -129,7 +139,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_vitality_capsule]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": "103,10,100"
+    "useEffect": "103,10,100",
+    "replace": 0
   },
   {
     "id": 1052,
@@ -141,7 +152,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_kit]",
     "canUse": 1,
     "rewardScale": 4000,
-    "useEffect": "103,15,100"
+    "useEffect": "103,15,100",
+    "replace": 0
   },
   {
     "id": 2000,
@@ -153,7 +165,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,
     "rewardScale": 3200,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 3000,
@@ -165,7 +178,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
     "rewardScale": 4200,
-    "useEffect": "4000,1,50;4001,1,50;4002,1,1;4003,1,50;4004,1,50;4005,1,1;4006,1,1;4008,1,50;4009,1,50;4010,1,1;4011,1,1;4013,1,50;4014,1,50;4015,1,1;4016,1,1;4018,1,50;4019,1,50;4020,1,1;4021,1,1;4023,1,10;4024,1,1"
+    "useEffect": "4000,1,50;4001,1,50;4002,1,1;4003,1,50;4004,1,50;4005,1,1;4006,1,1;4008,1,50;4009,1,50;4010,1,1;4011,1,1;4013,1,50;4014,1,50;4015,1,1;4016,1,1;4018,1,50;4019,1,50;4020,1,1;4021,1,1;4023,1,10;4024,1,1",
+    "replace": 0
   },
   {
     "id": 3001,
@@ -177,7 +191,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
     "rewardScale": 4200,
-    "useEffect": "101,100,100"
+    "useEffect": "101,100,100",
+    "replace": 0
   },
   {
     "id": 4000,
@@ -189,7 +204,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_3]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4001,
@@ -201,7 +217,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_4]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4002,
@@ -213,7 +230,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_5]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4003,
@@ -225,7 +243,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_1]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4004,
@@ -237,7 +256,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_2]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4005,
@@ -249,7 +269,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_3]",
     "canUse": 0,
     "rewardScale": 3800,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4006,
@@ -261,7 +282,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_4]",
     "canUse": 0,
     "rewardScale": 4500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4007,
@@ -273,7 +295,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_5]",
     "canUse": 0,
     "rewardScale": 4500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4008,
@@ -285,7 +308,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_1]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4009,
@@ -297,7 +321,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_2]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4010,
@@ -309,7 +334,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_3]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4011,
@@ -321,7 +347,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_4]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4012,
@@ -333,7 +360,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_5]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4013,
@@ -345,7 +373,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_1]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4014,
@@ -357,7 +386,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_2]",
     "canUse": 0,
     "rewardScale": 4200,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4015,
@@ -369,7 +399,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_3]",
     "canUse": 0,
     "rewardScale": 4400,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4016,
@@ -381,7 +412,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_4]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4017,
@@ -393,7 +425,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_5]",
     "canUse": 0,
     "rewardScale": 4000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4018,
@@ -405,7 +438,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_1]",
     "canUse": 0,
     "rewardScale": 5500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4019,
@@ -417,7 +451,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_2]",
     "canUse": 0,
     "rewardScale": 5500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4020,
@@ -429,7 +464,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_3]",
     "canUse": 0,
     "rewardScale": 4500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4021,
@@ -441,7 +477,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_4]",
     "canUse": 0,
     "rewardScale": 4500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4022,
@@ -453,7 +490,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_5]",
     "canUse": 0,
     "rewardScale": 4500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4023,
@@ -465,7 +503,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_1]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4024,
@@ -477,7 +516,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_2]",
     "canUse": 0,
     "rewardScale": 5500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4025,
@@ -489,7 +529,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_3]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4026,
@@ -501,7 +542,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_4]",
     "canUse": 0,
     "rewardScale": 5200,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4027,
@@ -513,7 +555,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_5]",
     "canUse": 0,
     "rewardScale": 5500,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 4028,
@@ -525,7 +568,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[time_chip_metro_card]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5000,
@@ -537,7 +581,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_wild_dog_milk]",
     "canUse": 0,
     "rewardScale": 6000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5001,
@@ -549,7 +594,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_live_shrimp(dead)]",
     "canUse": 0,
     "rewardScale": 6000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5002,
@@ -561,7 +607,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_free_rice_two_yuan]",
     "canUse": 0,
     "rewardScale": 6000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5003,
@@ -573,7 +620,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_spring_autumn_ham]",
     "canUse": 0,
     "rewardScale": 7000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5004,
@@ -585,7 +633,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_basketball_trainee_chicken]",
     "canUse": 0,
     "rewardScale": 6000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 5005,
@@ -597,7 +646,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[item_extra_long_egg_tart]",
     "canUse": 0,
     "rewardScale": 6000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6000,
@@ -609,7 +659,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_01_white_strip]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6001,
@@ -621,7 +672,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_02_crucian]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6002,
@@ -633,7 +685,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_03_loach]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6003,
@@ -645,7 +698,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_04_redtail_carp]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6004,
@@ -657,7 +711,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_05_grass_carp]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6005,
@@ -669,7 +724,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_06_silver_carp]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6006,
@@ -681,7 +737,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_07_river_perch]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6007,
@@ -693,7 +750,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_08_mandarin_fish]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6008,
@@ -705,7 +763,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_09_blue_catfish]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6009,
@@ -717,7 +776,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_10_lucky_koi]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6010,
@@ -729,7 +789,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_11_moonlight_trout]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6011,
@@ -741,7 +802,8 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_12_timefish]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6020,
@@ -753,7 +815,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_02_agile]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6021,
@@ -765,7 +828,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_03_wide]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6022,
@@ -777,7 +841,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_04_barbed]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6023,
@@ -789,7 +854,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_05_double]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6024,
@@ -801,7 +867,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_06_time]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6025,
@@ -813,7 +880,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_01_beginner]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6030,
@@ -825,7 +893,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_dough]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6031,
@@ -837,7 +906,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_worm]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6032,
@@ -849,7 +919,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_corn]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6033,
@@ -861,7 +932,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_shrimp]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6034,
@@ -873,7 +945,8 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_scent_fruit]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   },
   {
     "id": 6035,
@@ -885,6 +958,7 @@
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_time]",
     "canUse": 0,
     "rewardScale": 5000,
-    "useEffect": ""
+    "useEffect": "",
+    "replace": 0
   }
 ]

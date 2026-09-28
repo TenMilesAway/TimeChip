@@ -89,5 +89,26 @@
     "step": 2,
     "target": "HomeSatisfactionDetailButton",
     "content": "点击满意度面板"
+  },
+  {
+    "id": 1013,
+    "missionId": 3000,
+    "step": 1,
+    "target": "LotteryButton",
+    "content": "点击抽奖按钮"
+  },
+  {
+    "id": 1014,
+    "missionId": 3000,
+    "step": 2,
+    "target": "LotteryPoolSwitchButton",
+    "content": "点击切换奖池按钮"
+  },
+  {
+    "id": 1015,
+    "missionId": 3000,
+    "step": 3,
+    "target": "MysteryWheelPoolButton",
+    "content": "选择神秘转盘奖池"
   }
 ]

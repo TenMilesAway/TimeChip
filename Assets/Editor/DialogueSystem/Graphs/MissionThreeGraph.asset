@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0202a3095b7477a4091d56344f0af6b3, type: 3}
+  m_Name: MissionThreeGraph
+  m_EditorClassIdentifier: 
+  <FileName>k__BackingField: MissionThree
+  <Groups>k__BackingField:
+  - <ID>k__BackingField: 93308fbc-090e-4ab6-8571-b237cda4bf6c
+    <Name>k__BackingField: "\u795E\u79D8\u8F6C\u76D8\u5F00\u59CB"
+    <Position>k__BackingField: {x: 461, y: 1727}
+  <Nodes>k__BackingField:
+  - <ID>k__BackingField: e6c3bf8a-727d-474b-9eb4-96b151f317e2
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u4F60\u770B\u4E86\u770B\u8FD9\u679A\u786C\u5E01\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 896a1586-252c-483e-942a-fbbd2f1bb8a2
+    <GroupID>k__BackingField: 93308fbc-090e-4ab6-8571-b237cda4bf6c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 4
+    <SpeakerExpressionPath>k__BackingField: 
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 486, y: 1789}
+  - <ID>k__BackingField: 896a1586-252c-483e-942a-fbbd2f1bb8a2
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u8FD9\u4E2A\u597D\u50CF\u548C\u65F6\u95F4\u5E01\u957F\u5F97\u4E0D\u4E00\u6837\uFF01"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: ed478da5-dae3-46ab-a3fc-27189941f10a
+    <GroupID>k__BackingField: 93308fbc-090e-4ab6-8571-b237cda4bf6c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_think]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 765, y: 1790}
+  - <ID>k__BackingField: ed478da5-dae3-46ab-a3fc-27189941f10a
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u606D\u559C\u5BBF\u4E3B\uFF0C\u83B7\u5F97\u4E86\u4E00\u679A<\u8F6C\u76D8\u5E01>\uFF0C\u63A5\u4E0B\u6765\u8BF7\u4F60\u96C6\u4E2D\u610F\u5FF5\uFF0C\u548C\u6211\u4E00\u8D77\u5F00\u542F\u65B0\u7684\u62BD\u5956\u7CFB\u7EDF\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 93308fbc-090e-4ab6-8571-b237cda4bf6c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1438, y: 1791}
+  <OldGroupNames>k__BackingField:
+  - "\u795E\u79D8\u8F6C\u76D8\u5F00\u59CB"
+  <OldUngroupedNodeNames>k__BackingField: []
+  <OldGroupedNodeNames>k__BackingField:
+    list:
+    - Key: "\u795E\u79D8\u8F6C\u76D8\u5F00\u59CB"
+      Value:
+      - 1
+      - 2
+      - 3
