@@ -191,7 +191,20 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
     "canUse": 1,
     "rewardScale": 4200,
-    "useEffect": "101,100,100",
+    "useEffect": "101,100,100;1010,1,100;1011,1,20;3000,1,20",
+    "replace": 0
+  },
+  {
+    "id": 3002,
+    "name": "初级材料礼盒",
+    "level": 3,
+    "type": "礼盒",
+    "category": 3,
+    "desc": "鼓鼓的礼盒，开启有较小概率获得更高一阶的材料",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_gift_box]",
+    "canUse": 1,
+    "rewardScale": 4200,
+    "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,10",
     "replace": 0
   },
   {
@@ -638,6 +651,19 @@
   },
   {
     "id": 5005,
+    "name": "小鱼干",
+    "level": 1,
+    "type": "材料",
+    "category": 5,
+    "desc": "是猫猫最喜欢的食物",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[item_dried_fish]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": "",
+    "replace": 0
+  },
+  {
+    "id": 5006,
     "name": "超长长长蛋挞",
     "level": 4,
     "type": "材料",

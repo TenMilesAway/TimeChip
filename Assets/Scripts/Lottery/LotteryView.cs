@@ -979,7 +979,6 @@ public class LotteryView : UIBasePanel
 
         List<LotteryReward> candidates = ParseRewards(lotteryConfig.Rewards);
         candidates.RemoveAll(reward => !HasRewardPresentation(reward.ItemId));
-        RemoveDuplicateRewardItems(candidates);
         if (candidates.Count < drawCount)
         {
             return false;
@@ -1233,7 +1232,6 @@ public class LotteryView : UIBasePanel
 
         List<LotteryReward> candidates = ParseRewards(lotteryConfig.Rewards);
         candidates.RemoveAll(reward => !HasRewardPresentation(reward.ItemId));
-        RemoveDuplicateRewardItems(candidates);
         if (candidates.Count < MysteryWheelRewardCount)
         {
             Debug.LogError($"神秘转盘可用奖励少于 {MysteryWheelRewardCount} 个。", this);
@@ -1267,12 +1265,6 @@ public class LotteryView : UIBasePanel
         _mysteryWheelRewards.Clear();
         _mysteryWheelRewards.AddRange(rewards);
         return true;
-    }
-
-    private static void RemoveDuplicateRewardItems(List<LotteryReward> rewards)
-    {
-        HashSet<int> itemIds = new HashSet<int>();
-        rewards.RemoveAll(reward => !itemIds.Add(reward.ItemId));
     }
 
     private static List<CommonRewardItemData> SelectMysteryWheelRewards(

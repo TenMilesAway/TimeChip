@@ -36,6 +36,7 @@ public class InventoryView : UIBasePanel
     private int _refreshVersion;
     private int _detailVersion;
     private int _selectedItemId;
+    private bool _isUsingSelectedItem;
     private bool _isUiReady;
 
     private void Awake()
@@ -257,6 +258,8 @@ public class InventoryView : UIBasePanel
         _txtNumSplit.gameObject.SetActive(true);
         _txtNumPrefix.gameObject.SetActive(true);
         _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
+        _btnUse.interactable = entry.Item.CanUse == 1;
+        _isUsingSelectedItem = false;
         _goType.SetActive(true);
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(true);
@@ -312,11 +315,17 @@ public class InventoryView : UIBasePanel
         _txtNumPrefix.gameObject.SetActive(false);
         _txtNum.gameObject.SetActive(false);
         _btnUse.gameObject.SetActive(false);
+        _isUsingSelectedItem = false;
         _goType.SetActive(false);
     }
 
     private void UseSelectedItem()
     {
+        if (_isUsingSelectedItem)
+        {
+            return;
+        }
+
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_selectedItemId);
         if (itemConfig == null || itemConfig.CanUse != 1)
         {
@@ -330,10 +339,15 @@ public class InventoryView : UIBasePanel
             return;
         }
 
+        _isUsingSelectedItem = true;
+        _btnUse.interactable = false;
+
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
         {
             Debug.LogError($"背包道具消耗失败: [{itemConfig.Id}]", this);
+            _isUsingSelectedItem = false;
+            _btnUse.interactable = true;
             return;
         }
 
@@ -345,7 +359,8 @@ public class InventoryView : UIBasePanel
 
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
-            data = new List<CommonRewardItemData> { reward }
+            data = new List<CommonRewardItemData> { reward },
+            rewardsAlreadyGranted = true
         });
     }
 

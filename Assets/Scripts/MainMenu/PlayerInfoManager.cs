@@ -324,6 +324,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private const int MonthlyTimeCoinReward = 1;
     private const int MinCommunityCentreLevel = 1;
     private const int MaxCommunityCentreLevel = 6;
+    private const int CommunitySupplyGiftBoxItemId = 3001;
     private const int CureService1PriceIncrease = 30;
     private const int CureService2PriceIncrease = 60;
     public const int MaxWorkLevel = 5;
@@ -492,7 +493,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
-    /// <summary>提交一个当月社区需求，并发放随机社区经验及全数提交奖励。</summary>
+    /// <summary>提交一个当月社区需求，并发放社区物资礼盒、随机社区经验及全数提交奖励。</summary>
     public CommunityCentreNeedSubmitResult TrySubmitCommunityCentreNeed(
         int index,
         out int experienceGained,
@@ -524,6 +525,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         need.submitted = true;
+        AddItem(CommunitySupplyGiftBoxItemId, 1);
         experienceGained = UnityEngine.Random.Range(20, 26);
         if (AreAllCommunityCentreNeedsSubmitted() &&
             !_data.communityCentreAllNeedsBonusGranted)
@@ -542,14 +544,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         int itemId)
     {
         const int redundancyItemCategory = 4;
-        const int communitySupplyGiftBoxItemId = 3001;
         const int communityExperienceReward = 10;
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(itemId);
         if (itemConfig == null ||
             itemConfig.Category != redundancyItemCategory ||
-            itemConfig.Id == communitySupplyGiftBoxItemId)
+            itemConfig.Id == CommunitySupplyGiftBoxItemId)
         {
             return CommunityCentreRedundancySubmitResult.InvalidItem;
         }
@@ -564,7 +565,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
         }
 
-        AddItem(communitySupplyGiftBoxItemId, 1);
+        AddItem(CommunitySupplyGiftBoxItemId, 1);
         AddCommunityCentreExperience(communityExperienceReward);
         return CommunityCentreRedundancySubmitResult.Success;
     }
@@ -1108,16 +1109,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             throw new ArgumentException("神秘转盘奖励不能为空", nameof(rewards));
         }
 
-        HashSet<int> itemIds = new HashSet<int>();
         List<PlayerMysteryWheelReward> monthlyRewards =
             new List<PlayerMysteryWheelReward>(rewards.Count);
         for (int i = 0; i < rewards.Count; i++)
         {
             CommonRewardItemData reward = rewards[i];
-            if (reward == null || reward.itemId <= 0 || reward.itemCount <= 0 ||
-                !itemIds.Add(reward.itemId))
+            if (reward == null || reward.itemId <= 0 || reward.itemCount <= 0)
             {
-                throw new ArgumentException("神秘转盘奖励必须为不重复的有效物品", nameof(rewards));
+                throw new ArgumentException("神秘转盘奖励必须为有效物品", nameof(rewards));
             }
 
             monthlyRewards.Add(new PlayerMysteryWheelReward
@@ -1951,12 +1950,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
         }
 
-        HashSet<int> mysteryWheelRewardIds = new HashSet<int>();
         for (int i = _data.mysteryWheelRewards.Count - 1; i >= 0; i--)
         {
             PlayerMysteryWheelReward reward = _data.mysteryWheelRewards[i];
-            if (reward == null || reward.itemId <= 0 || reward.amount <= 0 ||
-                !mysteryWheelRewardIds.Add(reward.itemId))
+            if (reward == null || reward.itemId <= 0 || reward.amount <= 0)
             {
                 _data.mysteryWheelRewards.RemoveAt(i);
             }

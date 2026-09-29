@@ -269,8 +269,8 @@ public class CommunityCentreView : UIBasePanel
                     previousLevel,
                     previousProgress);
                 CommonTipView.Show(bonusExperienceGained > 0
-                    ? $"提交成功，社区经验 +{experienceGained}（额外经验 +{bonusExperienceGained}）"
-                    : $"提交成功，社区经验 +{experienceGained}");
+                    ? $"提交成功，获得【社区物资礼盒】×1，社区经验 +{experienceGained}（额外经验 +{bonusExperienceGained}）"
+                    : $"提交成功，获得【社区物资礼盒】×1，社区经验 +{experienceGained}");
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreNeedSubmitResult.InsufficientItem:

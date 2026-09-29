@@ -82,7 +82,7 @@ public sealed partial class Item : Luban.BeanBase
     /// </summary>
     public readonly string UseEffect;
     /// <summary>
-    /// Replacement base property ID; 0 means no replacement
+    /// 替换 Base 中的 ID
     /// </summary>
     public readonly int Replace;
 
