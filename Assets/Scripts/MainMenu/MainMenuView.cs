@@ -30,6 +30,8 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private GameObject _goLoad;
     [SerializeField] private GameObject _goBottom;
     [SerializeField] private GameObject _goInventory;
+    [SerializeField] private GameObject _goRedPointCurrentMission;
+    [SerializeField] private GameObject _goRedPointMissionButton;
 
     #region 任务
     [Space(10)]
@@ -82,6 +84,7 @@ public class MainMenuView : UIBasePanel
         _currentContentPage = MainContentPage.Community;
         _isNavigating = false;
         RefreshPlayerInfo(PlayerInfoManager.GetInstance());
+        RefreshMissionRedPoints();
         SetMissionsVisible(false);
     }
 
@@ -539,6 +542,7 @@ public class MainMenuView : UIBasePanel
 
     private void RefreshMissionItems()
     {
+        RefreshMissionRedPoints();
         _missionRefreshVersion++;
         ClearMissionItems();
         if (_missionParent == null)
@@ -652,7 +656,32 @@ public class MainMenuView : UIBasePanel
             return;
         }
 
+        RefreshMissionRedPoints();
         GameManager.Audio.Play(AudioDefine.SFXClick);
+    }
+
+    private void RefreshMissionRedPoints()
+    {
+        Mission<MissionMessage>[] missions = MissionAPI.GetActiveMissions();
+        bool hasClaimableMission = false;
+        for (int i = 0; i < missions.Length; i++)
+        {
+            if (missions[i].IsFinished)
+            {
+                hasClaimableMission = true;
+                break;
+            }
+        }
+
+        if (_goRedPointCurrentMission != null)
+        {
+            _goRedPointCurrentMission.SetActive(hasClaimableMission);
+        }
+
+        if (_goRedPointMissionButton != null)
+        {
+            _goRedPointMissionButton.SetActive(hasClaimableMission);
+        }
     }
 
     private static int CompareMissionDeadline(

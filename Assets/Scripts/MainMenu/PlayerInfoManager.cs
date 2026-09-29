@@ -256,7 +256,8 @@ public enum ClinicExaminationResult
 {
     Success,
     AlreadyExamined,
-    InvalidBuff
+    InsufficientCoins,
+    InvalidCost
 }
 
 public enum ClinicTreatmentResult
@@ -1467,17 +1468,22 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return FishStorePurchaseResult.Success;
     }
 
-    /// <summary>尝试完成本回合体检并激活指定 BUFF。</summary>
-    public ClinicExaminationResult TryUseClinicExamination(int buffId)
+    /// <summary>尝试花费模拟币完成本回合体检。</summary>
+    public ClinicExaminationResult TryUseClinicExamination(int cost)
     {
         if (_data.examinedThisTurn)
         {
             return ClinicExaminationResult.AlreadyExamined;
         }
 
-        if (buffId <= 0)
+        if (cost < 0)
         {
-            return ClinicExaminationResult.InvalidBuff;
+            return ClinicExaminationResult.InvalidCost;
+        }
+
+        if (!TrySpendSimulationCoins(cost))
+        {
+            return ClinicExaminationResult.InsufficientCoins;
         }
 
         _data.examinedThisTurn = true;

@@ -24,6 +24,9 @@ public class CommunityView : UIBasePanel
     private const string CommunityCentreFunctionId = "CommunityCentre";
     private const string TrashCanFunctionId = "TrashCan";
     private const string SubwayFunctionId = "Subway";
+    private const int CommunityCentreNeedCount = 3;
+    private const int CommunityCentreRedundancyItemCategory = 4;
+    private const int CommunitySupplyGiftBoxItemId = 3001;
 
     [SerializeField] private Button _btnWork;             // 零工中心
     [SerializeField] private Button _btnHomeStore;        // 家具店
@@ -34,6 +37,9 @@ public class CommunityView : UIBasePanel
 
     [Space(10)]
     [SerializeField] private GameObject[] _goTrashCans;   // 垃圾桶点位
+    [SerializeField] private GameObject _goWorkRedPoint;
+    [SerializeField] private GameObject _goClinicRedPoint;
+    [SerializeField] private GameObject _goCommunityCentreRedPoint;
 
     private void Awake()
     {
@@ -233,7 +239,66 @@ public class CommunityView : UIBasePanel
         SetFunctionButtonVisibility(_btnCilinic, ClinicFunctionId);
         SetFunctionButtonVisibility(_btnCommunityCentre, CommunityCentreFunctionId);
         SetFunctionButtonVisibility(_btnSubway, SubwayFunctionId);
+        RefreshRedPoints(playerInfoManager);
         RefreshTrashCanSpawns();
+    }
+
+    private void RefreshRedPoints(PlayerInfoManager playerInfoManager)
+    {
+        if (_goWorkRedPoint != null)
+        {
+            _goWorkRedPoint.SetActive(!playerInfoManager.WorkedThisTurn);
+        }
+
+        if (_goCommunityCentreRedPoint != null)
+        {
+            bool isCommunityCentreUnlocked =
+                FunctionUnlockService.IsUnlocked(CommunityCentreFunctionId);
+            _goCommunityCentreRedPoint.SetActive(
+                isCommunityCentreUnlocked &&
+                (HasSubmittableCommunityCentreMaterial(playerInfoManager) ||
+                 playerInfoManager.CommunityCentreProposalChoiceCount > 0));
+        }
+    }
+
+    private static bool HasSubmittableCommunityCentreMaterial(
+        PlayerInfoManager playerInfoManager)
+    {
+        if (playerInfoManager.HasMonthlyCommunityCentreNeeds(CommunityCentreNeedCount))
+        {
+            for (int i = 0; i < CommunityCentreNeedCount; i++)
+            {
+                if (playerInfoManager.TryGetMonthlyCommunityCentreNeedAt(
+                        i,
+                        out int itemId,
+                        out bool submitted) &&
+                    !submitted &&
+                    playerInfoManager.GetItemCount(itemId) > 0)
+                {
+                    return true;
+                }
+            }
+        }
+
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null)
+        {
+            return false;
+        }
+
+        IReadOnlyList<cfg.Item> items = tables.ItemTable.DataList;
+        for (int i = 0; i < items.Count; i++)
+        {
+            cfg.Item item = items[i];
+            if (item.Category == CommunityCentreRedundancyItemCategory &&
+                item.Id != CommunitySupplyGiftBoxItemId &&
+                playerInfoManager.GetItemCount(item.Id) > 1)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void SetFunctionButtonVisibility(Button button, string functionId)

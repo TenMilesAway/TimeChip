@@ -27,6 +27,12 @@ public class ClinicView : UIBasePanel
     private const int CureItem1Price = 500;
     private const int CureItem2Price = 998;
     private const int CureItem3Price = 1488;
+    private const int ExaminationCost = 50;
+    private const float ExaminationHealthRecoveryChance = 0.6f;
+    private const int ExaminationMinimumHealthRecovery = 3;
+    private const int ExaminationMaximumHealthRecovery = 8;
+    private const int ExaminationBuffIdMin = 1000;
+    private const int ExaminationBuffIdMaxExclusive = 2000;
 
     private bool _isUiReady;
 
@@ -113,11 +119,42 @@ public class ClinicView : UIBasePanel
             return;
         }
 
-        List<cfg.BuffConfig> availableBuffs = GetAvailableExaminationBuffs(playerInfoManager);
-        if (availableBuffs.Count == 0)
+        bool restoresHealth = Random.value < ExaminationHealthRecoveryChance;
+        List<cfg.BuffConfig> availableBuffs = restoresHealth
+            ? null
+            : GetAvailableExaminationBuffs(playerInfoManager);
+        if (!restoresHealth && availableBuffs.Count == 0)
         {
             Debug.LogError("体检没有可用的 BUFF 配置。", this);
             CommonTipView.Show("当前没有可获得的 BUFF");
+            return;
+        }
+
+        ClinicExaminationResult result = playerInfoManager.TryUseClinicExamination(ExaminationCost);
+        switch (result)
+        {
+            case ClinicExaminationResult.Success:
+                break;
+            case ClinicExaminationResult.AlreadyExamined:
+                CommonTipView.Show("本回合已完成体检");
+                return;
+            case ClinicExaminationResult.InsufficientCoins:
+                CommonTipView.Show("模拟币不足");
+                return;
+            default:
+                Debug.LogError($"体检花费无效: [{ExaminationCost}]", this);
+                return;
+        }
+
+        if (restoresHealth)
+        {
+            int healthBefore = playerInfoManager.Health;
+            int healthRecovery = Random.Range(
+                ExaminationMinimumHealthRecovery,
+                ExaminationMaximumHealthRecovery + 1);
+            playerInfoManager.ChangeHealth(healthRecovery);
+            CommonTipView.Show(
+                $"体检成功，健康值 +{playerInfoManager.Health - healthBefore}");
             return;
         }
 
@@ -129,11 +166,7 @@ public class ClinicView : UIBasePanel
             return;
         }
 
-        if (playerInfoManager.TryUseClinicExamination(selectedBuff.Id) ==
-            ClinicExaminationResult.Success)
-        {
-            CommonTipView.Show($"体检成功，获得【{selectedBuff.Name}】");
-        }
+        CommonTipView.Show($"体检成功，获得【{selectedBuff.Name}】");
     }
 
     private void TryTreatment(int serviceId)
@@ -255,7 +288,9 @@ public class ClinicView : UIBasePanel
         for (int i = 0; i < configs.Count; i++)
         {
             cfg.BuffConfig config = configs[i];
-            if (config.ActivationType == "Manual" &&
+            if (config.Id >= ExaminationBuffIdMin &&
+                config.Id < ExaminationBuffIdMaxExclusive &&
+                config.ActivationType == "Manual" &&
                 playerInfoManager.Satisfaction >= config.MinSatisfaction)
             {
                 availableBuffs.Add(config);
