@@ -102,6 +102,11 @@ public class MysLotteryItem : MonoBehaviour
     public void SetHighlighted(bool highlighted)
     {
         DOTween.Kill(this);
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         _bg.DOColor(highlighted ? Color.yellow : _defaultBackgroundColor, 0.08f)
             .SetTarget(this);
         transform.DOScale(_defaultScale * (highlighted ? 1.08f : 1f), 0.08f)

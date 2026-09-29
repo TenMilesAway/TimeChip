@@ -63,7 +63,6 @@ public class LotteryView : UIBasePanel
     private List<CommonRewardItemData> _pendingRewards;     // 待展示的已结算奖励
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
-    private Coroutine _mysteryWheelRefreshCoroutine;
     private readonly List<CommonRewardItemData> _boxRewards =
         new List<CommonRewardItemData>(BoxRewardCount);
     private int _selectedBoxIndex = -1;
@@ -401,7 +400,7 @@ public class LotteryView : UIBasePanel
 
         if (lotteryMode == LotteryMode.MysteryWheel)
         {
-            RefreshMysteryWheelRewardsAfterPanelActivated();
+            RefreshMysteryWheelRewards();
         }
 
         else if (lotteryMode == LotteryMode.Box)
@@ -1196,28 +1195,6 @@ public class LotteryView : UIBasePanel
         ClearMysteryWheelHighlights();
         _mysButton.interactable = true;
         _mysFiveButton.interactable = true;
-    }
-
-    private void RefreshMysteryWheelRewardsAfterPanelActivated()
-    {
-        if (_mysteryWheelRefreshCoroutine != null)
-        {
-            StopCoroutine(_mysteryWheelRefreshCoroutine);
-        }
-
-        _mysteryWheelRefreshCoroutine = StartCoroutine(
-            RefreshMysteryWheelRewardsOnNextFrame());
-    }
-
-    private IEnumerator RefreshMysteryWheelRewardsOnNextFrame()
-    {
-        yield return null;
-        _mysteryWheelRefreshCoroutine = null;
-
-        if (_mys.activeInHierarchy)
-        {
-            RefreshMysteryWheelRewards();
-        }
     }
 
     private bool TryLoadMonthlyMysteryWheelRewards()
