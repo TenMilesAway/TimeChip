@@ -25,8 +25,28 @@ public class MissionItem : MonoBehaviour
         _txtDetail.text = missionConfig.Desc;
 
         MissionProgress[] progresses = mission.Progresses;
-        int target = Mathf.Max(1, int.TryParse(missionConfig.Target, out int value) ? value : 1);
+        int target = progresses.Length > 0
+            ? Mathf.Max(1, progresses[0].targetCount)
+            : Mathf.Max(1, int.TryParse(missionConfig.Target, out int value) ? value : 1);
         int current = progresses.Length == 0 ? 0 : Mathf.Clamp(progresses[0].currentCount, 0, target);
+        if (MissionAPI.TryGetMissionTarget(
+                mission.id,
+                out int targetItemId,
+                out int targetItemCount))
+        {
+            cfg.Item targetItem = DataTableMananger.GetInstance()
+                .Tables
+                .ItemTable
+                .GetOrDefault(targetItemId);
+            if (targetItem != null)
+            {
+                _txtDetail.text = string.Format(
+                    missionConfig.Desc,
+                    targetItem.Name,
+                    targetItemCount);
+            }
+        }
+
         _sliderProgress.minValue = 0f;
         _sliderProgress.maxValue = target;
         _sliderProgress.value = current;

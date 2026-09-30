@@ -28,8 +28,26 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         cfg.Mission missionConfig,
         out MissionPrototype<MissionMessage> missionProto)
     {
+        return TryCreateMissionProto(missionConfig, 0, 0, out missionProto);
+    }
+
+    /// <summary>根据固定后的随机目标创建任务原型，用于保证读档后任务目标不变。</summary>
+    public bool TryCreateMissionProto(
+        cfg.Mission missionConfig,
+        int targetItemId,
+        int targetItemCount,
+        out MissionPrototype<MissionMessage> missionProto)
+    {
         missionProto = null;
-        if (missionConfig == null || !int.TryParse(missionConfig.Target, out int target))
+        if (missionConfig == null)
+        {
+            return false;
+        }
+
+        bool isItemMission = missionConfig.Message == "Item";
+        int target = 0;
+        if ((!isItemMission && !int.TryParse(missionConfig.Target, out target)) ||
+            (isItemMission && (targetItemId <= 0 || targetItemCount <= 0)))
         {
             Debug.LogWarning("[任务系统] 任务目标必须是正整数: " + missionConfig?.Id);
             return false;
@@ -71,6 +89,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         else if (missionConfig.Message == "HomeSatisfactionView")
         {
             missionRequire = new MissionRequireHomeSatisfactionView(target);
+        }
+        else if (isItemMission)
+        {
+            missionRequire = new MissionRequireItem(targetItemId, targetItemCount);
         }
         else
         {

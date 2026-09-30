@@ -34,5 +34,11 @@
     "name": "地铁站",
     "unlockMissionId": 0,
     "unlockItemId": 4028
+  },
+  {
+    "id": "CommunityCentreNotice",
+    "name": "???????",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
   }
 ]

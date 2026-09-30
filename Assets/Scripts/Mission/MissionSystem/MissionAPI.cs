@@ -14,6 +14,8 @@ public static class MissionAPI
     private static readonly MissionSaveComponent SaveComponent = new MissionSaveComponent();
     private static readonly Dictionary<string, PlayerMissionData> MissionTimings =
         new Dictionary<string, PlayerMissionData>();
+    private const int RandomMissionId = 3001;
+    private const float RandomMissionChance = 0.3f;
 
     private static PlayerInfoManager _playerInfoManager;
     private static bool _isInitialized;
@@ -50,6 +52,7 @@ public static class MissionAPI
             _isRestoringMissions = false;
         }
 
+        EnsureMonthlyRandomMissionOffer();
         EvaluateAvailableMissions(isNewGame);
         BroadcastSimulationCoinBalance(force: true);
         CheckDeadlines();
@@ -76,6 +79,27 @@ public static class MissionAPI
     public static Mission<MissionMessage>[] GetActiveMissions()
     {
         return _isInitialized ? MissionManager.GetMissions() : Array.Empty<Mission<MissionMessage>>();
+    }
+
+    /// <summary>获取已启动任务固定后的随机道具目标。</summary>
+    public static bool TryGetMissionTarget(
+        string missionId,
+        out int targetItemId,
+        out int targetItemCount)
+    {
+        targetItemId = 0;
+        targetItemCount = 0;
+        if (!_isInitialized ||
+            !MissionTimings.TryGetValue(missionId, out PlayerMissionData missionData) ||
+            missionData.targetItemId <= 0 ||
+            missionData.targetItemCount <= 0)
+        {
+            return false;
+        }
+
+        targetItemId = missionData.targetItemId;
+        targetItemCount = missionData.targetItemCount;
+        return true;
     }
 
     /// <summary>尝试获取任务的截止日期；未设置截止日期时返回 false。</summary>
@@ -110,7 +134,7 @@ public static class MissionAPI
             if (data == null || string.IsNullOrEmpty(data.missionId) ||
                 !TryGetMissionConfig(data.missionId, out cfg.Mission missionConfig) ||
                 !MissionProtoManager.GetInstance().TryCreateMissionProto(
-                    missionConfig,
+                    missionConfig, data.targetItemId, data.targetItemCount,
                     out MissionPrototype<MissionMessage> missionProto))
             {
                 continue;
@@ -129,8 +153,9 @@ public static class MissionAPI
 
     private static void OnTurnAdvanced()
     {
-        EvaluateAvailableMissions(false);
         CheckDeadlines();
+        EnsureMonthlyRandomMissionOffer();
+        EvaluateAvailableMissions(false);
     }
 
     private static void OnPlayerInfoChanged(PlayerInfoManager playerInfoManager)
@@ -178,57 +203,116 @@ public static class MissionAPI
 
     private static bool CanStartMission(cfg.Mission missionConfig, bool allowInitialMissions)
     {
+        if (missionConfig.Id == RandomMissionId)
+        {
+            return false;
+        }
+
         string condition = missionConfig.Condition;
         if (string.IsNullOrEmpty(condition))
         {
             return allowInitialMissions;
         }
 
-        if (condition.StartsWith("date:"))
+        string[] conditions = condition.Split(';');
+        for (int i = 0; i < conditions.Length; i++)
         {
-            return TryParseYearMonth(condition.Substring(5), out int age, out int month) &&
-                IsAtOrAfter(_playerInfoManager.CurrentAge, _playerInfoManager.CurrentMonth, age, month);
+            string itemCondition = conditions[i].Trim();
+            if (itemCondition.StartsWith("date:") || itemCondition.StartsWith("force:"))
+            {
+                int separatorIndex = itemCondition.IndexOf(':');
+                if (TryParseYearMonth(
+                        itemCondition.Substring(separatorIndex + 1),
+                        out int age,
+                        out int month) &&
+                    IsAtOrAfter(_playerInfoManager.CurrentAge, _playerInfoManager.CurrentMonth, age, month))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (itemCondition.StartsWith("mission:"))
+            {
+                string requiredMissionId = itemCondition.Substring(8);
+                if (_playerInfoManager.GetSnapshot().completedMissionIds.Contains(requiredMissionId))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (itemCondition.StartsWith("healthBelow:"))
+            {
+                if (int.TryParse(itemCondition.Substring(12), out int health) &&
+                    _playerInfoManager.Health <= health)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (itemCondition == "wheelCoinObtained")
+            {
+                if (_playerInfoManager.HasUnlockedMysteryWheelLottery)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (missionConfig.Message == "Health" &&
+                int.TryParse(itemCondition, out int legacyHealth))
+            {
+                if (_playerInfoManager.Health <= legacyHealth)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            Debug.LogWarning("[任务系统] 不支持的开启条件: " + itemCondition);
         }
 
-        if (condition.StartsWith("mission:"))
-        {
-            string requiredMissionId = condition.Substring(8);
-            return _playerInfoManager.GetSnapshot().completedMissionIds.Contains(requiredMissionId);
-        }
-
-        if (condition.StartsWith("healthBelow:"))
-        {
-            return int.TryParse(condition.Substring(12), out int health) &&
-                _playerInfoManager.Health <= health;
-        }
-
-        if (condition == "wheelCoinObtained")
-        {
-            return _playerInfoManager.HasUnlockedMysteryWheelLottery;
-        }
-
-        if (missionConfig.Message == "Health" && int.TryParse(condition, out int legacyHealth))
-        {
-            return _playerInfoManager.Health <= legacyHealth;
-        }
-
-        Debug.LogWarning("[任务系统] 不支持的开启条件: " + condition);
         return false;
     }
 
     private static void StartMission(cfg.Mission missionConfig)
     {
+        PlayerMissionData missionData = CreateMissionData(missionConfig, null);
+        if (missionConfig.Id == RandomMissionId)
+        {
+            if (!_playerInfoManager.HasMonthlyRandomMissionOffer())
+            {
+                return;
+            }
+
+            PlayerInfoData playerData = _playerInfoManager.GetSnapshot();
+            missionData.targetItemId = playerData.randomMissionTargetItemId;
+            missionData.targetItemCount = playerData.randomMissionTargetCount;
+        }
+
         if (!MissionProtoManager.GetInstance().TryCreateMissionProto(
-                missionConfig,
+                missionConfig, missionData.targetItemId, missionData.targetItemCount,
                 out MissionPrototype<MissionMessage> missionProto))
         {
             return;
         }
 
         string missionId = missionConfig.Id.ToString();
-        MissionTimings[missionId] = CreateMissionData(missionConfig, null);
+        MissionTimings[missionId] = missionData;
         if (MissionManager.StartMission(missionProto))
         {
+            if (missionConfig.Id == RandomMissionId)
+            {
+                _playerInfoManager.ClearMonthlyRandomMissionOffer();
+            }
+
             Debug.Log("[任务系统] 开启任务: " + missionConfig.Id + " - " + missionConfig.Name);
             MissionDialogueService.TryPlayStartDialogue(missionConfig);
             BroadcastSimulationCoinBalance(force: true);
@@ -236,6 +320,110 @@ public static class MissionAPI
         }
 
         MissionTimings.Remove(missionId);
+    }
+
+    /// <summary>公告栏展示本月待领取的随机委托时返回 true。</summary>
+    public static bool HasMonthlyRandomMissionOffer()
+    {
+        return _isInitialized && _playerInfoManager != null &&
+            _playerInfoManager.HasMonthlyRandomMissionOffer();
+    }
+
+    /// <summary>由公告栏领取本月的随机委托。</summary>
+    public static bool TryStartMonthlyRandomMission(
+        out cfg.Mission missionConfig,
+        out int targetItemId,
+        out int targetItemCount)
+    {
+        missionConfig = null;
+        targetItemId = 0;
+        targetItemCount = 0;
+        if (!_isInitialized ||
+            !_playerInfoManager.HasMonthlyRandomMissionOffer() ||
+            MissionManager.GetMission(RandomMissionId.ToString()) != null ||
+            !TryGetMissionConfig(RandomMissionId.ToString(), out missionConfig))
+        {
+            return false;
+        }
+
+        PlayerInfoData playerData = _playerInfoManager.GetSnapshot();
+        targetItemId = playerData.randomMissionTargetItemId;
+        targetItemCount = playerData.randomMissionTargetCount;
+        StartMission(missionConfig);
+        return MissionManager.GetMission(RandomMissionId.ToString()) != null;
+    }
+
+    private static void EnsureMonthlyRandomMissionOffer()
+    {
+        if (_playerInfoManager.HasGeneratedMonthlyRandomMissionOffer() ||
+            MissionManager.GetMission(RandomMissionId.ToString()) != null ||
+            !TryGetMissionConfig(RandomMissionId.ToString(), out cfg.Mission missionConfig))
+        {
+            return;
+        }
+
+        if (UnityEngine.Random.value >= RandomMissionChance ||
+            !TryPickRandomMissionTarget(
+                missionConfig.RandomTarget,
+                out int itemId,
+                out int itemCount))
+        {
+            _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
+            return;
+        }
+
+        _playerInfoManager.SetMonthlyRandomMissionOffer(itemId, itemCount);
+    }
+
+    private static bool TryPickRandomMissionTarget(
+        string targets,
+        out int itemId,
+        out int itemCount)
+    {
+        itemId = 0;
+        itemCount = 0;
+        string[] entries = string.IsNullOrEmpty(targets)
+            ? Array.Empty<string>()
+            : targets.Split(';');
+        List<(int itemId, int itemCount, int weight)> candidates =
+            new List<(int, int, int)>();
+        int totalWeight = 0;
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] values = entries[i].Split(',');
+            if (values.Length != 3 ||
+                !int.TryParse(values[0], out int candidateId) ||
+                !int.TryParse(values[1], out int candidateCount) ||
+                !int.TryParse(values[2], out int weight) ||
+                candidateId <= 0 || candidateCount <= 0 || weight <= 0 ||
+                DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(candidateId) == null)
+            {
+                continue;
+            }
+
+            candidates.Add((candidateId, candidateCount, weight));
+            totalWeight += weight;
+        }
+
+        if (totalWeight <= 0)
+        {
+            Debug.LogWarning("[任务系统] 随机任务目标配置无效: " + targets);
+            return false;
+        }
+
+        int roll = UnityEngine.Random.Range(0, totalWeight);
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            roll -= candidates[i].weight;
+            if (roll < 0)
+            {
+                itemId = candidates[i].itemId;
+                itemCount = candidates[i].itemCount;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void CheckDeadlines()
@@ -302,6 +490,11 @@ public static class MissionAPI
             " - " + missionConfig.Name +
             "，结算类型: " + missionConfig.Failure);
         MissionManager.RemoveMission(missionId);
+        if (string.IsNullOrEmpty(missionConfig.Failure))
+        {
+            return;
+        }
+
         if (string.Equals(missionConfig.Failure, "gameover", StringComparison.OrdinalIgnoreCase))
         {
             _isInitialized = false;
@@ -323,7 +516,9 @@ public static class MissionAPI
             startedAge = savedData == null ? _playerInfoManager.CurrentAge : savedData.startedAge,
             startedMonth = savedData == null ? _playerInfoManager.CurrentMonth : savedData.startedMonth,
             deadlineAge = savedData == null ? 0 : savedData.deadlineAge,
-            deadlineMonth = savedData == null ? 0 : savedData.deadlineMonth
+            deadlineMonth = savedData == null ? 0 : savedData.deadlineMonth,
+            targetItemId = savedData == null ? 0 : savedData.targetItemId,
+            targetItemCount = savedData == null ? 0 : savedData.targetItemCount
         };
 
         if (data.startedAge <= 0 || data.startedMonth < 1 || data.startedMonth > 12)
@@ -489,7 +684,9 @@ public static class MissionAPI
             startedAge = source.startedAge,
             startedMonth = source.startedMonth,
             deadlineAge = source.deadlineAge,
-            deadlineMonth = source.deadlineMonth
+            deadlineMonth = source.deadlineMonth,
+            targetItemId = source.targetItemId,
+            targetItemCount = source.targetItemCount
         };
     }
 

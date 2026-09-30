@@ -30,6 +30,7 @@ public sealed partial class Mission : Luban.BeanBase
         Icon = (int)_obj.GetValue("icon");
         Condition = (string)_obj.GetValue("condition");
         Target = (string)_obj.GetValue("target");
+        RandomTarget = (string)_obj.GetValue("randomTarget");
         Reward = (string)_obj.GetValue("reward");
         Deadline = (string)_obj.GetValue("deadline");
         Failure = (string)_obj.GetValue("failure");
@@ -71,6 +72,10 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string Target;
     /// <summary>
+    /// 任务目标随机池
+    /// </summary>
+    public readonly string RandomTarget;
+    /// <summary>
     /// 任务奖励（ItemID,num;ItemID,num）
     /// </summary>
     public readonly string Reward;
@@ -109,6 +114,7 @@ public sealed partial class Mission : Luban.BeanBase
         + "icon:" + Icon + ","
         + "condition:" + Condition + ","
         + "target:" + Target + ","
+        + "randomTarget:" + RandomTarget + ","
         + "reward:" + Reward + ","
         + "deadline:" + Deadline + ","
         + "failure:" + Failure + ","

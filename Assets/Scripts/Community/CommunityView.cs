@@ -14,14 +14,19 @@ public class CommunityView : UIBasePanel
     private const float TrashCanReminderPeakScaleMultiplier = 1.15f;
     private const float TrashCanReminderExpandDuration = 0.15f;
     private const float TrashCanReminderRestoreDuration = 0.2f;
+    private const float NoticeReminderPeakScaleMultiplier = 1.12f;
+    private const float NoticeReminderHalfCycleDuration = 0.5f;
     private static readonly int[] TrashCanLotteryPoolIds = { 5, 6, 7 };
     private readonly Dictionary<GameObject, Vector3> _trashCanOriginalScales = new Dictionary<GameObject, Vector3>();
     private readonly Dictionary<GameObject, Tween> _trashCanReminderTweens = new Dictionary<GameObject, Tween>();
     private Coroutine _trashCanReminderCoroutine;
+    private Tween _noticeReminderTween;
+    private Vector3 _noticeOriginalScale;
     private const string HomeStoreFunctionId = "HomeStore";
     private const string ConvenienceStoreFunctionId = "ConvenienceStore";
     private const string ClinicFunctionId = "Clinic";
     private const string CommunityCentreFunctionId = "CommunityCentre";
+    private const string CommunityCentreNoticeFunctionId = "CommunityCentreNotice";
     private const string TrashCanFunctionId = "TrashCan";
     private const string SubwayFunctionId = "Subway";
     private const int CommunityCentreNeedCount = 3;
@@ -34,12 +39,14 @@ public class CommunityView : UIBasePanel
     [SerializeField] private Button _btnCilinic;          // 医务室
     [SerializeField] private Button _btnCommunityCentre;  // 社区中心
     [SerializeField] private Button _btnSubway;           // 地铁
+    [SerializeField] private Button _btnCommunityCentreNotice; // 社区中心公告
 
     [Space(10)]
     [SerializeField] private GameObject[] _goTrashCans;   // 垃圾桶点位
     [SerializeField] private GameObject _goWorkRedPoint;
     [SerializeField] private GameObject _goClinicRedPoint;
     [SerializeField] private GameObject _goCommunityCentreRedPoint;
+    [SerializeField] private GameObject _goHasNotice;      // 社区中心公告红点
 
     private void Awake()
     {
@@ -59,6 +66,10 @@ public class CommunityView : UIBasePanel
         }
 
         _btnSubway.onClick.AddListener(OnClickSubway);
+        if (_btnCommunityCentreNotice != null)
+        {
+            _btnCommunityCentreNotice.onClick.AddListener(OnClickCommunityCentreNotice);
+        }
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -76,12 +87,14 @@ public class CommunityView : UIBasePanel
         playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
         playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
         RefreshFunctionUnlocks(playerInfoManager);
+        RefreshMissionNotice();
         StartTrashCanReminder();
     }
 
     protected override void HideHandle()
     {
         StopTrashCanReminder();
+        StopMissionNoticeReminder();
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
@@ -95,6 +108,7 @@ public class CommunityView : UIBasePanel
     protected override void OnDestroy()
     {
         StopTrashCanReminder();
+        StopMissionNoticeReminder();
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
 
@@ -106,6 +120,11 @@ public class CommunityView : UIBasePanel
         if (_btnSubway != null)
         {
             _btnSubway.onClick.RemoveListener(OnClickSubway);
+        }
+
+        if (_btnCommunityCentreNotice != null)
+        {
+            _btnCommunityCentreNotice.onClick.RemoveListener(OnClickCommunityCentreNotice);
         }
 
         base.OnDestroy();
@@ -165,6 +184,39 @@ public class CommunityView : UIBasePanel
 
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.SubwayView);
+    }
+
+    private void OnClickCommunityCentreNotice()
+    {
+        if (!FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId))
+        {
+            return;
+        }
+
+        if (!MissionAPI.TryStartMonthlyRandomMission(
+                out cfg.Mission missionConfig,
+                out int targetItemId,
+                out int targetItemCount))
+        {
+            return;
+        }
+
+        cfg.Item targetItem = DataTableMananger.GetInstance()
+            .Tables
+            .ItemTable
+            .GetOrDefault(targetItemId);
+        string targetName = targetItem == null ? targetItemId.ToString() : targetItem.Name;
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonConfirmPanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonConfirmData(
+                    missionConfig.Name,
+                    "任务已开启，需要完成任务目标：\n" +
+                    string.Format(missionConfig.Desc, targetName, targetItemCount))
+            });
+        RefreshMissionNotice();
     }
 
     private void BindTrashCanButtons()
@@ -238,9 +290,13 @@ public class CommunityView : UIBasePanel
         SetFunctionButtonVisibility(_btnConvenienceStore, ConvenienceStoreFunctionId);
         SetFunctionButtonVisibility(_btnCilinic, ClinicFunctionId);
         SetFunctionButtonVisibility(_btnCommunityCentre, CommunityCentreFunctionId);
+        SetFunctionButtonVisibility(
+            _btnCommunityCentreNotice,
+            CommunityCentreNoticeFunctionId);
         SetFunctionButtonVisibility(_btnSubway, SubwayFunctionId);
         RefreshRedPoints(playerInfoManager);
         RefreshTrashCanSpawns();
+        RefreshMissionNotice();
     }
 
     private void RefreshRedPoints(PlayerInfoManager playerInfoManager)
@@ -258,6 +314,56 @@ public class CommunityView : UIBasePanel
                 isCommunityCentreUnlocked &&
                 (HasSubmittableCommunityCentreMaterial(playerInfoManager) ||
                  playerInfoManager.CommunityCentreProposalChoiceCount > 0));
+        }
+    }
+
+    private void RefreshMissionNotice()
+    {
+        bool hasOffer = FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId) &&
+            MissionAPI.HasMonthlyRandomMissionOffer();
+        if (_goHasNotice != null)
+        {
+            _goHasNotice.SetActive(hasOffer);
+        }
+
+        if (hasOffer)
+        {
+            StartMissionNoticeReminder();
+        }
+        else
+        {
+            StopMissionNoticeReminder();
+        }
+    }
+
+    private void StartMissionNoticeReminder()
+    {
+        if (_goHasNotice == null || _noticeReminderTween != null)
+        {
+            return;
+        }
+
+        _noticeOriginalScale = _goHasNotice.transform.localScale;
+        _noticeReminderTween = _goHasNotice.transform
+            .DOScale(
+                _noticeOriginalScale * NoticeReminderPeakScaleMultiplier,
+                NoticeReminderHalfCycleDuration)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopMissionNoticeReminder()
+    {
+        if (_noticeReminderTween != null)
+        {
+            _noticeReminderTween.Kill();
+            _noticeReminderTween = null;
+        }
+
+        if (_goHasNotice != null)
+        {
+            _goHasNotice.transform.localScale = _noticeOriginalScale == Vector3.zero
+                ? Vector3.one
+                : _noticeOriginalScale;
         }
     }
 

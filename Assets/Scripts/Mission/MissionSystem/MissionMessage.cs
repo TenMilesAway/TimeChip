@@ -36,4 +36,5 @@ public enum MissionEventType
     MysteryWheelLottery,
     HomePurchase,
     HomeSatisfactionView,
+    Item,
 }

@@ -118,6 +118,24 @@ public sealed class PlayerInfoData
     /// <summary>玩家已经完成的任务 ID</summary>
     public List<string> completedMissionIds = new List<string>();
 
+    /// <summary>本月随机委托是否已完成生成判定</summary>
+    public bool randomMissionOfferGenerated;
+
+    /// <summary>本月是否有尚未领取的随机委托</summary>
+    public bool hasRandomMissionOffer;
+
+    /// <summary>随机委托生成时的年龄</summary>
+    public int randomMissionOfferAge = -1;
+
+    /// <summary>随机委托生成时的月份</summary>
+    public int randomMissionOfferMonth = -1;
+
+    /// <summary>随机委托要求收集的道具 ID</summary>
+    public int randomMissionTargetItemId;
+
+    /// <summary>随机委托要求收集的道具数量</summary>
+    public int randomMissionTargetCount;
+
     /// <summary>各零工类型的等级与经验</summary>
     public List<PlayerWorkProgress> workProgresses = new List<PlayerWorkProgress>();
 
@@ -300,6 +318,12 @@ public sealed class PlayerMissionData
 
     /// <summary>任务截止时的月份，零表示没有截止日期</summary>
     public int deadlineMonth;
+
+    /// <summary>随机道具收集任务固定后的目标道具 ID</summary>
+    public int targetItemId;
+
+    /// <summary>随机道具收集任务固定后的目标数量</summary>
+    public int targetItemCount;
 }
 
 /// <summary>
@@ -715,6 +739,65 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
+    /// <summary>当前月份是否有可从公告栏领取的随机委托。</summary>
+    public bool HasMonthlyRandomMissionOffer()
+    {
+        return _data.hasRandomMissionOffer &&
+            _data.randomMissionOfferAge == _data.currentAge &&
+            _data.randomMissionOfferMonth == _data.currentMonth &&
+            _data.randomMissionTargetItemId > 0 &&
+            _data.randomMissionTargetCount > 0;
+    }
+
+    /// <summary>本月是否已完成随机委托的生成判定。</summary>
+    public bool HasGeneratedMonthlyRandomMissionOffer()
+    {
+        return _data.randomMissionOfferGenerated &&
+            _data.randomMissionOfferAge == _data.currentAge &&
+            _data.randomMissionOfferMonth == _data.currentMonth;
+    }
+
+    /// <summary>保存本月生成的随机委托目标。</summary>
+    public void SetMonthlyRandomMissionOffer(int itemId, int count)
+    {
+        if (itemId <= 0 || count <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(itemId));
+        }
+
+        _data.randomMissionOfferGenerated = true;
+        _data.hasRandomMissionOffer = true;
+        _data.randomMissionOfferAge = _data.currentAge;
+        _data.randomMissionOfferMonth = _data.currentMonth;
+        _data.randomMissionTargetItemId = itemId;
+        _data.randomMissionTargetCount = count;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>记录本月未生成随机委托，避免同月重复抽取。</summary>
+    public void MarkMonthlyRandomMissionOfferGenerated()
+    {
+        _data.randomMissionOfferGenerated = true;
+        _data.hasRandomMissionOffer = false;
+        _data.randomMissionOfferAge = _data.currentAge;
+        _data.randomMissionOfferMonth = _data.currentMonth;
+        _data.randomMissionTargetItemId = 0;
+        _data.randomMissionTargetCount = 0;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>领取公告栏中的随机委托后移除本月待领取标记。</summary>
+    public void ClearMonthlyRandomMissionOffer()
+    {
+        if (!_data.hasRandomMissionOffer)
+        {
+            return;
+        }
+
+        _data.hasRandomMissionOffer = false;
+        NotifyPlayerInfoChanged();
+    }
+
     /// <summary>更新已完成任务记录。</summary>
     public void SetCompletedMissionIds(List<string> missionIds)
     {
@@ -949,6 +1032,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
             item.amount += amount;
             NotifyPlayerInfoChanged();
+            MissionAPI.Broadcast(new MissionMessage(
+                MissionEventType.Item,
+                amount,
+                itemId.ToString()));
             return;
         }
 
@@ -958,6 +1045,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             amount = amount
         });
         NotifyPlayerInfoChanged();
+        MissionAPI.Broadcast(new MissionMessage(
+            MissionEventType.Item,
+            amount,
+            itemId.ToString()));
     }
 
     /// <summary>获取背包中指定道具的持有数量</summary>
@@ -2080,6 +2171,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             activeBuffs = CreateActiveBuffCopy(source.activeBuffs),
             activeMissions = CreateMissionCopy(source.activeMissions),
             completedMissionIds = CreateMissionIdCopy(source.completedMissionIds),
+            randomMissionOfferGenerated = source.randomMissionOfferGenerated,
+            hasRandomMissionOffer = source.hasRandomMissionOffer,
+            randomMissionOfferAge = source.randomMissionOfferAge,
+            randomMissionOfferMonth = source.randomMissionOfferMonth,
+            randomMissionTargetItemId = source.randomMissionTargetItemId,
+            randomMissionTargetCount = source.randomMissionTargetCount,
             workProgresses = CreateWorkProgressCopy(source.workProgresses),
             convenienceOfferAge = source.convenienceOfferAge,
             convenienceOfferMonth = source.convenienceOfferMonth,
@@ -2237,7 +2334,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 startedAge = mission.startedAge,
                 startedMonth = mission.startedMonth,
                 deadlineAge = mission.deadlineAge,
-                deadlineMonth = mission.deadlineMonth
+                deadlineMonth = mission.deadlineMonth,
+                targetItemId = mission.targetItemId,
+                targetItemCount = mission.targetItemCount
             });
         }
 
