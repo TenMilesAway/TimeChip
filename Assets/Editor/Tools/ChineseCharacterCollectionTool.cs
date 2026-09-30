@@ -10,6 +10,9 @@ public class ChineseCharacterCollectionTool : EditorWindow
     private const string DefaultOutputPath = "Assets/Fonts/ChineseCharacters.txt";
     private const int PrintableAsciiFirst = 0x20;
     private const int PrintableAsciiLast = 0x7E;
+    private const int ChineseComma = 0xFF0C;
+    private const int ChineseFullStop = 0x3002;
+    private const int ChineseColon = 0xFF1A;
     private static readonly HashSet<string> TextFileExtensions = new HashSet<string>
     {
         ".asset",
@@ -40,7 +43,7 @@ public class ChineseCharacterCollectionTool : EditorWindow
     {
         EditorGUILayout.LabelField("中文字体子集字符收集", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
-            "扫描 Assets 下的文本资源，提取中文字符；同时固定包含大小写英文、数字、空格和常用英文标点，排序去重后生成 UTF-8 无 BOM 的 txt 文件。",
+            "扫描 Assets 下的文本资源，提取中文字符；同时固定包含大小写英文、数字、空格、常用英文标点及中文逗号、句号、冒号，排序去重后生成 UTF-8 无 BOM 的 txt 文件。",
             MessageType.Info);
 
         _outputPath = EditorGUILayout.TextField("输出路径", _outputPath);
@@ -121,6 +124,10 @@ public class ChineseCharacterCollectionTool : EditorWindow
         {
             characters.Add(character);
         }
+
+        characters.Add(ChineseComma);
+        characters.Add(ChineseFullStop);
+        characters.Add(ChineseColon);
     }
 
     private static bool ShouldScan(string assetPath, string outputPath)

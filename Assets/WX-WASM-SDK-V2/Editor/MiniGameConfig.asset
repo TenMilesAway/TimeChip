@@ -17,7 +17,7 @@ MonoBehaviour:
     Appid: 
     CDN: https://gamecomb-gamedevelop-test.oss-cn-hangzhou.aliyuncs.com/zll/Temp
     assetLoadType: 0
-    compressDataPackage: 0
+    compressDataPackage: 1
     VideoUrl: 
     relativeDST: D:/UGit/TimeChipBuild
     DST: D:/UGit/TimeChipBuild
