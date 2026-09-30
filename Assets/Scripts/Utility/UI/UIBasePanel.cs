@@ -11,6 +11,7 @@ public class OpenUIParam
     public object data;
     public Action callback;
     public bool rewardsAlreadyGranted; // 奖励是否已在打开面板前结算
+    public int? simulationCoinDisplayStart; // 已结算模拟币奖励的动画起始数量
 }
 
 /// <summary>

@@ -520,6 +520,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return CommunityCentreNeedSubmitResult.AlreadySubmitted;
         }
 
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
+            .GetOrDefault(need.itemId);
+        if (itemConfig == null ||
+            !TryGetCommunityCentreNeedExperience(itemConfig.Level, out int baseExperienceGained))
+        {
+            return CommunityCentreNeedSubmitResult.InvalidNeed;
+        }
+
         if (!TryConsumeItem(need.itemId))
         {
             return CommunityCentreNeedSubmitResult.InsufficientItem;
@@ -527,7 +535,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         need.submitted = true;
         AddItem(CommunitySupplyGiftBoxItemId, 1);
-        experienceGained = UnityEngine.Random.Range(20, 26);
+        experienceGained = baseExperienceGained;
         if (AreAllCommunityCentreNeedsSubmitted() &&
             !_data.communityCentreAllNeedsBonusGranted)
         {
@@ -1779,6 +1787,33 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             requirementIndex < CommunityCentreExperienceRequirements.Length
             ? CommunityCentreExperienceRequirements[requirementIndex]
             : 0;
+    }
+
+    private static bool TryGetCommunityCentreNeedExperience(
+        int itemLevel,
+        out int experience)
+    {
+        switch (itemLevel)
+        {
+            case 1:
+                experience = UnityEngine.Random.Range(10, 15);
+                return true;
+            case 2:
+                experience = UnityEngine.Random.Range(16, 19);
+                return true;
+            case 3:
+                experience = UnityEngine.Random.Range(20, 27);
+                return true;
+            case 4:
+                experience = UnityEngine.Random.Range(50, 61);
+                return true;
+            case 5:
+                experience = UnityEngine.Random.Range(100, 121);
+                return true;
+            default:
+                experience = 0;
+                return false;
+        }
     }
 
     private static int IncreaseClinicServicePrice(int price, int increase)

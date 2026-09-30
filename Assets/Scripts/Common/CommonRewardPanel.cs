@@ -16,6 +16,7 @@ public class CommonRewardPanel : UIBasePanel
 
     private int _presentationVersion; // 当前展示版本号，用于处理异步加载和展示的顺序问题
     private bool _rewardsAlreadyGranted; // 奖励是否已在展示前结算
+    private int? _simulationCoinDisplayStart; // 预结算模拟币奖励的动画起始数量
     private System.Action _closeCallback;
 
     private void Awake()
@@ -30,6 +31,7 @@ public class CommonRewardPanel : UIBasePanel
         GameManager.Audio.Play(AudioDefine.SFXGetReward);
 
         _rewardsAlreadyGranted = param != null && param.rewardsAlreadyGranted;
+        _simulationCoinDisplayStart = param?.simulationCoinDisplayStart;
         _closeCallback = param?.callback;
         ResetPresentation();
 
@@ -210,9 +212,9 @@ public class CommonRewardPanel : UIBasePanel
         {
             GrantInventoryItemRewards();
             GrantNonSimulationCoinBasePropertyRewards();
-            PlaySimulationCoinFlyAnimations();
         }
 
+        PlaySimulationCoinFlyAnimations(!_rewardsAlreadyGranted);
         System.Action closeCallback = _closeCallback;
         _closeCallback = null;
         UIManager.GetInstance().ClosePanel(GetPanelName());
@@ -234,16 +236,39 @@ public class CommonRewardPanel : UIBasePanel
     }
 
     /// <summary>
-    /// 将模拟币奖励从奖励图标飞往主界面货币文本，并在首枚图标抵达时入账
+    /// 将模拟币奖励从奖励图标飞往主界面货币文本；未预结算时在首枚图标抵达后入账。
     /// </summary>
-    private void PlaySimulationCoinFlyAnimations()
+    private void PlaySimulationCoinFlyAnimations(bool grantRewards)
     {
         MainMenuView mainMenuView = UIManager.GetInstance()
             .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
         if (mainMenuView == null)
         {
-            GrantSimulationCoinRewardsImmediately();
+            if (grantRewards)
+            {
+                GrantSimulationCoinRewardsImmediately();
+            }
+
             return;
+        }
+
+        System.Action preGrantedCountAnimation = null;
+        if (!grantRewards && _simulationCoinDisplayStart.HasValue)
+        {
+            int displayStart = _simulationCoinDisplayStart.Value;
+            bool hasStartedAnimation = false;
+            preGrantedCountAnimation = () =>
+            {
+                if (hasStartedAnimation)
+                {
+                    return;
+                }
+
+                hasStartedAnimation = true;
+                mainMenuView.PlaySimulationCoinCountAnimation(
+                    displayStart,
+                    PlayerInfoManager.GetInstance().SimulationCoins);
+            };
         }
 
         for (int i = 0; i < _rewardItems.Count; i++)
@@ -260,10 +285,15 @@ public class CommonRewardPanel : UIBasePanel
                     mainMenuView.SimulationCoinIcon.rectTransform,
                     mainMenuView.SimulationCoinIcon.sprite,
                     _simulationCoinIconCount,
-                    _waitForFirstCoinArrival,
-                    () => AddSimulationCoins(mainMenuView, simulationCoinAmount)))
+                    grantRewards ? _waitForFirstCoinArrival : true,
+                    grantRewards
+                        ? () => AddSimulationCoins(mainMenuView, simulationCoinAmount)
+                        : preGrantedCountAnimation))
             {
-                AddSimulationCoins(mainMenuView, simulationCoinAmount);
+                if (grantRewards)
+                {
+                    AddSimulationCoins(mainMenuView, simulationCoinAmount);
+                }
             }
         }
     }

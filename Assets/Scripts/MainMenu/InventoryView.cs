@@ -140,6 +140,7 @@ public class InventoryView : UIBasePanel
             }
         }
 
+        _items.Sort((left, right) => left.Item.Id.CompareTo(right.Item.Id));
         _currentPage = Mathf.Clamp(_currentPage, 1, GetMaxPage());
         int selectedItemIndex = FindItemIndex(_selectedItemId);
         if (selectedItemIndex >= 0)
@@ -343,6 +344,7 @@ public class InventoryView : UIBasePanel
         _btnUse.interactable = false;
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int simulationCoinCountBeforeUse = playerInfoManager.SimulationCoins;
         if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
         {
             Debug.LogError($"背包道具消耗失败: [{itemConfig.Id}]", this);
@@ -351,17 +353,62 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
-        if (tables.BaseTable.GetOrDefault(reward.itemId) == null)
+        GrantUseEffectReward(playerInfoManager, reward);
+        int? simulationCoinDisplayStart = null;
+        if (reward.itemId == BasePropertyId.SimulationCoin)
         {
-            playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+            MainMenuView mainMenuView = UIManager.GetInstance()
+                .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+            if (mainMenuView != null)
+            {
+                mainMenuView.SetSimulationCoinDisplay(simulationCoinCountBeforeUse);
+                simulationCoinDisplayStart = simulationCoinCountBeforeUse;
+            }
         }
 
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = new List<CommonRewardItemData> { reward },
-            rewardsAlreadyGranted = true
+            rewardsAlreadyGranted = true,
+            simulationCoinDisplayStart = simulationCoinDisplayStart
         });
+    }
+
+    private static void GrantUseEffectReward(
+        PlayerInfoManager playerInfoManager,
+        CommonRewardItemData reward)
+    {
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables.BaseTable.GetOrDefault(reward.itemId) == null)
+        {
+            playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+            return;
+        }
+
+        switch (reward.itemId)
+        {
+            case BasePropertyId.SimulationCoin:
+                playerInfoManager.AddSimulationCoins(reward.itemCount);
+                break;
+            case BasePropertyId.TimeCoin:
+                playerInfoManager.AddTimeCoins(reward.itemCount);
+                break;
+            case BasePropertyId.Health:
+                playerInfoManager.ChangeHealth(reward.itemCount);
+                break;
+            case BasePropertyId.WheelCoin:
+                playerInfoManager.AddWheelCoins(reward.itemCount);
+                break;
+            case BasePropertyId.BoxCoin:
+                playerInfoManager.AddBoxCoins(reward.itemCount);
+                break;
+            case BasePropertyId.CardCoin:
+                playerInfoManager.AddCardCoins(reward.itemCount);
+                break;
+            default:
+                Debug.LogError($"背包道具使用效果基础属性未处理: [{reward.itemId}]");
+                break;
+        }
     }
 
     private bool TryDrawUseEffect(string useEffect, out CommonRewardItemData reward)

@@ -61,6 +61,7 @@ public class LotteryView : UIBasePanel
     private bool _isLotteryInProgress;                      // 是否正在抽奖
     private Coroutine _rewardPresentationCoroutine;         // 延迟显示奖励的协程
     private List<CommonRewardItemData> _pendingRewards;     // 待展示的已结算奖励
+    private int? _pendingSimulationCoinDisplayStart;        // 待展示奖励的模拟币动画起始数量
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
     private readonly List<CommonRewardItemData> _boxRewards =
@@ -285,8 +286,12 @@ public class LotteryView : UIBasePanel
         }
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.NormalLottery));
-        ApplyRewards(rewards);
-        ScheduleRewardPresentation(rewards, LotteryDuration + LotteryRevealDuration + 0.01f);
+        int? simulationCoinDisplayStart = ApplyRewards(rewards);
+        PreserveSimulationCoinDisplay(simulationCoinDisplayStart);
+        ScheduleRewardPresentation(
+            rewards,
+            LotteryDuration + LotteryRevealDuration + 0.01f,
+            simulationCoinDisplayStart);
 
         _isLotteryInProgress = true;
         _normalButton.interactable = false;
@@ -441,9 +446,12 @@ public class LotteryView : UIBasePanel
         }
     }
 
-    private static void ApplyReward(CommonRewardItemData reward)
+    private static int? ApplyReward(CommonRewardItemData reward)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int? simulationCoinDisplayStart = reward.itemId == BasePropertyId.SimulationCoin
+            ? playerInfoManager.SimulationCoins
+            : null;
         switch (reward.itemId)
         {
             case BasePropertyId.SimulationCoin:
@@ -468,14 +476,24 @@ public class LotteryView : UIBasePanel
                 playerInfoManager.AddItem(reward.itemId, reward.itemCount);
                 break;
         }
+
+        return simulationCoinDisplayStart;
     }
 
-    private static void ApplyRewards(List<CommonRewardItemData> rewards)
+    private static int? ApplyRewards(List<CommonRewardItemData> rewards)
     {
+        int? simulationCoinDisplayStart = null;
         for (int i = 0; i < rewards.Count; i++)
         {
-            ApplyReward(rewards[i]);
+            int? rewardSimulationCoinDisplayStart = ApplyReward(rewards[i]);
+            if (!simulationCoinDisplayStart.HasValue &&
+                rewardSimulationCoinDisplayStart.HasValue)
+            {
+                simulationCoinDisplayStart = rewardSimulationCoinDisplayStart;
+            }
         }
+
+        return simulationCoinDisplayStart;
     }
 
     public static void GrantAndPresentReward(CommonRewardItemData reward)
@@ -486,8 +504,11 @@ public class LotteryView : UIBasePanel
             return;
         }
 
-        ApplyReward(reward);
-        PresentRewards(new List<CommonRewardItemData> { reward });
+        int? simulationCoinDisplayStart = ApplyReward(reward);
+        PreserveSimulationCoinDisplay(simulationCoinDisplayStart);
+        PresentRewards(
+            new List<CommonRewardItemData> { reward },
+            simulationCoinDisplayStart);
     }
 
     /// <summary>
@@ -559,10 +580,12 @@ public class LotteryView : UIBasePanel
         }
 
         CommonRewardItemData reward = _boxRewards[_selectedBoxIndex];
-        ApplyReward(reward);
+        int? simulationCoinDisplayStart = ApplyReward(reward);
+        PreserveSimulationCoinDisplay(simulationCoinDisplayStart);
         ScheduleRewardPresentation(
             new List<CommonRewardItemData> { reward },
-            BoxRevealDuration + 0.01f);
+            BoxRevealDuration + 0.01f,
+            simulationCoinDisplayStart);
 
         _isLotteryInProgress = true;
         _boxButton.interactable = false;
@@ -761,8 +784,12 @@ public class LotteryView : UIBasePanel
 
             List<CommonRewardItemData> rewards = new List<CommonRewardItemData> { cardReward };
             rewards.AddRange(ClaimCompletedCardLotteryAdditionRewards());
-            ApplyRewards(rewards);
-            ScheduleRewardPresentation(rewards, CardRevealDuration + 0.01f);
+            int? simulationCoinDisplayStart = ApplyRewards(rewards);
+            PreserveSimulationCoinDisplay(simulationCoinDisplayStart);
+            ScheduleRewardPresentation(
+                rewards,
+                CardRevealDuration + 0.01f,
+                simulationCoinDisplayStart);
 
             _isLotteryInProgress = true;
             _cardButton.interactable = false;
@@ -1321,16 +1348,18 @@ public class LotteryView : UIBasePanel
         }
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.MysteryWheelLottery));
-        ApplyRewards(rewards);
+        int? simulationCoinDisplayStart = ApplyRewards(rewards);
+        PreserveSimulationCoinDisplay(simulationCoinDisplayStart);
         if (drawCount > 1)
         {
-            PresentRewards(rewards);
+            PresentRewards(rewards, simulationCoinDisplayStart);
             return;
         }
 
         ScheduleRewardPresentation(
             rewards,
-            GetMysteryWheelAnimationDuration(selectedIndex) + MysteryWheelRevealDuration + 0.01f);
+            GetMysteryWheelAnimationDuration(selectedIndex) + MysteryWheelRevealDuration + 0.01f,
+            simulationCoinDisplayStart);
 
         _isLotteryInProgress = true;
         _mysButton.interactable = false;
@@ -1416,10 +1445,14 @@ public class LotteryView : UIBasePanel
         _mysFiveButton.interactable = true;
     }
 
-    private void ScheduleRewardPresentation(List<CommonRewardItemData> rewards, float delay)
+    private void ScheduleRewardPresentation(
+        List<CommonRewardItemData> rewards,
+        float delay,
+        int? simulationCoinDisplayStart)
     {
         CancelRewardPresentation();
         _pendingRewards = new List<CommonRewardItemData>(rewards);
+        _pendingSimulationCoinDisplayStart = simulationCoinDisplayStart;
         _rewardPresentationCoroutine = StartCoroutine(
             PresentRewardsAfterDelay(delay));
     }
@@ -1440,14 +1473,16 @@ public class LotteryView : UIBasePanel
         }
 
         List<CommonRewardItemData> rewards = _pendingRewards;
+        int? simulationCoinDisplayStart = _pendingSimulationCoinDisplayStart;
         _pendingRewards = null;
+        _pendingSimulationCoinDisplayStart = null;
         if (_rewardPresentationCoroutine != null)
         {
             StopCoroutine(_rewardPresentationCoroutine);
             _rewardPresentationCoroutine = null;
         }
 
-        PresentRewards(rewards);
+        PresentRewards(rewards, simulationCoinDisplayStart);
     }
 
     private void CancelRewardPresentation()
@@ -1459,14 +1494,33 @@ public class LotteryView : UIBasePanel
         }
 
         _pendingRewards = null;
+        _pendingSimulationCoinDisplayStart = null;
     }
 
-    private static void PresentRewards(List<CommonRewardItemData> rewards)
+    private static void PreserveSimulationCoinDisplay(int? simulationCoinDisplayStart)
+    {
+        if (!simulationCoinDisplayStart.HasValue)
+        {
+            return;
+        }
+
+        MainMenuView mainMenuView = UIManager.GetInstance()
+            .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+        if (mainMenuView != null)
+        {
+            mainMenuView.SetSimulationCoinDisplay(simulationCoinDisplayStart.Value);
+        }
+    }
+
+    private static void PresentRewards(
+        List<CommonRewardItemData> rewards,
+        int? simulationCoinDisplayStart = null)
     {
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = rewards,
-            rewardsAlreadyGranted = true
+            rewardsAlreadyGranted = true,
+            simulationCoinDisplayStart = simulationCoinDisplayStart
         });
     }
 

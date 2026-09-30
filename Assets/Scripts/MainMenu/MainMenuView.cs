@@ -721,6 +721,13 @@ public class MainMenuView : UIBasePanel
             .SetTarget(_simulationCoinsText);
     }
 
+    /// <summary>设置模拟币文本，等待飞币抵达后再播放数量递增动画。</summary>
+    public void SetSimulationCoinDisplay(int amount)
+    {
+        DOTween.Kill(_simulationCoinsText);
+        _simulationCoinsText.text = amount.ToString();
+    }
+
     /// <summary>
     /// 获取主界面模拟币图标，供飞币特效设为终点并播放抵达反馈
     /// </summary>
