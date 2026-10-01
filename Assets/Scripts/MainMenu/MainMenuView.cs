@@ -465,7 +465,7 @@ public class MainMenuView : UIBasePanel
         }
 
         _missionPanel.anchoredPosition = pointerPosition - _moveOffset;
-        ClampMissionPanelPosition();
+        ClampMissionPanelPosition(pointerEventData.pressEventCamera);
     }
 
     private bool TryGetMissionPanelLocalPosition(
@@ -482,7 +482,7 @@ public class MainMenuView : UIBasePanel
                 out localPosition);
     }
 
-    private void ClampMissionPanelPosition()
+    private void ClampMissionPanelPosition(Camera eventCamera)
     {
         RectTransform parent = _missionPanel.parent as RectTransform;
         if (parent == null)
@@ -497,26 +497,50 @@ public class MainMenuView : UIBasePanel
         float maxY = float.MinValue;
         for (int i = 0; i < _missionPanelCorners.Length; i++)
         {
-            Vector3 corner = parent.InverseTransformPoint(_missionPanelCorners[i]);
-            minX = Mathf.Min(minX, corner.x);
-            maxX = Mathf.Max(maxX, corner.x);
-            minY = Mathf.Min(minY, corner.y);
-            maxY = Mathf.Max(maxY, corner.y);
+            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(
+                eventCamera,
+                _missionPanelCorners[i]);
+            minX = Mathf.Min(minX, screenPosition.x);
+            maxX = Mathf.Max(maxX, screenPosition.x);
+            minY = Mathf.Min(minY, screenPosition.y);
+            maxY = Mathf.Max(maxY, screenPosition.y);
         }
 
-        Rect parentRect = parent.rect;
+        Rect screenRect = new Rect(0f, 0f, Screen.width, Screen.height);
         Vector2 offset = Vector2.zero;
         offset.x = GetContainedOffset(
             minX,
             maxX,
-            parentRect.xMin,
-            parentRect.xMax);
+            screenRect.xMin,
+            screenRect.xMax);
         offset.y = GetContainedOffset(
             minY,
             maxY,
-            parentRect.yMin,
-            parentRect.yMax);
-        _missionPanel.anchoredPosition += offset;
+            screenRect.yMin,
+            screenRect.yMax);
+        if (offset == Vector2.zero)
+        {
+            return;
+        }
+
+        Vector2 panelScreenPosition = RectTransformUtility.WorldToScreenPoint(
+            eventCamera,
+            _missionPanel.position);
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parent,
+                panelScreenPosition,
+                eventCamera,
+                out Vector2 panelLocalPosition) ||
+            !RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parent,
+                panelScreenPosition + offset,
+                eventCamera,
+                out Vector2 clampedLocalPosition))
+        {
+            return;
+        }
+
+        _missionPanel.anchoredPosition += clampedLocalPosition - panelLocalPosition;
     }
 
     private static float GetContainedOffset(
