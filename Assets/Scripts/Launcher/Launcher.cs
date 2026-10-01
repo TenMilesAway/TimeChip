@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -540,7 +541,15 @@ public class Launcher : SingletonMono<Launcher>
             health = 100,
             maxHealth = 100,
             simulationCoins = 100,
-            workedThisTurn = false
+            workedThisTurn = false,
+            inventory = new List<PlayerInventoryItem>
+            {
+                new PlayerInventoryItem
+                {
+                    itemId = 6020,
+                    amount = 1
+                }
+            }
         };
     }
 
