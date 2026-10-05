@@ -278,7 +278,10 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         int unlockedCount = Mathf.Min(unlockCount, lockedCards.Count);
         for (int index = 0; index < unlockedCount; index++)
         {
-            int randomIndex = UnityEngine.Random.Range(index, lockedCards.Count);
+            int randomIndex = TurnRandom.Range(
+                $"Grow.UnlockCard.{_data.memoryPoints}.{index}",
+                index,
+                lockedCards.Count);
             GrowCardData selectedCard = lockedCards[index];
             lockedCards[index] = lockedCards[randomIndex];
             lockedCards[randomIndex] = selectedCard;

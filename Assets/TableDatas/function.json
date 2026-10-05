@@ -12,6 +12,18 @@
     "unlockItemId": 0
   },
   {
+    "id": "VendingMachine",
+    "name": "自动售货机",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "LostWallet",
+    "name": "遗失的钱包",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
     "id": "HomeStore",
     "name": "家具店",
     "unlockMissionId": 1001,

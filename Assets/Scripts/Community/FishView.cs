@@ -67,6 +67,7 @@ public class FishView : UIBasePanel
     private bool _isCatchActive;
     private float _fishTargetY;
     private float _fishMoveSpeed;
+    private int _fishMovementRandomIndex;
     private float _fishMinY;
     private float _fishMaxY;
     private float _catchMinY;
@@ -492,7 +493,10 @@ public class FishView : UIBasePanel
     {
         yield return PlayAnimationOnce(AnimationStart);
         _animatorFishRod.Play(AnimationIdle, 0, 0f);
-        yield return new WaitForSeconds(Random.Range(BiteWaitMinSeconds, BiteWaitMaxSeconds));
+        yield return new WaitForSeconds(TurnRandom.Range(
+            $"Fish.BiteWait.{PlayerInfoManager.GetInstance().EquippedFishBaitItemId}",
+            BiteWaitMinSeconds,
+            BiteWaitMaxSeconds));
         yield return PlayAnimationOnce(AnimationEnd);
 
         int equippedBaitItemId = PlayerInfoManager.GetInstance().EquippedFishBaitItemId;
@@ -659,7 +663,10 @@ public class FishView : UIBasePanel
     private void SelectNextFishTarget()
     {
         float currentY = _rectFish.anchoredPosition.y;
-        _fishTargetY = Random.Range(_fishMinY, _fishMaxY);
+        _fishTargetY = TurnRandom.Range(
+            $"Fish.TargetY.{_fishMovementRandomIndex}",
+            _fishMinY,
+            _fishMaxY);
         if (Mathf.Abs(_fishTargetY - currentY) < 1f)
         {
             _fishTargetY = currentY < (_fishMinY + _fishMaxY) * 0.5f
@@ -667,9 +674,11 @@ public class FishView : UIBasePanel
                 : _fishMinY;
         }
 
-        float duration = Random.Range(
+        float duration = TurnRandom.Range(
+            $"Fish.MoveDuration.{_fishMovementRandomIndex}",
             FishMoveDurationMinSeconds,
             FishMoveDurationMaxSeconds);
+        _fishMovementRandomIndex++;
         _fishMoveSpeed = Mathf.Abs(_fishTargetY - currentY) / duration;
     }
 

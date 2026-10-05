@@ -191,7 +191,7 @@ public class ConvenienceStoreView : UIBasePanel
                 totalWeight += pool[j].Weight;
             }
 
-            long roll = (long)(Random.value * totalWeight);
+            long roll = TurnRandom.Range($"ConvenienceStore.Offer.{i}", totalWeight);
             long accumulatedWeight = 0;
             int selectedIndex = pool.Count - 1;
             for (int j = 0; j < pool.Count; j++)

@@ -334,7 +334,10 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        if (!TryDrawUseEffect(itemConfig.UseEffect, out CommonRewardItemData reward))
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        string randomKey =
+            $"Inventory.UseEffect.{itemConfig.Id}.{playerInfoManager.GetItemCount(itemConfig.Id)}";
+        if (!TryDrawUseEffect(itemConfig.UseEffect, randomKey, out CommonRewardItemData reward))
         {
             Debug.LogError($"背包道具使用效果配置无效: [{itemConfig.Id}], [{itemConfig.UseEffect}]", this);
             return;
@@ -343,7 +346,6 @@ public class InventoryView : UIBasePanel
         _isUsingSelectedItem = true;
         _btnUse.interactable = false;
 
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         int simulationCoinCountBeforeUse = playerInfoManager.SimulationCoins;
         if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
         {
@@ -411,7 +413,10 @@ public class InventoryView : UIBasePanel
         }
     }
 
-    private bool TryDrawUseEffect(string useEffect, out CommonRewardItemData reward)
+    private bool TryDrawUseEffect(
+        string useEffect,
+        string randomKey,
+        out CommonRewardItemData reward)
     {
         reward = null;
         if (string.IsNullOrWhiteSpace(useEffect))
@@ -448,7 +453,7 @@ public class InventoryView : UIBasePanel
             return false;
         }
 
-        double randomValue = UnityEngine.Random.value * totalWeight;
+        long randomValue = TurnRandom.Range(randomKey, totalWeight);
         long accumulatedWeight = 0;
         for (int i = 0; i < rewards.Count; i++)
         {

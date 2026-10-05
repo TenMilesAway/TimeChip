@@ -280,7 +280,8 @@ public class WorkView : UIBasePanel
 
     private static int CalculateCoinReward(int baseCoinReward, int rewardSection)
     {
-        int variationPercent = UnityEngine.Random.Range(
+        int variationPercent = TurnRandom.Range(
+            $"Work.CoinReward.{baseCoinReward}.{rewardSection}",
             -Mathf.Max(0, rewardSection),
             Mathf.Max(0, rewardSection) + 1);
         return Mathf.Max(0, Mathf.RoundToInt(baseCoinReward * (100 + variationPercent) / 100f));

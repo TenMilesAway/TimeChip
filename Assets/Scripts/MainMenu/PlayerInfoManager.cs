@@ -15,6 +15,9 @@ public sealed class PlayerInfoData
     /// <summary>当前年份中的月份, 取值范围为 1 至 12</summary>
     public int currentMonth = 1;
 
+    /// <summary>当前回合的随机种子</summary>
+    public int turnRandomSeed;
+
     /// <summary>玩家的当前健康值</summary>
     public int health = 100;
 
@@ -78,6 +81,24 @@ public sealed class PlayerInfoData
 
     /// <summary>每个垃圾桶点位当前显示的子物体索引，-1 表示未显示或已翻取</summary>
     public List<int> trashCanChildIndices = new List<int>();
+
+    /// <summary>自动售货机上次补货的年龄</summary>
+    public int vendingMachineRefreshAge = -1;
+
+    /// <summary>自动售货机上次补货的月份</summary>
+    public int vendingMachineRefreshMonth = -1;
+
+    /// <summary>自动售货机在当前回合是否有货</summary>
+    public bool vendingMachineHasStock;
+
+    /// <summary>遗失钱包上次刷新的年龄</summary>
+    public int lostWalletRefreshAge = -1;
+
+    /// <summary>遗失钱包上次刷新的月份</summary>
+    public int lostWalletRefreshMonth = -1;
+
+    /// <summary>当前回合遗失钱包出现的点位索引，-1 表示未出现或已处理</summary>
+    public int lostWalletPointIndex = -1;
 
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
@@ -365,6 +386,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取当前月份, 范围为 1 至 12</summary>
     public int CurrentMonth { get { return _data.currentMonth; } }
+
+    /// <summary>获取当前回合随机种子。</summary>
+    public int TurnRandomSeed { get { return _data.turnRandomSeed; } }
 
     /// <summary>获取玩家当前健康值</summary>
     public int Health { get { return _data.health; } }
@@ -714,11 +738,100 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return true;
     }
 
+    /// <summary>确保自动售货机已在当前回合补货。</summary>
+    public void EnsureCurrentTurnVendingMachineStock()
+    {
+        if (_data.vendingMachineRefreshAge == _data.currentAge &&
+            _data.vendingMachineRefreshMonth == _data.currentMonth)
+        {
+            return;
+        }
+
+        _data.vendingMachineRefreshAge = _data.currentAge;
+        _data.vendingMachineRefreshMonth = _data.currentMonth;
+        _data.vendingMachineHasStock = true;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>获取自动售货机在当前回合是否有货。</summary>
+    public bool HasCurrentTurnVendingMachineStock()
+    {
+        return _data.vendingMachineRefreshAge == _data.currentAge &&
+            _data.vendingMachineRefreshMonth == _data.currentMonth &&
+            _data.vendingMachineHasStock;
+    }
+
+    /// <summary>尝试购买当前回合自动售货机中的商品。</summary>
+    public bool TryPurchaseCurrentTurnVendingMachine(int cost)
+    {
+        if (cost < 0 ||
+            !HasCurrentTurnVendingMachineStock() ||
+            _data.simulationCoins < cost)
+        {
+            return false;
+        }
+
+        _data.simulationCoins -= cost;
+        _data.vendingMachineHasStock = false;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public bool TryGetCurrentTurnLostWalletPointIndex(
+        int expectedPointCount,
+        out int pointIndex)
+    {
+        pointIndex = -1;
+        if (expectedPointCount <= 0 ||
+            _data.lostWalletRefreshAge != _data.currentAge ||
+            _data.lostWalletRefreshMonth != _data.currentMonth ||
+            _data.lostWalletPointIndex < -1 ||
+            _data.lostWalletPointIndex >= expectedPointCount)
+        {
+            return false;
+        }
+
+        pointIndex = _data.lostWalletPointIndex;
+        return true;
+    }
+
+    public void SetCurrentTurnLostWalletPointIndex(int pointIndex, int pointCount)
+    {
+        if (pointCount <= 0 || pointIndex < -1 || pointIndex >= pointCount)
+        {
+            Debug.LogError("遗失钱包点位索引无效。");
+            return;
+        }
+
+        _data.lostWalletRefreshAge = _data.currentAge;
+        _data.lostWalletRefreshMonth = _data.currentMonth;
+        _data.lostWalletPointIndex = pointIndex;
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool TryConsumeCurrentTurnLostWallet(int pointIndex, int pointCount)
+    {
+        if (!TryGetCurrentTurnLostWalletPointIndex(pointCount, out int currentPointIndex) ||
+            currentPointIndex != pointIndex)
+        {
+            return false;
+        }
+
+        _data.lostWalletPointIndex = -1;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
     public void Init(PlayerInfoData initialData = null)
     {
         _data = initialData == null ? new PlayerInfoData() : CreateCopy(initialData);
         NormalizeData();
+        if (_data.turnRandomSeed == 0)
+        {
+            _data.turnRandomSeed = CreateInitialTurnRandomSeed();
+        }
+
         NotifyPlayerInfoChanged();
     }
 
@@ -992,6 +1105,19 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>尝试消耗当前社区等级的经验，经验不足时不发生改变。</summary>
+    public bool TrySpendCommunityCentreExperience(int amount)
+    {
+        if (amount <= 0 || _data.communityCentreExperience < amount)
+        {
+            return false;
+        }
+
+        _data.communityCentreExperience -= amount;
+        NotifyPlayerInfoChanged();
+        return true;
     }
 
     /// <summary>获取升至下一社区等级所需的经验；满级时返回零。</summary>
@@ -1795,6 +1921,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.currentAge++;
         }
 
+        _data.turnRandomSeed = CreateNextTurnRandomSeed(_data.turnRandomSeed);
+        _data.vendingMachineRefreshAge = _data.currentAge;
+        _data.vendingMachineRefreshMonth = _data.currentMonth;
+        _data.vendingMachineHasStock = true;
         _data.timeCoins = (int)Math.Min(
             int.MaxValue,
             (long)_data.timeCoins + MonthlyTimeCoinReward);
@@ -1887,19 +2017,19 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         switch (itemLevel)
         {
             case 1:
-                experience = UnityEngine.Random.Range(10, 15);
+                experience = TurnRandom.Range("Community.NeedExperience.Level1", 10, 15);
                 return true;
             case 2:
-                experience = UnityEngine.Random.Range(16, 19);
+                experience = TurnRandom.Range("Community.NeedExperience.Level2", 16, 19);
                 return true;
             case 3:
-                experience = UnityEngine.Random.Range(20, 27);
+                experience = TurnRandom.Range("Community.NeedExperience.Level3", 20, 27);
                 return true;
             case 4:
-                experience = UnityEngine.Random.Range(50, 61);
+                experience = TurnRandom.Range("Community.NeedExperience.Level4", 50, 61);
                 return true;
             case 5:
-                experience = UnityEngine.Random.Range(100, 121);
+                experience = TurnRandom.Range("Community.NeedExperience.Level5", 100, 121);
                 return true;
             default:
                 experience = 0;
@@ -1910,6 +2040,23 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private static int IncreaseClinicServicePrice(int price, int increase)
     {
         return (int)Math.Min(int.MaxValue, (long)price + increase);
+    }
+
+    private static int CreateInitialTurnRandomSeed()
+    {
+        long ticks = DateTime.UtcNow.Ticks;
+        return unchecked((int)(ticks ^ (ticks >> 32) ^ Environment.TickCount));
+    }
+
+    private static int CreateNextTurnRandomSeed(int currentSeed)
+    {
+        unchecked
+        {
+            uint value = (uint)currentSeed + 0x9e3779b9;
+            value = (value ^ (value >> 16)) * 0x85ebca6b;
+            value = (value ^ (value >> 13)) * 0xc2b2ae35;
+            return (int)(value ^ (value >> 16));
+        }
     }
 
     /// <summary>修正初始化数据中的无效值, 确保内部状态始终处于合法范围</summary>
@@ -2135,6 +2282,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         {
             currentAge = source.currentAge,
             currentMonth = source.currentMonth,
+            turnRandomSeed = source.turnRandomSeed,
             health = source.health,
             maxHealth = source.maxHealth,
             simulationCoins = source.simulationCoins,
@@ -2158,6 +2306,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             trashCanChildIndices = source.trashCanChildIndices == null
                 ? new List<int>()
                 : new List<int>(source.trashCanChildIndices),
+            vendingMachineRefreshAge = source.vendingMachineRefreshAge,
+            vendingMachineRefreshMonth = source.vendingMachineRefreshMonth,
+            vendingMachineHasStock = source.vendingMachineHasStock,
+            lostWalletRefreshAge = source.lostWalletRefreshAge,
+            lostWalletRefreshMonth = source.lostWalletRefreshMonth,
+            lostWalletPointIndex = source.lostWalletPointIndex,
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,

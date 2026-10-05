@@ -105,8 +105,20 @@ public class CurrencyFlyAnimation : MonoBehaviour
             GameObject iconObject = CreateIcon(icon, layer, startPosition);
             _icons.Add(iconObject);
 
-            Vector2 explosionPosition = startPosition + UnityEngine.Random.insideUnitCircle * ExplosionRadius;
-            float delay = UnityEngine.Random.Range(0f, 0.2f);
+            float angle = TurnRandom.Range(
+                $"CurrencyFly.ExplosionAngle.{iconCount}.{i}",
+                0f,
+                Mathf.PI * 2f);
+            float distance = TurnRandom.Range(
+                $"CurrencyFly.ExplosionDistance.{iconCount}.{i}",
+                0f,
+                ExplosionRadius);
+            Vector2 explosionPosition = startPosition +
+                new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+            float delay = TurnRandom.Range(
+                $"CurrencyFly.Delay.{iconCount}.{i}",
+                0f,
+                0.2f);
 
             DOTween.Sequence()
                 .Append(iconObject.GetComponent<RectTransform>()

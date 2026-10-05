@@ -362,7 +362,7 @@ public static class MissionAPI
             return;
         }
 
-        if (UnityEngine.Random.value >= RandomMissionChance ||
+        if (!TurnRandom.Chance("Mission.MonthlyOffer.Spawn", RandomMissionChance) ||
             !TryPickRandomMissionTarget(
                 missionConfig.RandomTarget,
                 out int itemId,
@@ -411,7 +411,7 @@ public static class MissionAPI
             return false;
         }
 
-        int roll = UnityEngine.Random.Range(0, totalWeight);
+        int roll = TurnRandom.Range("Mission.MonthlyOffer.Target", 0, totalWeight);
         for (int i = 0; i < candidates.Count; i++)
         {
             roll -= candidates[i].weight;

@@ -252,7 +252,9 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         {
             cfg.BuffConfig config = configurations[i];
             if (config.ActivationType == "RandomOnTurnStart" &&
-                UnityEngine.Random.value < Mathf.Clamp01(config.ActivationChance))
+                TurnRandom.Chance(
+                    $"Buff.AutoActivation.{config.Id}",
+                    Mathf.Clamp01(config.ActivationChance)))
             {
                 TryAddBuff(config.Id);
             }

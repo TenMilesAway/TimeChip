@@ -458,7 +458,11 @@ public class CommunityCentreView : UIBasePanel
         List<cfg.CommunityCentre> proposals = new List<cfg.CommunityCentre>(count);
         for (int i = 0; i < count; i++)
         {
-            int randomIndex = Random.Range(i, pool.Count);
+            int randomIndex = TurnRandom.Range(
+                $"Community.Proposal.{PlayerInfoManager.GetInstance().CommunityCentreLevel}." +
+                $"{PlayerInfoManager.GetInstance().CommunityCentreProposalChoiceCount}.{i}",
+                i,
+                pool.Count);
             cfg.CommunityCentre selected = pool[randomIndex];
             pool[randomIndex] = pool[i];
             pool[i] = selected;
@@ -556,7 +560,10 @@ public class CommunityCentreView : UIBasePanel
         List<cfg.Item> needs = new List<cfg.Item>(MonthlyNeedCount);
         for (int i = 0; i < MonthlyNeedCount; i++)
         {
-            int randomIndex = Random.Range(i, pool.Count);
+            int randomIndex = TurnRandom.Range(
+                $"Community.MonthlyNeed.{i}",
+                i,
+                pool.Count);
             cfg.Item selected = pool[randomIndex];
             pool[randomIndex] = pool[i];
             pool[i] = selected;

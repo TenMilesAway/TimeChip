@@ -274,7 +274,12 @@ public class LotteryView : UIBasePanel
     {
         if (_isLotteryInProgress) return;
 
-        if (!TryDrawRewards(LotteryPoolId, drawCount, out List<CommonRewardItemData> rewards))
+        string drawKey = $"Lottery.Normal.{PlayerInfoManager.GetInstance().TimeCoins}";
+        if (!TryDrawRewards(
+                LotteryPoolId,
+                drawCount,
+                drawKey,
+                out List<CommonRewardItemData> rewards))
         {
             Debug.LogError($"抽奖奖励配置无效: [{LotteryPoolId}]", this);
             return;
@@ -735,7 +740,10 @@ public class LotteryView : UIBasePanel
         {
             for (int i = rewards.Count - 1; i > 0; i--)
             {
-                int randomIndex = UnityEngine.Random.Range(0, i + 1);
+                int randomIndex = TurnRandom.Range(
+                    $"Lottery.Card.AdditionShuffle.{i}",
+                    0,
+                    i + 1);
                 CommonRewardItemData temporaryReward = rewards[i];
                 rewards[i] = rewards[randomIndex];
                 rewards[randomIndex] = temporaryReward;
@@ -767,7 +775,10 @@ public class LotteryView : UIBasePanel
                 return;
             }
 
-            if (!TryDrawReward(CardLotteryPoolId, out CommonRewardItemData cardReward))
+            if (!TryDrawReward(
+                    CardLotteryPoolId,
+                    $"Lottery.Card.{cardIndex}",
+                    out CommonRewardItemData cardReward))
             {
                 Debug.LogError($"时光星阵奖励配置无效: [{CardLotteryPoolId}]", this);
                 return;
@@ -820,7 +831,10 @@ public class LotteryView : UIBasePanel
                 return false;
             }
 
-            cardIndex = unopenedIndices[UnityEngine.Random.Range(0, unopenedIndices.Count)];
+            cardIndex = unopenedIndices[TurnRandom.Range(
+                $"Lottery.Card.Select.{unopenedIndices.Count}",
+                0,
+                unopenedIndices.Count)];
             return true;
         }
 
@@ -919,7 +933,10 @@ public class LotteryView : UIBasePanel
             _cardButton.interactable = HasUnopenedCardLotteryItem();
         }
 
-    public static bool TryDrawReward(int lotteryPoolId, out CommonRewardItemData reward)
+    public static bool TryDrawReward(
+        int lotteryPoolId,
+        string randomKey,
+        out CommonRewardItemData reward)
     {
         reward = null;
 
@@ -947,7 +964,7 @@ public class LotteryView : UIBasePanel
             totalWeight += rewards[i].Weight;
         }
 
-        double randomValue = UnityEngine.Random.value * totalWeight;
+        long randomValue = TurnRandom.Range(randomKey, totalWeight);
         long accumulatedWeight = 0;
 
         for (int i = 0; i < rewards.Count; i++)
@@ -972,12 +989,16 @@ public class LotteryView : UIBasePanel
     private bool TryDrawRewards(
         int lotteryPoolId,
         int drawCount,
+        string drawKey,
         out List<CommonRewardItemData> rewards)
     {
         rewards = new List<CommonRewardItemData>(drawCount);
         for (int i = 0; i < drawCount; i++)
         {
-            if (!TryDrawReward(lotteryPoolId, out CommonRewardItemData reward))
+            if (!TryDrawReward(
+                    lotteryPoolId,
+                    $"{drawKey}.{i}",
+                    out CommonRewardItemData reward))
             {
                 rewards.Clear();
                 return false;
@@ -1018,7 +1039,10 @@ public class LotteryView : UIBasePanel
                 totalWeight += candidates[j].Weight;
             }
 
-            long randomValue = (long)(UnityEngine.Random.value * totalWeight);
+            long randomValue = TurnRandom.Range(
+                $"Lottery.Box.{PlayerInfoManager.GetInstance().CurrentAge}." +
+                $"{PlayerInfoManager.GetInstance().CurrentMonth}.{i}",
+                totalWeight);
             long accumulatedWeight = 0;
             int selectedIndex = candidates.Count - 1;
             for (int j = 0; j < candidates.Count; j++)
@@ -1285,7 +1309,9 @@ public class LotteryView : UIBasePanel
                 totalWeight += pool[j].Weight;
             }
 
-            long randomValue = (long)(UnityEngine.Random.value * totalWeight);
+            long randomValue = TurnRandom.Range(
+                $"Lottery.MysteryWheel.{i}",
+                totalWeight);
             long accumulatedWeight = 0;
             int selectedIndex = pool.Count - 1;
             for (int j = 0; j < pool.Count; j++)
@@ -1338,7 +1364,10 @@ public class LotteryView : UIBasePanel
         int selectedIndex = 0;
         for (int i = 0; i < drawCount; i++)
         {
-            selectedIndex = UnityEngine.Random.Range(0, MysteryWheelRewardCount);
+            selectedIndex = TurnRandom.Range(
+                $"Lottery.MysteryWheel.Draw.{PlayerInfoManager.GetInstance().WheelCoins}.{i}",
+                0,
+                MysteryWheelRewardCount);
             rewards.Add(_mysteryWheelRewards[selectedIndex]);
         }
 
@@ -1599,7 +1628,7 @@ public class LotteryView : UIBasePanel
         PlayIdleDecorationAnimation(
             _lotteryBox,
             _lotteryBoxScale,
-            UnityEngine.Random.Range(2.5f, 5f));
+            TurnRandom.Range("Lottery.BubbleMoveDuration", 2.5f, 5f));
     }
 
     private void PlayIdleDecorationAnimation(
@@ -1611,7 +1640,7 @@ public class LotteryView : UIBasePanel
         const float restoreDuration = 0.45f;
 
         DOTween.Sequence()
-            .AppendInterval(UnityEngine.Random.Range(0.5f, interval))
+            .AppendInterval(TurnRandom.Range("Lottery.BubbleInterval", 0.5f, interval))
             .Append(decoration.DOScale(
                 originalScale * IdleDecorationScaleMultiplier,
                 expandDuration))

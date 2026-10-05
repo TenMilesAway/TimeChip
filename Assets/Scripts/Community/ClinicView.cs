@@ -119,7 +119,9 @@ public class ClinicView : UIBasePanel
             return;
         }
 
-        bool restoresHealth = Random.value < ExaminationHealthRecoveryChance;
+        bool restoresHealth = TurnRandom.Chance(
+            "Clinic.Examination.RestoresHealth",
+            ExaminationHealthRecoveryChance);
         List<cfg.BuffConfig> availableBuffs = restoresHealth
             ? null
             : GetAvailableExaminationBuffs(playerInfoManager);
@@ -149,7 +151,8 @@ public class ClinicView : UIBasePanel
         if (restoresHealth)
         {
             int healthBefore = playerInfoManager.Health;
-            int healthRecovery = Random.Range(
+            int healthRecovery = TurnRandom.Range(
+                "Clinic.Examination.HealthRecovery",
                 ExaminationMinimumHealthRecovery,
                 ExaminationMaximumHealthRecovery + 1);
             playerInfoManager.ChangeHealth(healthRecovery);
@@ -158,7 +161,10 @@ public class ClinicView : UIBasePanel
             return;
         }
 
-        cfg.BuffConfig selectedBuff = availableBuffs[Random.Range(0, availableBuffs.Count)];
+        cfg.BuffConfig selectedBuff = availableBuffs[TurnRandom.Range(
+            "Clinic.Examination.Buff",
+            0,
+            availableBuffs.Count)];
         if (!BuffSystem.GetInstance().TryAddBuff(selectedBuff.Id))
         {
             Debug.LogError($"体检激活 BUFF 失败: [{selectedBuff.Id}]", this);
