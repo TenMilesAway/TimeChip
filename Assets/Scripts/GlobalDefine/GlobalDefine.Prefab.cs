@@ -27,7 +27,7 @@ public class GlobalDefine
     public const string CommonTipView = "Assets/Art/Common/Prefab/CommonTipView.prefab";                   // System
     public const string CommonRewardPanel = "Assets/Art/Common/Prefab/CommonRewardPanel.prefab";           // System
     public const string CommonOverPanel = "Assets/Art/Common/Prefab/CommonOverPanel.prefab";               // System
-    public const string CommonMessageView = "Assets/Art/Common/Prefab/CommonMessageView.prefab";           // System
+    public const string CommonMessageView = "Assets/Art/Common/Prefab/CommonMessageView.prefab";           // System, 10
     public const string SettingView = "Assets/Art/Setting/Prefab/SettingView.prefab";                      // System
     public const string CommonItemDetailView = "Assets/Art/Common/Prefab/CommonItemDetailView.prefab";     // System
     public const string CommonConfirmPanel = "Assets/Art/Common/Prefab/CommonConfirmPanel.prefab";         // System

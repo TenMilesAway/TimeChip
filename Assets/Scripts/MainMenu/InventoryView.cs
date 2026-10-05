@@ -256,7 +256,7 @@ public class InventoryView : UIBasePanel
         _txtLevel.gameObject.SetActive(true);
         _txtDetail.gameObject.SetActive(true);
         _txtNum.gameObject.SetActive(true);
-        _txtNumSplit.gameObject.SetActive(true);
+        _txtNumSplit.gameObject.SetActive(false);  // 默认隐藏
         _txtNumPrefix.gameObject.SetActive(true);
         _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
         _btnUse.interactable = entry.Item.CanUse == 1;

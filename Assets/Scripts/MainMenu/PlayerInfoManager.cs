@@ -100,6 +100,24 @@ public sealed class PlayerInfoData
     /// <summary>当前回合遗失钱包出现的点位索引，-1 表示未出现或已处理</summary>
     public int lostWalletPointIndex = -1;
 
+    /// <summary>流浪猫食物盆上次刷新的年龄</summary>
+    public int strayCatFoodBowlRefreshAge = -1;
+
+    /// <summary>流浪猫食物盆上次刷新的月份</summary>
+    public int strayCatFoodBowlRefreshMonth = -1;
+
+    /// <summary>当前回合流浪猫食物盆出现的点位索引，-1 表示未出现或已喂养</summary>
+    public int strayCatFoodBowlPointIndex = -1;
+
+    /// <summary>社区募捐箱上次刷新的年龄</summary>
+    public int donationRefreshAge = -1;
+
+    /// <summary>社区募捐箱上次刷新的月份</summary>
+    public int donationRefreshMonth = -1;
+
+    /// <summary>当前回合社区募捐箱是否可捐赠</summary>
+    public bool donationAvailable;
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -370,7 +388,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private const int MonthlyTimeCoinReward = 1;
     private const int MinCommunityCentreLevel = 1;
     private const int MaxCommunityCentreLevel = 6;
-    private const int CommunitySupplyGiftBoxItemId = 3001;
+    private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int CureService1PriceIncrease = 30;
     private const int CureService2PriceIncrease = 60;
     public const int MaxWorkLevel = 5;
@@ -818,6 +836,88 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         _data.lostWalletPointIndex = -1;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public bool TryGetCurrentTurnStrayCatFoodBowlPointIndex(
+        int expectedPointCount,
+        out int pointIndex)
+    {
+        pointIndex = -1;
+        if (expectedPointCount <= 0 ||
+            _data.strayCatFoodBowlRefreshAge != _data.currentAge ||
+            _data.strayCatFoodBowlRefreshMonth != _data.currentMonth ||
+            _data.strayCatFoodBowlPointIndex < -1 ||
+            _data.strayCatFoodBowlPointIndex >= expectedPointCount)
+        {
+            return false;
+        }
+
+        pointIndex = _data.strayCatFoodBowlPointIndex;
+        return true;
+    }
+
+    public void SetCurrentTurnStrayCatFoodBowlPointIndex(
+        int pointIndex,
+        int pointCount)
+    {
+        if (pointCount <= 0 || pointIndex < -1 || pointIndex >= pointCount)
+        {
+            Debug.LogError("流浪猫食物盆点位索引无效。");
+            return;
+        }
+
+        _data.strayCatFoodBowlRefreshAge = _data.currentAge;
+        _data.strayCatFoodBowlRefreshMonth = _data.currentMonth;
+        _data.strayCatFoodBowlPointIndex = pointIndex;
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool TryConsumeCurrentTurnStrayCatFoodBowl(int pointIndex, int pointCount)
+    {
+        if (!TryGetCurrentTurnStrayCatFoodBowlPointIndex(
+                pointCount,
+                out int currentPointIndex) ||
+            currentPointIndex != pointIndex)
+        {
+            return false;
+        }
+
+        _data.strayCatFoodBowlPointIndex = -1;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public bool TryGetCurrentTurnDonationAvailable(out bool isAvailable)
+    {
+        isAvailable = false;
+        if (_data.donationRefreshAge != _data.currentAge ||
+            _data.donationRefreshMonth != _data.currentMonth)
+        {
+            return false;
+        }
+
+        isAvailable = _data.donationAvailable;
+        return true;
+    }
+
+    public void SetCurrentTurnDonationAvailable(bool isAvailable)
+    {
+        _data.donationRefreshAge = _data.currentAge;
+        _data.donationRefreshMonth = _data.currentMonth;
+        _data.donationAvailable = isAvailable;
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool TryConsumeCurrentTurnDonation()
+    {
+        if (!TryGetCurrentTurnDonationAvailable(out bool isAvailable) || !isAvailable)
+        {
+            return false;
+        }
+
+        _data.donationAvailable = false;
         NotifyPlayerInfoChanged();
         return true;
     }
@@ -2312,6 +2412,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             lostWalletRefreshAge = source.lostWalletRefreshAge,
             lostWalletRefreshMonth = source.lostWalletRefreshMonth,
             lostWalletPointIndex = source.lostWalletPointIndex,
+            strayCatFoodBowlRefreshAge = source.strayCatFoodBowlRefreshAge,
+            strayCatFoodBowlRefreshMonth = source.strayCatFoodBowlRefreshMonth,
+            strayCatFoodBowlPointIndex = source.strayCatFoodBowlPointIndex,
+            donationRefreshAge = source.donationRefreshAge,
+            donationRefreshMonth = source.donationRefreshMonth,
+            donationAvailable = source.donationAvailable,
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,

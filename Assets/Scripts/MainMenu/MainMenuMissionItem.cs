@@ -34,6 +34,23 @@ public class MainMenuMissionItem : MonoBehaviour
 
         _txtTitle.text = missionConfig.Name;
         _txtDes.text = missionConfig.Desc;
+        if (MissionAPI.TryGetMissionTarget(
+                mission.id,
+                out int targetItemId,
+                out int targetItemCount))
+        {
+            cfg.Item targetItem = DataTableMananger.GetInstance()
+                .Tables
+                .ItemTable
+                .GetOrDefault(targetItemId);
+            if (targetItem != null)
+            {
+                _txtDes.text = string.Format(
+                    missionConfig.Desc,
+                    targetItem.Name,
+                    targetItemCount);
+            }
+        }
 
         int target = Mathf.Max(1, int.TryParse(missionConfig.Target, out int value) ? value : 1);
         MissionProgress[] progresses = mission.Progresses;

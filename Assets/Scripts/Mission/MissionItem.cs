@@ -59,6 +59,7 @@ public class MissionItem : MonoBehaviour
             _btnGet.onClick.AddListener(() => claimAction());
         }
 
+        gameObject.SetActive(true);
         SetIconAsync(missionConfig, _requestVersion);
         SetRewardsAsync(missionConfig, _requestVersion);
     }

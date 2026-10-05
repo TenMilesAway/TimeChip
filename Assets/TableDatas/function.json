@@ -12,18 +12,6 @@
     "unlockItemId": 0
   },
   {
-    "id": "VendingMachine",
-    "name": "自动售货机",
-    "unlockMissionId": 1003,
-    "unlockItemId": 0
-  },
-  {
-    "id": "LostWallet",
-    "name": "遗失的钱包",
-    "unlockMissionId": 1003,
-    "unlockItemId": 0
-  },
-  {
     "id": "HomeStore",
     "name": "家具店",
     "unlockMissionId": 1001,
@@ -49,7 +37,31 @@
   },
   {
     "id": "CommunityCentreNotice",
-    "name": "???????",
+    "name": "社区中心布告",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "VendingMachine",
+    "name": "自动售货机",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "LostWallet",
+    "name": "遗失的钱包",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "StrayCatFoodBowl",
+    "name": "流浪猫食物盆",
+    "unlockMissionId": 1003,
+    "unlockItemId": 0
+  },
+  {
+    "id": "Donation",
+    "name": "社区募捐箱",
     "unlockMissionId": 1003,
     "unlockItemId": 0
   }

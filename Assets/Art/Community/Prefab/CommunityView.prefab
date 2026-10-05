@@ -1127,6 +1127,7 @@ MonoBehaviour:
   _btnSubway: {fileID: 3010212295998737396}
   _btnCommunityCentreNotice: {fileID: 3348648523217550698}
   _btnVendingMachine: {fileID: 5720538469007611038}
+  _btnDonation: {fileID: 7230439407777002326}
   _goTrashCans:
   - {fileID: 882715165700397692}
   - {fileID: 4554385440386504830}
@@ -1141,6 +1142,10 @@ MonoBehaviour:
   - {fileID: 6339635429430655706}
   - {fileID: 2610863885139675241}
   - {fileID: 7499809292844379856}
+  _goStaryCatFoodBowls:
+  - {fileID: 6831223470554435855}
+  - {fileID: 641563089379144153}
+  _goDonation: {fileID: 4312740490064227295}
   _goWorkRedPoint: {fileID: 2149637598495169644}
   _goClinicRedPoint: {fileID: 7803795790654393882}
   _goCommunityCentreRedPoint: {fileID: 4760451614336693739}
@@ -6279,7 +6284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4959672399784697097
 RectTransform:
   m_ObjectHideFlags: 0

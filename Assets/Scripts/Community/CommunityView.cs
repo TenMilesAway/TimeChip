@@ -32,14 +32,22 @@ public class CommunityView : UIBasePanel
     private const string SubwayFunctionId = "Subway";
     private const string VendingMachineFunctionId = "VendingMachine";
     private const string LostWalletFunctionId = "LostWallet";
+    private const string StrayCatFoodBowlFunctionId = "StrayCatFoodBowl";
+    private const string DonationFunctionId = "Donation";
     private const int CommunityCentreNeedCount = 3;
     private const int CommunityCentreRedundancyItemCategory = 4;
-    private const int CommunitySupplyGiftBoxItemId = 3001;
+    private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int VendingMachineLotteryPoolId = 8;
     private const int VendingMachineCost = 50;
     private const int LostWalletLotteryPoolId = 9;
     private const int LostWalletCommunityExperienceCost = 20;
     private const int LostWalletCommunityExperienceReward = 20;
+    private const float StrayCatFoodBowlSpawnChance = 0.1f;
+    private const int StrayCatFoodBowlLotteryPoolId = 10;
+    private const int DriedFishItemId = 5005;
+    private const float DonationSpawnChance = 0.5f;
+    private const int DonationLotteryPoolId = 11;
+    private const int DonationCost = 30;
 
     [SerializeField] private Button _btnWork;             // 零工中心
     [SerializeField] private Button _btnHomeStore;        // 家具店
@@ -49,11 +57,14 @@ public class CommunityView : UIBasePanel
     [SerializeField] private Button _btnSubway;           // 地铁
     [SerializeField] private Button _btnCommunityCentreNotice; // 社区中心公告
     [SerializeField] private Button _btnVendingMachine;   // 自动售货机
+    [SerializeField] private Button _btnDonation;         // 社区募捐箱
 
     [Space(10)]
     [SerializeField] private GameObject[] _goTrashCans;             // 垃圾桶点位
     [SerializeField] private GameObject[] _goVendingMachines;       // 自动售货机: 0 为有货, 1 为无货
     [SerializeField] private GameObject[] _goLostWallets;           // 遗失的钱包点位
+    [SerializeField] private GameObject[] _goStaryCatFoodBowls;     // 流浪猫食物盆点位
+    [SerializeField] private GameObject _goDonation;                // 社区募捐箱点位
 
     [Space(10)]
     [SerializeField] private GameObject _goWorkRedPoint;            // 零工中心红点
@@ -65,6 +76,8 @@ public class CommunityView : UIBasePanel
     {
         BindTrashCanButtons();
         BindLostWalletButtons();
+        BindStrayCatFoodBowlButtons();
+        BindDonationButton();
 
         if (_btnConvenienceStore == null)
         {
@@ -107,6 +120,10 @@ public class CommunityView : UIBasePanel
         playerInfoManager.TurnAdvanced += RefreshVendingMachineStock;
         playerInfoManager.TurnAdvanced -= RefreshLostWalletSpawns;
         playerInfoManager.TurnAdvanced += RefreshLostWalletSpawns;
+        playerInfoManager.TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
+        playerInfoManager.TurnAdvanced += RefreshStrayCatFoodBowlSpawns;
+        playerInfoManager.TurnAdvanced -= RefreshDonationSpawn;
+        playerInfoManager.TurnAdvanced += RefreshDonationSpawn;
         playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
         playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
         RefreshFunctionUnlocks(playerInfoManager);
@@ -121,6 +138,8 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshVendingMachineStock;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshLostWalletSpawns;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
     }
@@ -137,6 +156,8 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshTrashCanSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshVendingMachineStock;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshLostWalletSpawns;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
 
         if (_btnConvenienceStore != null)
@@ -157,6 +178,11 @@ public class CommunityView : UIBasePanel
         if (_btnCommunityCentreNotice != null)
         {
             _btnCommunityCentreNotice.onClick.RemoveListener(OnClickCommunityCentreNotice);
+        }
+
+        if (_btnDonation != null)
+        {
+            _btnDonation.onClick.RemoveListener(OnClickDonation);
         }
 
         base.OnDestroy();
@@ -247,6 +273,109 @@ public class CommunityView : UIBasePanel
                         TryPurchaseVendingMachine();
                     })
             });
+    }
+
+    private void BindDonationButton()
+    {
+        if (_goDonation == null)
+        {
+            Debug.LogError("CommunityView 未绑定社区募捐箱点位。", this);
+            return;
+        }
+
+        if (_btnDonation == null)
+        {
+            _btnDonation = _goDonation.GetComponent<Button>();
+        }
+
+        if (_btnDonation == null)
+        {
+            Debug.LogError("CommunityView 未绑定社区募捐箱按钮。", this);
+            return;
+        }
+
+        _btnDonation.onClick.AddListener(OnClickDonation);
+        _goDonation.SetActive(false);
+    }
+
+    private void RefreshDonationSpawn()
+    {
+        if (_goDonation == null)
+        {
+            return;
+        }
+
+        if (!FunctionUnlockService.IsUnlocked(DonationFunctionId))
+        {
+            _goDonation.SetActive(false);
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (!playerInfoManager.TryGetCurrentTurnDonationAvailable(out bool isAvailable))
+        {
+            isAvailable = TurnRandom.Chance(
+                "Community.Donation.Spawn",
+                DonationSpawnChance);
+            playerInfoManager.SetCurrentTurnDonationAvailable(isAvailable);
+        }
+
+        _goDonation.SetActive(isAvailable);
+    }
+
+    private void OnClickDonation()
+    {
+        if (!FunctionUnlockService.IsUnlocked(DonationFunctionId))
+        {
+            return;
+        }
+
+        if (!PlayerInfoManager.GetInstance().TryGetCurrentTurnDonationAvailable(
+                out bool isAvailable) ||
+            !isAvailable)
+        {
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonChoosePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonChooseData(
+                    "社区募捐箱",
+                    $"将花费 {DonationCost} 模拟币捐赠于社区困难居民",
+                    DonateToCommunity)
+            });
+    }
+
+    private void DonateToCommunity()
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.SimulationCoins < DonationCost)
+        {
+            CommonTipView.Show("模拟币不足");
+            return;
+        }
+
+        if (!LotteryView.TryDrawReward(
+                DonationLotteryPoolId,
+                "Community.Donation.Reward",
+                out CommonRewardItemData reward))
+        {
+            Debug.LogError($"社区募捐箱奖池配置无效: [{DonationLotteryPoolId}]", this);
+            CommonTipView.Show("募捐奖励暂时无法获取");
+            return;
+        }
+
+        if (!playerInfoManager.TryConsumeCurrentTurnDonation() ||
+            !playerInfoManager.TrySpendSimulationCoins(DonationCost))
+        {
+            return;
+        }
+
+        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+        LotteryView.GrantAndPresentReward(reward);
     }
 
     private void OnClickCommunityCentreNotice()
@@ -362,6 +491,8 @@ public class CommunityView : UIBasePanel
         RefreshTrashCanSpawns();
         RefreshVendingMachineStock();
         RefreshLostWalletSpawns();
+        RefreshStrayCatFoodBowlSpawns();
+        RefreshDonationSpawn();
         RefreshMissionNotice();
     }
 
@@ -436,6 +567,11 @@ public class CommunityView : UIBasePanel
     private static bool HasSubmittableCommunityCentreMaterial(
         PlayerInfoManager playerInfoManager)
     {
+        if (!CommunityCentreView.EnsureMonthlyNeeds(out _))
+        {
+            return false;
+        }
+
         if (playerInfoManager.HasMonthlyCommunityCentreNeeds(CommunityCentreNeedCount))
         {
             for (int i = 0; i < CommunityCentreNeedCount; i++)
@@ -642,12 +778,6 @@ public class CommunityView : UIBasePanel
     private void KeepLostWallet(int pointIndex)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        if (playerInfoManager.CommunityCentreExperience < LostWalletCommunityExperienceCost)
-        {
-            CommonTipView.Show($"社区经验不足，需要 {LostWalletCommunityExperienceCost} 点");
-            return;
-        }
-
         if (!LotteryView.TryDrawReward(
                 LostWalletLotteryPoolId,
                 $"Community.LostWallet.{pointIndex}.Reward",
@@ -660,13 +790,20 @@ public class CommunityView : UIBasePanel
 
         if (!playerInfoManager.TryConsumeCurrentTurnLostWallet(
                 pointIndex,
-                _goLostWallets.Length) ||
-            !playerInfoManager.TrySpendCommunityCentreExperience(
-                LostWalletCommunityExperienceCost))
+                _goLostWallets.Length))
         {
             return;
         }
 
+        int experienceCost = Mathf.Min(
+            playerInfoManager.CommunityCentreExperience,
+            LostWalletCommunityExperienceCost);
+        if (experienceCost > 0)
+        {
+            playerInfoManager.TrySpendCommunityCentreExperience(experienceCost);
+        }
+
+        CommonTipView.Show($"占为己有，扣除 {experienceCost} 点社区经验");
         UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
         LotteryView.GrantAndPresentReward(reward);
     }
@@ -683,6 +820,139 @@ public class CommunityView : UIBasePanel
 
         playerInfoManager.AddCommunityCentreExperience(LostWalletCommunityExperienceReward);
         CommonTipView.Show($"上交钱包，社区经验 +{LostWalletCommunityExperienceReward}");
+    }
+
+    private void BindStrayCatFoodBowlButtons()
+    {
+        if (_goStaryCatFoodBowls == null || _goStaryCatFoodBowls.Length == 0)
+        {
+            Debug.LogError("CommunityView 必须配置至少 1 个流浪猫食物盆点位。", this);
+            return;
+        }
+
+        for (int pointIndex = 0; pointIndex < _goStaryCatFoodBowls.Length; pointIndex++)
+        {
+            GameObject foodBowl = _goStaryCatFoodBowls[pointIndex];
+            if (foodBowl == null)
+            {
+                Debug.LogError($"CommunityView 的第 {pointIndex + 1} 个流浪猫食物盆点位无效。", this);
+                continue;
+            }
+
+            Button button = foodBowl.GetComponent<Button>();
+            if (button == null)
+            {
+                button = foodBowl.AddComponent<Button>();
+                button.targetGraphic = foodBowl.GetComponent<Graphic>();
+            }
+
+            int capturedPointIndex = pointIndex;
+            button.onClick.AddListener(() => OnClickStrayCatFoodBowl(capturedPointIndex));
+            foodBowl.SetActive(false);
+        }
+    }
+
+    private void RefreshStrayCatFoodBowlSpawns()
+    {
+        if (_goStaryCatFoodBowls == null || _goStaryCatFoodBowls.Length == 0)
+        {
+            return;
+        }
+
+        if (!FunctionUnlockService.IsUnlocked(StrayCatFoodBowlFunctionId))
+        {
+            SetStrayCatFoodBowlVisibility(-1);
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (!playerInfoManager.TryGetCurrentTurnStrayCatFoodBowlPointIndex(
+                _goStaryCatFoodBowls.Length,
+                out int visiblePointIndex))
+        {
+            visiblePointIndex = TurnRandom.Chance(
+                    "Community.StrayCatFoodBowl.Spawn",
+                    StrayCatFoodBowlSpawnChance)
+                ? TurnRandom.Range(
+                    "Community.StrayCatFoodBowl.Point",
+                    0,
+                    _goStaryCatFoodBowls.Length)
+                : -1;
+            playerInfoManager.SetCurrentTurnStrayCatFoodBowlPointIndex(
+                visiblePointIndex,
+                _goStaryCatFoodBowls.Length);
+        }
+
+        SetStrayCatFoodBowlVisibility(visiblePointIndex);
+    }
+
+    private void SetStrayCatFoodBowlVisibility(int visiblePointIndex)
+    {
+        for (int pointIndex = 0; pointIndex < _goStaryCatFoodBowls.Length; pointIndex++)
+        {
+            _goStaryCatFoodBowls[pointIndex].SetActive(pointIndex == visiblePointIndex);
+        }
+    }
+
+    private void OnClickStrayCatFoodBowl(int pointIndex)
+    {
+        if (!FunctionUnlockService.IsUnlocked(StrayCatFoodBowlFunctionId))
+        {
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (!playerInfoManager.TryGetCurrentTurnStrayCatFoodBowlPointIndex(
+                _goStaryCatFoodBowls.Length,
+                out int visiblePointIndex) ||
+            visiblePointIndex != pointIndex)
+        {
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonChoosePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonChooseData(
+                    "流浪猫食物盆",
+                    "喂养将花费1个小鱼干",
+                    () => FeedStrayCat(pointIndex))
+            });
+    }
+
+    private void FeedStrayCat(int pointIndex)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.GetItemCount(DriedFishItemId) < 1)
+        {
+            CommonTipView.Show("小鱼干不足");
+            return;
+        }
+
+        if (!LotteryView.TryDrawReward(
+                StrayCatFoodBowlLotteryPoolId,
+                $"Community.StrayCatFoodBowl.{pointIndex}.Reward",
+                out CommonRewardItemData reward))
+        {
+            Debug.LogError(
+                $"流浪猫食物盆奖池配置无效: [{StrayCatFoodBowlLotteryPoolId}]",
+                this);
+            CommonTipView.Show("食物盆奖励暂时无法获取");
+            return;
+        }
+
+        if (!playerInfoManager.TryConsumeCurrentTurnStrayCatFoodBowl(
+                pointIndex,
+                _goStaryCatFoodBowls.Length) ||
+            !playerInfoManager.TryConsumeItem(DriedFishItemId))
+        {
+            return;
+        }
+
+        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+        LotteryView.GrantAndPresentReward(reward);
     }
 
     private void HideTrashCans()

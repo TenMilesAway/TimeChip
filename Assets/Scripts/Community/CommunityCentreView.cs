@@ -8,7 +8,7 @@ public class CommunityCentreView : UIBasePanel
     private const int MonthlyNeedCount = 3;
     private const int CommunityNeedItemCategory = 5;
     private const int RedundancyItemCategory = 4;
-    private const int CommunitySupplyGiftBoxItemId = 3001;
+    private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int CommunityCentreScaleId = 8;
     private const int RedundancyItemsPerPage = 4;
     private const float ExperienceAnimationDuration = 0.45f;
@@ -147,7 +147,7 @@ public class CommunityCentreView : UIBasePanel
             return;
         }
 
-        if (!TryLoadMonthlyNeeds(out List<cfg.Item> needs))
+        if (!EnsureMonthlyNeeds(out List<cfg.Item> needs))
         {
             return;
         }
@@ -184,11 +184,16 @@ public class CommunityCentreView : UIBasePanel
         }
     }
 
-    private bool TryLoadMonthlyNeeds(out List<cfg.Item> needs)
+    public static bool EnsureMonthlyNeeds(out List<cfg.Item> needs)
     {
         needs = new List<cfg.Item>(MonthlyNeedCount);
-        IReadOnlyList<cfg.Item> configurations = DataTableMananger.GetInstance()
-            .Tables.ItemTable.DataList;
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null)
+        {
+            return false;
+        }
+
+        IReadOnlyList<cfg.Item> configurations = tables.ItemTable.DataList;
         List<cfg.Item> candidates = new List<cfg.Item>();
         for (int i = 0; i < configurations.Count; i++)
         {
@@ -201,8 +206,7 @@ public class CommunityCentreView : UIBasePanel
         if (candidates.Count < MonthlyNeedCount)
         {
             Debug.LogError(
-                $"第 {CommunityNeedItemCategory} 类道具少于 {MonthlyNeedCount} 个，无法生成社区需求。",
-                this);
+                $"第 {CommunityNeedItemCategory} 类道具少于 {MonthlyNeedCount} 个，无法生成社区需求。");
             return false;
         }
 
