@@ -118,6 +118,16 @@ public sealed class PlayerInfoData
     /// <summary>当前回合社区募捐箱是否可捐赠</summary>
     public bool donationAvailable;
 
+    /// <summary>港口集装箱上次刷新的年龄</summary>
+    public int portContainerRefreshAge = -1;
+
+    /// <summary>港口集装箱上次刷新的月份</summary>
+    public int portContainerRefreshMonth = -1;
+
+    /// <summary>当前回合港口集装箱列表</summary>
+    public List<PlayerPortContainerOffer> portContainerOffers =
+        new List<PlayerPortContainerOffer>();
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -251,6 +261,16 @@ public sealed class PlayerFishStoreOffer
 {
     public int fishStoreId;
     public int remainingCount;
+}
+
+/// <summary>港口集装箱的当前回合购买状态</summary>
+[Serializable]
+public sealed class PlayerPortContainerOffer
+{
+    public int lotteryPoolId;
+    public int price;
+    public int rewardCount;
+    public bool purchased;
 }
 
 /// <summary>神秘转盘中的单个奖励存档数据</summary>
@@ -479,6 +499,17 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             }
         }
 
+        if (_data.portContainerOffers == null)
+        {
+            _data.portContainerOffers = new List<PlayerPortContainerOffer>();
+        }
+
+        _data.portContainerOffers.RemoveAll(offer => offer == null ||
+            offer.lotteryPoolId < 12 ||
+            offer.lotteryPoolId > 16 ||
+            offer.price < 0 ||
+            offer.rewardCount <= 0);
+
         _data.communityCentreProposalOfferIds = new List<int>(offerIds);
         NotifyPlayerInfoChanged();
     }
@@ -493,6 +524,87 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.communityCentreProposalChoiceCount--;
         _data.communityCentreProposalOfferIds.Clear();
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public bool TryGetCurrentTurnPortContainerOffers(
+        out List<PlayerPortContainerOffer> offers)
+    {
+        offers = null;
+        if (_data.portContainerRefreshAge != _data.currentAge ||
+            _data.portContainerRefreshMonth != _data.currentMonth ||
+            _data.portContainerOffers == null ||
+            _data.portContainerOffers.Count < 2 ||
+            _data.portContainerOffers.Count > 4)
+        {
+            return false;
+        }
+
+        offers = CreatePortContainerOfferCopies(_data.portContainerOffers);
+        return true;
+    }
+
+    public void SetCurrentTurnPortContainerOffers(
+        IReadOnlyList<PlayerPortContainerOffer> offers)
+    {
+        if (offers == null || offers.Count < 2 || offers.Count > 4)
+        {
+            Debug.LogError("港口集装箱数量必须介于 2 至 4 个。");
+            return;
+        }
+
+        List<PlayerPortContainerOffer> copies = new List<PlayerPortContainerOffer>(
+            offers.Count);
+        for (int i = 0; i < offers.Count; i++)
+        {
+            PlayerPortContainerOffer offer = offers[i];
+            if (offer == null ||
+                offer.lotteryPoolId < 12 ||
+                offer.lotteryPoolId > 16 ||
+                offer.price < 0 ||
+                offer.rewardCount <= 0)
+            {
+                Debug.LogError("港口集装箱配置无效。");
+                return;
+            }
+
+            copies.Add(new PlayerPortContainerOffer
+            {
+                lotteryPoolId = offer.lotteryPoolId,
+                price = offer.price,
+                rewardCount = offer.rewardCount,
+                purchased = offer.purchased
+            });
+        }
+
+        _data.portContainerRefreshAge = _data.currentAge;
+        _data.portContainerRefreshMonth = _data.currentMonth;
+        _data.portContainerOffers = copies;
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool TryPurchaseCurrentTurnPortContainer(int index, int expectedPrice)
+    {
+        if (!TryGetCurrentTurnPortContainerOffers(
+                out List<PlayerPortContainerOffer> offers) ||
+            index < 0 ||
+            index >= offers.Count ||
+            expectedPrice < 0)
+        {
+            return false;
+        }
+
+        PlayerPortContainerOffer offer = _data.portContainerOffers[index];
+        if (offer.purchased ||
+            offer.price != expectedPrice ||
+            _data.simulationCoins < offer.price)
+        {
+            return false;
+        }
+
+        _data.simulationCoins -= offer.price;
+        offer.purchased = true;
         NotifyPlayerInfoChanged();
         return true;
     }
@@ -2418,6 +2530,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             donationRefreshAge = source.donationRefreshAge,
             donationRefreshMonth = source.donationRefreshMonth,
             donationAvailable = source.donationAvailable,
+            portContainerRefreshAge = source.portContainerRefreshAge,
+            portContainerRefreshMonth = source.portContainerRefreshMonth,
+            portContainerOffers = CreatePortContainerOfferCopies(source.portContainerOffers),
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,
@@ -2480,6 +2595,35 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             {
                 itemId = item.itemId,
                 amount = item.amount
+            });
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerPortContainerOffer> CreatePortContainerOfferCopies(
+        IReadOnlyList<PlayerPortContainerOffer> source)
+    {
+        List<PlayerPortContainerOffer> copy = new List<PlayerPortContainerOffer>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerPortContainerOffer offer = source[i];
+            if (offer == null)
+            {
+                continue;
+            }
+
+            copy.Add(new PlayerPortContainerOffer
+            {
+                lotteryPoolId = offer.lotteryPoolId,
+                price = offer.price,
+                rewardCount = offer.rewardCount,
+                purchased = offer.purchased
             });
         }
 

@@ -35,10 +35,11 @@ public class SubwayView : UIBasePanel
     [SerializeField] private Image _imgUnlock;      // 地点图片
     [SerializeField] private Button _btnGo;         // 解锁时：前往按钮
     [SerializeField] private Button _btnBack;   // 回到社区按钮
-    [SerializeField] private SubwayPoint[] _subwayPoints; // 地铁点, 目前仅 2 个, 根据表中顺序进行初始化
+    [SerializeField] private SubwayPoint[] _subwayPoints; // 地铁点
     [SerializeField] private SubwayDestination[] _destinations =
     {
         new SubwayDestination(2, GlobalDefine.FishView),
+        new SubwayDestination(3, GlobalDefine.PortView),
     };
 
 
@@ -368,6 +369,12 @@ public class SubwayView : UIBasePanel
         if (locationId == 2)
         {
             panelName = GlobalDefine.FishView;
+            return true;
+        }
+
+        if (locationId == 3)
+        {
+            panelName = GlobalDefine.PortView;
             return true;
         }
 

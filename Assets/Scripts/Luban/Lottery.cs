@@ -29,6 +29,11 @@ public sealed partial class Lottery : Luban.BeanBase
         Rewards = (string)_obj.GetValue("rewards");
         UseCoin = (string)_obj.GetValue("useCoin");
         AdditionRewards = (string)_obj.GetValue("additionRewards");
+        Icon = (string)_obj.GetValue("icon");
+        MinRewardCount = (int)_obj.GetValue("minRewardCount");
+        MaxRewardCount = (int)_obj.GetValue("maxRewardCount");
+        MinPrice = (int)_obj.GetValue("minPrice");
+        MaxPrice = (int)_obj.GetValue("maxPrice");
     }
 
     public static Lottery DeserializeLottery(JToken _buf)
@@ -60,6 +65,26 @@ public sealed partial class Lottery : Luban.BeanBase
     /// 额外奖励
     /// </summary>
     public readonly string AdditionRewards;
+    /// <summary>
+    /// 集装箱图标路径
+    /// </summary>
+    public readonly string Icon;
+    /// <summary>
+    /// 最小奖品数量
+    /// </summary>
+    public readonly int MinRewardCount;
+    /// <summary>
+    /// 最大奖品数量
+    /// </summary>
+    public readonly int MaxRewardCount;
+    /// <summary>
+    /// 最低模拟币价格
+    /// </summary>
+    public readonly int MinPrice;
+    /// <summary>
+    /// 最高模拟币价格
+    /// </summary>
+    public readonly int MaxPrice;
 
 
     public const int __ID__ = 2019323689;
@@ -78,6 +103,11 @@ public sealed partial class Lottery : Luban.BeanBase
         + "rewards:" + Rewards + ","
         + "useCoin:" + UseCoin + ","
         + "additionRewards:" + AdditionRewards + ","
+        + "icon:" + Icon + ","
+        + "minRewardCount:" + MinRewardCount + ","
+        + "maxRewardCount:" + MaxRewardCount + ","
+        + "minPrice:" + MinPrice + ","
+        + "maxPrice:" + MaxPrice + ","
         + "}";
     }
 }

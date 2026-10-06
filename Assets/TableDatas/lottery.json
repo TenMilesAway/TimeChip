@@ -5,7 +5,12 @@
     "desc": "普通奖池，消耗时间币 * 1",
     "rewards": "101,20,100&101,50,50&101,100,50&101,500,10&1010,2,50&1011,1,10&1050,1,100&2000,1,10&3000,1,50&3020,1,100&3020,2,100&3020,5,20",
     "useCoin": "102,1",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 2,
@@ -13,7 +18,12 @@
     "desc": "神秘转盘，消耗转盘币 * 1",
     "rewards": "1000,1,1000&1000,3,1000&1000,5,1000&1001,1,500&1001,3,500&3000,1,50&3001,1,10&3001,1,10&1050,1,1000&1051,1,1000&4000,1,1000&4001,1,1000&4023,1,1000",
     "useCoin": "104,1",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 3,
@@ -21,7 +31,12 @@
     "desc": "时光秘匣，消耗秘匣币 * 1",
     "rewards": "1001,1,100&1002,1,100&1003,1,100&1004,1,100&3000,1,100&4000,1,100&4001,1,100&4002,1,100&4003,1,100&4004,1,100&4005,1,100&4006,1,100&4007,1,100&4008,1,100&4009,1,100&4010,1,100&4011,1,100&4012,1,100",
     "useCoin": "105,1",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 4,
@@ -29,7 +44,12 @@
     "desc": "时光星阵，消耗星阵币 * 1",
     "rewards": "1001,1,500&1002,1,500&1003,1,500&1004,1,500",
     "useCoin": "106,1",
-    "additionRewards": "1001,5&1002,10&1003,20&1004,50&1001,5&1002,10&1003,20&1004,50"
+    "additionRewards": "1001,5&1002,10&1003,20&1004,50&1001,5&1002,10&1003,20&1004,50",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 5,
@@ -37,7 +57,12 @@
     "desc": "翻找垃圾桶有机会获得日常收获",
     "rewards": "101,20,100&101,50,100&1010,1,100&3020,1,100",
     "useCoin": "",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 6,
@@ -45,7 +70,12 @@
     "desc": "翻找垃圾桶有机会获得实用补给",
     "rewards": "101,88,450&1000,1,300&1001,1,170&1050,1,80",
     "useCoin": "",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 7,
@@ -53,7 +83,12 @@
     "desc": "翻找垃圾桶有机会发现稀有奖励",
     "rewards": "101,188,450&104,1,120&105,1,50&106,1,20",
     "useCoin": "",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 8,
@@ -61,7 +96,12 @@
     "desc": "自动售货机",
     "rewards": "3020,1,500&3020,2,300&3020,3,100&1010,1,100",
     "useCoin": "101,50",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 9,
@@ -69,7 +109,12 @@
     "desc": "遗失的钱包",
     "rewards": "101,88,500&101,188,300&101,288,100",
     "useCoin": "",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 10,
@@ -77,7 +122,12 @@
     "desc": "流浪猫食物盆",
     "rewards": "3010,1,100&3011,1,10",
     "useCoin": "5005,1",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
   },
   {
     "id": 11,
@@ -85,6 +135,76 @@
     "desc": "社区募捐箱",
     "rewards": "3020,1,500&3020,2,100&3020,3,50&1010,1,50",
     "useCoin": "101,30",
-    "additionRewards": ""
+    "additionRewards": "",
+    "icon": "",
+    "minRewardCount": 0,
+    "maxRewardCount": 0,
+    "minPrice": 0,
+    "maxPrice": 0
+  },
+  {
+    "id": 12,
+    "name": "一阶集装箱",
+    "desc": "随机获得基础补给",
+    "rewards": "101,50,450&101,100,300&1000,1,150&3020,1,100",
+    "useCoin": "",
+    "additionRewards": "",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_container_1]",
+    "minRewardCount": 1,
+    "maxRewardCount": 3,
+    "minPrice": 50,
+    "maxPrice": 100
+  },
+  {
+    "id": 13,
+    "name": "二阶集装箱",
+    "desc": "随机获得实用补给",
+    "rewards": "101,100,350&101,188,250&1000,1,180&1001,1,120&3020,1,70&1050,1,30",
+    "useCoin": "",
+    "additionRewards": "",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_container_2]",
+    "minRewardCount": 2,
+    "maxRewardCount": 4,
+    "minPrice": 100,
+    "maxPrice": 200
+  },
+  {
+    "id": 14,
+    "name": "三阶集装箱",
+    "desc": "随机获得进阶物资",
+    "rewards": "101,188,300&101,288,200&1001,1,160&3010,1,100&3020,2,90&1010,1,50&1050,1,30",
+    "useCoin": "",
+    "additionRewards": "",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_container_3]",
+    "minRewardCount": 3,
+    "maxRewardCount": 6,
+    "minPrice": 200,
+    "maxPrice": 400
+  },
+  {
+    "id": 15,
+    "name": "四阶集装箱",
+    "desc": "随机获得珍贵物资",
+    "rewards": "101,288,260&101,500,180&1002,1,130&1003,1,80&3010,1,110&3011,1,60&1010,1,100&1011,1,40",
+    "useCoin": "",
+    "additionRewards": "",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_container_4]",
+    "minRewardCount": 4,
+    "maxRewardCount": 8,
+    "minPrice": 400,
+    "maxPrice": 800
+  },
+  {
+    "id": 16,
+    "name": "五阶集装箱",
+    "desc": "随机获得稀有补给",
+    "rewards": "101,500,220&101,888,170&1003,1,120&1004,1,70&3011,1,120&1010,2,100&1011,1,70&1051,1,30",
+    "useCoin": "",
+    "additionRewards": "",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_container_5]",
+    "minRewardCount": 5,
+    "maxRewardCount": 10,
+    "minPrice": 800,
+    "maxPrice": 1600
   }
 ]

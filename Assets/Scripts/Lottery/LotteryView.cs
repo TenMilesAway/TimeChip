@@ -6,6 +6,26 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+public readonly struct ContainerLotteryOffer
+{
+    public ContainerLotteryOffer(
+        int lotteryPoolId,
+        int price,
+        int rewardCount,
+        string iconPath)
+    {
+        LotteryPoolId = lotteryPoolId;
+        Price = price;
+        RewardCount = rewardCount;
+        IconPath = iconPath;
+    }
+
+    public int LotteryPoolId { get; }
+    public int Price { get; }
+    public int RewardCount { get; }
+    public string IconPath { get; }
+}
+
 public class LotteryView : UIBasePanel
 {
     [Header("抽奖界面")]
@@ -516,6 +536,26 @@ public class LotteryView : UIBasePanel
             simulationCoinDisplayStart);
     }
 
+    public static void GrantRewards(List<CommonRewardItemData> rewards)
+    {
+        if (rewards == null || rewards.Count == 0)
+        {
+            Debug.LogError("无法发放空的奖励列表。");
+            return;
+        }
+
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            if (rewards[i] == null)
+            {
+                Debug.LogError("奖励列表包含空奖励。");
+                return;
+            }
+        }
+
+        ApplyRewards(rewards);
+    }
+
     /// <summary>
     /// 将玩家当前持有的时间币数量显示在抽奖界面
     /// </summary>
@@ -984,6 +1024,52 @@ public class LotteryView : UIBasePanel
         }
 
         return false;
+    }
+
+    public static bool TryCreateContainerLotteryOffer(
+        int lotteryPoolId,
+        string refreshKey,
+        out ContainerLotteryOffer offer)
+    {
+        offer = default;
+        if (string.IsNullOrWhiteSpace(refreshKey))
+        {
+            Debug.LogError("集装箱奖池刷新随机键不能为空。");
+            return false;
+        }
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance()
+            .Tables
+            .LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null ||
+            lotteryConfig.MinRewardCount <= 0 ||
+            lotteryConfig.MaxRewardCount < lotteryConfig.MinRewardCount ||
+            lotteryConfig.MinPrice < 0 ||
+            lotteryConfig.MaxPrice < lotteryConfig.MinPrice)
+        {
+            Debug.LogError($"集装箱奖池配置无效: [{lotteryPoolId}]。");
+            return false;
+        }
+
+        int price = lotteryConfig.MinPrice == lotteryConfig.MaxPrice
+            ? lotteryConfig.MinPrice
+            : TurnRandom.Range(
+                $"{refreshKey}.Price",
+                lotteryConfig.MinPrice,
+                lotteryConfig.MaxPrice + 1);
+        int rewardCount = lotteryConfig.MinRewardCount == lotteryConfig.MaxRewardCount
+            ? lotteryConfig.MinRewardCount
+            : TurnRandom.Range(
+                $"{refreshKey}.RewardCount",
+                lotteryConfig.MinRewardCount,
+                lotteryConfig.MaxRewardCount + 1);
+        offer = new ContainerLotteryOffer(
+            lotteryPoolId,
+            price,
+            rewardCount,
+            lotteryConfig.Icon);
+        return true;
     }
 
     private bool TryDrawRewards(

@@ -12,6 +12,7 @@ public class GlobalDefine
     public const string GrowView = "Assets/Art/Grow/Prefab/GrowView.prefab";                               // Mid+
     public const string SubwayView = "Assets/Art/Community/Prefab/SubwayView.prefab";                      // Mid+
     public const string FishView = "Assets/Art/Community/Prefab/FishView.prefab";                          // Mid+
+    public const string PortView = "Assets/Art/Community/Prefab/PortView.prefab";                          // Mid+
 
     public const string MainMenuView = "Assets/Art/MainMenu/Prefab/MainMenuView.prefab";                   // Super
     public const string WorkView = "Assets/Art/Community/Prefab/WorkView.prefab";                          // Super+
@@ -21,6 +22,7 @@ public class GlobalDefine
     public const string HomeDetailView = "Assets/Art/Home/Prefab/HomeDetailView.prefab";                   // Super+
     public const string ClinicView = "Assets/Art/Community/Prefab/ClinicView.prefab";                      // Super+
     public const string CommunityCentreView = "Assets/Art/Community/Prefab/CommunityCentreView.prefab";    // Super+
+    public const string PortContainerView = "Assets/Art/Community/Prefab/PortContainerView.prefab";        // Super+
     public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";              // Super++
     public const string DialogueView = "Assets/Art/Dialogue/Prefabs/DialoguePanel.prefab";                 // Super++
 
@@ -33,10 +35,13 @@ public class GlobalDefine
     public const string CommonConfirmPanel = "Assets/Art/Common/Prefab/CommonConfirmPanel.prefab";         // System
     public const string CommonChoosePanel = "Assets/Art/Common/Prefab/CommonChoosePanel.prefab";           // System
 
+
     // Item
     public const string CommonRewardItem = "Assets/Art/Common/Prefab/CommonRewardItem.prefab";
     public const string CommonTip = "Assets/Art/Common/Prefab/CommonTip.prefab";
     public const string HomeItem = "Assets/Art/Community/Prefab/HomeItem.prefab";
     public const string BuffItem = "Assets/Art/MainMenu/Prefab/BuffItem.prefab";
     public const string MainMenuMissionItem = "Assets/Art/MainMenu/Prefab/MainMenuMissionItem.prefab";
+    public const string ContainerItem = "Assets/Art/Community/Prefab/ContainerItem.prefab";
+    public const string PortContainerItem = "Assets/Art/Community/Prefab/PortContainerItem.prefab";
 }

@@ -46,5 +46,11 @@
     "name": "communityCentre",
     "desc": "在社区中心冗余道具时的倍率",
     "scaleValue": 7500
+  },
+  {
+    "id": 9,
+    "name": "portContainerItem",
+    "desc": "在港口集装箱时的倍率",
+    "scaleValue": 7000
   }
 ]
