@@ -1,6 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+public sealed class CommonBuffDetailData
+{
+    public cfg.BuffConfig BuffConfig { get; }
+    public int RemainingTurns { get; }
+    public int Stacks { get; }
+
+    public CommonBuffDetailData(
+        cfg.BuffConfig buffConfig,
+        int remainingTurns,
+        int stacks)
+    {
+        BuffConfig = buffConfig;
+        RemainingTurns = remainingTurns;
+        Stacks = stacks;
+    }
+}
+
 public class CommonItemDetailView : UIBasePanel
 {
     private const float RewardScaleDivisor = 10000f;
@@ -9,6 +26,7 @@ public class CommonItemDetailView : UIBasePanel
     private static readonly Color LegendaryLevelColor = new Color(1f, 0.75f, 0.1f);
     private static readonly Color MythicLevelColor = new Color(1f, 0.25f, 0.25f);
 
+    [SerializeField] private Text _txtTitle;     // 标题
     [SerializeField] private Text _txtName;      // 物品名称
     [SerializeField] private Text _txtLevel;     // 物品品质
     [SerializeField] private Text _txtDetail;    // 物品描述
@@ -22,9 +40,18 @@ public class CommonItemDetailView : UIBasePanel
     {
         base.InitHandle(param);
 
+        if (param?.data is CommonBuffDetailData buffDetailData &&
+            buffDetailData.BuffConfig != null)
+        {
+            SetData(buffDetailData);
+            return;
+        }
+
         if (!(param?.data is int itemId))
         {
-            Debug.LogError("CommonItemDetailView 需要通过 OpenUIParam.data 传入道具 ID", this);
+            Debug.LogError(
+                "CommonItemDetailView 需要通过 OpenUIParam.data 传入道具 ID 或 Buff 详情数据。",
+                this);
             ClearData();
             return;
         }
@@ -55,6 +82,8 @@ public class CommonItemDetailView : UIBasePanel
 
     private void SetData(cfg.Item itemConfig)
     {
+        _txtTitle.text = "物品详情";
+        _txtLevel.gameObject.SetActive(true);
         _txtName.text = itemConfig.Name;
         _txtDetail.text = itemConfig.Desc;
         _txtType.text = itemConfig.Type;
@@ -71,6 +100,8 @@ public class CommonItemDetailView : UIBasePanel
 
     private void SetData(cfg.Base baseConfig)
     {
+        _txtTitle.text = "物品详情";
+        _txtLevel.gameObject.SetActive(true);
         _txtName.text = baseConfig.Name;
         _txtDetail.text = baseConfig.Desc;
         _txtType.text = string.Empty;
@@ -82,6 +113,36 @@ public class CommonItemDetailView : UIBasePanel
             baseConfig.Id,
             baseConfig.Icon,
             baseConfig.RewardScale,
+            requestVersion);
+    }
+
+    private void SetData(CommonBuffDetailData detailData)
+    {
+        cfg.Item iconItemConfig = DataTableMananger.GetInstance()
+            .Tables
+            .ItemTable
+            .GetOrDefault(detailData.BuffConfig.Icon);
+        if (iconItemConfig == null)
+        {
+            Debug.LogError(
+                $"BUFF 详情图标配置不存在: [{detailData.BuffConfig.Id}], [{detailData.BuffConfig.Icon}]",
+                this);
+            ClearData();
+            return;
+        }
+
+        _txtTitle.text = "BUFF详情";
+        _txtName.text = detailData.BuffConfig.Name;
+        _txtDetail.text = detailData.BuffConfig.Desc;
+        _txtName.color = Color.white;
+        _txtLevel.gameObject.SetActive(false);
+        _goType.SetActive(false);
+
+        int requestVersion = ++_iconRequestVersion;
+        SetIconAsync(
+            detailData.BuffConfig.Id,
+            iconItemConfig.Icon,
+            iconItemConfig.RewardScale,
             requestVersion);
     }
 
@@ -148,6 +209,7 @@ public class CommonItemDetailView : UIBasePanel
     {
         _iconRequestVersion++;
         _imgIcon.sprite = null;
+        _txtTitle.text = string.Empty;
         _txtName.text = string.Empty;
         _txtLevel.text = string.Empty;
         _txtDetail.text = string.Empty;

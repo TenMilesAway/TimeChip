@@ -619,7 +619,7 @@
     "desc": "有了这张卡，就可以去你想去的地方",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[time_chip_metro_card]",
     "canUse": 0,
-    "rewardScale": 5000,
+    "rewardScale": 3200,
     "useEffect": "",
     "replace": 0
   },

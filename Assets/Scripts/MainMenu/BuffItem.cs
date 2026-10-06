@@ -9,6 +9,7 @@ public class BuffItem : MonoBehaviour
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtRemain;
     [SerializeField] private Text _txtMulti;
+    [SerializeField] private Button _btnDetail;
 
     private int _presentationVersion;
 
@@ -26,6 +27,8 @@ public class BuffItem : MonoBehaviour
             ? "永久"
             : $"剩余{activeBuff.remainingTurns}月";
         _txtMulti.text = $"×{activeBuff.stacks}";
+        _btnDetail.onClick.RemoveAllListeners();
+        _btnDetail.onClick.AddListener(() => OpenDetail(buffConfig, activeBuff));
         SetIconAsync(buffConfig, resourceTag, _presentationVersion);
     }
 
@@ -52,7 +55,26 @@ public class BuffItem : MonoBehaviour
             _txtMulti.text = string.Empty;
         }
 
+        if (_btnDetail != null)
+        {
+            _btnDetail.onClick.RemoveAllListeners();
+        }
+
         gameObject.SetActive(false);
+    }
+
+    private void OpenDetail(cfg.BuffConfig buffConfig, ActiveBuffData activeBuff)
+    {
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonItemDetailView,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonBuffDetailData(
+                    buffConfig,
+                    activeBuff.remainingTurns,
+                    activeBuff.stacks)
+            });
     }
 
     private async void SetIconAsync(cfg.BuffConfig buffConfig, string resourceTag, int presentationVersion)
@@ -90,7 +112,11 @@ public class BuffItem : MonoBehaviour
 
     private bool HasValidUiReferences()
     {
-        if (_icon != null && _txtName != null && _txtRemain != null && _txtMulti != null)
+        if (_icon != null &&
+            _txtName != null &&
+            _txtRemain != null &&
+            _txtMulti != null &&
+            _btnDetail != null)
         {
             return true;
         }

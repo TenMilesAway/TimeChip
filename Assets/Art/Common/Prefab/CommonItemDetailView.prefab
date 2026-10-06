@@ -71,6 +71,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isBlockingWindow: 1
+  _txtTitle: {fileID: 3994484098788173035}
   _txtName: {fileID: 7958205781630650383}
   _txtLevel: {fileID: 1761030657891500652}
   _txtDetail: {fileID: 4609895965216113006}

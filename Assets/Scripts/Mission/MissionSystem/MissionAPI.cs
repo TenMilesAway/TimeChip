@@ -16,6 +16,8 @@ public static class MissionAPI
         new Dictionary<string, PlayerMissionData>();
     private const int RandomMissionId = 3001;
     private const float RandomMissionChance = 0.3f;
+    private const string CollectTargetType = "collect";
+    private const string SubmitTargetType = "submit";
 
     private static PlayerInfoManager _playerInfoManager;
     private static bool _isInitialized;
@@ -72,7 +74,20 @@ public static class MissionAPI
     /// <summary>领取已完成任务的奖励。</summary>
     public static bool TryClaimMission(string missionId)
     {
-        return _isInitialized && MissionManager.TryClaimMission(missionId);
+        if (!_isInitialized)
+        {
+            return false;
+        }
+
+        Mission<MissionMessage> mission = MissionManager.GetMission(missionId);
+        if (mission == null ||
+            !mission.IsFinished ||
+            !TrySubmitMissionTarget(missionId))
+        {
+            return false;
+        }
+
+        return MissionManager.TryClaimMission(missionId);
     }
 
     /// <summary>获取当前进行中或待领取的任务。</summary>
@@ -119,6 +134,43 @@ public static class MissionAPI
         deadlineAge = missionData.deadlineAge;
         deadlineMonth = missionData.deadlineMonth;
         return true;
+    }
+
+    private static bool TrySubmitMissionTarget(string missionId)
+    {
+        if (!TryGetMissionConfig(missionId, out cfg.Mission missionConfig))
+        {
+            return false;
+        }
+
+        string targetType = string.IsNullOrWhiteSpace(missionConfig.TargetType)
+            ? CollectTargetType
+            : missionConfig.TargetType.Trim();
+        if (string.Equals(targetType, CollectTargetType, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (!string.Equals(targetType, SubmitTargetType, StringComparison.OrdinalIgnoreCase))
+        {
+            Debug.LogError($"[任务系统] 不支持的任务目标类型: [{targetType}]，任务 [{missionId}]。");
+            return false;
+        }
+
+        if (missionConfig.Message != "Item" ||
+            !TryGetMissionTarget(missionId, out int targetItemId, out int targetItemCount))
+        {
+            Debug.LogError($"[任务系统] 提交类型任务缺少有效的物品目标: [{missionId}]。");
+            return false;
+        }
+
+        if (_playerInfoManager.GetItemCount(targetItemId) < targetItemCount)
+        {
+            Debug.LogWarning($"[任务系统] 提交任务所需物品不足: [{missionId}]。");
+            return false;
+        }
+
+        return _playerInfoManager.TryConsumeItem(targetItemId, targetItemCount);
     }
 
     private static void RestoreMissions(List<PlayerMissionData> missionData)
