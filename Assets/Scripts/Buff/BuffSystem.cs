@@ -51,7 +51,7 @@ public sealed class BuffSystem : Singleton<BuffSystem>
 
         if (ParseDurationType(config.DurationType) == BuffDurationType.Instant)
         {
-            ApplyTriggeredEffect(config, 1);
+            ApplyTriggeredEffect(config);
             CommonMessageView.Show($"BUFF 激活：{config.Name}");
             return true;
         }
@@ -71,7 +71,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             {
                 buffId = buffId,
                 remainingTurns = GetRemainingTurns(config),
-                stacks = 1,
                 sourceId = sourceId
             });
         }
@@ -111,7 +110,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             ApplyWorkEffect(
                 config.EffectType,
                 config.EffectValue,
-                activeBuff.stacks,
                 ref coinReward,
                 ref healthCost,
                 ref coinMultiplier,
@@ -119,7 +117,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             ApplyWorkEffect(
                 config.ExtraEffectType,
                 config.ExtraEffectValue,
-                activeBuff.stacks,
                 ref coinReward,
                 ref healthCost,
                 ref coinMultiplier,
@@ -166,12 +163,10 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             multiplier *= GetMultiplierContribution(
                 config.EffectType,
                 config.EffectValue,
-                activeBuff.stacks,
                 effectType);
             multiplier *= GetMultiplierContribution(
                 config.ExtraEffectType,
                 config.ExtraEffectValue,
-                activeBuff.stacks,
                 effectType);
         }
 
@@ -282,14 +277,14 @@ public sealed class BuffSystem : Singleton<BuffSystem>
                 config.Trigger == trigger &&
                 MeetsSatisfactionRequirement(config))
             {
-                ApplyTriggeredEffect(config, activeBuff.stacks);
+                ApplyTriggeredEffect(config);
             }
         }
     }
 
-    private void ApplyTriggeredEffect(cfg.BuffConfig config, int stacks)
+    private void ApplyTriggeredEffect(cfg.BuffConfig config)
     {
-        int amount = Mathf.RoundToInt(config.EffectValue * stacks);
+        int amount = Mathf.RoundToInt(config.EffectValue);
         switch (config.EffectType)
         {
             case "HealthChange":
@@ -303,18 +298,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
 
     private void UpdateExistingBuff(ActiveBuffData activeBuff, cfg.BuffConfig config, int sourceId)
     {
-        switch (ParseStackRule(config.StackRule))
-        {
-            case BuffStackRule.Ignore:
-                return;
-            case BuffStackRule.AddStack:
-                activeBuff.stacks = Mathf.Clamp(activeBuff.stacks + 1, 1, Mathf.Max(1, config.MaxStacks));
-                break;
-            case BuffStackRule.Replace:
-                activeBuff.stacks = 1;
-                break;
-        }
-
         activeBuff.remainingTurns = GetRemainingTurns(config);
         activeBuff.sourceId = sourceId;
     }
@@ -371,7 +354,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             {
                 buffId = selectedTier.BuffId,
                 remainingTurns = -1,
-                stacks = 1,
                 sourceId = HomeSatisfactionBuffSourceId
             });
         }
@@ -385,7 +367,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     private static void ApplyWorkEffect(
         string effectType,
         float effectValue,
-        int stacks,
         ref int coinReward,
         ref int healthCost,
         ref float coinMultiplier,
@@ -394,16 +375,16 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         switch (effectType)
         {
             case "WorkCoinFlat":
-                coinReward += Mathf.RoundToInt(effectValue * stacks);
+                coinReward += Mathf.RoundToInt(effectValue);
                 break;
             case "WorkCoinMultiplier":
-                coinMultiplier *= 1f + effectValue * stacks;
+                coinMultiplier *= 1f + effectValue;
                 break;
             case "WorkHealthCostFlat":
-                healthCost += Mathf.RoundToInt(effectValue * stacks);
+                healthCost += Mathf.RoundToInt(effectValue);
                 break;
             case "WorkHealthCostMultiplier":
-                healthCostMultiplier *= 1f + effectValue * stacks;
+                healthCostMultiplier *= 1f + effectValue;
                 break;
         }
     }
@@ -411,11 +392,10 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     private static float GetMultiplierContribution(
         string configuredEffectType,
         float effectValue,
-        int stacks,
         string requestedEffectType)
     {
         return configuredEffectType == requestedEffectType
-            ? 1f + effectValue * stacks
+            ? 1f + effectValue
             : 1f;
     }
 
@@ -437,13 +417,6 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         return Enum.TryParse(durationType, out BuffDurationType result)
             ? result
             : BuffDurationType.Instant;
-    }
-
-    private static BuffStackRule ParseStackRule(string stackRule)
-    {
-        return Enum.TryParse(stackRule, out BuffStackRule result)
-            ? result
-            : BuffStackRule.RefreshDuration;
     }
 
     private static int GetRemainingTurns(cfg.BuffConfig config)

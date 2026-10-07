@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "社区",
+    "name": "沿江社区",
     "desc": "温馨的社区",
     "image": "Assets/Art/Community/SpritesBig/community_station.png[community_station]",
     "fare": 0,
@@ -23,7 +23,7 @@
   },
   {
     "id": 3,
-    "name": "港口",
+    "name": "沿江港口",
     "desc": "商贸交易的地方，可以淘到好东西",
     "image": "Assets/Art/Community/SpritesBig/Subway_harbor.png[Subway_harbor]",
     "fare": 100,

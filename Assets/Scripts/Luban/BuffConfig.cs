@@ -32,8 +32,6 @@ public sealed partial class BuffConfig : Luban.BeanBase
         Trigger = (string)_obj.GetValue("trigger");
         DurationType = (string)_obj.GetValue("durationType");
         DurationTurns = (int)_obj.GetValue("durationTurns");
-        MaxStacks = (int)_obj.GetValue("maxStacks");
-        StackRule = (string)_obj.GetValue("stackRule");
         MinSatisfaction = (float)_obj.GetValue("minSatisfaction");
         EffectType = (string)_obj.GetValue("effectType");
         EffectValue = (float)_obj.GetValue("effectValue");
@@ -83,14 +81,6 @@ public sealed partial class BuffConfig : Luban.BeanBase
     /// </summary>
     public readonly int DurationTurns;
     /// <summary>
-    /// 最大层数
-    /// </summary>
-    public readonly int MaxStacks;
-    /// <summary>
-    /// RefreshDuration / AddStack / Replace / Ignore
-    /// </summary>
-    public readonly string StackRule;
-    /// <summary>
     /// 生效所需最低满意度
     /// </summary>
     public readonly float MinSatisfaction;
@@ -131,8 +121,6 @@ public sealed partial class BuffConfig : Luban.BeanBase
         + "trigger:" + Trigger + ","
         + "durationType:" + DurationType + ","
         + "durationTurns:" + DurationTurns + ","
-        + "maxStacks:" + MaxStacks + ","
-        + "stackRule:" + StackRule + ","
         + "minSatisfaction:" + MinSatisfaction + ","
         + "effectType:" + EffectType + ","
         + "effectValue:" + EffectValue + ","

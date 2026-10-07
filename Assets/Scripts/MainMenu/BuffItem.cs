@@ -8,7 +8,6 @@ public class BuffItem : MonoBehaviour
     [SerializeField] private Image _icon;
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtRemain;
-    [SerializeField] private Text _txtMulti;
     [SerializeField] private Button _btnDetail;
 
     private int _presentationVersion;
@@ -26,7 +25,6 @@ public class BuffItem : MonoBehaviour
         _txtRemain.text = activeBuff.remainingTurns < 0
             ? "永久"
             : $"剩余{activeBuff.remainingTurns}月";
-        _txtMulti.text = $"×{activeBuff.stacks}";
         _btnDetail.onClick.RemoveAllListeners();
         _btnDetail.onClick.AddListener(() => OpenDetail(buffConfig, activeBuff));
         SetIconAsync(buffConfig, resourceTag, _presentationVersion);
@@ -50,11 +48,6 @@ public class BuffItem : MonoBehaviour
             _txtRemain.text = string.Empty;
         }
 
-        if (_txtMulti != null)
-        {
-            _txtMulti.text = string.Empty;
-        }
-
         if (_btnDetail != null)
         {
             _btnDetail.onClick.RemoveAllListeners();
@@ -72,8 +65,7 @@ public class BuffItem : MonoBehaviour
             {
                 data = new CommonBuffDetailData(
                     buffConfig,
-                    activeBuff.remainingTurns,
-                    activeBuff.stacks)
+                    activeBuff.remainingTurns)
             });
     }
 
@@ -115,7 +107,6 @@ public class BuffItem : MonoBehaviour
         if (_icon != null &&
             _txtName != null &&
             _txtRemain != null &&
-            _txtMulti != null &&
             _btnDetail != null)
         {
             return true;

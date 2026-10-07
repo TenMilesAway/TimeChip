@@ -7,20 +7,11 @@ public enum BuffDurationType
     Permanent
 }
 
-public enum BuffStackRule
-{
-    RefreshDuration,
-    AddStack,
-    Replace,
-    Ignore
-}
-
 [Serializable]
 public sealed class ActiveBuffData
 {
     public int buffId;
     public int remainingTurns;
-    public int stacks = 1;
     public int sourceId;
 }
 

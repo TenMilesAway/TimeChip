@@ -2379,7 +2379,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.activeBuffs = new List<ActiveBuffData>();
         }
 
-        _data.activeBuffs.RemoveAll(buff => buff == null || buff.buffId <= 0 || buff.stacks <= 0 ||
+        _data.activeBuffs.RemoveAll(buff => buff == null || buff.buffId <= 0 ||
             buff.remainingTurns == 0 || buff.remainingTurns < -1);
 
         if (_data.workProgresses == null)
@@ -2709,7 +2709,6 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 {
                     buffId = buff.buffId,
                     remainingTurns = buff.remainingTurns,
-                    stacks = buff.stacks,
                     sourceId = buff.sourceId
                 });
             }

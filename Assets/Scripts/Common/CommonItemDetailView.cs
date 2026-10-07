@@ -5,16 +5,13 @@ public sealed class CommonBuffDetailData
 {
     public cfg.BuffConfig BuffConfig { get; }
     public int RemainingTurns { get; }
-    public int Stacks { get; }
 
     public CommonBuffDetailData(
         cfg.BuffConfig buffConfig,
-        int remainingTurns,
-        int stacks)
+        int remainingTurns)
     {
         BuffConfig = buffConfig;
         RemainingTurns = remainingTurns;
-        Stacks = stacks;
     }
 }
 

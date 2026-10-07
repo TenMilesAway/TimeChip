@@ -2,7 +2,7 @@
   {
     "id": 100,
     "name": "第一桶金",
-    "desc": "在25岁前积累5000模拟币",
+    "desc": "在25岁前积累5000模拟币，然后去看看外边的世界吧",
     "message": "SimulationCoinBalance",
     "icon": 1002,
     "condition": "mission:1003;force:22,2",
@@ -11,6 +11,22 @@
     "randomTarget": "",
     "reward": "4028,1",
     "deadline": "25,1",
+    "failure": "gameover",
+    "dialogueStart": "",
+    "dialogueEnd": ""
+  },
+  {
+    "id": 101,
+    "name": "风起",
+    "desc": "生活压力变大了，在28岁前攒到20000模拟币",
+    "message": "SimulationCoinBalance",
+    "icon": 1002,
+    "condition": "mission:100",
+    "target": "20000",
+    "targetType": "",
+    "randomTarget": "",
+    "reward": "1012,1",
+    "deadline": "28,1",
     "failure": "gameover",
     "dialogueStart": "",
     "dialogueEnd": ""
