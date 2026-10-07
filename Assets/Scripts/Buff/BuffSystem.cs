@@ -139,6 +139,16 @@ public sealed class BuffSystem : Singleton<BuffSystem>
             Mathf.CeilToInt(Mathf.Max(0, basePrice) * GetEffectMultiplier("ShopPriceMultiplier")));
     }
 
+    /// <summary>计算受当前永久 BUFF 影响后的社区经验。</summary>
+    public int CalculateCommunityExperience(int baseExperience)
+    {
+        return Mathf.Max(
+            0,
+            Mathf.CeilToInt(
+                Mathf.Max(0, baseExperience) *
+                GetEffectMultiplier("CommunityExperienceMultiplier")));
+    }
+
     /// <summary>返回指定倍率效果的最终乘数。</summary>
     public float GetEffectMultiplier(string effectType)
     {

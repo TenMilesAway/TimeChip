@@ -178,7 +178,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_2]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "4000,1,50;4001,1,50;4003,1,50;4004,1,50;4008,1,50;4009,1,50;4013,1,50;4014,1,50;4018,1,50;4019,1,50;4023,1,100",
+    "useEffect": "3001,1,10;4000,1,50;4001,1,50;4003,1,50;4004,1,50;4008,1,50;4009,1,50;4013,1,50;4014,1,50;4018,1,50;4019,1,50;4023,1,100",
     "replace": 0
   },
   {
@@ -191,7 +191,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_3]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "4002,1,50;4005,1,50;4006,1,50;4010,1,50;4011,1,50;4015,1,50;4016,1,50;4020,1,50;4021,1,50;4024,1,100",
+    "useEffect": "3002,1,10;4002,1,50;4005,1,50;4006,1,50;4010,1,50;4011,1,50;4015,1,50;4016,1,50;4020,1,50;4021,1,50;4024,1,100",
     "replace": 0
   },
   {
@@ -217,7 +217,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_1]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "101,100,100;1010,1,100;1011,1,10;3000,1,10",
+    "useEffect": "3011,1,10;101,100,100;1010,1,100;1011,1,10;3000,1,10",
     "replace": 0
   },
   {
@@ -230,7 +230,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_2]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "101,500,100;101,888,100;1010,2,100;1011,1,50;3000,1,50;",
+    "useEffect": "101,500,100;101,888,100;1010,2,100;1011,1,50;3000,1,50",
     "replace": 0
   },
   {
@@ -243,7 +243,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_1]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,10",
+    "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,100",
     "replace": 0
   },
   {

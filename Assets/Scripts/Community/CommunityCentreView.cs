@@ -272,9 +272,10 @@ public class CommunityCentreView : UIBasePanel
                     playerInfoManager,
                     previousLevel,
                     previousProgress);
+                ShowCommunitySupplyGiftBoxReward();
                 CommonTipView.Show(bonusExperienceGained > 0
-                    ? $"提交成功，获得【社区物资礼盒】×1，社区经验 +{experienceGained}（额外经验 +{bonusExperienceGained}）"
-                    : $"提交成功，获得【社区物资礼盒】×1，社区经验 +{experienceGained}");
+                    ? $"提交成功，社区经验 +{experienceGained}（额外经验 +{bonusExperienceGained}）"
+                    : $"提交成功，社区经验 +{experienceGained}");
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreNeedSubmitResult.InsufficientItem:
@@ -784,7 +785,8 @@ public class CommunityCentreView : UIBasePanel
         _isSubmittingRedundancyItem = true;
         CommunityCentreRedundancySubmitResult result =
             playerInfoManager.TrySubmitCommunityCentreRedundancyItem(
-                _selectedRedundancyItem.Id);
+                _selectedRedundancyItem.Id,
+                out int experienceGained);
         _isSubmittingRedundancyItem = false;
 
         switch (result)
@@ -797,7 +799,8 @@ public class CommunityCentreView : UIBasePanel
                     playerInfoManager,
                     previousLevel,
                     previousProgress);
-                CommonTipView.Show("提交成功，获得【社区物资礼盒】×1，社区经验 +10");
+                ShowCommunitySupplyGiftBoxReward();
+                CommonTipView.Show($"提交成功，社区经验 +{experienceGained}");
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreRedundancySubmitResult.InsufficientRedundancy:
@@ -810,5 +813,21 @@ public class CommunityCentreView : UIBasePanel
                     this);
                 break;
         }
+    }
+
+    private static void ShowCommunitySupplyGiftBoxReward()
+    {
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+        {
+            data = new List<CommonRewardItemData>
+            {
+                new CommonRewardItemData
+                {
+                    itemId = CommunitySupplyGiftBoxItemId,
+                    itemCount = 1
+                }
+            },
+            rewardsAlreadyGranted = true
+        });
     }
 }

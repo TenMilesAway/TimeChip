@@ -24,6 +24,7 @@ public static class MissionAPI
     private static bool _isRestoringMissions;
     private static bool _isSynchronizingMissions;
     private static bool _isEvaluatingMissions;
+    private static bool _isClaimingMission;
     private static bool _hasBroadcastSimulationCoinBalance;
     private static int _lastBroadcastSimulationCoinBalance;
 
@@ -56,6 +57,7 @@ public static class MissionAPI
 
         EnsureMonthlyRandomMissionOffer();
         EvaluateAvailableMissions(isNewGame);
+        SynchronizeSubmitMissionProgresses();
         BroadcastSimulationCoinBalance(force: true);
         CheckDeadlines();
     }
@@ -80,14 +82,21 @@ public static class MissionAPI
         }
 
         Mission<MissionMessage> mission = MissionManager.GetMission(missionId);
-        if (mission == null ||
-            !mission.IsFinished ||
-            !TrySubmitMissionTarget(missionId))
+        if (mission == null || !mission.IsFinished)
         {
             return false;
         }
 
-        return MissionManager.TryClaimMission(missionId);
+        _isClaimingMission = true;
+        try
+        {
+            return TrySubmitMissionTarget(missionId) &&
+                MissionManager.TryClaimMission(missionId);
+        }
+        finally
+        {
+            _isClaimingMission = false;
+        }
     }
 
     /// <summary>获取当前进行中或待领取的任务。</summary>
@@ -215,6 +224,10 @@ public static class MissionAPI
         if (!_isSynchronizingMissions)
         {
             EvaluateAvailableMissions(false);
+            if (!_isClaimingMission)
+            {
+                SynchronizeSubmitMissionProgresses();
+            }
         }
 
         BroadcastSimulationCoinBalance();
@@ -247,9 +260,52 @@ public static class MissionAPI
                 StartMission(missionConfig);
             }
         }
+
         finally
         {
             _isEvaluatingMissions = false;
+        }
+    }
+
+    private static void SynchronizeSubmitMissionProgresses()
+    {
+        bool hasProgressChanged = false;
+        Mission<MissionMessage>[] missions = MissionManager.GetMissions();
+        for (int i = 0; i < missions.Length; i++)
+        {
+            Mission<MissionMessage> mission = missions[i];
+            if (!TryGetMissionConfig(mission.id, out cfg.Mission missionConfig) ||
+                missionConfig.Message != "Item" ||
+                !string.Equals(
+                    missionConfig.TargetType,
+                    SubmitTargetType,
+                    StringComparison.OrdinalIgnoreCase) ||
+                !TryGetMissionTarget(
+                    mission.id,
+                    out int targetItemId,
+                    out int targetItemCount))
+            {
+                continue;
+            }
+
+            MissionProgress[] progresses = mission.Progresses;
+            int currentCount = Mathf.Clamp(
+                _playerInfoManager.GetItemCount(targetItemId),
+                0,
+                targetItemCount);
+            if (progresses.Length == 0 ||
+                progresses[0].currentCount == currentCount)
+            {
+                continue;
+            }
+
+            mission.RestoreProgress(new[] { currentCount });
+            hasProgressChanged = true;
+        }
+
+        if (hasProgressChanged)
+        {
+            SaveMissions();
         }
     }
 

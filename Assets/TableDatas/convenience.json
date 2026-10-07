@@ -3,36 +3,44 @@
     "id": 1,
     "name": "初级零工凭证礼盒",
     "itemId": 3000,
-    "price": 1000,
+    "price": 500,
     "num": 1,
-    "weight": 100
+    "weight": 50
   },
   {
     "id": 2,
     "name": "初级零工凭证礼盒",
     "itemId": 3000,
-    "price": 1500,
+    "price": 1000,
     "num": 1,
-    "weight": 200
+    "weight": 100
   },
   {
     "id": 3,
     "name": "初级零工凭证礼盒",
     "itemId": 3000,
-    "price": 2000,
+    "price": 1200,
     "num": 1,
-    "weight": 400
+    "weight": 500
   },
   {
     "id": 4,
+    "name": "中级零工凭证礼盒",
+    "itemId": 3001,
+    "price": 3000,
+    "num": 1,
+    "weight": 50
+  },
+  {
+    "id": 5,
     "name": "家具折扣券",
     "itemId": 2000,
     "price": 400,
     "num": 1,
-    "weight": 100
+    "weight": 50
   },
   {
-    "id": 5,
+    "id": 6,
     "name": "时间币",
     "itemId": 102,
     "price": 100,
@@ -40,7 +48,7 @@
     "weight": 100
   },
   {
-    "id": 6,
+    "id": 7,
     "name": "时间币",
     "itemId": 102,
     "price": 200,
@@ -48,20 +56,12 @@
     "weight": 200
   },
   {
-    "id": 7,
+    "id": 8,
     "name": "时间币",
     "itemId": 102,
     "price": 300,
     "num": 1,
-    "weight": 400
-  },
-  {
-    "id": 8,
-    "name": "地铁卡",
-    "itemId": 4028,
-    "price": 1000,
-    "num": 1,
-    "weight": 100
+    "weight": 500
   },
   {
     "id": 9,
@@ -126,5 +126,21 @@
     "price": 3000,
     "num": 1,
     "weight": 10
+  },
+  {
+    "id": 100,
+    "name": "小鱼干",
+    "itemId": 5005,
+    "price": 100,
+    "num": 1,
+    "weight": 100
+  },
+  {
+    "id": 101,
+    "name": "初级材料礼盒",
+    "itemId": 3020,
+    "price": 50,
+    "num": 1,
+    "weight": 200
   }
 ]

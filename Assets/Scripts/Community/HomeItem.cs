@@ -41,7 +41,7 @@ public class HomeItem : MonoBehaviour
 
         if (_nameText != null) _nameText.text = $"{homeConfig.Name}";
         if (_satisfactionText != null) _satisfactionText.text = $"{homeConfig.Satisfaction:0.##}";
-        if (_priceText != null) _priceText.text = $"{homeConfig.Price}";
+        RefreshPrice();
 
         LoadIconAsync(homeConfig, resourceTag, _presentationVersion);
     }
@@ -161,6 +161,18 @@ public class HomeItem : MonoBehaviour
         _lockBg.SetActive(!isPurchased &&
             _homeConfig.UnlockId > 0 &&
             !playerInfoManager.IsHomeUnlocked(_homeConfig.UnlockId));
+    }
+
+    public void RefreshPrice()
+    {
+        if (_homeConfig == null || _priceText == null)
+        {
+            return;
+        }
+
+        _priceText.text = BuffSystem.GetInstance()
+            .CalculateShopPrice(_homeConfig.Price)
+            .ToString();
     }
 
     public bool TryGetGuideTarget(out RectTransform guideTarget, out Button itemButton)

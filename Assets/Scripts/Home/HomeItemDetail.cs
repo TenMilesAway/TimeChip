@@ -107,7 +107,7 @@ public class HomeItemDetail : UIBasePanel
             args: _homeConfig.Id.ToString()));
         _prerequisiteConfig = null;
         _imageTip.SetActive(false);
-        _priceText.text = $"-{_homeConfig.Price}";
+        _priceText.text = $"-{purchaseCost}";
         _purchaseButton.interactable = false;
         OnClose();
         CommonTipView.Show($"购买成功，获得家具: {suffix}");

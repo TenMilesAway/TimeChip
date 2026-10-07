@@ -46,6 +46,7 @@ public class HomeStoreView : UIBasePanel
         _previousPageButton.onClick.AddListener(ShowPreviousPage);
         _nextPageButton.onClick.AddListener(ShowNextPage);
         PlayerInfoManager.GetInstance().PlayerInfoChanged += OnPlayerInfoChanged;
+        BuffSystem.GetInstance().BuffsChanged += RefreshHomeItemPrices;
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -87,6 +88,7 @@ public class HomeStoreView : UIBasePanel
         }
 
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnPlayerInfoChanged;
+        BuffSystem.GetInstance().BuffsChanged -= RefreshHomeItemPrices;
         base.OnDestroy();
     }
 
@@ -277,6 +279,14 @@ public class HomeStoreView : UIBasePanel
         for (int i = 0; i < _homeItems.Count; i++)
         {
             _homeItems[i].RefreshPurchaseState();
+        }
+    }
+
+    private void RefreshHomeItemPrices()
+    {
+        for (int i = 0; i < _homeItems.Count; i++)
+        {
+            _homeItems[i].RefreshPrice();
         }
     }
 

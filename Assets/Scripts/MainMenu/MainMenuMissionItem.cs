@@ -52,8 +52,10 @@ public class MainMenuMissionItem : MonoBehaviour
             }
         }
 
-        int target = Mathf.Max(1, int.TryParse(missionConfig.Target, out int value) ? value : 1);
         MissionProgress[] progresses = mission.Progresses;
+        int target = progresses.Length > 0
+            ? Mathf.Max(1, progresses[0].targetCount)
+            : Mathf.Max(1, int.TryParse(missionConfig.Target, out int value) ? value : 1);
         int current = progresses.Length == 0 ? 0 : Mathf.Clamp(progresses[0].currentCount, 0, target);
         _sliderProgress.minValue = 0f;
         _sliderProgress.maxValue = target;

@@ -92,7 +92,14 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         }
         else if (isItemMission)
         {
-            missionRequire = new MissionRequireItem(targetItemId, targetItemCount);
+            bool isSubmitTarget = string.Equals(
+                missionConfig.TargetType,
+                "submit",
+                System.StringComparison.OrdinalIgnoreCase);
+            missionRequire = new MissionRequireItem(
+                targetItemId,
+                targetItemCount,
+                !isSubmitTarget);
         }
         else
         {

@@ -5,11 +5,16 @@ public class MissionRequireItem : MissionRequire<MissionMessage>
 {
     private readonly int _itemId;
     private readonly int _targetCount;
+    private readonly bool _trackItemAcquisition;
 
-    public MissionRequireItem(int itemId, int targetCount)
+    public MissionRequireItem(
+        int itemId,
+        int targetCount,
+        bool trackItemAcquisition = true)
     {
         _itemId = itemId;
         _targetCount = targetCount;
+        _trackItemAcquisition = trackItemAcquisition;
     }
 
     public class Handle : MissionRequireHandle<MissionMessage>, IMissionProgressHandle
@@ -39,7 +44,8 @@ public class MissionRequireItem : MissionRequire<MissionMessage>
 
     public override bool CheckMessage(MissionMessage message)
     {
-        return message.type == MissionEventType.Item &&
+        return _trackItemAcquisition &&
+            message.type == MissionEventType.Item &&
             int.TryParse(message.args, out int itemId) &&
             itemId == _itemId;
     }

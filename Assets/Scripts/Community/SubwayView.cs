@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class SubwayView : UIBasePanel
 {
+    private const int FishLocationId = 2;
+    private const string FishingUnlockEffectType = "UnlockFishing";
+
     [System.Serializable]
     private class SubwayDestination
     {
@@ -248,6 +251,13 @@ public class SubwayView : UIBasePanel
         }
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (locationConfig.Id == FishLocationId &&
+            (!TryGetFishingUnlockSatisfaction(out float requiredSatisfaction) ||
+             playerInfoManager.Satisfaction < requiredSatisfaction))
+        {
+            return false;
+        }
+
         return playerInfoManager.CommunityCentreLevel >= locationConfig.UnlockCommunityLevel &&
             (locationConfig.UnlockItemId <= 0 ||
              playerInfoManager.GetItemCount(locationConfig.UnlockItemId) > 0) &&
@@ -280,7 +290,48 @@ public class SubwayView : UIBasePanel
             requirements.Add($"拥有 {locationConfig.UnlockCoin} 模拟币");
         }
 
+        if (locationConfig.Id == FishLocationId &&
+            TryGetFishingUnlockSatisfaction(out float requiredSatisfaction))
+        {
+            requirements.Add($"小屋满意度达到 {requiredSatisfaction:0.#}%");
+        }
+
         return requirements.Count > 0 ? string.Join("及", requirements) : "已解锁";
+    }
+
+    private static bool TryGetFishingUnlockSatisfaction(
+        out float requiredSatisfaction)
+    {
+        requiredSatisfaction = 0f;
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        IReadOnlyList<cfg.HomeSatisfactionBuff> tiers =
+            tables.HomeSatisfactionBuffTable.DataList;
+        for (int i = 0; i < tiers.Count; i++)
+        {
+            cfg.HomeSatisfactionBuff tier = tiers[i];
+            cfg.BuffConfig buffConfig = tables.BuffConfigTable
+                .GetOrDefault(tier.BuffId);
+            if (buffConfig == null ||
+                (buffConfig.EffectType != FishingUnlockEffectType &&
+                 buffConfig.ExtraEffectType != FishingUnlockEffectType))
+            {
+                continue;
+            }
+
+            if (requiredSatisfaction <= 0f ||
+                tier.MinSatisfaction < requiredSatisfaction)
+            {
+                requiredSatisfaction = tier.MinSatisfaction;
+            }
+        }
+
+        if (requiredSatisfaction > 0f)
+        {
+            return true;
+        }
+
+        Debug.LogError("未配置钓鱼的小屋满意度解锁收益。");
+        return false;
     }
 
     private void OnClickBack()

@@ -17,7 +17,7 @@
     "image": "Assets/Art/Community/SpritesBig/subway_fish.png[subway_fish]",
     "fare": 50,
     "itemCosts": "",
-    "unlockCommunityLevel": 1,
+    "unlockCommunityLevel": 0,
     "unlockItemId": 0,
     "unlockCoin": 0
   },

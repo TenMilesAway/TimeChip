@@ -722,16 +722,18 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             experienceGained += bonusExperienceGained;
         }
 
-        AddCommunityCentreExperience(experienceGained);
+        experienceGained = AddCommunityCentreExperience(experienceGained);
         return CommunityCentreNeedSubmitResult.Success;
     }
 
     /// <summary>提交一个冗余社区道具，换取社区物资礼盒和社区经验。</summary>
     public CommunityCentreRedundancySubmitResult TrySubmitCommunityCentreRedundancyItem(
-        int itemId)
+        int itemId,
+        out int experienceGained)
     {
         const int redundancyItemCategory = 4;
         const int communityExperienceReward = 10;
+        experienceGained = 0;
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(itemId);
@@ -753,7 +755,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         AddItem(CommunitySupplyGiftBoxItemId, 1);
-        AddCommunityCentreExperience(communityExperienceReward);
+        experienceGained = AddCommunityCentreExperience(communityExperienceReward);
         return CommunityCentreRedundancySubmitResult.Success;
     }
 
@@ -1282,7 +1284,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     }
 
     /// <summary>增加社区经验，升级后自动获得一次社区提案选择次数。</summary>
-    public void AddCommunityCentreExperience(int amount)
+    public int AddCommunityCentreExperience(int amount)
     {
         if (amount <= 0)
         {
@@ -1293,10 +1295,13 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         if (_data.communityCentreLevel >= MaxCommunityCentreLevel)
         {
-            return;
+            return 0;
         }
 
-        _data.communityCentreExperience = checked(_data.communityCentreExperience + amount);
+        int adjustedAmount = BuffSystem.GetInstance()
+            .CalculateCommunityExperience(amount);
+        _data.communityCentreExperience = checked(
+            _data.communityCentreExperience + adjustedAmount);
         while (_data.communityCentreLevel < MaxCommunityCentreLevel)
         {
             int requiredExperience = GetCommunityCentreExperienceRequired(
@@ -1317,6 +1322,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         NotifyPlayerInfoChanged();
+        return adjustedAmount;
     }
 
     /// <summary>尝试消耗当前社区等级的经验，经验不足时不发生改变。</summary>
