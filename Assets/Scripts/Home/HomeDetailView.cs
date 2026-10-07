@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class HomeDetailView : UIBasePanel
 {
+    private const float HiddenMissionSatisfaction = 40f;
+    private const string HiddenMissionLockedDescription = "???";
+
     [SerializeField] private Text _txtSatisfaction; // 满意度文本：xx%
     [SerializeField] private Slider _sliderSatisfaction; // 满意度滑动条
     [SerializeField] private HomeDetailShowItem[] _showItems; // 展示的详细信息项
@@ -87,7 +90,12 @@ public class HomeDetailView : UIBasePanel
                 continue;
             }
 
-            _showItems[i].SetData(tier, buffConfig, satisfaction >= tier.MinSatisfaction);
+            bool isUnlocked = satisfaction >= tier.MinSatisfaction;
+            string displayDescription =
+                tier.MinSatisfaction == HiddenMissionSatisfaction && !isUnlocked
+                    ? HiddenMissionLockedDescription
+                    : buffConfig.Desc;
+            _showItems[i].SetData(tier, buffConfig, isUnlocked, displayDescription);
         }
 
         for (int i = itemCount; i < _showItems.Length; i++)

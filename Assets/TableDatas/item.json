@@ -715,6 +715,32 @@
     "replace": 0
   },
   {
+    "id": 5100,
+    "name": "草莓小熊",
+    "level": 5,
+    "type": "稀有材料",
+    "category": 5,
+    "desc": "女儿一直想要的草莓小熊，为什么会从河里钓起来？",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[rare_pink_bear_plush_icon]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": "",
+    "replace": 0
+  },
+  {
+    "id": 5101,
+    "name": "海洋之心",
+    "level": 5,
+    "type": "稀有材料",
+    "category": 5,
+    "desc": "完美的吊坠，送给喵夫人最为合适了",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[rare_ocean_heart_pendant_icon]",
+    "canUse": 0,
+    "rewardScale": 6000,
+    "useEffect": "",
+    "replace": 0
+  },
+  {
     "id": 6000,
     "name": "小白条",
     "level": 1,

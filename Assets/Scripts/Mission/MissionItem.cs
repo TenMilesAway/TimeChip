@@ -176,6 +176,7 @@ public class MissionItem : MonoBehaviour
             }
 
             _rewardItems[slotIndex].SetData(
+                reward.itemId,
                 icon,
                 reward.itemCount,
                 ((baseConfig == null ? itemConfig.RewardScale : baseConfig.RewardScale) / ScaleDivisor) *

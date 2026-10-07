@@ -18,6 +18,7 @@ public static class MissionAPI
     private const float RandomMissionChance = 0.3f;
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
+    private const string UnlockedHomeIdRangeCountPrefix = "unlockedHomeIdRangeCount:";
 
     private static PlayerInfoManager _playerInfoManager;
     private static bool _isInitialized;
@@ -316,6 +317,7 @@ public static class MissionAPI
             return false;
         }
 
+        PlayerInfoData playerData = _playerInfoManager.GetSnapshot();
         string condition = missionConfig.Condition;
         if (string.IsNullOrEmpty(condition))
         {
@@ -356,6 +358,38 @@ public static class MissionAPI
             {
                 if (int.TryParse(itemCondition.Substring(12), out int health) &&
                     _playerInfoManager.Health <= health)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (itemCondition.StartsWith("satisfactionAtLeast:"))
+            {
+                if (float.TryParse(
+                        itemCondition.Substring(20),
+                        out float requiredSatisfaction) &&
+                    _playerInfoManager.Satisfaction >= requiredSatisfaction)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (itemCondition.StartsWith(UnlockedHomeIdRangeCountPrefix))
+            {
+                if (TryParseUnlockedHomeIdRangeCount(
+                        itemCondition.Substring(UnlockedHomeIdRangeCountPrefix.Length),
+                        out int minimumHomeId,
+                        out int maximumHomeId,
+                        out int requiredCount) &&
+                    HasAtLeastUnlockedHomesInRange(
+                        playerData.unlockedHomeIds,
+                        minimumHomeId,
+                        maximumHomeId,
+                        requiredCount))
                 {
                     return true;
                 }
@@ -640,6 +674,16 @@ public static class MissionAPI
             SetDeadline(missionConfig.Deadline, data);
         }
 
+        if (missionConfig.Message == "Item" &&
+            data.targetItemId <= 0 &&
+            !TryParseItemTarget(
+                missionConfig.Target,
+                out data.targetItemId,
+                out data.targetItemCount))
+        {
+            Debug.LogWarning($"[任务系统] 物品任务目标配置无效: [{missionConfig.Id}], [{missionConfig.Target}]");
+        }
+
         return data;
     }
 
@@ -765,6 +809,67 @@ public static class MissionAPI
             age > 0 &&
             month >= 1 &&
             month <= 12;
+    }
+
+    private static bool TryParseItemTarget(string value, out int itemId, out int itemCount)
+    {
+        itemId = 0;
+        itemCount = 0;
+        string[] values = string.IsNullOrEmpty(value)
+            ? Array.Empty<string>()
+            : value.Split(',');
+        return values.Length == 2 &&
+            int.TryParse(values[0], out itemId) &&
+            int.TryParse(values[1], out itemCount) &&
+            itemId > 0 &&
+            itemCount > 0 &&
+            DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId) != null;
+    }
+
+    private static bool TryParseUnlockedHomeIdRangeCount(
+        string value,
+        out int minimumHomeId,
+        out int maximumHomeId,
+        out int requiredCount)
+    {
+        minimumHomeId = 0;
+        maximumHomeId = 0;
+        requiredCount = 0;
+        string[] values = string.IsNullOrEmpty(value)
+            ? Array.Empty<string>()
+            : value.Split(',');
+        return values.Length == 3 &&
+            int.TryParse(values[0], out minimumHomeId) &&
+            int.TryParse(values[1], out maximumHomeId) &&
+            int.TryParse(values[2], out requiredCount) &&
+            minimumHomeId > 0 &&
+            maximumHomeId >= minimumHomeId &&
+            requiredCount > 0;
+    }
+
+    private static bool HasAtLeastUnlockedHomesInRange(
+        List<int> unlockedHomeIds,
+        int minimumHomeId,
+        int maximumHomeId,
+        int requiredCount)
+    {
+        if (unlockedHomeIds == null)
+        {
+            return false;
+        }
+
+        int count = 0;
+        for (int i = 0; i < unlockedHomeIds.Count; i++)
+        {
+            int homeId = unlockedHomeIds[i];
+            if (homeId >= minimumHomeId && homeId <= maximumHomeId &&
+                ++count >= requiredCount)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool IsAtOrAfter(int age, int month, int targetAge, int targetMonth)

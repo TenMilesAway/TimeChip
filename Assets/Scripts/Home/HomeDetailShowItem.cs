@@ -10,7 +10,11 @@ public class HomeDetailShowItem : MonoBehaviour
     [SerializeField] private GameObject _goUnlockGroup;
     [SerializeField] private GameObject _goLockGroup;
 
-    public bool SetData(cfg.HomeSatisfactionBuff tier, cfg.BuffConfig buffConfig, bool isUnlocked)
+    public bool SetData(
+        cfg.HomeSatisfactionBuff tier,
+        cfg.BuffConfig buffConfig,
+        bool isUnlocked,
+        string displayDescription)
     {
         if (tier == null || buffConfig == null)
         {
@@ -31,7 +35,7 @@ public class HomeDetailShowItem : MonoBehaviour
 
         gameObject.SetActive(true);
         _txtSatisfaction.text = $"{tier.MinSatisfaction:0.##}%";
-        _txtBuff.text = buffConfig.Desc;
+        _txtBuff.text = displayDescription;
         _goUnlockGroup.SetActive(isUnlocked);
         _goLockGroup.SetActive(!isUnlocked);
         return true;
