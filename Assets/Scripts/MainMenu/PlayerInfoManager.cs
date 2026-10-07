@@ -1198,6 +1198,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.Health, _data.health));
     }
 
+    /// <summary>设置当前健康值，结果限制在零与最大健康值之间</summary>
+    public void SetHealth(int health)
+    {
+        ChangeHealth(health - _data.health);
+    }
+
     /// <summary>按指定数值增减模拟币, 模拟币不会低于零</summary>
     /// <param name="amount">模拟币变化量, 正数增加, 负数减少</param>
     public void AddSimulationCoins(int amount)

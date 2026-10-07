@@ -32,6 +32,22 @@
     "extraEffectValue": 0
   },
   {
+    "id": 1003,
+    "name": "过度疲劳",
+    "desc": "体力消耗增加 20%，持续两回合",
+    "icon": 1000,
+    "activationType": "HealthBelowThreshold",
+    "activationChance": 0,
+    "trigger": "",
+    "durationType": "Turns",
+    "durationTurns": 2,
+    "minSatisfaction": 0,
+    "effectType": "WorkHealthCostMultiplier",
+    "effectValue": 0.2,
+    "extraEffectType": "",
+    "extraEffectValue": 0
+  },
+  {
     "id": 2001,
     "name": "社区热心肠 I",
     "desc": "社区经验 +5%",
@@ -385,8 +401,8 @@
   },
   {
     "id": 3005,
-    "name": "精打细算 II",
-    "desc": "商品价格 -5%",
+    "name": "沿江港口",
+    "desc": "解锁沿江港口",
     "icon": 1000,
     "activationType": "HomeSatisfaction",
     "activationChance": 0,
@@ -394,8 +410,8 @@
     "durationType": "Permanent",
     "durationTurns": 0,
     "minSatisfaction": 0,
-    "effectType": "ShopPriceMultiplier",
-    "effectValue": -0.05,
+    "effectType": "UnlockPort",
+    "effectValue": 1,
     "extraEffectType": "",
     "extraEffectValue": 0
   },

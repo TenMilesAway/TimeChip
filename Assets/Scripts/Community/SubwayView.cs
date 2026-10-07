@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class SubwayView : UIBasePanel
 {
     private const int FishLocationId = 2;
+    private const int PortLocationId = 3;
     private const string FishingUnlockEffectType = "UnlockFishing";
+    private const string PortUnlockEffectType = "UnlockPort";
 
     [System.Serializable]
     private class SubwayDestination
@@ -258,6 +260,13 @@ public class SubwayView : UIBasePanel
             return false;
         }
 
+        if (locationConfig.Id == PortLocationId &&
+            (!TryGetPortUnlockSatisfaction(out float requiredPortSatisfaction) ||
+             playerInfoManager.Satisfaction < requiredPortSatisfaction))
+        {
+            return false;
+        }
+
         return playerInfoManager.CommunityCentreLevel >= locationConfig.UnlockCommunityLevel &&
             (locationConfig.UnlockItemId <= 0 ||
              playerInfoManager.GetItemCount(locationConfig.UnlockItemId) > 0) &&
@@ -296,10 +305,33 @@ public class SubwayView : UIBasePanel
             requirements.Add($"小屋满意度达到 {requiredSatisfaction:0.#}%");
         }
 
+        if (locationConfig.Id == PortLocationId &&
+            TryGetPortUnlockSatisfaction(out float requiredPortSatisfaction))
+        {
+            requirements.Add($"小屋满意度达到 {requiredPortSatisfaction:0.#}%");
+        }
+
         return requirements.Count > 0 ? string.Join("及", requirements) : "已解锁";
     }
 
     private static bool TryGetFishingUnlockSatisfaction(
+        out float requiredSatisfaction)
+    {
+        return TryGetSatisfactionUnlockThreshold(
+            FishingUnlockEffectType,
+            out requiredSatisfaction);
+    }
+
+    private static bool TryGetPortUnlockSatisfaction(
+        out float requiredSatisfaction)
+    {
+        return TryGetSatisfactionUnlockThreshold(
+            PortUnlockEffectType,
+            out requiredSatisfaction);
+    }
+
+    private static bool TryGetSatisfactionUnlockThreshold(
+        string effectType,
         out float requiredSatisfaction)
     {
         requiredSatisfaction = 0f;
@@ -312,8 +344,8 @@ public class SubwayView : UIBasePanel
             cfg.BuffConfig buffConfig = tables.BuffConfigTable
                 .GetOrDefault(tier.BuffId);
             if (buffConfig == null ||
-                (buffConfig.EffectType != FishingUnlockEffectType &&
-                 buffConfig.ExtraEffectType != FishingUnlockEffectType))
+                (buffConfig.EffectType != effectType &&
+                 buffConfig.ExtraEffectType != effectType))
             {
                 continue;
             }
@@ -330,7 +362,7 @@ public class SubwayView : UIBasePanel
             return true;
         }
 
-        Debug.LogError("未配置钓鱼的小屋满意度解锁收益。");
+        Debug.LogError($"未配置效果 [{effectType}] 的小屋满意度解锁收益。");
         return false;
     }
 

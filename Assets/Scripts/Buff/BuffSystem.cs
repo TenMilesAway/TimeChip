@@ -8,9 +8,12 @@ using UnityEngine;
 public sealed class BuffSystem : Singleton<BuffSystem>
 {
     private const int HomeSatisfactionBuffSourceId = -1;
+    private const int LowHealthDebuffId = 1003;
+    private const int LowHealthDebuffThreshold = 60;
 
     private PlayerInfoManager _playerInfoManager;
     private bool _isSynchronizingHomeSatisfactionBuff;
+    private int _lastKnownHealth;
 
     /// <summary>激活 BUFF 列表变化时触发，供表现层刷新图标。</summary>
     public event Action BuffsChanged;
@@ -26,13 +29,14 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         {
             _playerInfoManager.TurnEnding -= OnTurnEnding;
             _playerInfoManager.TurnAdvanced -= OnTurnAdvanced;
-            _playerInfoManager.PlayerInfoChanged -= SynchronizeHomeSatisfactionBuff;
+            _playerInfoManager.PlayerInfoChanged -= OnPlayerInfoChanged;
         }
 
         _playerInfoManager = playerInfoManager;
+        _lastKnownHealth = _playerInfoManager.Health;
         _playerInfoManager.TurnEnding += OnTurnEnding;
         _playerInfoManager.TurnAdvanced += OnTurnAdvanced;
-        _playerInfoManager.PlayerInfoChanged += SynchronizeHomeSatisfactionBuff;
+        _playerInfoManager.PlayerInfoChanged += OnPlayerInfoChanged;
         RemoveMissingConfigurations();
         SynchronizeHomeSatisfactionBuff(_playerInfoManager);
     }
@@ -212,6 +216,21 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     {
         AddAutomaticBuffs();
         ApplyEffectsForTrigger("TurnStart");
+    }
+
+    private void OnPlayerInfoChanged(PlayerInfoManager playerInfoManager)
+    {
+        int currentHealth = playerInfoManager.Health;
+        bool crossedLowHealthThreshold = _lastKnownHealth > LowHealthDebuffThreshold &&
+            currentHealth <= LowHealthDebuffThreshold;
+        _lastKnownHealth = currentHealth;
+
+        SynchronizeHomeSatisfactionBuff(playerInfoManager);
+        if (crossedLowHealthThreshold &&
+            FindActiveBuff(playerInfoManager.GetActiveBuffs(), LowHealthDebuffId) == null)
+        {
+            TryAddBuff(LowHealthDebuffId);
+        }
     }
 
     private void OnTurnEnding()

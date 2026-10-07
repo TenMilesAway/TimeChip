@@ -7,11 +7,12 @@ public sealed class GMPanel : MonoBehaviour
     private const int MaxGrantCount = 99999;
 
     private readonly Rect _buttonRect = new Rect(12f, 12f, 84f, 36f);
-    private Rect _windowRect = new Rect(12f, 56f, 340f, 190f);
+    private Rect _windowRect = new Rect(12f, 56f, 340f, 290f);
 
     private bool _isOpen;
     private string _itemIdInput = string.Empty;
     private string _countInput = "1";
+    private string _healthInput = string.Empty;
     private string _message = string.Empty;
 
     public static GMPanel Create()
@@ -33,7 +34,7 @@ public sealed class GMPanel : MonoBehaviour
                 GetInstanceID(),
                 _windowRect,
                 DrawWindow,
-                "GM 物品发放");
+                "GM 工具");
         }
     }
 
@@ -54,7 +55,17 @@ public sealed class GMPanel : MonoBehaviour
             TryGrantItem();
         }
 
-        GUI.Label(new Rect(16f, 142f, 294f, 32f), _message);
+        GUI.Label(new Rect(16f, 146f, 92f, 24f), "当前健康值");
+        _healthInput = GUI.TextField(
+            new Rect(110f, 146f, 200f, 24f),
+            _healthInput);
+
+        if (GUI.Button(new Rect(16f, 180f, 294f, 30f), "设置健康值"))
+        {
+            TrySetHealth();
+        }
+
+        GUI.Label(new Rect(16f, 218f, 294f, 48f), _message);
         GUI.DragWindow(new Rect(0f, 0f, 340f, 24f));
     }
 
@@ -97,6 +108,19 @@ public sealed class GMPanel : MonoBehaviour
         }
 
         _message = $"已获得 {baseConfig.Name} × {count}。";
+    }
+
+    private void TrySetHealth()
+    {
+        if (!int.TryParse(_healthInput, out int health) || health < 0)
+        {
+            _message = "请输入大于或等于 0 的健康值。";
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.SetHealth(health);
+        _message = $"当前健康值已设为 {playerInfoManager.Health}。";
     }
 
     private static bool TryGrantBaseProperty(int basePropertyId, int count)
