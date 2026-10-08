@@ -146,7 +146,7 @@
   {
     "id": 3002,
     "name": "海洋之心",
-    "desc": "收集<color=#00FFFA>{0}</color>×{1}",
+    "desc": "收集<color=#00FFFA>{0}</color>×{1}，送给喵夫人",
     "message": "Item",
     "icon": 5101,
     "condition": "satisfactionAtLeast:40",
@@ -156,13 +156,13 @@
     "reward": "3001,1;4023,3",
     "deadline": "",
     "failure": "",
-    "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueStart": "MissionThree,3",
+    "dialogueEnd": "MissionThree,4"
   },
   {
     "id": 3003,
     "name": "草莓小熊",
-    "desc": "收集<color=#00FFFA>{0}</color>×{1}",
+    "desc": "女儿的心愿，收集<color=#00FFFA>{0}</color>×{1}",
     "message": "Item",
     "icon": 5100,
     "condition": "unlockedHomeIdRangeCount:7000,7999,3",
