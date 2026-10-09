@@ -16,22 +16,22 @@ MonoBehaviour:
   <Groups>k__BackingField:
   - <ID>k__BackingField: 2a921d39-0b0e-4f10-b8e1-cb2d6f02607a
     <Name>k__BackingField: "\u521D\u51FA\u8305\u5E90\u5F00\u59CB"
-    <Position>k__BackingField: {x: -127.19998, y: -9.59988}
+    <Position>k__BackingField: {x: -127.2, y: -9.599995}
   - <ID>k__BackingField: 40833c53-79ec-40e8-9250-5ee7c3330951
     <Name>k__BackingField: "\u521D\u51FA\u8305\u5E90\u7ED3\u675F"
-    <Position>k__BackingField: {x: -127.19998, y: 345.59998}
+    <Position>k__BackingField: {x: -127.2, y: 345.6}
   - <ID>k__BackingField: a16d797e-80fc-49fb-9201-1ce1a8ed517f
     <Name>k__BackingField: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u5F00\u59CB"
-    <Position>k__BackingField: {x: -33.600006, y: 830.4}
+    <Position>k__BackingField: {x: -33.6, y: 830.4}
   - <ID>k__BackingField: 33c99902-5bb3-415d-a055-c2d3dc176d27
     <Name>k__BackingField: "\u4ECE\u5929\u800C\u964D\u7684\u597D\u8FD0\u7ED3\u675F"
-    <Position>k__BackingField: {x: -33.600006, y: 1270.4001}
+    <Position>k__BackingField: {x: -33.6, y: 1270.4001}
   - <ID>k__BackingField: 25098f21-b3f5-4e39-a4a4-f8ebedcdd13c
     <Name>k__BackingField: "\u6DFB\u7F6E\u5BB6\u5177\u5F00\u59CB"
-    <Position>k__BackingField: {x: -28.800003, y: 1950.4}
+    <Position>k__BackingField: {x: -28.8, y: 1950.4}
   - <ID>k__BackingField: d1e3a612-f46e-4e90-b893-cfafc32183fd
     <Name>k__BackingField: "\u6DFB\u7F6E\u5BB6\u5177\u7ED3\u675F"
-    <Position>k__BackingField: {x: -28.800142, y: 2395.2}
+    <Position>k__BackingField: {x: -28.8, y: 2395.2002}
   <Nodes>k__BackingField:
   - <ID>k__BackingField: fe78b4c3-fcec-451f-8de2-8c23c7d582d1
     <Name>k__BackingField: 1
@@ -347,7 +347,7 @@ MonoBehaviour:
     <Position>k__BackingField: {x: 3588.8, y: 892.8}
   - <ID>k__BackingField: 026623a0-b58f-462f-b189-8b3177d6da45
     <Name>k__BackingField: 8
-    <Text>k__BackingField: "\u68C0\u6D4B\u5230\u7279\u6B8A\u7269\u54C1\u2014\u2014\u65F6\u95F4\u5E01\uFF0C\u53EF\u7528\u4E8E\u5728\u795E\u79D8\u7A7A\u95F4\u4E2D\u5F00\u542F\u62BD\u5956\u88C5\u7F6E\u3002"
+    <Text>k__BackingField: "\u68C0\u6D4B\u5230\u7279\u6B8A\u7269\u54C1\u2014\u2014<color=#00FFFA>\u65F6\u95F4\u5E01</color>\uFF0C\u53EF\u7528\u4E8E\u5728\u795E\u79D8\u7A7A\u95F4\u4E2D\u5F00\u542F\u62BD\u5956\u88C5\u7F6E\u3002"
     <Choices>k__BackingField:
     - <Text>k__BackingField: Next Dialogue
       <NodeID>k__BackingField: bcb036e1-1975-44d8-88d4-038ec04eac90
@@ -539,7 +539,7 @@ MonoBehaviour:
     <Position>k__BackingField: {x: 2665.6, y: 1333.6001}
   - <ID>k__BackingField: a1677721-45a5-40db-9bd4-79279b8111f2
     <Name>k__BackingField: 6
-    <Text>k__BackingField: "\u90A3\u679A\u65F6\u95F4\u5E01\u5DF2\u7ECF\u6D88\u5931\u4E86\uFF1F"
+    <Text>k__BackingField: "\u90A3\u679A<color=#00FFFA>\u65F6\u95F4\u5E01</color>\u5DF2\u7ECF\u6D88\u5931\u4E86\uFF1F"
     <Choices>k__BackingField:
     - <Text>k__BackingField: Next Dialogue
       <NodeID>k__BackingField: 342e8c28-2884-490a-a77a-1b22fe9fa7bd

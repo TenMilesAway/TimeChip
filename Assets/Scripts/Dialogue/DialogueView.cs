@@ -433,7 +433,8 @@ public class DialogueView : UIBasePanel
         _txtDialogue.text = string.Empty;
         _isTyping = true;
 
-        int characterCount = fullText.Length;
+        List<string> textPrefixes = BuildRichTextPrefixes(fullText);
+        int characterCount = textPrefixes.Count - 1;
         float duration = Mathf.Max(0.01f, _typewriterSecondsPerChar * characterCount);
         int visibleCharacters = 0;
 
@@ -441,7 +442,7 @@ public class DialogueView : UIBasePanel
             .To(() => visibleCharacters, value =>
             {
                 visibleCharacters = value;
-                _txtDialogue.text = fullText.Substring(0, Mathf.Clamp(value, 0, characterCount));
+                _txtDialogue.text = textPrefixes[Mathf.Clamp(value, 0, characterCount)];
             }, characterCount, duration)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
@@ -450,6 +451,103 @@ public class DialogueView : UIBasePanel
                 _isTyping = false;
                 _typewriterTween = null;
             });
+    }
+
+    private static List<string> BuildRichTextPrefixes(string fullText)
+    {
+        List<string> prefixes = new List<string> { string.Empty };
+        System.Text.StringBuilder currentText = new System.Text.StringBuilder();
+        List<string> openTags = new List<string>();
+        int visibleCharacterCount = 0;
+        int index = 0;
+
+        while (index < fullText.Length)
+        {
+            if (fullText[index] == '<')
+            {
+                int tagEndIndex = fullText.IndexOf('>', index);
+                if (tagEndIndex >= 0)
+                {
+                    string tag = fullText.Substring(index, tagEndIndex - index + 1);
+                    currentText.Append(tag);
+                    UpdateOpenRichTextTags(openTags, tag);
+                    prefixes[visibleCharacterCount] = AddClosingRichTextTags(
+                        currentText.ToString(),
+                        openTags);
+                    index = tagEndIndex + 1;
+                    continue;
+                }
+            }
+
+            currentText.Append(fullText[index]);
+            visibleCharacterCount++;
+            prefixes.Add(AddClosingRichTextTags(currentText.ToString(), openTags));
+            index++;
+        }
+
+        return prefixes;
+    }
+
+    private static void UpdateOpenRichTextTags(List<string> openTags, string tag)
+    {
+        if (tag.StartsWith("</"))
+        {
+            string tagName = GetRichTextTagName(tag);
+            for (int i = openTags.Count - 1; i >= 0; i--)
+            {
+                if (openTags[i] == tagName)
+                {
+                    openTags.RemoveAt(i);
+                    break;
+                }
+            }
+
+            return;
+        }
+
+        if (tag.EndsWith("/>") ||
+            tag.StartsWith("<br") ||
+            tag.StartsWith("<quad"))
+        {
+            return;
+        }
+
+        string openingTagName = GetRichTextTagName(tag);
+        if (!string.IsNullOrEmpty(openingTagName))
+        {
+            openTags.Add(openingTagName);
+        }
+    }
+
+    private static string AddClosingRichTextTags(
+        string text,
+        List<string> openTags)
+    {
+        System.Text.StringBuilder result = new System.Text.StringBuilder(text);
+        for (int i = openTags.Count - 1; i >= 0; i--)
+        {
+            result.Append("</");
+            result.Append(openTags[i]);
+            result.Append('>');
+        }
+
+        return result.ToString();
+    }
+
+    private static string GetRichTextTagName(string tag)
+    {
+        int startIndex = tag.StartsWith("</") ? 2 : 1;
+        int endIndex = startIndex;
+        while (endIndex < tag.Length &&
+               tag[endIndex] != '>' &&
+               tag[endIndex] != '/' &&
+               tag[endIndex] != '=' &&
+               !char.IsWhiteSpace(tag[endIndex]))
+        {
+            endIndex++;
+        }
+
+        return tag.Substring(startIndex, endIndex - startIndex).ToLowerInvariant();
     }
 
     private void CompleteCurrentTypewriterLine()

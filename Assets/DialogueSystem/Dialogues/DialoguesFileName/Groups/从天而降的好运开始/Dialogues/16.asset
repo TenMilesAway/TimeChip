@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f262818b55b0f4418296bad0176bdab, type: 3}
+  m_Name: 16
+  m_EditorClassIdentifier: 
+  <DialogueName>k__BackingField: 16
+  <Text>k__BackingField: "\u8BF7\u5BBF\u4E3B\u96C6\u4E2D\u610F\u5FF5\uFF0C\u6452\u9664\u6742\u5FF5\uFF0C\u5FC3\u795E\u5408\u4E00\uFF0C\u5FC3\u5982\u6B62\u6C34\uFF0C\u6C14\u6C89\u4E39\u7530\uFF0C\u8EAB\u968F\u5FC3\u52A8\uFF0C\u5FF5\u7531\u610F\u751F\uFF0C\u610F\u5B88\u7384\u5173\uFF0C\u795E\u6E38\u7269\u5916\uFF0C\u4E91\u5FC3\u4F3C\u6C34\uFF0C\u795E\u6E38\u592A\u865A......."
+  <Choices>k__BackingField:
+  - <Text>k__BackingField: Next Dialogue
+    <NextDialogue>k__BackingField: {fileID: 0}
+  <DialogueType>k__BackingField: 0
+  <Speaker>k__BackingField: 3
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+  <Reward>k__BackingField: 
+  <IsStartingDialogue>k__BackingField: 0
