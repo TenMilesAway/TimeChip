@@ -980,6 +980,20 @@
     "replace": 0
   },
   {
+    "id": 6020,
+    "name": "练习圆钩",
+    "level": 1,
+    "inventoryType": 0,
+    "type": "鱼钩",
+    "category": 7,
+    "desc": "练习圆钩",
+    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_01_beginner]",
+    "canUse": 0,
+    "rewardScale": 5000,
+    "useEffect": "",
+    "replace": 0
+  },
+  {
     "id": 6021,
     "name": "灵巧细钩",
     "level": 1,
@@ -1044,20 +1058,6 @@
     "category": 7,
     "desc": "时光鱼钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_06_time]",
-    "canUse": 0,
-    "rewardScale": 5000,
-    "useEffect": "",
-    "replace": 0
-  },
-  {
-    "id": 6020,
-    "name": "练习圆钩",
-    "level": 1,
-    "inventoryType": 0,
-    "type": "鱼钩",
-    "category": 7,
-    "desc": "练习圆钩",
-    "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_01_beginner]",
     "canUse": 0,
     "rewardScale": 5000,
     "useEffect": "",

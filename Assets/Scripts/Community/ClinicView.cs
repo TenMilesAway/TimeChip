@@ -28,7 +28,6 @@ public class ClinicView : UIBasePanel
     private const int CureItem2Price = 998;
     private const int CureItem3Price = 1488;
     private const int ExaminationCost = 50;
-    private const float ExaminationHealthRecoveryChance = 0.6f;
     private const int ExaminationMinimumHealthRecovery = 3;
     private const int ExaminationMaximumHealthRecovery = 8;
     private const int ExaminationBuffIdMin = 1000;
@@ -121,7 +120,7 @@ public class ClinicView : UIBasePanel
 
         bool restoresHealth = TurnRandom.Chance(
             "Clinic.Examination.RestoresHealth",
-            ExaminationHealthRecoveryChance);
+            GameProbability.Get("Clinic.Examination.RestoresHealth"));
         List<cfg.BuffConfig> availableBuffs = restoresHealth
             ? null
             : GetAvailableExaminationBuffs(playerInfoManager);

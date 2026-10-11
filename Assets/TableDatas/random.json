@@ -1,0 +1,32 @@
+[
+  {
+    "id": "Community.TrashCan.Spawn",
+    "probability": 0.1,
+    "desc": "每个垃圾桶点位刷新的概率"
+  },
+  {
+    "id": "Community.LostWallet.Spawn",
+    "probability": 0.1,
+    "desc": "遗失钱包出现概率"
+  },
+  {
+    "id": "Community.StrayCatFoodBowl.Spawn",
+    "probability": 0.1,
+    "desc": "流浪猫食物盆出现概率"
+  },
+  {
+    "id": "Community.Donation.Spawn",
+    "probability": 1,
+    "desc": "社区募捐箱出现概率"
+  },
+  {
+    "id": "Clinic.Examination.RestoresHealth",
+    "probability": 0.6,
+    "desc": "体检恢复健康而非获得BUFF的概率"
+  },
+  {
+    "id": "Mission.MonthlyOffer.Spawn",
+    "probability": 0.3,
+    "desc": "每月生成随机社区委托的概率"
+  }
+]

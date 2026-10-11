@@ -33,6 +33,7 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "guide",
         "homeSatisfactionBuff",
         "function",
+        "random",
     };
 
     #region Getter

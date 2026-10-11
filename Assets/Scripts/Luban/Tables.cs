@@ -89,6 +89,10 @@ public partial class Tables
     /// 鱼饵效果配置
     /// </summary>
     public FishBaitTable FishBaitTable {get; }
+    /// <summary>
+    /// ??????
+    /// </summary>
+    public RandomTable RandomTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -112,6 +116,7 @@ public partial class Tables
         FishRodTable = new FishRodTable(loader("fishRod"));
         FishTable = new FishTable(loader("fish"));
         FishBaitTable = new FishBaitTable(loader("fishBait"));
+        RandomTable = new RandomTable(loader("random"));
         ResolveRef();
     }
     
@@ -136,6 +141,7 @@ public partial class Tables
         FishRodTable.ResolveRef(this);
         FishTable.ResolveRef(this);
         FishBaitTable.ResolveRef(this);
+        RandomTable.ResolveRef(this);
     }
 }
 

@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class CommunityView : UIBasePanel
 {
-    private const float TrashCanSpawnChance = 0.1f;
-    private const float LostWalletSpawnChance = 0.1f;
     private const int MinimumTrashCanHealthCost = 3;
     private const int MaximumTrashCanHealthCost = 5;
     private const float TrashCanReminderInterval = 5f;
@@ -42,10 +40,8 @@ public class CommunityView : UIBasePanel
     private const int LostWalletLotteryPoolId = 9;
     private const int LostWalletCommunityExperienceCost = 20;
     private const int LostWalletCommunityExperienceReward = 20;
-    private const float StrayCatFoodBowlSpawnChance = 0.1f;
     private const int StrayCatFoodBowlLotteryPoolId = 10;
     private const int DriedFishItemId = 5005;
-    private const float DonationSpawnChance = 0.5f;
     private const int DonationLotteryPoolId = 11;
     private const int DonationCost = 30;
 
@@ -316,7 +312,7 @@ public class CommunityView : UIBasePanel
         {
             isAvailable = TurnRandom.Chance(
                 "Community.Donation.Spawn",
-                DonationSpawnChance);
+                GameProbability.Get("Community.Donation.Spawn"));
             playerInfoManager.SetCurrentTurnDonationAvailable(isAvailable);
         }
 
@@ -742,8 +738,8 @@ public class CommunityView : UIBasePanel
                 out int visiblePointIndex))
         {
             visiblePointIndex = TurnRandom.Chance(
-                    "Community.LostWallet.Spawn",
-                    LostWalletSpawnChance)
+                "Community.LostWallet.Spawn",
+                GameProbability.Get("Community.LostWallet.Spawn"))
                 ? TurnRandom.Range(
                     "Community.LostWallet.Point",
                     0,
@@ -892,8 +888,8 @@ public class CommunityView : UIBasePanel
                 out int visiblePointIndex))
         {
             visiblePointIndex = TurnRandom.Chance(
-                    "Community.StrayCatFoodBowl.Spawn",
-                    StrayCatFoodBowlSpawnChance)
+                "Community.StrayCatFoodBowl.Spawn",
+                GameProbability.Get("Community.StrayCatFoodBowl.Spawn"))
                 ? TurnRandom.Range(
                     "Community.StrayCatFoodBowl.Point",
                     0,
@@ -993,7 +989,7 @@ public class CommunityView : UIBasePanel
             int childCount = point == null ? 0 : point.transform.childCount;
             bool shouldSpawn = childCount > 0 && TurnRandom.Chance(
                 $"Community.TrashCan.{pointIndex}.Spawn",
-                TrashCanSpawnChance);
+                GameProbability.Get("Community.TrashCan.Spawn"));
             childIndices.Add(shouldSpawn
                 ? TurnRandom.Range(
                     $"Community.TrashCan.{pointIndex}.Child",

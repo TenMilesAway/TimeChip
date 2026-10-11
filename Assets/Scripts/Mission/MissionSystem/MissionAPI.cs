@@ -16,7 +16,6 @@ public static class MissionAPI
         new Dictionary<string, PlayerMissionData>();
     private const int RandomMissionId = 3001;
     private const int RandomFishMissionId = 3004;
-    private const float RandomMissionChance = 0.3f;
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
     private const string UnlockedHomeIdRangeCountPrefix = "unlockedHomeIdRangeCount:";
@@ -527,7 +526,9 @@ public static class MissionAPI
             return;
         }
 
-        if (!TurnRandom.Chance("Mission.MonthlyOffer.Spawn", RandomMissionChance))
+        if (!TurnRandom.Chance(
+                "Mission.MonthlyOffer.Spawn",
+                GameProbability.Get("Mission.MonthlyOffer.Spawn")))
         {
             _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
             return;
