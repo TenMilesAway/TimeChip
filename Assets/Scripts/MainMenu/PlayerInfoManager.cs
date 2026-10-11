@@ -149,6 +149,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家拥有的可叠加道具列表</summary>
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
 
+    /// <summary>鱼钩道具 ID 迁移版本</summary>
+    public int fishHookItemIdVersion;
+
     /// <summary>当前装备的鱼钩道具 ID</summary>
     public int equippedFishHookItemId;
 
@@ -406,6 +409,7 @@ public sealed class PlayerInventoryItem
 /// </summary>
 public class PlayerInfoManager : Singleton<PlayerInfoManager>
 {
+    private const int FishHookItemIdVersion = 1;
     /// <summary>每年的月份数量</summary>
     private const int MonthsPerYear = 12;
     private const int MonthlyTimeCoinReward = 1;
@@ -2309,9 +2313,42 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
     }
 
+    private static int MigrateFishHookItemId(int itemId)
+    {
+        switch (itemId)
+        {
+            case 6020: return 6021;
+            case 6021: return 6022;
+            case 6022: return 6023;
+            case 6023: return 6024;
+            case 6024: return 6025;
+            case 6025: return 6020;
+            default: return itemId;
+        }
+    }
+
     /// <summary>修正初始化数据中的无效值, 确保内部状态始终处于合法范围</summary>
     private void NormalizeData()
     {
+        if (_data.fishHookItemIdVersion < FishHookItemIdVersion)
+        {
+            if (_data.inventory != null)
+            {
+                for (int i = 0; i < _data.inventory.Count; i++)
+                {
+                    if (_data.inventory[i] != null)
+                    {
+                        _data.inventory[i].itemId = MigrateFishHookItemId(
+                            _data.inventory[i].itemId);
+                    }
+                }
+            }
+
+            _data.equippedFishHookItemId = MigrateFishHookItemId(
+                _data.equippedFishHookItemId);
+            _data.fishHookItemIdVersion = FishHookItemIdVersion;
+        }
+
         _data.currentAge = Mathf.Max(0, _data.currentAge);
         _data.currentMonth = Mathf.Clamp(_data.currentMonth, 1, MonthsPerYear);
         _data.maxHealth = Mathf.Max(1, _data.maxHealth);
@@ -2578,6 +2615,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             cureService1Price = source.cureService1Price,
             cureService2Price = source.cureService2Price,
             inventory = CreateInventoryCopy(source.inventory),
+            fishHookItemIdVersion = source.fishHookItemIdVersion,
             equippedFishHookItemId = source.equippedFishHookItemId,
             equippedFishBaitItemId = source.equippedFishBaitItemId,
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),

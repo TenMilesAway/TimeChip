@@ -1,6 +1,6 @@
 [
   {
-    "id": 6025,
+    "id": 6020,
     "name": "练习圆钩",
     "riseAcceleration": 1000,
     "maxRiseSpeed": 800,
@@ -14,7 +14,7 @@
     "fishDegree": 0
   },
   {
-    "id": 6020,
+    "id": 6021,
     "name": "灵巧细钩",
     "riseAcceleration": 1000,
     "maxRiseSpeed": 800,
@@ -28,7 +28,7 @@
     "fishDegree": 1
   },
   {
-    "id": 6021,
+    "id": 6022,
     "name": "宽口鱼钩",
     "riseAcceleration": 1000,
     "maxRiseSpeed": 800,
@@ -42,7 +42,7 @@
     "fishDegree": 1
   },
   {
-    "id": 6022,
+    "id": 6023,
     "name": "稳固倒刺钩",
     "riseAcceleration": 1100,
     "maxRiseSpeed": 800,
@@ -56,7 +56,7 @@
     "fishDegree": 2
   },
   {
-    "id": 6023,
+    "id": 6024,
     "name": "双重稳固钩",
     "riseAcceleration": 1200,
     "maxRiseSpeed": 800,
@@ -70,7 +70,7 @@
     "fishDegree": 2
   },
   {
-    "id": 6024,
+    "id": 6025,
     "name": "时光鱼钩",
     "riseAcceleration": 1800,
     "maxRiseSpeed": 900,

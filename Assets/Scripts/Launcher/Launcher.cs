@@ -536,6 +536,7 @@ public class Launcher : SingletonMono<Launcher>
     {
         return new PlayerInfoData
         {
+            fishHookItemIdVersion = 1,
             currentAge = 22,
             currentMonth = 1,
             health = 100,
