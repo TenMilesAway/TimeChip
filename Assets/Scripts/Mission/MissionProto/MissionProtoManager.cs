@@ -45,8 +45,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         }
 
         bool isItemMission = missionConfig.Message == "Item";
+        bool isFishCatchMission = missionConfig.Message == "FishCatch";
         int target = 0;
-        if ((!isItemMission && !int.TryParse(missionConfig.Target, out target)) ||
+        if ((!isItemMission && !isFishCatchMission &&
+             !int.TryParse(missionConfig.Target, out target)) ||
             (isItemMission && (targetItemId <= 0 || targetItemCount <= 0)))
         {
             Debug.LogWarning("[任务系统] 任务目标必须是正整数: " + missionConfig?.Id);
@@ -54,6 +56,7 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         }
 
         MissionRequire<MissionMessage> missionRequire;
+        MissionRequire<MissionMessage>[] missionRequires = null;
         if (missionConfig.Message == "Coin")
         {
             missionRequire = new MissionRequireCoin(target);
@@ -90,6 +93,36 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireHomeSatisfactionView(target);
         }
+        else if (isFishCatchMission)
+        {
+            if (targetItemId > 0 && targetItemCount > 0)
+            {
+                cfg.Item fishItem = DataTableMananger.GetInstance()
+                    .Tables
+                    .ItemTable
+                    .GetOrDefault(targetItemId);
+                if (fishItem == null || fishItem.InventoryType != 2 ||
+                    targetItemId == 6011)
+                {
+                    Debug.LogWarning(
+                        $"[任务系统] 随机鱼获任务目标无效: [{missionConfig.Id}], [{targetItemId}]");
+                    return false;
+                }
+
+                missionRequires = new MissionRequire<MissionMessage>[]
+                {
+                    new MissionRequireFishCatch(targetItemId, targetItemCount)
+                };
+            }
+            else if (!TryCreateFishCatchRequires(
+                         missionConfig.Target,
+                         out missionRequires))
+            {
+                return false;
+            }
+
+            missionRequire = null;
+        }
         else if (isItemMission)
         {
             bool isSubmitTarget = string.Equals(
@@ -116,9 +149,56 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
 
         missionProto = new MissionPrototype<MissionMessage>(
             missionConfig.Id.ToString(),
-            new MissionRequire<MissionMessage>[] { missionRequire },
+            missionRequires ?? new MissionRequire<MissionMessage>[] { missionRequire },
             rewards);
         return true;
+    }
+
+    private static bool TryCreateFishCatchRequires(
+        string targetText,
+        out MissionRequire<MissionMessage>[] missionRequires)
+    {
+        missionRequires = null;
+        if (string.IsNullOrWhiteSpace(targetText))
+        {
+            Debug.LogWarning("[任务系统] 鱼获任务没有配置目标鱼种。");
+            return false;
+        }
+
+        string[] entries = targetText.Split(';');
+        List<MissionRequire<MissionMessage>> requires =
+            new List<MissionRequire<MissionMessage>>(entries.Length);
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] values = entries[i].Split(',');
+            if (values.Length != 2 ||
+                !int.TryParse(values[0], out int fishItemId) ||
+                !int.TryParse(values[1], out int targetCount) ||
+                fishItemId <= 0 ||
+                targetCount <= 0 ||
+                fishItemId == 6011)
+            {
+                Debug.LogWarning(
+                    $"[任务系统] 鱼获任务目标配置无效: [{entries[i]}]");
+                return false;
+            }
+
+            cfg.Item fishItem = DataTableMananger.GetInstance()
+                .Tables
+                .ItemTable
+                .GetOrDefault(fishItemId);
+            if (fishItem == null || fishItem.InventoryType != 2)
+            {
+                Debug.LogWarning(
+                    $"[任务系统] 鱼获任务目标必须是钓鱼背包道具: [{fishItemId}]");
+                return false;
+            }
+
+            requires.Add(new MissionRequireFishCatch(fishItemId, targetCount));
+        }
+
+        missionRequires = requires.ToArray();
+        return missionRequires.Length > 0;
     }
 
     private static bool TryCreateRewards(

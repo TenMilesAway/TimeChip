@@ -1,0 +1,50 @@
+[
+  {
+    "id": 6030,
+    "extraFishDegree": 0,
+    "extraFishDegreeProbability": 0,
+    "treasureProbabilityBonus": 0,
+    "catchAreaHeightBonus": 0,
+    "fishMoveSpeedMultiplier": 1
+  },
+  {
+    "id": 6031,
+    "extraFishDegree": 0,
+    "extraFishDegreeProbability": 0.1,
+    "treasureProbabilityBonus": 0,
+    "catchAreaHeightBonus": 0,
+    "fishMoveSpeedMultiplier": 1
+  },
+  {
+    "id": 6032,
+    "extraFishDegree": 0,
+    "extraFishDegreeProbability": 0,
+    "treasureProbabilityBonus": 0.05,
+    "catchAreaHeightBonus": 0,
+    "fishMoveSpeedMultiplier": 1
+  },
+  {
+    "id": 6033,
+    "extraFishDegree": 0,
+    "extraFishDegreeProbability": 0,
+    "treasureProbabilityBonus": 0,
+    "catchAreaHeightBonus": 10,
+    "fishMoveSpeedMultiplier": 1
+  },
+  {
+    "id": 6034,
+    "extraFishDegree": 1,
+    "extraFishDegreeProbability": 1,
+    "treasureProbabilityBonus": 0.1,
+    "catchAreaHeightBonus": 0,
+    "fishMoveSpeedMultiplier": 0.95
+  },
+  {
+    "id": 6035,
+    "extraFishDegree": 2,
+    "extraFishDegreeProbability": 1,
+    "treasureProbabilityBonus": 0.1,
+    "catchAreaHeightBonus": 20,
+    "fishMoveSpeedMultiplier": 0.9
+  }
+]

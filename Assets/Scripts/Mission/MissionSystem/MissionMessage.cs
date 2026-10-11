@@ -37,4 +37,5 @@ public enum MissionEventType
     HomePurchase,
     HomeSatisfactionView,
     Item,
+    FishCatch,
 }

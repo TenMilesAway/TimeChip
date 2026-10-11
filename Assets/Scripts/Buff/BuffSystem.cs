@@ -177,6 +177,34 @@ public sealed class BuffSystem : Singleton<BuffSystem>
         return Mathf.Max(0f, multiplier);
     }
 
+    /// <summary>累加指定效果类型的当前数值。</summary>
+    public float GetEffectValue(string effectType)
+    {
+        float value = 0f;
+        List<ActiveBuffData> activeBuffs = _playerInfoManager.GetActiveBuffs();
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuffData activeBuff = activeBuffs[i];
+            cfg.BuffConfig config = GetConfig(activeBuff.buffId);
+            if (config == null || !MeetsSatisfactionRequirement(config))
+            {
+                continue;
+            }
+
+            if (config.EffectType == effectType)
+            {
+                value += config.EffectValue;
+            }
+
+            if (config.ExtraEffectType == effectType)
+            {
+                value += config.ExtraEffectValue;
+            }
+        }
+
+        return value;
+    }
+
     /// <summary>判断指定解锁效果是否处于生效状态。</summary>
     public bool HasActiveEffect(string effectType)
     {

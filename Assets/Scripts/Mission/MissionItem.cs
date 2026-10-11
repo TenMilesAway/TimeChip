@@ -46,6 +46,24 @@ public class MissionItem : MonoBehaviour
                     targetItemCount);
             }
         }
+        else if (missionConfig.Message == "FishCatch")
+        {
+            if (TryGetFishCatchSummary(
+                    missionConfig,
+                    progresses,
+                    out string description,
+                    out int fishCurrent,
+                    out int fishTarget))
+            {
+                _txtDetail.text = description;
+                target = fishTarget;
+                current = fishCurrent;
+            }
+            else
+            {
+                Debug.LogError($"鱼获任务目标配置无效: [{missionConfig.Id}]", this);
+            }
+        }
 
         _sliderProgress.minValue = 0f;
         _sliderProgress.maxValue = target;
@@ -199,5 +217,61 @@ public class MissionItem : MonoBehaviour
 
         Debug.LogError($"缩放配置不存在: [{scaleName}]");
         return null;
+    }
+
+    private bool TryGetFishCatchSummary(
+        cfg.Mission missionConfig,
+        MissionProgress[] progresses,
+        out string description,
+        out int current,
+        out int target)
+    {
+        description = missionConfig.Desc;
+        current = 0;
+        target = 0;
+        System.Text.StringBuilder targetText = new System.Text.StringBuilder();
+        string[] entries = missionConfig.Target.Split(';');
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] values = entries[i].Split(',');
+            if (values.Length != 2 ||
+                !int.TryParse(values[0], out int itemId) ||
+                !int.TryParse(values[1], out int count))
+            {
+                return false;
+            }
+
+            cfg.Item item = DataTableMananger.GetInstance()
+                .Tables
+                .ItemTable
+                .GetOrDefault(itemId);
+            if (item == null || item.InventoryType != 2 || count <= 0)
+            {
+                return false;
+            }
+
+            if (i > 0)
+            {
+                targetText.Append("、");
+            }
+
+            targetText.Append("<color=#00FFFA>");
+            targetText.Append(item.Name);
+            targetText.Append("</color>*");
+            targetText.Append(count);
+            target += count;
+            if (i < progresses.Length)
+            {
+                current += Mathf.Min(progresses[i].currentCount, count);
+            }
+        }
+
+        if (target <= 0)
+        {
+            return false;
+        }
+
+        description = string.Format(missionConfig.Desc, targetText, target);
+        return true;
     }
 }

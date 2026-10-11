@@ -173,6 +173,9 @@ public sealed class PlayerInfoData
     /// <summary>本月是否有尚未领取的随机委托</summary>
     public bool hasRandomMissionOffer;
 
+    /// <summary>本月随机委托的任务 ID</summary>
+    public int randomMissionOfferId;
+
     /// <summary>随机委托生成时的年龄</summary>
     public int randomMissionOfferAge = -1;
 
@@ -1069,11 +1072,26 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>当前月份是否有可从公告栏领取的随机委托。</summary>
     public bool HasMonthlyRandomMissionOffer()
     {
+        int missionId = GetMonthlyRandomMissionOfferId();
         return _data.hasRandomMissionOffer &&
             _data.randomMissionOfferAge == _data.currentAge &&
             _data.randomMissionOfferMonth == _data.currentMonth &&
-            _data.randomMissionTargetItemId > 0 &&
-            _data.randomMissionTargetCount > 0;
+            missionId > 0 &&
+            (missionId == 3004 ||
+             (_data.randomMissionTargetItemId > 0 &&
+              _data.randomMissionTargetCount > 0));
+    }
+
+    /// <summary>获取本月随机委托任务 ID，兼容旧存档。</summary>
+    public int GetMonthlyRandomMissionOfferId()
+    {
+        return _data.randomMissionOfferId > 0
+            ? _data.randomMissionOfferId
+            : (_data.hasRandomMissionOffer &&
+               _data.randomMissionTargetItemId > 0 &&
+               _data.randomMissionTargetCount > 0
+                ? 3001
+                : 0);
     }
 
     /// <summary>本月是否已完成随机委托的生成判定。</summary>
@@ -1087,15 +1105,22 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     /// <summary>保存本月生成的随机委托目标。</summary>
     public void SetMonthlyRandomMissionOffer(int itemId, int count)
     {
-        if (itemId <= 0 || count <= 0)
+        SetMonthlyRandomMissionOffer(3001, itemId, count);
+    }
+
+    /// <summary>保存本月生成的随机委托。</summary>
+    public void SetMonthlyRandomMissionOffer(int missionId, int itemId, int count)
+    {
+        if (missionId <= 0 || itemId <= 0 || count <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(itemId));
+            throw new ArgumentOutOfRangeException(nameof(missionId));
         }
 
         _data.randomMissionOfferGenerated = true;
         _data.hasRandomMissionOffer = true;
         _data.randomMissionOfferAge = _data.currentAge;
         _data.randomMissionOfferMonth = _data.currentMonth;
+        _data.randomMissionOfferId = missionId;
         _data.randomMissionTargetItemId = itemId;
         _data.randomMissionTargetCount = count;
         NotifyPlayerInfoChanged();
@@ -1108,6 +1133,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.hasRandomMissionOffer = false;
         _data.randomMissionOfferAge = _data.currentAge;
         _data.randomMissionOfferMonth = _data.currentMonth;
+        _data.randomMissionOfferId = 0;
         _data.randomMissionTargetItemId = 0;
         _data.randomMissionTargetCount = 0;
         NotifyPlayerInfoChanged();
@@ -2560,6 +2586,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             completedMissionIds = CreateMissionIdCopy(source.completedMissionIds),
             randomMissionOfferGenerated = source.randomMissionOfferGenerated,
             hasRandomMissionOffer = source.hasRandomMissionOffer,
+            randomMissionOfferId = source.randomMissionOfferId,
             randomMissionOfferAge = source.randomMissionOfferAge,
             randomMissionOfferMonth = source.randomMissionOfferMonth,
             randomMissionTargetItemId = source.randomMissionTargetItemId,

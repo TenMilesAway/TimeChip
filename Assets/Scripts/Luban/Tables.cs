@@ -77,6 +77,18 @@ public partial class Tables
     /// 功能解锁配置
     /// </summary>
     public FunctionTable FunctionTable {get; }
+    /// <summary>
+    /// 鱼钩能力配置
+    /// </summary>
+    public FishRodTable FishRodTable {get; }
+    /// <summary>
+    /// 鱼类配置
+    /// </summary>
+    public FishTable FishTable {get; }
+    /// <summary>
+    /// 鱼饵效果配置
+    /// </summary>
+    public FishBaitTable FishBaitTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -97,6 +109,9 @@ public partial class Tables
         GuideTable = new GuideTable(loader("guide"));
         HomeSatisfactionBuffTable = new HomeSatisfactionBuffTable(loader("homeSatisfactionBuff"));
         FunctionTable = new FunctionTable(loader("function"));
+        FishRodTable = new FishRodTable(loader("fishRod"));
+        FishTable = new FishTable(loader("fish"));
+        FishBaitTable = new FishBaitTable(loader("fishBait"));
         ResolveRef();
     }
     
@@ -118,6 +133,9 @@ public partial class Tables
         GuideTable.ResolveRef(this);
         HomeSatisfactionBuffTable.ResolveRef(this);
         FunctionTable.ResolveRef(this);
+        FishRodTable.ResolveRef(this);
+        FishTable.ResolveRef(this);
+        FishBaitTable.ResolveRef(this);
     }
 }
 

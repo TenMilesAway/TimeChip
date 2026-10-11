@@ -15,6 +15,7 @@ public static class MissionAPI
     private static readonly Dictionary<string, PlayerMissionData> MissionTimings =
         new Dictionary<string, PlayerMissionData>();
     private const int RandomMissionId = 3001;
+    private const int RandomFishMissionId = 3004;
     private const float RandomMissionChance = 0.3f;
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
@@ -312,7 +313,7 @@ public static class MissionAPI
 
     private static bool CanStartMission(cfg.Mission missionConfig, bool allowInitialMissions)
     {
-        if (missionConfig.Id == RandomMissionId)
+        if (IsMonthlyRandomMission(missionConfig.Id))
         {
             return false;
         }
@@ -427,7 +428,7 @@ public static class MissionAPI
     private static void StartMission(cfg.Mission missionConfig)
     {
         PlayerMissionData missionData = CreateMissionData(missionConfig, null);
-        if (missionConfig.Id == RandomMissionId)
+        if (IsMonthlyRandomMission(missionConfig.Id))
         {
             if (!_playerInfoManager.HasMonthlyRandomMissionOffer())
             {
@@ -450,7 +451,7 @@ public static class MissionAPI
         MissionTimings[missionId] = missionData;
         if (MissionManager.StartMission(missionProto))
         {
-            if (missionConfig.Id == RandomMissionId)
+            if (IsMonthlyRandomMission(missionConfig.Id))
             {
                 _playerInfoManager.ClearMonthlyRandomMissionOffer();
             }
@@ -482,39 +483,90 @@ public static class MissionAPI
         targetItemCount = 0;
         if (!_isInitialized ||
             !_playerInfoManager.HasMonthlyRandomMissionOffer() ||
-            MissionManager.GetMission(RandomMissionId.ToString()) != null ||
-            !TryGetMissionConfig(RandomMissionId.ToString(), out missionConfig))
+            !TryGetMissionConfig(
+                _playerInfoManager.GetMonthlyRandomMissionOfferId().ToString(),
+                out missionConfig) ||
+            (missionConfig.Id == RandomFishMissionId && !SubwayView.IsFishingUnlocked()) ||
+            MissionManager.GetMission(missionConfig.Id.ToString()) != null)
         {
             return false;
         }
 
         PlayerInfoData playerData = _playerInfoManager.GetSnapshot();
+        if (missionConfig.Id == RandomFishMissionId &&
+            (playerData.randomMissionTargetItemId <= 0 ||
+             playerData.randomMissionTargetCount <= 0))
+        {
+            if (!TryPickRandomMissionTarget(
+                    missionConfig.RandomTarget,
+                    out int fishItemId,
+                    out int fishCount))
+            {
+                return false;
+            }
+
+            _playerInfoManager.SetMonthlyRandomMissionOffer(
+                RandomFishMissionId,
+                fishItemId,
+                fishCount);
+            playerData = _playerInfoManager.GetSnapshot();
+        }
+
         targetItemId = playerData.randomMissionTargetItemId;
         targetItemCount = playerData.randomMissionTargetCount;
         StartMission(missionConfig);
-        return MissionManager.GetMission(RandomMissionId.ToString()) != null;
+        return MissionManager.GetMission(missionConfig.Id.ToString()) != null;
     }
 
     private static void EnsureMonthlyRandomMissionOffer()
     {
         if (_playerInfoManager.HasGeneratedMonthlyRandomMissionOffer() ||
             MissionManager.GetMission(RandomMissionId.ToString()) != null ||
-            !TryGetMissionConfig(RandomMissionId.ToString(), out cfg.Mission missionConfig))
+            MissionManager.GetMission(RandomFishMissionId.ToString()) != null)
         {
             return;
         }
 
-        if (!TurnRandom.Chance("Mission.MonthlyOffer.Spawn", RandomMissionChance) ||
-            !TryPickRandomMissionTarget(
-                missionConfig.RandomTarget,
-                out int itemId,
-                out int itemCount))
+        if (!TurnRandom.Chance("Mission.MonthlyOffer.Spawn", RandomMissionChance))
         {
             _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
             return;
         }
 
-        _playerInfoManager.SetMonthlyRandomMissionOffer(itemId, itemCount);
+        int missionId = TurnRandom.Range("Mission.MonthlyOffer.Type", 0, 2) == 0
+            ? RandomMissionId
+            : RandomFishMissionId;
+        if (missionId == RandomFishMissionId && !SubwayView.IsFishingUnlocked())
+        {
+            missionId = RandomMissionId;
+        }
+
+        if (!TryGetMissionConfig(missionId.ToString(), out cfg.Mission missionConfig))
+        {
+            _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
+            return;
+        }
+
+        int itemId = 0;
+        int itemCount = 0;
+        if (!TryPickRandomMissionTarget(
+                missionConfig.RandomTarget,
+                out itemId,
+                out itemCount))
+        {
+            _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
+            return;
+        }
+
+        _playerInfoManager.SetMonthlyRandomMissionOffer(
+            missionId,
+            itemId,
+            itemCount);
+    }
+
+    private static bool IsMonthlyRandomMission(int missionId)
+    {
+        return missionId == RandomMissionId || missionId == RandomFishMissionId;
     }
 
     private static bool TryPickRandomMissionTarget(

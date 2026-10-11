@@ -18,6 +18,7 @@ public class GlobalDefine
     public const string WorkView = "Assets/Art/Community/Prefab/WorkView.prefab";                          // Super+
     public const string HomeStoreView = "Assets/Art/Community/Prefab/HomeStoreView.prefab";                // Super+
     public const string InventoryView = "Assets/Art/MainMenu/Prefab/InventoryView.prefab";                 // Super+
+    public const string FishInventoryView = "Assets/Art/Community/Prefab/FishInventoryView.prefab";        // Super+
     public const string ConvenienceStoreView = "Assets/Art/Community/Prefab/ConvenienceStoreView.prefab";  // Super+
     public const string HomeDetailView = "Assets/Art/Home/Prefab/HomeDetailView.prefab";                   // Super+
     public const string ClinicView = "Assets/Art/Community/Prefab/ClinicView.prefab";                      // Super+

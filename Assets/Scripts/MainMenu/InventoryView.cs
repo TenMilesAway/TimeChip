@@ -134,7 +134,9 @@ public class InventoryView : UIBasePanel
         {
             PlayerInventoryItem playerItem = playerData.inventory[i];
             cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(playerItem.itemId);
-            if (itemConfig != null && playerItem.amount > 0)
+            if (itemConfig != null &&
+                itemConfig.InventoryType == 1 &&
+                playerItem.amount > 0)
             {
                 _items.Add(new InventoryEntry(itemConfig, playerItem.amount));
             }

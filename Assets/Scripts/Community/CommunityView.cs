@@ -398,6 +398,28 @@ public class CommunityView : UIBasePanel
             .ItemTable
             .GetOrDefault(targetItemId);
         string targetName = targetItem == null ? targetItemId.ToString() : targetItem.Name;
+        string missionDescription;
+        if (missionConfig.Message == "FishCatch")
+        {
+            if (targetItem == null || targetItemCount <= 0)
+            {
+                Debug.LogError($"社区鱼获任务目标配置无效: [{targetItemId}], [{targetItemCount}]", this);
+                return;
+            }
+
+            missionDescription = string.Format(
+                missionConfig.Desc,
+                $"<color=#00FFFA>{targetName}</color>",
+                targetItemCount);
+        }
+        else
+        {
+            missionDescription = string.Format(
+                missionConfig.Desc,
+                targetName,
+                targetItemCount);
+        }
+
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonConfirmPanel,
             UILayer.System,
@@ -405,8 +427,7 @@ public class CommunityView : UIBasePanel
             {
                 data = new CommonConfirmData(
                     missionConfig.Name,
-                    "任务已开启，需要完成任务目标：\n" +
-                    string.Format(missionConfig.Desc, targetName, targetItemCount))
+                    "任务已开启，需要完成任务目标：\n" + missionDescription)
             });
         RefreshMissionNotice();
     }

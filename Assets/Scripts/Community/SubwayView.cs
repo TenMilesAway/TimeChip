@@ -273,6 +273,15 @@ public class SubwayView : UIBasePanel
             playerInfoManager.SimulationCoins >= locationConfig.UnlockCoin;
     }
 
+    public static bool IsFishingUnlocked()
+    {
+        cfg.Subway fishingLocation = DataTableMananger.GetInstance()
+            .Tables
+            .SubwayTable
+            .GetOrDefault(FishLocationId);
+        return IsLocationUnlocked(fishingLocation);
+    }
+
     private static string GetUnlockTip(cfg.Subway locationConfig)
     {
         if (locationConfig == null)
