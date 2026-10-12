@@ -16,7 +16,7 @@
   },
   {
     "id": "Community.Donation.Spawn",
-    "probability": 1,
+    "probability": 0.3,
     "desc": "社区募捐箱出现概率"
   },
   {

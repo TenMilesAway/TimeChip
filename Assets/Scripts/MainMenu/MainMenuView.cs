@@ -8,9 +8,6 @@ using UnityEngine.Events;
 
 public class MainMenuView : UIBasePanel
 {
-    private const float AdvanceTurnConfirmDuration = 3f;
-
-
     [SerializeField] private Text _ageText;
     [SerializeField] private Text _monthText;
     [SerializeField] private Text _healthText;
@@ -48,9 +45,7 @@ public class MainMenuView : UIBasePanel
         new List<MainMenuMissionItem>();
 
     private MainContentPage _currentContentPage = MainContentPage.Community;    // 当前页面
-    private bool _isWaitingForAdvanceTurnConfirmation;
     private bool _isNavigating;
-    private float _advanceTurnConfirmDeadline;
     private int _buffRefreshVersion;
     private int _missionRefreshVersion;
     private Vector2 _moveOffset;
@@ -111,7 +106,6 @@ public class MainMenuView : UIBasePanel
         BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
         ClearBuffItems();
         ClearMissionItems();
-        _isWaitingForAdvanceTurnConfirmation = false;
         SetLoadingVisible(false);
     }
 
@@ -178,24 +172,31 @@ public class MainMenuView : UIBasePanel
         base.OnDestroy();
     }
 
-    /// <summary>
-    /// 在三秒确认窗口内再次点击时才推进到下一月
-    /// </summary>
     private void TryAdvanceTurn()
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        string detail = playerInfoManager.WorkedThisTurn
+            ? "确定要进入下一月吗？"
+            : "本回合还没有打零工，是否仍要进入下一月？";
 
-        if (!_isWaitingForAdvanceTurnConfirmation ||
-            Time.unscaledTime > _advanceTurnConfirmDeadline)
-        {
-            _isWaitingForAdvanceTurnConfirmation = true;
-            _advanceTurnConfirmDeadline = Time.unscaledTime + AdvanceTurnConfirmDuration;
-            CommonTipView.Show("再次点击进入下一月");
-            return;
-        }
-
-        _isWaitingForAdvanceTurnConfirmation = false;
-        PlayerInfoManager.GetInstance().AdvanceTurn(); // 推进下一月
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonChoosePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonChooseData(
+                    "进入下一月",
+                    detail,
+                    () =>
+                    {
+                        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+                        playerInfoManager.AdvanceTurn();
+                    },
+                    null,
+                    "下一月",
+                    "再等等")
+            });
     }
 
     #region 打开面板
@@ -770,6 +771,19 @@ public class MainMenuView : UIBasePanel
 
         missionButton = null;
         Debug.LogError("MainMenuView 未绑定任务按钮。", this);
+        return false;
+    }
+
+    public bool TryGetSaveButton(out Button saveButton)
+    {
+        if (_saveButton != null && _saveButton.gameObject.activeInHierarchy)
+        {
+            saveButton = _saveButton;
+            return true;
+        }
+
+        saveButton = null;
+        Debug.LogError("MainMenuView 未绑定存档按钮。", this);
         return false;
     }
 

@@ -354,7 +354,9 @@ public class LotteryView : UIBasePanel
         _isLotteryInProgress = false;
         _normalButton.interactable = true;
         _normalFiveButton.interactable = true;
-        PlayIdleAnimations();
+        _mysButton.interactable = true;
+        _mysFiveButton.interactable = true;
+        PlayIdleAnimationsForActiveMode();
     }
 
     private void OpenLotterySelection()
@@ -431,6 +433,7 @@ public class LotteryView : UIBasePanel
         if (lotteryMode == LotteryMode.MysteryWheel)
         {
             RefreshMysteryWheelRewards();
+            PlayIdleAnimationsForActiveMode();
         }
 
         else if (lotteryMode == LotteryMode.Box)
@@ -443,7 +446,7 @@ public class LotteryView : UIBasePanel
         }
         else
         {
-            PlayIdleAnimations();
+            PlayIdleAnimationsForActiveMode();
         }
     }
 
@@ -567,6 +570,7 @@ public class LotteryView : UIBasePanel
         _boxCoinText.text = $"{playerInfoManager.GetConsumableCount(BoxCoinItemId)}";
         _cardCoinTest.text = $"{playerInfoManager.CardCoins}";
         RefreshLotteryModeAvailability();
+        RefreshIdleAnimations(playerInfoManager);
     }
 
     private void RefreshBoxLotteryRewards()
@@ -1700,21 +1704,50 @@ public class LotteryView : UIBasePanel
             return;
         }
 
-        DOTween.Sequence()
-            .Append(_normalButton.transform.DOScale(
-                _lotteryButtonScale * IdleButtonScaleMultiplier,
-                IdleButtonBreathDuration))
-            .Append(_normalButton.transform.DOScale(_lotteryButtonScale, IdleButtonBreathDuration))
-            .AppendInterval(IdleButtonInterval)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1)
-            .SetUpdate(true)
-            .SetTarget(this);
+        if (!HasLotteryCoins(LotteryPoolId))
+        {
+            return;
+        }
+
+        PlayButtonIdleAnimation(_normalButton, _lotteryButtonScale);
 
         PlayIdleDecorationAnimation(
             _lotteryBox,
             _lotteryBoxScale,
             TurnRandom.Range("Lottery.BubbleMoveDuration", 2.5f, 5f));
+    }
+
+    private void PlayMysteryWheelIdleAnimation()
+    {
+        if (_mys == null || !_mys.activeInHierarchy || _mysButton == null)
+        {
+            return;
+        }
+
+        if (_mysButtonScale == Vector3.zero)
+        {
+            _mysButtonScale = _mysButton.transform.localScale;
+        }
+
+        if (!HasLotteryCoins(MysteryWheelPoolId))
+        {
+            return;
+        }
+
+        _mysButton.transform.localScale = _mysButtonScale;
+        PlayButtonIdleAnimation(_mysButton, _mysButtonScale);
+    }
+
+    private void PlayIdleAnimationsForActiveMode()
+    {
+        if (_normal != null && _normal.activeInHierarchy)
+        {
+            PlayIdleAnimations();
+        }
+        else if (_mys != null && _mys.activeInHierarchy)
+        {
+            PlayMysteryWheelIdleAnimation();
+        }
     }
 
     private void PlayIdleDecorationAnimation(
@@ -1732,6 +1765,104 @@ public class LotteryView : UIBasePanel
                 expandDuration))
             .Append(decoration.DOScale(originalScale, restoreDuration))
             .AppendInterval(interval)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1)
+            .SetUpdate(true)
+            .SetTarget(this);
+    }
+
+    private static bool HasLotteryCoins(int lotteryPoolId, int drawCount = 1)
+    {
+        if (drawCount <= 0)
+        {
+            return false;
+        }
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null || !TryParseCosts(lotteryConfig.UseCoin, out List<LotteryCost> costs))
+        {
+            return false;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        for (int i = 0; i < costs.Count; i++)
+        {
+            if (costs[i].Amount > int.MaxValue / drawCount ||
+                playerInfoManager.GetConsumableCount(costs[i].ItemId) < costs[i].Amount * drawCount)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void RefreshIdleAnimations(PlayerInfoManager playerInfoManager)
+    {
+        if (_isLotteryInProgress)
+        {
+            return;
+        }
+
+        RefreshButtonIdleAnimation(
+            LotteryPoolId,
+            _normal,
+            _normalButton,
+            _lotteryButtonScale);
+        RefreshButtonIdleAnimation(
+            MysteryWheelPoolId,
+            _mys,
+            _mysButton,
+            _mysButtonScale);
+    }
+
+    private void RefreshButtonIdleAnimation(
+        int lotteryPoolId,
+        GameObject lotteryMode,
+        Button button,
+        Vector3 originalScale)
+    {
+        if (lotteryMode == null || !lotteryMode.activeInHierarchy || button == null)
+        {
+            return;
+        }
+
+        bool shouldPlay = HasLotteryCoins(lotteryPoolId);
+        bool isIdleAnimationPlaying = DOTween.IsTweening(button.transform, false);
+        if (shouldPlay == isIdleAnimationPlaying)
+        {
+            return;
+        }
+
+        DOTween.Kill(button.transform);
+        button.transform.localScale = originalScale;
+        if (shouldPlay)
+        {
+            PlayButtonIdleAnimation(button, originalScale);
+            if (lotteryPoolId == LotteryPoolId)
+            {
+                PlayIdleDecorationAnimation(
+                    _lotteryBox,
+                    _lotteryBoxScale,
+                    TurnRandom.Range("Lottery.BubbleMoveDuration", 2.5f, 5f));
+            }
+        }
+    }
+
+    private void PlayButtonIdleAnimation(Button button, Vector3 originalScale)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        DOTween.Sequence()
+            .Append(button.transform.DOScale(
+                originalScale * IdleButtonScaleMultiplier,
+                IdleButtonBreathDuration))
+            .Append(button.transform.DOScale(originalScale, IdleButtonBreathDuration))
+            .AppendInterval(IdleButtonInterval)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1)
             .SetUpdate(true)

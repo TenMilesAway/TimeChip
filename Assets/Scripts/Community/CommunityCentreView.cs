@@ -193,11 +193,20 @@ public class CommunityCentreView : UIBasePanel
             return false;
         }
 
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int requiredItemLevel = playerInfoManager.CommunityCentreLevel;
         IReadOnlyList<cfg.Item> configurations = tables.ItemTable.DataList;
         List<cfg.Item> candidates = new List<cfg.Item>();
+        List<cfg.Item> allCandidates = new List<cfg.Item>();
         for (int i = 0; i < configurations.Count; i++)
         {
-            if (configurations[i].Category == CommunityNeedItemCategory)
+            if (configurations[i].Category != CommunityNeedItemCategory)
+            {
+                continue;
+            }
+
+            allCandidates.Add(configurations[i]);
+            if (configurations[i].Level == requiredItemLevel)
             {
                 candidates.Add(configurations[i]);
             }
@@ -205,12 +214,23 @@ public class CommunityCentreView : UIBasePanel
 
         if (candidates.Count < MonthlyNeedCount)
         {
-            Debug.LogError(
-                $"第 {CommunityNeedItemCategory} 类道具少于 {MonthlyNeedCount} 个，无法生成社区需求。");
-            return false;
+            for (int i = 0; i < allCandidates.Count; i++)
+            {
+                if (allCandidates[i].Level <= requiredItemLevel &&
+                    !candidates.Contains(allCandidates[i]))
+                {
+                    candidates.Add(allCandidates[i]);
+                }
+            }
+
+            if (candidates.Count < MonthlyNeedCount)
+            {
+                candidates = allCandidates;
+                Debug.LogWarning(
+                    $"社区等级 [{requiredItemLevel}] 缺少足够同品质材料，已扩展到全部社区材料。");
+            }
         }
 
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (playerInfoManager.HasMonthlyCommunityCentreNeeds(MonthlyNeedCount))
         {
             for (int i = 0; i < MonthlyNeedCount; i++)

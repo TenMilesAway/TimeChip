@@ -22,6 +22,7 @@ public static class GuideService
     private const string HomePurchaseButtonTarget = "HomePurchaseButton";
     private const string HomeButtonTarget = "HomeButton";
     private const string HomeSatisfactionDetailButtonTarget = "HomeSatisfactionDetailButton";
+    private const string SaveButtonTarget = "SaveButton";
     private const float PanelWaitTimeout = 5f;
 
     private static MainMenuView guideMainMenuView;
@@ -138,6 +139,9 @@ public static class GuideService
                 break;
             case HomeSatisfactionDetailButtonTarget:
                 ShowHomeSatisfactionDetailButtonGuide(guide.Content, onCompleted);
+                break;
+            case SaveButtonTarget:
+                ShowSaveButtonGuide(guide.Content, onCompleted);
                 break;
             default:
                 Debug.LogError($"引导目标未实现: [{guide.Id}], [{guide.Target}]");
@@ -392,6 +396,20 @@ public static class GuideService
         }
 
         ShowButtonGuide(detailButton, instruction, onCompleted);
+    }
+
+    private static async void ShowSaveButtonGuide(string instruction, Action<bool> onCompleted)
+    {
+        MainMenuView mainMenuView = await WaitForOpeningPanelAsync<MainMenuView>(
+            GlobalDefine.MainMenuView);
+        if (mainMenuView == null || !mainMenuView.TryGetSaveButton(out Button saveButton))
+        {
+            Debug.LogError("无法启动存档按钮引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(saveButton, instruction, onCompleted);
     }
 
     private static void ShowButtonGuide(
