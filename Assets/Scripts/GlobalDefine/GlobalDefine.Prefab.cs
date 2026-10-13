@@ -35,6 +35,7 @@ public class GlobalDefine
     public const string CommonItemDetailView = "Assets/Art/Common/Prefab/CommonItemDetailView.prefab";     // System
     public const string CommonConfirmPanel = "Assets/Art/Common/Prefab/CommonConfirmPanel.prefab";         // System
     public const string CommonChoosePanel = "Assets/Art/Common/Prefab/CommonChoosePanel.prefab";           // System
+    public const string CommonUsePanel = "Assets/Art/Common/Prefab/CommonUsePanel.prefab";                 // System
 
 
     // Item

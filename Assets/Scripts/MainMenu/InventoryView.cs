@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,7 @@ public class InventoryView : UIBasePanel
 {
     private const int ItemsPerPage = 16;
     private const float RewardScaleDivisor = 10000f;
+    [SerializeField, Min(1)] private int _batchUseItemsPerFrame = 10;
     private static readonly Color RareLevelColor = new Color(0.2f, 0.6f, 1f);
     private static readonly Color EpicLevelColor = new Color(0.7f, 0.3f, 1f);
     private static readonly Color LegendaryLevelColor = new Color(1f, 0.75f, 0.1f);
@@ -26,6 +28,7 @@ public class InventoryView : UIBasePanel
     [SerializeField] private Button _btnUse;
     [SerializeField] private Button _previousPageButton;
     [SerializeField] private Button _nextPageButton;
+    [SerializeField] private Button _btnUseMore;               // 批量使用
 
     [SerializeField] private InventoryItem[] _inventoryItems;
     [SerializeField] private GameObject _goType;
@@ -51,6 +54,7 @@ public class InventoryView : UIBasePanel
         _previousPageButton.onClick.AddListener(ShowPreviousPage);
         _nextPageButton.onClick.AddListener(ShowNextPage);
         _btnUse.onClick.AddListener(UseSelectedItem);
+        _btnUseMore.onClick.AddListener(OpenBatchUsePanel);
         HideDetail();
     }
 
@@ -112,6 +116,11 @@ public class InventoryView : UIBasePanel
             _btnUse.onClick.RemoveListener(UseSelectedItem);
         }
 
+        if (_btnUseMore != null)
+        {
+            _btnUseMore.onClick.RemoveListener(OpenBatchUsePanel);
+        }
+
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnPlayerInfoChanged;
         base.OnDestroy();
     }
@@ -123,6 +132,11 @@ public class InventoryView : UIBasePanel
 
     private void OnPlayerInfoChanged(PlayerInfoManager playerInfoManager)
     {
+        if (_isUsingSelectedItem)
+        {
+            return;
+        }
+
         RefreshInventory();
     }
 
@@ -235,6 +249,11 @@ public class InventoryView : UIBasePanel
 
     private void SelectItem(int itemIndex)
     {
+        if (_isUsingSelectedItem)
+        {
+            return;
+        }
+
         GameManager.Audio.Play(AudioDefine.SFXClick);
         ShowItemDetailAsync(itemIndex);
     }
@@ -261,8 +280,10 @@ public class InventoryView : UIBasePanel
         _txtNumSplit.gameObject.SetActive(false);  // 默认隐藏
         _txtNumPrefix.gameObject.SetActive(true);
         _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
-        _btnUse.interactable = entry.Item.CanUse == 1;
-        _isUsingSelectedItem = false;
+        _btnUse.interactable = entry.Item.CanUse == 1 && !_isUsingSelectedItem;
+        _btnUseMore.gameObject.SetActive(entry.Item.CanUse == 1 && entry.Amount > 1);
+        _btnUseMore.interactable =
+            entry.Item.CanUse == 1 && entry.Amount > 1 && !_isUsingSelectedItem;
         _goType.SetActive(true);
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(true);
@@ -318,11 +339,11 @@ public class InventoryView : UIBasePanel
         _txtNumPrefix.gameObject.SetActive(false);
         _txtNum.gameObject.SetActive(false);
         _btnUse.gameObject.SetActive(false);
-        _isUsingSelectedItem = false;
+        _btnUseMore.gameObject.SetActive(false);
         _goType.SetActive(false);
     }
 
-    private void UseSelectedItem()
+    private async void UseSelectedItem()
     {
         if (_isUsingSelectedItem)
         {
@@ -336,100 +357,192 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        string randomKey =
-            $"Inventory.UseEffect.{itemConfig.Id}.{playerInfoManager.GetItemCount(itemConfig.Id)}";
-        if (!TryDrawUseEffect(itemConfig.UseEffect, randomKey, out CommonRewardItemData reward))
+        _isUsingSelectedItem = true;
+        _btnUse.interactable = false;
+        await UseItemsAsync(itemConfig, 1);
+    }
+
+    private void OpenBatchUsePanel()
+    {
+        if (_isUsingSelectedItem)
         {
-            Debug.LogError($"背包道具使用效果配置无效: [{itemConfig.Id}], [{itemConfig.UseEffect}]", this);
+            return;
+        }
+
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_selectedItemId);
+        int availableAmount = itemConfig == null ? 0 : PlayerInfoManager.GetInstance().GetItemCount(itemConfig.Id);
+        if (itemConfig == null || itemConfig.CanUse != 1 || availableAmount <= 1)
+        {
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.CommonUsePanel, UILayer.System, new OpenUIParam
+        {
+            data = new CommonUsePanelData
+            {
+                itemName = itemConfig.Name,
+                maxAmount = availableAmount,
+                useCallback = amount => UseSelectedItems(itemConfig.Id, amount)
+            }
+        });
+    }
+
+    private async void UseSelectedItems(int itemId, int amount)
+    {
+        if (_isUsingSelectedItem)
+        {
+            return;
+        }
+
+        cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId);
+        if (itemConfig == null || itemConfig.CanUse != 1 || amount <= 0 ||
+            amount > PlayerInfoManager.GetInstance().GetItemCount(itemId))
+        {
+            Debug.LogError($"无法批量使用背包道具: [{itemId}], [{amount}]", this);
+            RefreshInventory();
             return;
         }
 
         _isUsingSelectedItem = true;
         _btnUse.interactable = false;
+        _btnUseMore.interactable = false;
+        await UseItemsAsync(itemConfig, amount);
+    }
 
-        int simulationCoinCountBeforeUse = playerInfoManager.SimulationCoins;
-        if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
+    private async Task UseItemsAsync(cfg.Item itemConfig, int amount)
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int availableAmount = playerInfoManager.GetItemCount(itemConfig.Id);
+        if (amount <= 0 || amount > availableAmount)
         {
-            Debug.LogError($"背包道具消耗失败: [{itemConfig.Id}]", this);
+            Debug.LogError($"背包道具数量无效: [{itemConfig.Id}], [{amount}], 当前数量 [{availableAmount}]");
             _isUsingSelectedItem = false;
-            _btnUse.interactable = true;
+            RefreshInventory();
             return;
         }
 
-        GrantUseEffectReward(playerInfoManager, reward);
-        int? simulationCoinDisplayStart = null;
-        if (reward.itemId == BasePropertyId.SimulationCoin)
+        if (!TryParseUseEffect(
+                itemConfig.UseEffect,
+                out List<UseEffectReward> useEffectRewards,
+                out long totalWeight))
         {
-            MainMenuView mainMenuView = UIManager.GetInstance()
-                .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
-            if (mainMenuView != null)
+            Debug.LogError($"背包道具使用效果配置无效: [{itemConfig.Id}], [{itemConfig.UseEffect}]", this);
+            _isUsingSelectedItem = false;
+            RefreshInventory();
+            return;
+        }
+
+        UseRewardSequence sequence = new UseRewardSequence();
+        List<CommonRewardItemData> rewardBatch = new List<CommonRewardItemData>(5);
+        int itemsPerFrame = Mathf.Max(1, _batchUseItemsPerFrame);
+        bool completed = true;
+
+        for (int i = 0; i < amount; i++)
+        {
+            if (i > 0 && i % itemsPerFrame == 0)
             {
-                mainMenuView.SetSimulationCoinDisplay(simulationCoinCountBeforeUse);
-                simulationCoinDisplayStart = simulationCoinCountBeforeUse;
+                await Task.Yield();
+            }
+
+            string randomKey = $"Inventory.UseEffect.{itemConfig.Id}.{availableAmount - i}";
+            if (!TryDrawUseEffect(useEffectRewards, totalWeight, randomKey, out CommonRewardItemData reward))
+            {
+                Debug.LogError($"背包道具使用效果计算失败: [{itemConfig.Id}]", this);
+                completed = false;
+                break;
+            }
+
+            if (!playerInfoManager.TryConsumeItem(itemConfig.Id))
+            {
+                Debug.LogError($"背包道具消耗失败: [{itemConfig.Id}]", this);
+                completed = false;
+                break;
+            }
+
+            rewardBatch.Add(reward);
+            if (rewardBatch.Count == 5)
+            {
+                QueueUseRewardBatch(rewardBatch, sequence);
+                rewardBatch = new List<CommonRewardItemData>(5);
             }
         }
 
-        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+        if (rewardBatch.Count > 0)
         {
-            data = new List<CommonRewardItemData> { reward },
-            rewardsAlreadyGranted = true,
-            simulationCoinDisplayStart = simulationCoinDisplayStart
-        });
+            QueueUseRewardBatch(rewardBatch, sequence);
+        }
+
+        sequence.ProcessingCompleted = true;
+        if (!completed)
+        {
+            Debug.LogWarning($"背包道具使用未完成: [{itemConfig.Id}]");
+        }
+
+        if (sequence.PendingPanelCount == 0)
+        {
+            CompleteUseRewardSequence(sequence);
+        }
+        else
+        {
+            RefreshInventory();
+        }
     }
 
-    private static void GrantUseEffectReward(
-        PlayerInfoManager playerInfoManager,
-        CommonRewardItemData reward)
+    private void QueueUseRewardBatch(
+        List<CommonRewardItemData> rewards,
+        UseRewardSequence sequence)
     {
-        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
-        if (tables.BaseTable.GetOrDefault(reward.itemId) == null)
+        if (sequence.SkipFurtherPanels)
         {
-            playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+            UIManager.GetInstance().GrantRewardsImmediately(rewards);
             return;
         }
 
-        switch (reward.itemId)
+        sequence.PendingPanelCount++;
+        UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
-            case BasePropertyId.SimulationCoin:
-                playerInfoManager.AddSimulationCoins(reward.itemCount);
-                break;
-            case BasePropertyId.TimeCoin:
-                playerInfoManager.AddTimeCoins(reward.itemCount);
-                break;
-            case BasePropertyId.Health:
-                playerInfoManager.ChangeHealth(reward.itemCount);
-                break;
-            case BasePropertyId.WheelCoin:
-                playerInfoManager.AddWheelCoins(reward.itemCount);
-                break;
-            case BasePropertyId.BoxCoin:
-                playerInfoManager.AddBoxCoins(reward.itemCount);
-                break;
-            case BasePropertyId.CardCoin:
-                playerInfoManager.AddCardCoins(reward.itemCount);
-                break;
-            default:
-                Debug.LogError($"背包道具使用效果基础属性未处理: [{reward.itemId}]");
-                break;
+            data = rewards,
+            rewardsAlreadyGranted = false,
+            callback = () => OnUseRewardPanelClosed(sequence),
+            skipQueuedRewardPanelsCallback = () => sequence.SkipFurtherPanels = true
+        });
+    }
+
+    private void OnUseRewardPanelClosed(UseRewardSequence sequence)
+    {
+        sequence.PendingPanelCount--;
+        if (sequence.ProcessingCompleted && sequence.PendingPanelCount == 0)
+        {
+            CompleteUseRewardSequence(sequence);
         }
     }
 
-    private bool TryDrawUseEffect(
-        string useEffect,
-        string randomKey,
-        out CommonRewardItemData reward)
+    private void CompleteUseRewardSequence(UseRewardSequence sequence)
     {
-        reward = null;
+        if (!sequence.ProcessingCompleted || sequence.PendingPanelCount != 0)
+        {
+            return;
+        }
+
+        _isUsingSelectedItem = false;
+        RefreshInventory();
+    }
+
+    private bool TryParseUseEffect(
+        string useEffect,
+        out List<UseEffectReward> rewards,
+        out long totalWeight)
+    {
+        rewards = new List<UseEffectReward>();
+        totalWeight = 0;
         if (string.IsNullOrWhiteSpace(useEffect))
         {
             return false;
         }
 
         cfg.Tables tables = DataTableMananger.GetInstance().Tables;
-        List<UseEffectReward> rewards = new List<UseEffectReward>();
         string[] effectEntries = useEffect.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-        long totalWeight = 0;
 
         for (int i = 0; i < effectEntries.Length; i++)
         {
@@ -450,7 +563,17 @@ public class InventoryView : UIBasePanel
             totalWeight += weight;
         }
 
-        if (totalWeight <= 0)
+        return totalWeight > 0;
+    }
+
+    private bool TryDrawUseEffect(
+        List<UseEffectReward> rewards,
+        long totalWeight,
+        string randomKey,
+        out CommonRewardItemData reward)
+    {
+        reward = null;
+        if (rewards == null || rewards.Count == 0 || totalWeight <= 0)
         {
             return false;
         }
@@ -490,6 +613,7 @@ public class InventoryView : UIBasePanel
             _btnUse == null ||
             _previousPageButton == null ||
             _nextPageButton == null ||
+            _btnUseMore == null ||
             _currentPageText == null ||
             _maxPageText == null ||
             _inventoryItems == null ||
@@ -576,5 +700,12 @@ public class InventoryView : UIBasePanel
             ItemCount = itemCount;
             Weight = weight;
         }
+    }
+
+    private sealed class UseRewardSequence
+    {
+        public int PendingPanelCount;
+        public bool ProcessingCompleted;
+        public bool SkipFurtherPanels;
     }
 }

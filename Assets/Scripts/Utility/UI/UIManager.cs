@@ -30,6 +30,7 @@ public class UIManager : Singleton<UIManager>
 
     private RectTransform _uiRoot;
     private int _loadingOverlayCount;
+    private Action _activeRewardPanelSkipCallback;
 
     /// <summary>
     /// 初始化 Launcher UI Root 引用
@@ -56,8 +57,76 @@ public class UIManager : Singleton<UIManager>
         TaskCompletionSource<UIBasePanel> completionSource =
             new TaskCompletionSource<UIBasePanel>();
         _rewardPanelQueue.Enqueue(new RewardPanelRequest(param, completionSource));
+        RefreshRewardPanelSkipButton();
         OpenNextRewardPanel();
         return completionSource.Task;
+    }
+
+    private void RefreshRewardPanelSkipButton()
+    {
+        if (_panelDic.TryGetValue(GlobalDefine.CommonRewardPanel, out UIBasePanel panel) &&
+            panel is CommonRewardPanel rewardPanel)
+        {
+            rewardPanel.RefreshSkipButtonVisibility();
+        }
+    }
+
+    private static void GrantSkippedRewardItems(List<CommonRewardItemData> rewards)
+    {
+        if (rewards == null)
+        {
+            Debug.LogError("跳过的 CommonRewardPanel 缺少奖励数据。");
+            return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            CommonRewardItemData reward = rewards[i];
+            if (reward == null)
+            {
+                Debug.LogError($"跳过的 CommonRewardPanel 奖励数据为空: [{i}]");
+                continue;
+            }
+
+            if (tables.BaseTable.GetOrDefault(reward.itemId) == null)
+            {
+                if (tables.ItemTable.GetOrDefault(reward.itemId) == null)
+                {
+                    Debug.LogError($"跳过的 CommonRewardPanel 奖励配置不存在: [{reward.itemId}]");
+                    continue;
+                }
+
+                playerInfoManager.AddItem(reward.itemId, reward.itemCount);
+                continue;
+            }
+
+            switch (reward.itemId)
+            {
+                case BasePropertyId.SimulationCoin:
+                    playerInfoManager.AddSimulationCoins(reward.itemCount);
+                    break;
+                case BasePropertyId.TimeCoin:
+                    playerInfoManager.AddTimeCoins(reward.itemCount);
+                    break;
+                case BasePropertyId.Health:
+                    playerInfoManager.ChangeHealth(reward.itemCount);
+                    break;
+                case BasePropertyId.WheelCoin:
+                    playerInfoManager.AddWheelCoins(reward.itemCount);
+                    break;
+                case BasePropertyId.BoxCoin:
+                    playerInfoManager.AddBoxCoins(reward.itemCount);
+                    break;
+                case BasePropertyId.CardCoin:
+                    playerInfoManager.AddCardCoins(reward.itemCount);
+                    break;
+                default:
+                    Debug.LogError($"跳过的 CommonRewardPanel 基础属性未处理: [{reward.itemId}]");
+                    break;
+            }
+        }
     }
 
     /// <summary>
@@ -66,6 +135,33 @@ public class UIManager : Singleton<UIManager>
     public void QueueRewardPanel(OpenUIParam param)
     {
         _ = EnqueueRewardPanel(param);
+    }
+
+    public bool HasQueuedRewardPanels => _rewardPanelQueue.Count > 0;
+
+    public void GrantRewardsImmediately(List<CommonRewardItemData> rewards)
+    {
+        GrantSkippedRewardItems(rewards);
+    }
+
+    public void SkipQueuedRewardPanels()
+    {
+        _activeRewardPanelSkipCallback?.Invoke();
+
+        while (_rewardPanelQueue.Count > 0)
+        {
+            RewardPanelRequest request = _rewardPanelQueue.Dequeue();
+            OpenUIParam param = request.Param;
+            if (param != null && !param.rewardsAlreadyGranted)
+            {
+                GrantRewardsImmediately(param.data as List<CommonRewardItemData>);
+            }
+
+            request.CompletionSource.TrySetResult(null);
+            param?.callback?.Invoke();
+        }
+
+        RefreshRewardPanelSkipButton();
     }
 
     /// <summary>
@@ -212,6 +308,10 @@ public class UIManager : Singleton<UIManager>
             _panelDic[panelName].OnClose();
             UnityObjectPoolFactory.GetInstance().PutItem(panelName, _panelDic[panelName].gameObject);
             _panelDic.Remove(panelName);
+            if (panelName == GlobalDefine.CommonRewardPanel)
+            {
+                _activeRewardPanelSkipCallback = null;
+            }
         }
     }
 
@@ -223,6 +323,7 @@ public class UIManager : Singleton<UIManager>
         List<KeyValuePair<string, UIBasePanel>> panels = new List<KeyValuePair<string, UIBasePanel>>(_panelDic);
         _panelDic.Clear();
         _blockingWindows.Clear();
+        _activeRewardPanelSkipCallback = null;
         CancelQueuedRewardPanels();
 
         foreach (KeyValuePair<string, UIBasePanel> panelEntry in panels)
@@ -259,6 +360,7 @@ public class UIManager : Singleton<UIManager>
         RewardPanelRequest request = _rewardPanelQueue.Dequeue();
         Action previousCloseCallback = request.Param?.callback;
         OpenUIParam param = request.Param ?? new OpenUIParam();
+        _activeRewardPanelSkipCallback = param.skipQueuedRewardPanelsCallback;
         param.callback = () =>
         {
             previousCloseCallback?.Invoke();
@@ -273,7 +375,13 @@ public class UIManager : Singleton<UIManager>
 
         if (rewardPanel == null)
         {
-            OpenNextRewardPanel();
+            _activeRewardPanelSkipCallback = null;
+            if (!param.rewardsAlreadyGranted)
+            {
+                GrantRewardsImmediately(param.data as List<CommonRewardItemData>);
+            }
+
+            param.callback?.Invoke();
         }
     }
 

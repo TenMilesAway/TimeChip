@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class CommonRewardPanel : UIBasePanel
 {
     [SerializeField] private Button _closeButton;                           // 关闭按钮
+    [SerializeField] private Button _btnSkip;                               // 跳过按钮
     [SerializeField] private Transform _commonRewardItemParent;             // 通用奖励物品父物体
     [SerializeField] private GameObject _textTip;                           // 提示文本
     [SerializeField, Min(0f)] private float _itemDisplayInterval = 0.35f;   // 奖励物品显示间隔
@@ -22,6 +23,13 @@ public class CommonRewardPanel : UIBasePanel
     private void Awake()
     {
         _closeButton.onClick.AddListener(ClosePanel);
+        _btnSkip.onClick.AddListener(SkipAllQueuedRewards);
+    }
+
+    protected override void ShowHandle()
+    {
+        base.ShowHandle();
+        RefreshSkipButtonVisibility();
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -65,12 +73,25 @@ public class CommonRewardPanel : UIBasePanel
             _closeButton.onClick.RemoveListener(ClosePanel);
         }
 
+        if (_btnSkip != null)
+        {
+            _btnSkip.onClick.RemoveListener(SkipAllQueuedRewards);
+        }
+
         base.OnDestroy();
     }
 
     public override string GetPanelName()
     {
         return GlobalDefine.CommonRewardPanel;
+    }
+
+    public void RefreshSkipButtonVisibility()
+    {
+        if (_btnSkip != null)
+        {
+            _btnSkip.gameObject.SetActive(UIManager.GetInstance().HasQueuedRewardPanels);
+        }
     }
 
     /// <summary>
@@ -174,6 +195,7 @@ public class CommonRewardPanel : UIBasePanel
         ClearRewardItems();
         _textTip.SetActive(false);
         _closeButton.interactable = false;
+        _btnSkip.interactable = false;
     }
 
     /// <summary>
@@ -183,6 +205,7 @@ public class CommonRewardPanel : UIBasePanel
     {
         _textTip.SetActive(true);
         _closeButton.interactable = true;
+        _btnSkip.interactable = true;
     }
 
     /// <summary>
@@ -219,6 +242,19 @@ public class CommonRewardPanel : UIBasePanel
         _closeCallback = null;
         UIManager.GetInstance().ClosePanel(GetPanelName());
         closeCallback?.Invoke();
+    }
+
+    private void SkipAllQueuedRewards()
+    {
+        if (!UIManager.GetInstance().HasQueuedRewardPanels)
+        {
+            RefreshSkipButtonVisibility();
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UIManager.GetInstance().SkipQueuedRewardPanels();
+        ClosePanel();
     }
 
     private void GrantInventoryItemRewards()
