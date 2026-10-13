@@ -85,7 +85,8 @@ public class HomeItemDetail : UIBasePanel
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (!playerInfoManager.TrySpendSimulationCoins(purchaseCost))
         {
-            CommonTipView.Show($"模拟币不足，无法购买家具: [{_homeConfig.Name}]");
+            CommonTipView.Show(
+                $"模拟币不足，无法购买家具: [<color=#00FFFA>{_homeConfig.Name}</color>]");
             return;
         }
 
@@ -110,7 +111,7 @@ public class HomeItemDetail : UIBasePanel
         _priceText.text = $"-{purchaseCost}";
         _purchaseButton.interactable = false;
         OnClose();
-        CommonTipView.Show($"购买成功，获得家具: {suffix}");
+        CommonTipView.Show($"购买成功，获得家具: <color=#00FFFA>{suffix}</color>");
         GameManager.Audio.Play(AudioDefine.SFXBuy);
     }
 

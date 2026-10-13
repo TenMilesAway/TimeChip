@@ -220,10 +220,10 @@ public class ClinicView : UIBasePanel
             case ClinicItemPurchaseResult.Success:
                 cfg.Item item = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId);
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
-                CommonTipView.Show($"购买成功，获得【{item.Name}】");
+                CommonTipView.Show($"购买成功，获得【<color=#00FFFA>{item.Name}</color>】");
                 break;
             case ClinicItemPurchaseResult.AlreadyPurchased:
-                CommonTipView.Show("本回合已购买治疗物品");
+                CommonTipView.Show("本回合已购买治疗<color=#00FFFA>物品</color>");
                 break;
             case ClinicItemPurchaseResult.InsufficientCoins:
                 CommonTipView.Show("模拟币不足");

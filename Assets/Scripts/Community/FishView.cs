@@ -387,14 +387,14 @@ public class FishView : UIBasePanel
         if (playerInfoManager.EquippedFishHookItemId <= 0 ||
             playerInfoManager.GetItemCount(playerInfoManager.EquippedFishHookItemId) <= 0)
         {
-            CommonTipView.Show("请先装备鱼钩");
+            CommonTipView.Show("请先装备<color=#00FFFA>鱼钩</color>");
             return;
         }
 
         if (playerInfoManager.EquippedFishBaitItemId <= 0 ||
             playerInfoManager.GetItemCount(playerInfoManager.EquippedFishBaitItemId) <= 0)
         {
-            CommonTipView.Show("请先装备鱼饵");
+            CommonTipView.Show("请先装备<color=#00FFFA>鱼饵</color>");
             return;
         }
 
@@ -772,7 +772,7 @@ public class FishView : UIBasePanel
         {
             case FishStorePurchaseResult.Success:
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
-                CommonTipView.Show($"购买{storeConfig.Name}成功");
+                CommonTipView.Show($"购买<color=#00FFFA>{storeConfig.Name}</color>成功");
                 break;
             case FishStorePurchaseResult.SoldOut:
                 CommonTipView.Show("购买次数已达上限");
@@ -816,7 +816,7 @@ public class FishView : UIBasePanel
         {
             _fishingCoroutine = null;
             ResetFishingState();
-            CommonTipView.Show("鱼饵不足");
+            CommonTipView.Show("<color=#00FFFA>鱼饵</color>不足");
             yield break;
         }
 
@@ -956,6 +956,7 @@ public class FishView : UIBasePanel
 
         if (_imgFishProgress.fillAmount <= 0f)
         {
+            CommonTipView.Show("鱼逃走了呢");
             EndCatchGameWithCooldown();
         }
     }

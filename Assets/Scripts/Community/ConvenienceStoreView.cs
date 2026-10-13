@@ -220,7 +220,7 @@ public class ConvenienceStoreView : UIBasePanel
             case ConveniencePurchaseResult.Success:
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 RefreshMonthlyOffers();
-                CommonTipView.Show("购买成功");
+                CommonTipView.Show($"购买成功，获得【<color=#00FFFA>{offerConfig.Name}</color>】");
                 break;
             case ConveniencePurchaseResult.SoldOut:
                 CommonTipView.Show("剩余购买次数不足");

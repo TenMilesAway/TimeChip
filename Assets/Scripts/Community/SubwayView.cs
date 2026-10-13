@@ -408,7 +408,7 @@ public class SubwayView : UIBasePanel
 
         if (!CanAffordTravelCosts(travelCosts))
         {
-            CommonTipView.Show("车费或所需道具不足");
+            CommonTipView.Show("车费或所需<color=#00FFFA>道具</color>不足");
             GameManager.Audio.Play(AudioDefine.SFXClickFail);
             return;
         }
@@ -428,7 +428,7 @@ public class SubwayView : UIBasePanel
                 Debug.LogError($"地铁扣除消耗失败: [{_selectedLocation.Id}]", this);
                 UIManager.GetInstance().ClosePanel(destinationPanelName);
                 UIManager.GetInstance().SetMainMenuNavigationVisible(false);
-                CommonTipView.Show("车费或所需道具不足");
+                CommonTipView.Show("车费或所需<color=#00FFFA>道具</color>不足");
                 GameManager.Audio.Play(AudioDefine.SFXClickFail);
                 return;
             }

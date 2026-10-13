@@ -177,8 +177,8 @@ public class MainMenuView : UIBasePanel
         GameManager.Audio.Play(AudioDefine.SFXClick);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         string detail = playerInfoManager.WorkedThisTurn
-            ? "确定要进入下一月吗？"
-            : "本回合还没有打零工，是否仍要进入下一月？";
+            ? "确定要进入下一月吗?"
+            : "本回合还没有打零工，是否仍要进入下一月?";
 
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonChoosePanel,

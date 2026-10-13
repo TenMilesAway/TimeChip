@@ -299,7 +299,7 @@ public class CommunityCentreView : UIBasePanel
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreNeedSubmitResult.InsufficientItem:
-                CommonTipView.Show("所需道具不足");
+                CommonTipView.Show("所需<color=#00FFFA>道具</color>不足");
                 break;
             case CommunityCentreNeedSubmitResult.AlreadySubmitted:
                 CommonTipView.Show("该社区需求已提交");
@@ -634,7 +634,7 @@ public class CommunityCentreView : UIBasePanel
         {
             _goSubmit.SetActive(true);
             _goSelect.SetActive(false);
-            CommonTipView.Show("背包中没有符合条件的物品");
+            CommonTipView.Show("背包中没有符合条件的<color=#00FFFA>物品</color>");
             return;
         }
 
@@ -825,7 +825,7 @@ public class CommunityCentreView : UIBasePanel
                 break;
             case CommunityCentreRedundancySubmitResult.InsufficientRedundancy:
                 ClearSelectedRedundancyItem();
-                CommonTipView.Show("没有可提交的冗余道具");
+                CommonTipView.Show("没有可提交的冗余<color=#00FFFA>道具</color>");
                 break;
             default:
                 Debug.LogError(

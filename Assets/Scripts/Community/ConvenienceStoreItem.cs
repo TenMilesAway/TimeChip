@@ -12,6 +12,7 @@ public class ConvenienceStoreItem : MonoBehaviour
     [SerializeField] private Text _txtNum;      // 商品剩余数量：剩余   {0}/{1}
     [SerializeField] private Text _txtType;     // 商品类型
     [SerializeField] private Button _btnCharge; // 购买按钮
+    [SerializeField] private Button _btnDetail; // 详情按钮
     [SerializeField] private Image _imgIcon;    // 商品图标
     [SerializeField] private GameObject _goType;
 
@@ -22,6 +23,7 @@ public class ConvenienceStoreItem : MonoBehaviour
     private void Awake()
     {
         _btnCharge.onClick.AddListener(OnClickPurchase);
+        _btnDetail.onClick.AddListener(OnClickDetail);
     }
 
     private void OnDestroy()
@@ -29,6 +31,11 @@ public class ConvenienceStoreItem : MonoBehaviour
         if (_btnCharge != null)
         {
             _btnCharge.onClick.RemoveListener(OnClickPurchase);
+        }
+
+        if (_btnDetail != null)
+        {
+            _btnDetail.onClick.RemoveListener(OnClickDetail);
         }
     }
 
@@ -58,6 +65,10 @@ public class ConvenienceStoreItem : MonoBehaviour
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(convenienceConfig.ItemId);
+        cfg.Base baseConfig = itemConfig == null
+            ? DataTableMananger.GetInstance().Tables.BaseTable.GetOrDefault(convenienceConfig.ItemId)
+            : null;
+        _btnDetail.interactable = itemConfig != null || baseConfig != null;
         _goType.SetActive(itemConfig != null);
         _txtType.text = itemConfig == null ? string.Empty : itemConfig.Type;
 
@@ -98,5 +109,27 @@ public class ConvenienceStoreItem : MonoBehaviour
         {
             _purchaseHandler?.Invoke(_convenienceConfig);
         }
+    }
+
+    private void OnClickDetail()
+    {
+        if (_convenienceConfig == null)
+        {
+            return;
+        }
+
+        int itemId = _convenienceConfig.ItemId;
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables.ItemTable.GetOrDefault(itemId) == null &&
+            tables.BaseTable.GetOrDefault(itemId) == null)
+        {
+            Debug.LogError($"便利店商品详情配置不存在: [{itemId}]", this);
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonItemDetailView,
+            param: new OpenUIParam { data = itemId });
     }
 }

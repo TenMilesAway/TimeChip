@@ -421,7 +421,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public const int MaxWorkLevel = 5;
     private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
     private static readonly int[] CommunityCentreExperienceRequirements =
-        { 150, 350, 700, 1200, 1800 };
+        { 300, 500, 1000, 1500, 3000 };
 
     /// <summary>当前由管理器维护的玩家数据</summary>
     private PlayerInfoData _data = new PlayerInfoData();

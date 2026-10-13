@@ -801,7 +801,7 @@ public class CommunityView : UIBasePanel
                 out CommonRewardItemData reward))
         {
             Debug.LogError($"遗失钱包奖池配置无效: [{LostWalletLotteryPoolId}]", this);
-            CommonTipView.Show("钱包中的物品暂时无法获取");
+            CommonTipView.Show("钱包中的<color=#00FFFA>物品</color>暂时无法获取");
             return;
         }
 

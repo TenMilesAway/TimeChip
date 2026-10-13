@@ -218,7 +218,8 @@ public class WorkView : UIBasePanel
             !playerInfoManager.TryConsumeItem(workConfig.IsUseItem))
         {
             Debug.LogError($"零工消耗道具失败: [{workConfig.Id}], [{workConfig.IsUseItem}]", this);
-            CommonTipView.Show("所需道具不足，无法完成零工");
+            CommonTipView.Show(
+                $"所需<color=#00FFFA>{GetItemName(workConfig.IsUseItem)}</color>不足，无法完成零工");
             return;
         }
 
@@ -238,7 +239,9 @@ public class WorkView : UIBasePanel
         }
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.Work));
-        CommonTipView.Show($"完成{workConfig.Name}，获得{coinReward}模拟币和{workExperience}经验");
+        CommonTipView.Show(
+            $"完成{workConfig.Name}，获得<color=#D5FF00>{coinReward}</color>模拟币和" +
+            $"<color=#00FFFA>{workExperience}</color>经验");
         GameManager.Audio.Play(AudioDefine.SFXWork);
     }
 
@@ -260,13 +263,13 @@ public class WorkView : UIBasePanel
         if (workConfig.UnlockItemId > 0 &&
             playerInfoManager.GetItemCount(workConfig.UnlockItemId) <= 0)
         {
-            requirements.Add($"需要【{GetItemName(workConfig.UnlockItemId)}】");
+            requirements.Add($"需要{FormatRequirementItem(workConfig.UnlockItemId)}");
         }
 
         if (workConfig.IsUseItem > 0 &&
             playerInfoManager.GetItemCount(workConfig.IsUseItem) <= 0)
         {
-            requirements.Add($"需要并消耗【{GetItemName(workConfig.IsUseItem)}】");
+            requirements.Add($"需要并消耗{FormatRequirementItem(workConfig.IsUseItem)}");
         }
 
         if (requirements.Count == 0)
@@ -292,6 +295,11 @@ public class WorkView : UIBasePanel
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(itemId);
         return itemConfig == null ? $"道具{itemId}" : itemConfig.Name;
+    }
+
+    private static string FormatRequirementItem(int itemId)
+    {
+        return $"<color=#00FFFA>{GetItemName(itemId)}</color>";
     }
 
     private void UpdateTagSelection()
