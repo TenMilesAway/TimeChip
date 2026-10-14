@@ -170,6 +170,9 @@ public sealed class PlayerInfoData
     /// <summary>玩家已经完成的任务 ID</summary>
     public List<string> completedMissionIds = new List<string>();
 
+    /// <summary>熊大山便利店对话是否已播放</summary>
+    public bool bearConvenienceDialoguePlayed;
+
     /// <summary>本月随机委托是否已完成生成判定</summary>
     public bool randomMissionOfferGenerated;
 
@@ -1169,6 +1172,23 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data != null &&
             _data.completedMissionIds != null &&
             _data.completedMissionIds.Contains(missionId.ToString());
+    }
+
+    public bool HasPlayedBearConvenienceDialogue
+    {
+        get { return _data != null && _data.bearConvenienceDialoguePlayed; }
+    }
+
+    public bool TryMarkBearConvenienceDialoguePlayed()
+    {
+        if (_data == null || _data.bearConvenienceDialoguePlayed)
+        {
+            return false;
+        }
+
+        _data.bearConvenienceDialoguePlayed = true;
+        NotifyPlayerInfoChanged();
+        return true;
     }
 
     /// <summary>获取激活 BUFF 的独立副本。</summary>

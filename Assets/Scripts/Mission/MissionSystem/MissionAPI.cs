@@ -106,6 +106,17 @@ public static class MissionAPI
         return _isInitialized ? MissionManager.GetMissions() : Array.Empty<Mission<MissionMessage>>();
     }
 
+    public static bool IsMissionInProgress(int missionId)
+    {
+        if (!_isInitialized || missionId <= 0)
+        {
+            return false;
+        }
+
+        Mission<MissionMessage> mission = MissionManager.GetMission(missionId.ToString());
+        return mission != null && !mission.IsFinished;
+    }
+
     /// <summary>获取已启动任务固定后的随机道具目标。</summary>
     public static bool TryGetMissionTarget(
         string missionId,

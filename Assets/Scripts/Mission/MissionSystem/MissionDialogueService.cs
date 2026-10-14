@@ -28,6 +28,27 @@ public static class MissionDialogueService
         EnqueueDialogue(missionConfig, missionConfig?.DialogueEnd, "结束");
     }
 
+    public static bool TryPlayOneOffDialogue(
+        cfg.Mission missionConfig,
+        string dialogueConfig,
+        System.Action<bool> onCompleted)
+    {
+        if (missionConfig == null || string.IsNullOrWhiteSpace(dialogueConfig))
+        {
+            return false;
+        }
+
+        DialogueQueue.Enqueue(new DialogueRequest
+        {
+            MissionConfig = missionConfig,
+            DialogueConfig = dialogueConfig,
+            Phase = "临时",
+            OnCompleted = onCompleted
+        });
+        PlayNextDialogue();
+        return true;
+    }
+
     public static void TryPlayMissionGuides(cfg.Mission missionConfig)
     {
         if (missionConfig == null)
@@ -94,6 +115,7 @@ public static class MissionDialogueService
             {
                 Debug.LogWarning(
                     $"[任务系统] 任务[{request.MissionConfig.Id}]对话配置格式错误({request.Phase}): {request.DialogueConfig}");
+                request.OnCompleted?.Invoke(false);
                 continue;
             }
 
@@ -104,6 +126,7 @@ public static class MissionDialogueService
             {
                 Debug.LogWarning(
                     $"[任务系统] 任务[{request.MissionConfig.Id}]无法加载对话文件({request.Phase}): {fileName}");
+                request.OnCompleted?.Invoke(false);
                 if (TryStartGuidesAfterSkippedStartDialogue(request))
                 {
                     return;
@@ -118,6 +141,7 @@ public static class MissionDialogueService
             {
                 Debug.LogWarning(
                     $"[任务系统] 任务[{request.MissionConfig.Id}]对话组为空({request.Phase}): {fileName},{groupIndex}");
+                request.OnCompleted?.Invoke(false);
                 if (TryStartGuidesAfterSkippedStartDialogue(request))
                 {
                     return;
@@ -149,6 +173,8 @@ public static class MissionDialogueService
             {
                 return;
             }
+
+            request.OnCompleted?.Invoke(false);
         }
     }
 
@@ -164,6 +190,7 @@ public static class MissionDialogueService
             return;
         }
 
+        request.OnCompleted?.Invoke(true);
         PlayNextDialogue();
     }
 
@@ -338,5 +365,6 @@ public static class MissionDialogueService
         public cfg.Mission MissionConfig;
         public string DialogueConfig;
         public string Phase;
+        public System.Action<bool> OnCompleted;
     }
 }

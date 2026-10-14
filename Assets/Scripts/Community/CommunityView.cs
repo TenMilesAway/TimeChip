@@ -35,6 +35,8 @@ public class CommunityView : UIBasePanel
     private const int CommunityCentreNeedCount = 3;
     private const int CommunityCentreRedundancyItemCategory = 4;
     private const int CommunitySupplyGiftBoxItemId = 3010;
+    private const int BearTapeMissionId = 200;
+    private const string BearConvenienceDialogueConfig = "MissionRole,2";
     private const int VendingMachineLotteryPoolId = 8;
     private const int VendingMachineCost = 50;
     private const int LostWalletLotteryPoolId = 9;
@@ -204,6 +206,46 @@ public class CommunityView : UIBasePanel
         if (!FunctionUnlockService.IsUnlocked(ConvenienceStoreFunctionId))
         {
             return;
+        }
+
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (MissionAPI.IsMissionInProgress(BearTapeMissionId) &&
+            !playerInfoManager.HasPlayedBearConvenienceDialogue)
+        {
+            cfg.Mission missionConfig = DataTableMananger.GetInstance().Tables.MissionTable
+                .GetOrDefault(BearTapeMissionId);
+            if (missionConfig == null)
+            {
+                Debug.LogError($"便利店对话任务配置不存在: [{BearTapeMissionId}]", this);
+            }
+            else
+            {
+                _btnConvenienceStore.interactable = false;
+                bool isQueued = MissionDialogueService.TryPlayOneOffDialogue(
+                    missionConfig,
+                    BearConvenienceDialogueConfig,
+                    dialoguePlayed =>
+                    {
+                        if (this == null)
+                        {
+                            return;
+                        }
+
+                        _btnConvenienceStore.interactable = true;
+                        if (dialoguePlayed)
+                        {
+                            playerInfoManager.TryMarkBearConvenienceDialoguePlayed();
+                        }
+
+                        UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+                    });
+                if (isQueued)
+                {
+                    return;
+                }
+
+                _btnConvenienceStore.interactable = true;
+            }
         }
 
         UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);

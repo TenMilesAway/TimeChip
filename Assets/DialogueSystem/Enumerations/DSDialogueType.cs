@@ -13,6 +13,8 @@ namespace DS.Enumerations
         Daughter,
         System,
         Bear,
-        Narrator
+        Narrator,
+        Fox,
+        Deer
     }
 }
