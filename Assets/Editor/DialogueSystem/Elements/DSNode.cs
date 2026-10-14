@@ -178,7 +178,7 @@ namespace DS.Elements
                         : string.Empty;
                 });
 
-                List<string> speakerOptions = new List<string> { "我", "喵夫人", "女儿", "系统", "旁白" };
+                List<string> speakerOptions = new List<string> { "我", "喵夫人", "女儿", "系统", "熊大山", "旁白" };
                 PopupField<string> speakerField = new PopupField<string>(
                     "Speaker",
                     speakerOptions,
@@ -266,8 +266,10 @@ namespace DS.Elements
                     return 2;
                 case DSDialogueSpeaker.System:
                     return 3;
-                case DSDialogueSpeaker.Narrator:
+                case DSDialogueSpeaker.Bear:
                     return 4;
+                case DSDialogueSpeaker.Narrator:
+                    return 5;
                 default:
                     return 0;
             }
@@ -283,6 +285,8 @@ namespace DS.Elements
                     return DSDialogueSpeaker.Daughter;
                 case "系统":
                     return DSDialogueSpeaker.System;
+                case "熊大山":
+                    return DSDialogueSpeaker.Bear;
                 case "旁白":
                     return DSDialogueSpeaker.Narrator;
                 default:
@@ -388,6 +392,8 @@ namespace DS.Elements
                     return "daughter";
                 case DSDialogueSpeaker.System:
                     return "system";
+                case DSDialogueSpeaker.Bear:
+                    return "bear";
                 default:
                     return "me";
             }

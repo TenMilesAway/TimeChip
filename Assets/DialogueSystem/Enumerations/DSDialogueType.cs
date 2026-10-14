@@ -12,6 +12,7 @@ namespace DS.Enumerations
         Girlfriend,
         Daughter,
         System,
+        Bear,
         Narrator
     }
 }

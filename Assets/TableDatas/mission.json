@@ -32,6 +32,22 @@
     "dialogueEnd": ""
   },
   {
+    "id": 200,
+    "name": "熊大山",
+    "desc": "熊大山工具带得很齐，却唯独忘记了最普通的强力胶带",
+    "message": "Item",
+    "icon": 5012,
+    "condition": "force:22,6",
+    "target": "5102,1",
+    "targetType": "collect",
+    "randomTarget": "",
+    "reward": "",
+    "deadline": "",
+    "failure": "",
+    "dialogueStart": "MissionRole,0",
+    "dialogueEnd": ""
+  },
+  {
     "id": 1000,
     "name": "外出捕食",
     "desc": "完成一次零工",

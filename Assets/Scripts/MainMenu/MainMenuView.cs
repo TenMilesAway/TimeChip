@@ -8,6 +8,7 @@ using UnityEngine.Events;
 
 public class MainMenuView : UIBasePanel
 {
+    private const int BearMissionId = 200;
     [SerializeField] private Text _ageText;
     [SerializeField] private Text _monthText;
     [SerializeField] private Text _healthText;
@@ -176,6 +177,14 @@ public class MainMenuView : UIBasePanel
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.CurrentAge == 22 &&
+            playerInfoManager.CurrentMonth == 6 &&
+            !playerInfoManager.HasCompletedMission(BearMissionId))
+        {
+            CommonMessageView.Show("请先完成并领取熊大山的任务，再进入下一月。");
+            return;
+        }
+
         string detail = playerInfoManager.WorkedThisTurn
             ? "确定要进入下一月吗?"
             : "本回合还没有打零工，是否仍要进入下一月?";

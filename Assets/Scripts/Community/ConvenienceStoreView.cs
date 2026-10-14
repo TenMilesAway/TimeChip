@@ -6,6 +6,8 @@ public class ConvenienceStoreView : UIBasePanel
 {
     private const int ItemsPerMonth = 6;
     private const int ConvenienceScaleId = 4;
+    private const int BearMissionId = 200;
+    private const int BearTapeConvenienceId = 200;
     private const float ScaleDivisor = 10000f;
 
     [SerializeField] private Text _txtCoin;                 // 模拟币数量
@@ -134,13 +136,32 @@ public class ConvenienceStoreView : UIBasePanel
             candidates.Add(config);
         }
 
-        if (candidates.Count < ItemsPerMonth)
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        bool isBearMissionOfferTurn =
+            playerInfoManager.CurrentAge == 22 &&
+            playerInfoManager.CurrentMonth == 6 &&
+            !playerInfoManager.HasCompletedMission(BearMissionId);
+        cfg.Convenience guaranteedBearOffer = isBearMissionOfferTurn
+            ? candidates.Find(offer => offer.Id == BearTapeConvenienceId)
+            : null;
+        if (isBearMissionOfferTurn && guaranteedBearOffer == null)
         {
-            Debug.LogError($"便利店可用商品少于 {ItemsPerMonth} 个，无法生成本月商品。", this);
+            Debug.LogError(
+                $"熊大山任务便利店商品配置不存在: [{BearTapeConvenienceId}]",
+                this);
             return false;
         }
 
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        int requiredCandidateCount = ItemsPerMonth -
+            (guaranteedBearOffer == null ? 0 : 1);
+        if (candidates.Count - (guaranteedBearOffer == null ? 0 : 1) < requiredCandidateCount)
+        {
+            Debug.LogError(
+                $"便利店可用商品少于 {ItemsPerMonth} 个，无法生成本月商品。",
+                this);
+            return false;
+        }
+
         bool shouldRefresh = !playerInfoManager.HasMonthlyConvenienceOffers(ItemsPerMonth);
         List<cfg.Convenience> savedOffers = new List<cfg.Convenience>(ItemsPerMonth);
         if (!shouldRefresh)
@@ -167,9 +188,15 @@ public class ConvenienceStoreView : UIBasePanel
             shouldRefresh = savedOffers.Count != ItemsPerMonth;
         }
 
+        if (guaranteedBearOffer != null &&
+            (shouldRefresh || savedOffers[0].Id != BearTapeConvenienceId))
+        {
+            shouldRefresh = true;
+        }
+
         if (shouldRefresh)
         {
-            savedOffers = SelectOffers(candidates);
+            savedOffers = SelectOffers(candidates, guaranteedBearOffer);
             playerInfoManager.SetMonthlyConvenienceOffers(savedOffers);
         }
 
@@ -179,12 +206,31 @@ public class ConvenienceStoreView : UIBasePanel
         return _monthlyOffers.Count == ItemsPerMonth;
     }
 
-    private static List<cfg.Convenience> SelectOffers(List<cfg.Convenience> candidates)
+    private static List<cfg.Convenience> SelectOffers(
+        List<cfg.Convenience> candidates,
+        cfg.Convenience guaranteedFirstOffer = null)
     {
         List<cfg.Convenience> pool = new List<cfg.Convenience>(candidates);
         List<cfg.Convenience> selectedOffers = new List<cfg.Convenience>(ItemsPerMonth);
+        if (guaranteedFirstOffer != null)
+        {
+            selectedOffers.Add(guaranteedFirstOffer);
+            pool.Remove(guaranteedFirstOffer);
+        }
+
         for (int i = 0; i < ItemsPerMonth; i++)
         {
+            if (selectedOffers.Count >= ItemsPerMonth)
+            {
+                break;
+            }
+
+            if (pool.Count == 0)
+            {
+                Debug.LogError("便利店可用商品不足，无法完成当月商品抽取。");
+                return new List<cfg.Convenience>();
+            }
+
             long totalWeight = 0;
             for (int j = 0; j < pool.Count; j++)
             {

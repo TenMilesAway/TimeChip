@@ -25,6 +25,7 @@ public class DialogueView : UIBasePanel
     private const string MeAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me]";
     private const string GirlfriendAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend]";
     private const string DaughterAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_daughter]";
+    private const string BearAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_normal]";
     private const string SystemAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]";
     private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
 
@@ -368,6 +369,8 @@ public class DialogueView : UIBasePanel
                 return "喵夫人";
             case DSDialogueSpeaker.Daughter:
                 return "女儿";
+            case DSDialogueSpeaker.Bear:
+                return "熊大山";
             case DSDialogueSpeaker.System:
                 return "系统";
             case DSDialogueSpeaker.Narrator:
@@ -579,6 +582,8 @@ public class DialogueView : UIBasePanel
                 return GirlfriendAvatarPath;
             case DSDialogueSpeaker.Daughter:
                 return DaughterAvatarPath;
+            case DSDialogueSpeaker.Bear:
+                return BearAvatarPath;
             case DSDialogueSpeaker.System:
                 return SystemAvatarPath;
             default:
