@@ -27,6 +27,8 @@ public sealed partial class Function : Luban.BeanBase
         Name = (string)_obj.GetValue("name");
         UnlockMissionId = (int)_obj.GetValue("unlockMissionId");
         UnlockItemId = (int)_obj.GetValue("unlockItemId");
+        UnlockAge = (int)_obj.GetValue("unlockAge");
+        UnlockMonth = (int)_obj.GetValue("unlockMonth");
     }
 
     public static Function DeserializeFunction(JToken _buf)
@@ -50,6 +52,14 @@ public sealed partial class Function : Luban.BeanBase
     /// 解锁道具 ID；0 表示不需要道具
     /// </summary>
     public readonly int UnlockItemId;
+    /// <summary>
+    /// 解锁所需年龄；0 表示不限制
+    /// </summary>
+    public readonly int UnlockAge;
+    /// <summary>
+    /// 解锁所需月份；0 表示不限制
+    /// </summary>
+    public readonly int UnlockMonth;
 
 
     public const int __ID__ = 1445582840;
@@ -66,6 +76,8 @@ public sealed partial class Function : Luban.BeanBase
         + "name:" + Name + ","
         + "unlockMissionId:" + UnlockMissionId + ","
         + "unlockItemId:" + UnlockItemId + ","
+        + "unlockAge:" + UnlockAge + ","
+        + "unlockMonth:" + UnlockMonth + ","
         + "}";
     }
 }

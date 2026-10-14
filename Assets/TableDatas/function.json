@@ -2,67 +2,89 @@
   {
     "id": "ConvenienceStore",
     "name": "便利店",
-    "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockMissionId": 0,
+    "unlockItemId": 0,
+    "unlockAge": 22,
+    "unlockMonth": 6
   },
   {
     "id": "TrashCan",
     "name": "垃圾桶",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "HomeStore",
     "name": "家具店",
     "unlockMissionId": 1001,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "Clinic",
     "name": "医务室",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "CommunityCentre",
     "name": "社区中心",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "Subway",
     "name": "地铁站",
     "unlockMissionId": 0,
-    "unlockItemId": 4028
+    "unlockItemId": 4028,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "CommunityCentreNotice",
     "name": "社区中心布告",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "VendingMachine",
     "name": "自动售货机",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "LostWallet",
     "name": "遗失的钱包",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "StrayCatFoodBowl",
     "name": "流浪猫食物盆",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   },
   {
     "id": "Donation",
     "name": "社区募捐箱",
     "unlockMissionId": 1003,
-    "unlockItemId": 0
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   }
 ]

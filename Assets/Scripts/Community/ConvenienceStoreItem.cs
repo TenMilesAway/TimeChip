@@ -59,9 +59,7 @@ public class ConvenienceStoreItem : MonoBehaviour
         gameObject.SetActive(true);
         _txtName.text = convenienceConfig.Name;
         _txtTag.text = $"限购{convenienceConfig.Num}份";
-        _txtPrice.text = BuffSystem.GetInstance()
-            .CalculateShopPrice(convenienceConfig.Price)
-            .ToString();
+        _txtPrice.text = ConvenienceStorePricing.GetPrice(convenienceConfig).ToString();
         _txtNum.text = $"剩余   {remainingCount}/{convenienceConfig.Num}";
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(convenienceConfig.ItemId);

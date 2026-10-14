@@ -30,6 +30,11 @@ public static class FunctionUnlockService
             playerInfoManager.HasCompletedMission(functionConfig.UnlockMissionId);
         bool itemRequirementMet = functionConfig.UnlockItemId <= 0 ||
             playerInfoManager.GetItemCount(functionConfig.UnlockItemId) > 0;
-        return missionRequirementMet && itemRequirementMet;
+        bool turnRequirementMet = functionConfig.UnlockAge <= 0 ||
+            playerInfoManager.CurrentAge > functionConfig.UnlockAge ||
+            (playerInfoManager.CurrentAge == functionConfig.UnlockAge &&
+             (functionConfig.UnlockMonth <= 0 ||
+              playerInfoManager.CurrentMonth >= functionConfig.UnlockMonth));
+        return missionRequirementMet && itemRequirementMet && turnRequirementMet;
     }
 }

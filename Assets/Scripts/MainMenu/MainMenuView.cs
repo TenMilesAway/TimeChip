@@ -181,7 +181,7 @@ public class MainMenuView : UIBasePanel
             playerInfoManager.CurrentMonth == 6 &&
             !playerInfoManager.HasCompletedMission(BearMissionId))
         {
-            CommonMessageView.Show("请先完成并领取熊大山的任务，再进入下一月。");
+            CommonMessageView.Show("需要完成熊大山的任务，才能结束本月噢");
             return;
         }
 
@@ -314,7 +314,7 @@ public class MainMenuView : UIBasePanel
     {
         if (_goLoad == null)
         {
-            Debug.LogError("MainMenuView 的 Load 节点未在 Inspector 中配置。", this);
+            Debug.LogError("MainMenuView 的 Load 节点未在 Inspector 中配置", this);
             return;
         }
 

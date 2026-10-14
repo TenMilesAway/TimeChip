@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,8 @@ public class ConvenienceStoreView : UIBasePanel
     private const int ConvenienceScaleId = 4;
     private const int BearMissionId = 200;
     private const int BearTapeConvenienceId = 200;
+    private const int BearTapeItemId = 5102;
+    private const int BearTapePrice = 100;
     private const float ScaleDivisor = 10000f;
 
     [SerializeField] private Text _txtCoin;                 // 模拟币数量
@@ -141,15 +144,12 @@ public class ConvenienceStoreView : UIBasePanel
             playerInfoManager.CurrentAge == 22 &&
             playerInfoManager.CurrentMonth == 6 &&
             !playerInfoManager.HasCompletedMission(BearMissionId);
-        cfg.Convenience guaranteedBearOffer = isBearMissionOfferTurn
-            ? candidates.Find(offer => offer.Id == BearTapeConvenienceId)
-            : null;
-        if (isBearMissionOfferTurn && guaranteedBearOffer == null)
+        cfg.Convenience guaranteedBearOffer = null;
+        if (isBearMissionOfferTurn)
         {
-            Debug.LogError(
-                $"熊大山任务便利店商品配置不存在: [{BearTapeConvenienceId}]",
-                this);
-            return false;
+            guaranteedBearOffer = CreateBearTapeConvenienceOffer();
+            candidates.RemoveAll(offer => offer.Id == BearTapeConvenienceId);
+            candidates.Add(guaranteedBearOffer);
         }
 
         int requiredCandidateCount = ItemsPerMonth -
@@ -204,6 +204,19 @@ public class ConvenienceStoreView : UIBasePanel
         _monthlyOffers.AddRange(savedOffers);
 
         return _monthlyOffers.Count == ItemsPerMonth;
+    }
+
+    private static cfg.Convenience CreateBearTapeConvenienceOffer()
+    {
+        return new cfg.Convenience(new JObject
+        {
+            ["id"] = BearTapeConvenienceId,
+            ["name"] = "强力胶带",
+            ["itemId"] = BearTapeItemId,
+            ["price"] = BearTapePrice,
+            ["num"] = 1,
+            ["weight"] = 1
+        });
     }
 
     private static List<cfg.Convenience> SelectOffers(
@@ -312,5 +325,18 @@ public class ConvenienceStoreView : UIBasePanel
     public override string GetPanelName()
     {
         return GlobalDefine.ConvenienceStoreView;
+    }
+}
+
+internal static class ConvenienceStorePricing
+{
+    private const int BearTapeConvenienceId = 200;
+    private const int BearTapeFixedPrice = 100;
+
+    public static int GetPrice(cfg.Convenience offer)
+    {
+        return offer.Id == BearTapeConvenienceId
+            ? BearTapeFixedPrice
+            : BuffSystem.GetInstance().CalculateShopPrice(offer.Price);
     }
 }

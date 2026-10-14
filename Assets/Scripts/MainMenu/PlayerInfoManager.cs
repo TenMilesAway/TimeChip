@@ -1835,7 +1835,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return ConveniencePurchaseResult.InvalidOffer;
         }
 
-        int price = BuffSystem.GetInstance().CalculateShopPrice(offerConfig.Price);
+        int price = ConvenienceStorePricing.GetPrice(offerConfig);
         if (offerConfig.Price < 0 || _data.simulationCoins < price)
         {
             return ConveniencePurchaseResult.InsufficientCoins;
