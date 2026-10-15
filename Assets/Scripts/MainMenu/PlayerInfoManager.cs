@@ -30,6 +30,12 @@ public sealed class PlayerInfoData
     /// <summary>玩家持有的时间币数量</summary>
     public int timeCoins;
 
+    /// <summary>普通抽奖已提交的抽奖序号，只增不减，避免结果只由货币余额决定</summary>
+    public int normalLotteryDrawSerial;
+
+    /// <summary>神秘转盘已提交的抽奖序号，只增不减，避免结果只由转盘币余额决定</summary>
+    public int mysteryWheelDrawSerial;
+
     /// <summary>玩家持有的转盘币数量</summary>
     public int wheelCoins;
 
@@ -449,6 +455,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
     /// <summary>获取玩家当前持有的时间币数量</summary>
     public int TimeCoins { get { return _data.timeCoins; } }
+
+    /// <summary>获取下一次普通抽奖使用的序号</summary>
+    public int NormalLotteryDrawSerial { get { return _data.normalLotteryDrawSerial; } }
+
+    /// <summary>获取下一次神秘转盘抽奖使用的序号</summary>
+    public int MysteryWheelDrawSerial { get { return _data.mysteryWheelDrawSerial; } }
 
     /// <summary>获取玩家当前持有的转盘币数量</summary>
     public int WheelCoins { get { return _data.wheelCoins; } }
@@ -1286,6 +1298,18 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public bool TrySpendTimeCoins(int amount)
     {
         return TrySpendCoins(ref _data.timeCoins, amount);
+    }
+
+    /// <summary>普通抽奖成功提交后推进序号，保证下一次随机键不同</summary>
+    public void AdvanceNormalLotteryDrawSerial()
+    {
+        SetValue(ref _data.normalLotteryDrawSerial, _data.normalLotteryDrawSerial + 1);
+    }
+
+    /// <summary>神秘转盘抽奖成功提交后推进序号，保证下一次随机键不同</summary>
+    public void AdvanceMysteryWheelDrawSerial()
+    {
+        SetValue(ref _data.mysteryWheelDrawSerial, _data.mysteryWheelDrawSerial + 1);
     }
 
     /// <summary>按指定数值增加或减少转盘币, 转盘币不会低于零</summary>
@@ -2594,6 +2618,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             maxHealth = source.maxHealth,
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
+            normalLotteryDrawSerial = source.normalLotteryDrawSerial,
+            mysteryWheelDrawSerial = source.mysteryWheelDrawSerial,
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
             cardCoins = source.cardCoins,

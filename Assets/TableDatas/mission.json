@@ -37,7 +37,7 @@
     "desc": "熊大山工具带得很齐，却唯独忘记了最普通的强力胶带",
     "message": "Item",
     "icon": 5012,
-    "condition": "force:22,6",
+    "condition": "force:22,4",
     "target": "5102,1",
     "targetType": "collect",
     "randomTarget": "",

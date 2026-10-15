@@ -294,7 +294,8 @@ public class LotteryView : UIBasePanel
     {
         if (_isLotteryInProgress) return;
 
-        string drawKey = $"Lottery.Normal.{PlayerInfoManager.GetInstance().TimeCoins}";
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        string drawKey = $"Lottery.Normal.{playerInfoManager.NormalLotteryDrawSerial}";
         if (!TryDrawRewards(
                 LotteryPoolId,
                 drawCount,
@@ -309,6 +310,8 @@ public class LotteryView : UIBasePanel
         {
             return;
         }
+
+        playerInfoManager.AdvanceNormalLotteryDrawSerial();
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.NormalLottery));
         int? simulationCoinDisplayStart = ApplyRewards(rewards);
@@ -1450,12 +1453,13 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         List<CommonRewardItemData> rewards = new List<CommonRewardItemData>(drawCount);
         int selectedIndex = 0;
         for (int i = 0; i < drawCount; i++)
         {
             selectedIndex = TurnRandom.Range(
-                $"Lottery.MysteryWheel.Draw.{PlayerInfoManager.GetInstance().WheelCoins}.{i}",
+                $"Lottery.MysteryWheel.Draw.{playerInfoManager.MysteryWheelDrawSerial}.{i}",
                 0,
                 MysteryWheelRewardCount);
             rewards.Add(_mysteryWheelRewards[selectedIndex]);
@@ -1465,6 +1469,8 @@ public class LotteryView : UIBasePanel
         {
             return;
         }
+
+        playerInfoManager.AdvanceMysteryWheelDrawSerial();
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.MysteryWheelLottery));
         int? simulationCoinDisplayStart = ApplyRewards(rewards);

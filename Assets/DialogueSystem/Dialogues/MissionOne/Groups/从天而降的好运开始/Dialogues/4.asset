@@ -19,6 +19,6 @@ MonoBehaviour:
     <NextDialogue>k__BackingField: {fileID: 11400000, guid: 8e6ab88ba4292674d8d6c1029a4350b1, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 4
-  <SpeakerExpressionPath>k__BackingField: 
+  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_confused]
   <Reward>k__BackingField: 
   <IsStartingDialogue>k__BackingField: 0
