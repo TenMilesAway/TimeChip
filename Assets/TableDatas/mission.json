@@ -45,7 +45,7 @@
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionRole,0",
-    "dialogueEnd": ""
+    "dialogueEnd": "MissionRole,1"
   },
   {
     "id": 1000,

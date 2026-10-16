@@ -311,8 +311,22 @@ public class CommonRewardPanel : UIBasePanel
         {
             CommonRewardItem rewardItem = _rewardItems[i];
             int simulationCoinAmount = GetSimulationCoinAmount(rewardItem.ItemId, rewardItem.Count);
-            if (simulationCoinAmount <= 0)
+            if (simulationCoinAmount == 0)
             {
+                continue;
+            }
+
+            if (simulationCoinAmount < 0)
+            {
+                if (grantRewards)
+                {
+                    AddSimulationCoins(mainMenuView, simulationCoinAmount);
+                }
+                else
+                {
+                    preGrantedCountAnimation?.Invoke();
+                }
+
                 continue;
             }
 
@@ -342,7 +356,7 @@ public class CommonRewardPanel : UIBasePanel
         for (int i = 0; i < _rewardItems.Count; i++)
         {
             int simulationCoinAmount = GetSimulationCoinAmount(_rewardItems[i].ItemId, _rewardItems[i].Count);
-            if (simulationCoinAmount > 0)
+            if (simulationCoinAmount != 0)
             {
                 PlayerInfoManager.GetInstance().AddSimulationCoins(simulationCoinAmount);
             }
@@ -356,8 +370,9 @@ public class CommonRewardPanel : UIBasePanel
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         int currentAmount = playerInfoManager.SimulationCoins;
+        int targetAmount = Mathf.Max(0, currentAmount + amount);
         playerInfoManager.AddSimulationCoins(amount);
-        mainMenuView.PlaySimulationCoinCountAnimation(currentAmount, currentAmount + amount);
+        mainMenuView.PlaySimulationCoinCountAnimation(currentAmount, targetAmount);
     }
 
     /// <summary>

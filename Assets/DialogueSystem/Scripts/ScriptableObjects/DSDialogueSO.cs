@@ -72,7 +72,8 @@ namespace DS.Data
                     !int.TryParse(values[0].Trim(), out int itemID) ||
                     !int.TryParse(values[1].Trim(), out int amount) ||
                     itemID <= 0 ||
-                    amount <= 0)
+                    amount == 0 ||
+                    (amount < 0 && itemID != BasePropertyId.SimulationCoin))
                 {
                     errorMessage = $"奖励条目格式无效: {entries[i]}";
                     rewards.Clear();

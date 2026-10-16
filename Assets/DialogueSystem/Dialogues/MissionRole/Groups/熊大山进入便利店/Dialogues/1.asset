@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: 1
   m_EditorClassIdentifier: 
   <DialogueName>k__BackingField: 1
-  <Text>k__BackingField: "\u77A7\u77A7\u8FD9\u662F\u8C01\u6765\u5566~"
+  <Text>k__BackingField: "\u95E8\u53E3\u7684\u611F\u5E94\u94C3\u54CD\u4E86\u4E00\u58F0\u3002\u67DC\u53F0\u540E\u7684\u72D0\u72F8\u62AC\u8D77\u5934\uFF0C\u76EE\u5149\u5728\u6211\u548C\u8D27\u67B6\u4E4B\u95F4\u8FC5\u901F\u8F6C\u4E86\u4E00\u5708\u3002"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 0}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: 49e0d456936ad9d4fb300be4f0ccc47d, type: 2}
   <DialogueType>k__BackingField: 0
-  <Speaker>k__BackingField: 6
-  <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
+  <Speaker>k__BackingField: 5
+  <SpeakerExpressionPath>k__BackingField: 
   <Reward>k__BackingField: 
   <IsStartingDialogue>k__BackingField: 1

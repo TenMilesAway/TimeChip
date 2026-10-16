@@ -30,6 +30,7 @@ public class DialogueView : UIBasePanel
     private const string DeerAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]";
     private const string SystemAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]";
     private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
+    private const float BearAvatarScale = 1.3f;
 
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtDialogue;
@@ -403,6 +404,9 @@ public class DialogueView : UIBasePanel
         }
 
         _imgAvatar.gameObject.SetActive(true);
+        _imgAvatar.rectTransform.localScale = speaker == DSDialogueSpeaker.Bear
+            ? Vector3.one * BearAvatarScale
+            : Vector3.one;
         string avatarPath = string.IsNullOrEmpty(expressionPath)
             ? GetAvatarPath(speaker)
             : NormalizeExpressionReference(expressionPath);

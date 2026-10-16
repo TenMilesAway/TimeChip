@@ -141,7 +141,7 @@ namespace DS.Elements
                 Reward,
                 "奖励",
                 callback => Reward = callback.newValue);
-            rewardTextField.tooltip = "格式：itemID,num;itemID,num，例如：1001,2;1002,1";
+            rewardTextField.tooltip = "格式：itemID,num;itemID,num，例如：1001,2;1002,1。模拟币 101 的数量为负数时扣除相应模拟币。";
             customDataContainer.Add(rewardTextField);
 
             if (DialogueType == DSDialogueType.SingleChoice)

@@ -16,7 +16,7 @@ MonoBehaviour:
   <Text>k__BackingField: "(\u718A\u5927\u5C71\u63A5\u8FC7\u80F6\u5E26\uFF0C\u5C0F\u5FC3\u56FA\u5B9A\u4F4F\u6728\u677F\uFF0C\u968F\u540E\u91CD\u65B0\u62E7\u7D27\u8FDE\u63A5\u5904\u7684\u87BA\u4E1D)"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 0}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: 63e3bbde7677ef84cb5dbe9d681cabe1, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 5
   <SpeakerExpressionPath>k__BackingField: 
