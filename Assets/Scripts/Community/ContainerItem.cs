@@ -44,7 +44,11 @@ public class ContainerItem : MonoBehaviour
             _btnBuy.interactable = !offer.purchased;
             if (!offer.purchased)
             {
-                _btnBuy.onClick.AddListener(() => buyAction?.Invoke());
+                _btnBuy.onClick.AddListener(() =>
+                {
+                    UiButtonAudio.PlayClick();
+                    buyAction?.Invoke();
+                });
             }
         }
 

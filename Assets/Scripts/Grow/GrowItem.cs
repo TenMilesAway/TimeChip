@@ -40,6 +40,7 @@ public class GrowItem : MonoBehaviour
 
     private void Select()
     {
+        UiButtonAudio.PlayClick();
         _selectAction?.Invoke(_growId);
     }
 }

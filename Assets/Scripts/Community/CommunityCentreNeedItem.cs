@@ -86,6 +86,7 @@ public class CommunityCentreNeedItem : MonoBehaviour
 
     private void Submit()
     {
+        UiButtonAudio.PlayClick();
         _submitHandler?.Invoke();
     }
 }

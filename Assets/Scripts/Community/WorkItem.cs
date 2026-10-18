@@ -148,6 +148,7 @@ public class WorkItem : MonoBehaviour
 
     private void OnClickGet()
     {
+        UiButtonAudio.PlayClick();
         if (_workConfig == null)
         {
             return;

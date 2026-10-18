@@ -9,6 +9,9 @@ using UnityEngine.Events;
 public class MainMenuView : UIBasePanel
 {
     private const int BearMissionId = 200;
+    private const int HomeTutorialCompleteMissionId = 1003;
+    private const int CommunityReportMissionId = 201;
+    private const int ClinicConsultationMissionId = 202;
     [SerializeField] private Text _ageText;
     [SerializeField] private Text _monthText;
     [SerializeField] private Text _healthText;
@@ -185,6 +188,28 @@ public class MainMenuView : UIBasePanel
             return;
         }
 
+        if (!playerInfoManager.HasCompletedMission(HomeTutorialCompleteMissionId))
+        {
+            CommonMessageView.Show("需要完成「温馨小屋」任务，才能结束本月噢");
+            return;
+        }
+
+        if (playerInfoManager.CurrentAge == 22 &&
+            playerInfoManager.CurrentMonth == 2 &&
+            !playerInfoManager.HasCompletedMission(CommunityReportMissionId))
+        {
+            CommonMessageView.Show("需要完成「社区报到」任务，才能结束本月噢");
+            return;
+        }
+
+        if (playerInfoManager.CurrentAge == 22 &&
+            playerInfoManager.CurrentMonth == 3 &&
+            !playerInfoManager.HasCompletedMission(ClinicConsultationMissionId))
+        {
+            CommonMessageView.Show("需要完成「问诊」任务，才能结束本月噢");
+            return;
+        }
+
         string detail = playerInfoManager.WorkedThisTurn
             ? "确定要进入下一月吗?"
             : "本回合还没有打零工，是否仍要进入下一月?";
@@ -231,6 +256,7 @@ public class MainMenuView : UIBasePanel
 
     private void OpenInventory()
     {
+        UiButtonAudio.PlayClick();
         UIManager.GetInstance().OpenPanel(GlobalDefine.InventoryView);
     }
 

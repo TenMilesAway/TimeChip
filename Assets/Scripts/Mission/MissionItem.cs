@@ -74,7 +74,11 @@ public class MissionItem : MonoBehaviour
         _btnGet.interactable = mission.IsFinished;
         if (mission.IsFinished)
         {
-            _btnGet.onClick.AddListener(() => claimAction());
+            _btnGet.onClick.AddListener(() =>
+            {
+                UiButtonAudio.PlayClick();
+                claimAction();
+            });
         }
 
         gameObject.SetActive(true);

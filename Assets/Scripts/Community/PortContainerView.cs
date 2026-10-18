@@ -114,6 +114,7 @@ public class PortContainerView : UIBasePanel
 
     private void ClosePanel()
     {
+        UiButtonAudio.PlayClick();
         if (_btnClose.enabled)
         {
             PlaySimulationCoinFlyAnimations();

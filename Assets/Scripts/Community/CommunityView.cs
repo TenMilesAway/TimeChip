@@ -37,6 +37,10 @@ public class CommunityView : UIBasePanel
     private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int BearTapeMissionId = 200;
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
+    private const int CommunityReportMissionId = 201;
+    private const string CommunityEnterDialogueConfig = "MissionRole,4";
+    private const int ClinicConsultationMissionId = 202;
+    private const string ClinicEnterDialogueConfig = "MissionRole,6";
     private const int VendingMachineLotteryPoolId = 8;
     private const int VendingMachineCost = 50;
     private const int LostWalletLotteryPoolId = 9;
@@ -188,11 +192,13 @@ public class CommunityView : UIBasePanel
 
     public void OnClickWork()
     {
+        UiButtonAudio.PlayClick();
         UIManager.GetInstance().OpenPanel(GlobalDefine.WorkView);
     }
 
     public void OnClickHomeStore()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(HomeStoreFunctionId))
         {
             return;
@@ -203,6 +209,7 @@ public class CommunityView : UIBasePanel
 
     public void OnClickConvenienceStore()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(ConvenienceStoreFunctionId))
         {
             return;
@@ -253,9 +260,47 @@ public class CommunityView : UIBasePanel
 
     public void OnClickClinic()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(ClinicFunctionId))
         {
             return;
+        }
+
+        if (MissionAPI.IsMissionInProgress(ClinicConsultationMissionId))
+        {
+            cfg.Mission missionConfig = DataTableMananger.GetInstance().Tables.MissionTable
+                .GetOrDefault(ClinicConsultationMissionId);
+            if (missionConfig == null)
+            {
+                Debug.LogError($"医务室对话任务配置不存在: [{ClinicConsultationMissionId}]", this);
+            }
+            else if (_btnCilinic != null)
+            {
+                _btnCilinic.interactable = false;
+                bool isQueued = MissionDialogueService.TryPlayOneOffDialogue(
+                    missionConfig,
+                    ClinicEnterDialogueConfig,
+                    _ =>
+                    {
+                        if (this == null)
+                        {
+                            return;
+                        }
+
+                        if (_btnCilinic != null)
+                        {
+                            _btnCilinic.interactable = true;
+                        }
+
+                        UIManager.GetInstance().OpenPanel(GlobalDefine.ClinicView);
+                    });
+                if (isQueued)
+                {
+                    return;
+                }
+
+                _btnCilinic.interactable = true;
+            }
         }
 
         UIManager.GetInstance().OpenPanel(GlobalDefine.ClinicView);
@@ -263,9 +308,47 @@ public class CommunityView : UIBasePanel
 
     public void OnClickCommunityCentre()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(CommunityCentreFunctionId))
         {
             return;
+        }
+
+        if (MissionAPI.IsMissionInProgress(CommunityReportMissionId))
+        {
+            cfg.Mission missionConfig = DataTableMananger.GetInstance().Tables.MissionTable
+                .GetOrDefault(CommunityReportMissionId);
+            if (missionConfig == null)
+            {
+                Debug.LogError($"社区中心对话任务配置不存在: [{CommunityReportMissionId}]", this);
+            }
+            else if (_btnCommunityCentre != null)
+            {
+                _btnCommunityCentre.interactable = false;
+                bool isQueued = MissionDialogueService.TryPlayOneOffDialogue(
+                    missionConfig,
+                    CommunityEnterDialogueConfig,
+                    _ =>
+                    {
+                        if (this == null)
+                        {
+                            return;
+                        }
+
+                        if (_btnCommunityCentre != null)
+                        {
+                            _btnCommunityCentre.interactable = true;
+                        }
+
+                        UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityCentreView);
+                    });
+                if (isQueued)
+                {
+                    return;
+                }
+
+                _btnCommunityCentre.interactable = true;
+            }
         }
 
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommunityCentreView);
@@ -273,6 +356,7 @@ public class CommunityView : UIBasePanel
 
     public void OnClickSubway()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(SubwayFunctionId))
         {
             return;
@@ -284,6 +368,7 @@ public class CommunityView : UIBasePanel
 
     private void OnClickVendingMachine()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(VendingMachineFunctionId))
         {
             return;
@@ -363,6 +448,7 @@ public class CommunityView : UIBasePanel
 
     private void OnClickDonation()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(DonationFunctionId))
         {
             return;
@@ -418,6 +504,7 @@ public class CommunityView : UIBasePanel
 
     private void OnClickCommunityCentreNotice()
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId))
         {
             return;
@@ -805,6 +892,7 @@ public class CommunityView : UIBasePanel
 
     private void OnClickLostWallet(int pointIndex)
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(LostWalletFunctionId))
         {
             return;
@@ -955,6 +1043,7 @@ public class CommunityView : UIBasePanel
 
     private void OnClickStrayCatFoodBowl(int pointIndex)
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(StrayCatFoodBowlFunctionId))
         {
             return;
@@ -1152,6 +1241,7 @@ public class CommunityView : UIBasePanel
 
     private void TrySearchTrashCan(int pointIndex, int childIndex, GameObject trashCan)
     {
+        UiButtonAudio.PlayClick();
         if (!FunctionUnlockService.IsUnlocked(TrashCanFunctionId))
         {
             return;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 public class CommunityCentreView : UIBasePanel
 {
     private const int MonthlyNeedCount = 3;
-    private const int CommunityNeedItemCategory = 5;
+    private const string CommunityNeedMaterialType = "材料";
     private const int RedundancyItemCategory = 4;
     private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int CommunityCentreScaleId = 8;
@@ -62,6 +63,7 @@ public class CommunityCentreView : UIBasePanel
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.CommunityCentreView));
         RefreshCommunityProgress(PlayerInfoManager.GetInstance());
         RefreshMonthlyNeeds();
         RefreshProposals();
@@ -200,7 +202,10 @@ public class CommunityCentreView : UIBasePanel
         List<cfg.Item> allCandidates = new List<cfg.Item>();
         for (int i = 0; i < configurations.Count; i++)
         {
-            if (configurations[i].Category != CommunityNeedItemCategory)
+            if (!string.Equals(
+                    configurations[i].Type,
+                    CommunityNeedMaterialType,
+                    StringComparison.Ordinal))
             {
                 continue;
             }
@@ -793,6 +798,7 @@ public class CommunityCentreView : UIBasePanel
 
     private void SubmitSelectedRedundancyItem()
     {
+        UiButtonAudio.PlayClick();
         if (_isSubmittingRedundancyItem || _selectedRedundancyItem == null)
         {
             return;

@@ -68,7 +68,11 @@ public class MainMenuMissionItem : MonoBehaviour
         _btnComplete.interactable = canComplete;
         if (canComplete)
         {
-            _btnComplete.onClick.AddListener(() => completeAction());
+            _btnComplete.onClick.AddListener(() =>
+            {
+                UiButtonAudio.PlayClick();
+                completeAction();
+            });
             PlayCompleteBreathingAnimation();
         }
         else

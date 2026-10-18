@@ -60,6 +60,7 @@ public static class MissionAPI
         EvaluateAvailableMissions(isNewGame);
         SynchronizeSubmitMissionProgresses();
         BroadcastSimulationCoinBalance(force: true);
+        SynchronizeAdvanceTurnMissions();
         CheckDeadlines();
     }
 
@@ -228,6 +229,7 @@ public static class MissionAPI
     {
         CheckDeadlines();
         EnsureMonthlyRandomMissionOffer();
+        Broadcast(new MissionMessage(MissionEventType.AdvanceTurn, 1));
         EvaluateAvailableMissions(false);
     }
 
@@ -243,6 +245,7 @@ public static class MissionAPI
         }
 
         BroadcastSimulationCoinBalance();
+        SynchronizeAdvanceTurnMissions();
     }
 
     private static void EvaluateAvailableMissions(bool allowInitialMissions)
@@ -467,12 +470,24 @@ public static class MissionAPI
             }
 
             Debug.Log("[任务系统] 开启任务: " + missionConfig.Id + " - " + missionConfig.Name);
+            ShowMissionStartedTip(missionConfig);
             MissionDialogueService.TryPlayStartDialogue(missionConfig);
             BroadcastSimulationCoinBalance(force: true);
+            SynchronizeAdvanceTurnMissions();
             return;
         }
 
         MissionTimings.Remove(missionId);
+    }
+
+    private static void ShowMissionStartedTip(cfg.Mission missionConfig)
+    {
+        if (missionConfig == null)
+        {
+            return;
+        }
+
+        CommonTipView.Show("新任务开启：【" + missionConfig.Name + "】");
     }
 
     /// <summary>公告栏展示本月待领取的随机委托时返回 true。</summary>
@@ -660,6 +675,48 @@ public static class MissionAPI
                 return;
             }
         }
+    }
+
+    private static void SynchronizeAdvanceTurnMissions()
+    {
+        if (!_isInitialized || _playerInfoManager == null || _isRestoringMissions)
+        {
+            return;
+        }
+
+        if (!IsAtOrAfter(
+                _playerInfoManager.CurrentAge,
+                _playerInfoManager.CurrentMonth,
+                22,
+                2) ||
+            !HasIncompleteAdvanceTurnMission())
+        {
+            return;
+        }
+
+        Broadcast(new MissionMessage(MissionEventType.AdvanceTurn, 1));
+    }
+
+    private static bool HasIncompleteAdvanceTurnMission()
+    {
+        Mission<MissionMessage>[] missions = MissionManager.GetMissions();
+        for (int i = 0; i < missions.Length; i++)
+        {
+            if (!TryGetMissionConfig(missions[i].id, out cfg.Mission missionConfig) ||
+                missionConfig.Message != "AdvanceTurn" ||
+                !int.TryParse(missionConfig.Target, out int targetCount))
+            {
+                continue;
+            }
+
+            MissionProgress[] progresses = missions[i].Progresses;
+            if (progresses.Length == 0 || progresses[0].currentCount < targetCount)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void BroadcastSimulationCoinBalance(bool force = false)

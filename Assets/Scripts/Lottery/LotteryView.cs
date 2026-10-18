@@ -57,6 +57,7 @@ public class LotteryView : UIBasePanel
     [SerializeField] private Button _mysButton;             // 抽奖按钮
     [SerializeField] private Button _mysFiveButton;         // 抽奖按钮，五连抽
     [SerializeField] private Text _wheelCoinText;           // 剩余转盘币文本
+    [SerializeField] private Transform _mysIcon;            // 转盘图标
 
     [Header("时光秘匣")]
     [SerializeField] private BoxLotteryItem[] _boxLotteryItem;  // 时光秘匣奖品列表, 共 6 个
@@ -73,6 +74,7 @@ public class LotteryView : UIBasePanel
     private Vector3 _lotteryBoxScale;                       // 奖池盒子缩放
     private Vector3 _lotteryButtonScale;                    // 抽奖按钮缩放
     private Vector3 _mysButtonScale;                        // 转盘按钮缩放
+    private Vector3 _mysIconScale;                          // 转盘中心图标缩放
     private Vector2[] _bubblePositions;                     // 气泡位置
     private Vector3[] _bubbleScales;                        // 气泡缩放
     private float _lotteryBoxRotation;                      // 奖池盒子旋转
@@ -106,7 +108,10 @@ public class LotteryView : UIBasePanel
     private const float IdleButtonScaleMultiplier = 1.035f; // 待机按钮最大缩放
     private const float IdleButtonBreathDuration = 0.25f;   // 待机按钮单程时长
     private const float IdleButtonInterval = 1.5f;          // 待机按钮呼吸间隔
-    private const float IdleDecorationScaleMultiplier = 1.025f; // 待机装饰最大缩放
+    private const float LotteryBoxIdleScaleMultiplier = 1.038f;   // 礼盒待机最大缩放
+    private const float LotteryBoxIdleHalfCycleDuration = 2.2f; // 礼盒待机半周期（放大或缩小）
+    private const float MysIconIdleScaleMultiplier = 1.06f;       // 转盘中心图标待机最大缩放
+    private const float MysIconIdleHalfCycleDuration = 1.75f;   // 转盘中心图标呼吸半周期
     private const float LotteryRevealDuration = 0.38f;      // 开箱揭晓演出时长
     private const float MysteryWheelRevealDuration = 0.38f; // 转盘结果揭晓时长
     private const float BoxRevealDuration = 0.52f;          // 秘匣结果揭晓时长
@@ -151,6 +156,8 @@ public class LotteryView : UIBasePanel
 
         _isLotteryInProgress = false;
         DOTween.Kill(this);
+        StopBubbleIdleAnimations();
+        StopMysIconIdleAnimations();
         RestoreAnimationState();
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         playerInfoManager.PlayerInfoChanged -= RefreshTimeCoins;
@@ -292,6 +299,7 @@ public class LotteryView : UIBasePanel
 
     private void StartLottery(int drawCount)
     {
+        UiButtonAudio.PlayClick();
         if (_isLotteryInProgress) return;
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
@@ -326,6 +334,7 @@ public class LotteryView : UIBasePanel
         _normalFiveButton.interactable = false;
 
         DOTween.Kill(this);
+        StopBubbleIdleAnimations();
         PlayLotteryButtonClickAnimation();
         PlayLotteryBoxAnimation();
         PlayBubbleAnimations();
@@ -334,7 +343,6 @@ public class LotteryView : UIBasePanel
         DOVirtual.DelayedCall(LotteryDuration, CompleteLottery)
             .SetUpdate(true)
             .SetTarget(this);
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private void CompleteLottery()
@@ -364,6 +372,7 @@ public class LotteryView : UIBasePanel
 
     private void OpenLotterySelection()
     {
+        UiButtonAudio.PlayClick();
         if (!_isLotteryInProgress)
         {
             RefreshLotteryModeAvailability();
@@ -373,6 +382,7 @@ public class LotteryView : UIBasePanel
 
     private void CloseLotterySelection()
     {
+        UiButtonAudio.PlayClick();
         _selection.SetActive(false);
     }
 
@@ -413,6 +423,7 @@ public class LotteryView : UIBasePanel
 
     private void SwitchLotteryMode(LotteryMode lotteryMode)
     {
+        UiButtonAudio.PlayClick();
         if (_isLotteryInProgress)
         {
             return;
@@ -426,6 +437,8 @@ public class LotteryView : UIBasePanel
 
         PresentPendingRewards();
         DOTween.Kill(this);
+        StopBubbleIdleAnimations();
+        StopMysIconIdleAnimations();
         RestoreAnimationState();
         _normal.SetActive(lotteryMode == LotteryMode.Normal);
         _mys.SetActive(lotteryMode == LotteryMode.MysteryWheel);
@@ -615,11 +628,12 @@ public class LotteryView : UIBasePanel
         }
 
         _boxButton.interactable = true;
-        GameManager.Audio.Play(AudioDefine.SFXClick);
+        UiButtonAudio.PlayClick();
     }
 
     private void StartBoxLottery()
     {
+        UiButtonAudio.PlayClick();
         if (_isLotteryInProgress || _selectedBoxIndex < 0 ||
             _selectedBoxIndex >= _boxRewards.Count)
         {
@@ -643,7 +657,6 @@ public class LotteryView : UIBasePanel
         _boxButton.interactable = false;
 
         _boxLotteryItem[_selectedBoxIndex].PlayDrawAnimation();
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         GameManager.Audio.Vibrate();
 
         DOVirtual.DelayedCall(BoxRevealDuration, CompleteBoxLottery)
@@ -817,6 +830,7 @@ public class LotteryView : UIBasePanel
 
         private void StartCardLottery()
         {
+            UiButtonAudio.PlayClick();
             if (_isLotteryInProgress || !TryGetRandomUnopenedCardIndex(out int cardIndex))
             {
                 return;
@@ -852,7 +866,6 @@ public class LotteryView : UIBasePanel
             _isLotteryInProgress = true;
             _cardButton.interactable = false;
             _cardLotteryItems[cardIndex].PlayRevealAnimation(cardReward);
-            GameManager.Audio.Play(AudioDefine.SFXClick);
             GameManager.Audio.Vibrate();
 
             DOVirtual.DelayedCall(CardRevealDuration, CompleteCardLottery)
@@ -1448,6 +1461,7 @@ public class LotteryView : UIBasePanel
 
     private void StartMysteryWheelLottery(int drawCount)
     {
+        UiButtonAudio.PlayClick();
         if (_isLotteryInProgress || _mysteryWheelRewards.Count != MysteryWheelRewardCount)
         {
             return;
@@ -1490,12 +1504,12 @@ public class LotteryView : UIBasePanel
         _mysButton.interactable = false;
         _mysFiveButton.interactable = false;
         DOTween.Kill(this);
+        StopMysIconIdleAnimations();
         ClearMysteryWheelHighlights();
         PlayMysteryWheelButtonClickAnimation();
         GameManager.Audio.Vibrate();
 
         PlayMysteryWheelAnimation(selectedIndex);
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private void PlayMysteryWheelAnimation(int selectedIndex)
@@ -1568,6 +1582,7 @@ public class LotteryView : UIBasePanel
         _isLotteryInProgress = false;
         _mysButton.interactable = true;
         _mysFiveButton.interactable = true;
+        PlayMysteryWheelIdleAnimation();
     }
 
     private void ScheduleRewardPresentation(
@@ -1689,6 +1704,11 @@ public class LotteryView : UIBasePanel
         _lotteryBoxScale = _lotteryBox.localScale;
         _lotteryButtonScale = _normalButton.transform.localScale;
         _mysButtonScale = _mysButton.transform.localScale;
+        if (_mysIcon != null)
+        {
+            _mysIconScale = _mysIcon.localScale;
+        }
+
         _lotteryBoxRotation = _lotteryBox.localEulerAngles.z;
 
         _bubblePositions = new Vector2[_bubbles.Length];
@@ -1710,17 +1730,13 @@ public class LotteryView : UIBasePanel
             return;
         }
 
-        if (!HasLotteryCoins(LotteryPoolId))
+        if (HasLotteryCoins(LotteryPoolId))
         {
-            return;
+            PlayButtonIdleAnimation(_normalButton, _lotteryButtonScale);
         }
 
-        PlayButtonIdleAnimation(_normalButton, _lotteryButtonScale);
-
-        PlayIdleDecorationAnimation(
-            _lotteryBox,
-            _lotteryBoxScale,
-            TurnRandom.Range("Lottery.BubbleMoveDuration", 2.5f, 5f));
+        EnsureLotteryBoxIdleAnimation();
+        EnsureBubbleIdleAnimations();
     }
 
     private void PlayMysteryWheelIdleAnimation()
@@ -1735,13 +1751,13 @@ public class LotteryView : UIBasePanel
             _mysButtonScale = _mysButton.transform.localScale;
         }
 
-        if (!HasLotteryCoins(MysteryWheelPoolId))
+        _mysButton.transform.localScale = _mysButtonScale;
+        if (HasLotteryCoins(MysteryWheelPoolId))
         {
-            return;
+            PlayButtonIdleAnimation(_mysButton, _mysButtonScale);
         }
 
-        _mysButton.transform.localScale = _mysButtonScale;
-        PlayButtonIdleAnimation(_mysButton, _mysButtonScale);
+        EnsureMysIconIdleAnimation();
     }
 
     private void PlayIdleAnimationsForActiveMode()
@@ -1754,27 +1770,6 @@ public class LotteryView : UIBasePanel
         {
             PlayMysteryWheelIdleAnimation();
         }
-    }
-
-    private void PlayIdleDecorationAnimation(
-        RectTransform decoration,
-        Vector3 originalScale,
-        float interval)
-    {
-        const float expandDuration = 0.35f;
-        const float restoreDuration = 0.45f;
-
-        DOTween.Sequence()
-            .AppendInterval(TurnRandom.Range("Lottery.BubbleInterval", 0.5f, interval))
-            .Append(decoration.DOScale(
-                originalScale * IdleDecorationScaleMultiplier,
-                expandDuration))
-            .Append(decoration.DOScale(originalScale, restoreDuration))
-            .AppendInterval(interval)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1)
-            .SetUpdate(true)
-            .SetTarget(this);
     }
 
     private static bool HasLotteryCoins(int lotteryPoolId, int drawCount = 1)
@@ -1821,6 +1816,9 @@ public class LotteryView : UIBasePanel
             _mys,
             _mysButton,
             _mysButtonScale);
+        EnsureLotteryBoxIdleAnimation();
+        EnsureBubbleIdleAnimations();
+        EnsureMysIconIdleAnimation();
     }
 
     private void RefreshButtonIdleAnimation(
@@ -1846,13 +1844,134 @@ public class LotteryView : UIBasePanel
         if (shouldPlay)
         {
             PlayButtonIdleAnimation(button, originalScale);
-            if (lotteryPoolId == LotteryPoolId)
+        }
+    }
+
+    private void EnsureLotteryBoxIdleAnimation()
+    {
+        if (_isLotteryInProgress ||
+            _normal == null ||
+            !_normal.activeInHierarchy ||
+            _lotteryBox == null)
+        {
+            return;
+        }
+
+        if (DOTween.IsTweening(_lotteryBox, false))
+        {
+            return;
+        }
+
+        if (!_hasCachedAnimationState)
+        {
+            CacheAnimationState();
+        }
+
+        _lotteryBox.localScale = _lotteryBoxScale;
+        _lotteryBox
+            .DOScale(_lotteryBoxScale * LotteryBoxIdleScaleMultiplier, LotteryBoxIdleHalfCycleDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetUpdate(true)
+            .SetTarget(_lotteryBox);
+    }
+
+    private void EnsureBubbleIdleAnimations()
+    {
+        if (_isLotteryInProgress ||
+            _bubbles == null ||
+            _bubbles.Length == 0 ||
+            _normal == null ||
+            !_normal.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (!_hasCachedAnimationState)
+        {
+            CacheAnimationState();
+        }
+
+        for (int i = 0; i < _bubbles.Length; i++)
+        {
+            RectTransform bubble = _bubbles[i];
+            if (bubble == null || DOTween.IsTweening(bubble, false))
             {
-                PlayIdleDecorationAnimation(
-                    _lotteryBox,
-                    _lotteryBoxScale,
-                    TurnRandom.Range("Lottery.BubbleMoveDuration", 2.5f, 5f));
+                continue;
             }
+
+            Vector2 basePosition = _bubblePositions[i];
+            float amplitude = TurnRandom.Range($"Lottery.BubbleIdle.Amplitude.{i}", 4f, 16f);
+            float halfCycleDuration = TurnRandom.Range($"Lottery.BubbleIdle.HalfCycle.{i}", 0.75f, 2.2f);
+            float startDelay = TurnRandom.Range($"Lottery.BubbleIdle.Phase.{i}", 0f, 2.5f);
+            Vector2 upperPosition = basePosition + new Vector2(0f, amplitude);
+
+            bubble.anchoredPosition = basePosition;
+            bubble.DOAnchorPos(upperPosition, halfCycleDuration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetDelay(startDelay)
+                .SetUpdate(true)
+                .SetTarget(bubble);
+        }
+    }
+
+    private void StopBubbleIdleAnimations()
+    {
+        if (_bubbles == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _bubbles.Length; i++)
+        {
+            if (_bubbles[i] != null)
+            {
+                DOTween.Kill(_bubbles[i]);
+            }
+        }
+    }
+
+    private void EnsureMysIconIdleAnimation()
+    {
+        if (_isLotteryInProgress ||
+            _mys == null ||
+            !_mys.activeInHierarchy ||
+            _mysIcon == null)
+        {
+            return;
+        }
+
+        if (DOTween.IsTweening(_mysIcon, false))
+        {
+            return;
+        }
+
+        if (!_hasCachedAnimationState)
+        {
+            CacheAnimationState();
+        }
+
+        _mysIcon.localScale = _mysIconScale;
+        _mysIcon
+            .DOScale(_mysIconScale * MysIconIdleScaleMultiplier, MysIconIdleHalfCycleDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetUpdate(true)
+            .SetTarget(_mysIcon);
+    }
+
+    private void StopMysIconIdleAnimations()
+    {
+        if (_mysIcon == null)
+        {
+            return;
+        }
+
+        DOTween.Kill(_mysIcon);
+        if (_hasCachedAnimationState)
+        {
+            _mysIcon.localScale = _mysIconScale;
         }
     }
 
@@ -1976,6 +2095,10 @@ public class LotteryView : UIBasePanel
         _lotteryBox.localScale = _lotteryBoxScale;
         _normalButton.transform.localScale = _lotteryButtonScale;
         _mysButton.transform.localScale = _mysButtonScale;
+        if (_mysIcon != null && _hasCachedAnimationState)
+        {
+            _mysIcon.localScale = _mysIconScale;
+        }
 
         for (int i = 0; i < _bubbles.Length; i++)
         {

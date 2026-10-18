@@ -58,6 +58,7 @@ public class BuffItem : MonoBehaviour
 
     private void OpenDetail(cfg.BuffConfig buffConfig, ActiveBuffData activeBuff)
     {
+        UiButtonAudio.PlayClick();
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonItemDetailView,
             UILayer.System,

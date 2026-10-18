@@ -77,6 +77,7 @@ public class CommunityRedundancyItem : MonoBehaviour
 
     private void Select()
     {
+        UiButtonAudio.PlayClick();
         if (_itemConfig != null)
         {
             _selectHandler?.Invoke(_itemConfig);

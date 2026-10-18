@@ -63,6 +63,9 @@ MonoBehaviour:
   _btnSkip: {fileID: 6496661153951508010}
   _commonRewardItemParent: {fileID: 1684944769624840978}
   _textTip: {fileID: 5682434526538362458}
+  _textTitle: {fileID: 4346771760148698340}
+  _chestIcon: {fileID: 4935499750520528665}
+  _chestFX: {fileID: 3324666395519504707}
   _itemDisplayInterval: 0.35
   _simulationCoinIconCount: 8
   _waitForFirstCoinArrival: 1

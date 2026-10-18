@@ -177,6 +177,7 @@ public class GrowView : UIBasePanel
 
     private void TryUpgradeSelectedGrow()
     {
+        UiButtonAudio.PlayClick();
         if (_selectedGrow == null)
         {
             return;

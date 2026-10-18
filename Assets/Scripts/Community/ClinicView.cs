@@ -53,6 +53,12 @@ public class ClinicView : UIBasePanel
         _btnCureItem3.onClick.AddListener(TryPurchaseItem3);
     }
 
+    protected override void InitHandle(OpenUIParam param)
+    {
+        base.InitHandle(param);
+        MissionAPI.Broadcast(new MissionMessage(MissionEventType.ClinicView));
+    }
+
     protected override void ShowHandle()
     {
         base.ShowHandle();

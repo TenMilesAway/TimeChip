@@ -257,6 +257,7 @@ public class PortView : UIBasePanel
 
     private void OnClickBack()
     {
+        UiButtonAudio.PlayClick();
         UIManager.GetInstance().ClosePanel(GetPanelName());
         UIManager.GetInstance().OpenPanel(GlobalDefine.SubwayView);
     }

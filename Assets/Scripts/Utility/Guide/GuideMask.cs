@@ -80,7 +80,11 @@ public sealed class GuideMask : MonoBehaviour
         }
 
         guideMask.targetButton = completionButton;
-        completionButton.onClick.AddListener(guideMask.Close);
+        completionButton.onClick.AddListener(() =>
+        {
+            UiButtonAudio.PlayClick();
+            guideMask.Close();
+        });
         return guideMask;
     }
 

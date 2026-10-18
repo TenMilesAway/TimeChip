@@ -54,12 +54,86 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     public Task<UIBasePanel> EnqueueRewardPanel(OpenUIParam param)
     {
+        if (TryCreateSplitGainAndLossRewardParams(
+                param,
+                out OpenUIParam gainedRewardsParam,
+                out OpenUIParam lostRewardsParam))
+        {
+            Task<UIBasePanel> gainedRewardsTask = EnqueueRewardPanelInternal(gainedRewardsParam);
+            EnqueueRewardPanelInternal(lostRewardsParam);
+            return gainedRewardsTask;
+        }
+
+        return EnqueueRewardPanelInternal(param);
+    }
+
+    private Task<UIBasePanel> EnqueueRewardPanelInternal(OpenUIParam param)
+    {
         TaskCompletionSource<UIBasePanel> completionSource =
             new TaskCompletionSource<UIBasePanel>();
         _rewardPanelQueue.Enqueue(new RewardPanelRequest(param, completionSource));
         RefreshRewardPanelSkipButton();
         OpenNextRewardPanel();
         return completionSource.Task;
+    }
+
+    private static bool TryCreateSplitGainAndLossRewardParams(
+        OpenUIParam param,
+        out OpenUIParam gainedRewardsParam,
+        out OpenUIParam lostRewardsParam)
+    {
+        gainedRewardsParam = null;
+        lostRewardsParam = null;
+        if (!(param?.data is List<CommonRewardItemData> rewards))
+        {
+            return false;
+        }
+
+        List<CommonRewardItemData> gainedRewards = new List<CommonRewardItemData>();
+        List<CommonRewardItemData> lostRewards = new List<CommonRewardItemData>();
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            CommonRewardItemData reward = rewards[i];
+            if (reward == null || reward.itemCount == 0)
+            {
+                continue;
+            }
+
+            if (reward.itemCount < 0)
+            {
+                lostRewards.Add(reward);
+            }
+            else
+            {
+                gainedRewards.Add(reward);
+            }
+        }
+
+        if (gainedRewards.Count == 0 || lostRewards.Count == 0)
+        {
+            return false;
+        }
+
+        gainedRewardsParam = CreateRewardPanelParam(param, gainedRewards, false, null);
+        lostRewardsParam = CreateRewardPanelParam(param, lostRewards, true, param.callback);
+        return true;
+    }
+
+    private static OpenUIParam CreateRewardPanelParam(
+        OpenUIParam source,
+        List<CommonRewardItemData> rewards,
+        bool isPlayerItemLossPresentation,
+        Action callback)
+    {
+        return new OpenUIParam
+        {
+            data = rewards,
+            callback = callback,
+            skipQueuedRewardPanelsCallback = source?.skipQueuedRewardPanelsCallback,
+            rewardsAlreadyGranted = source != null && source.rewardsAlreadyGranted,
+            simulationCoinDisplayStart = source?.simulationCoinDisplayStart,
+            isPlayerItemLossPresentation = isPlayerItemLossPresentation
+        };
     }
 
     private void RefreshRewardPanelSkipButton()

@@ -15,6 +15,7 @@ namespace DS.Enumerations
         Bear,
         Narrator,
         Fox,
-        Deer
+        Deer,
+        Rabbit
     }
 }

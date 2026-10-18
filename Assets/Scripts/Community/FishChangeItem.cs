@@ -73,6 +73,7 @@ public class FishChangeItem : MonoBehaviour
 
     private void OnClickChange()
     {
+        UiButtonAudio.PlayClick();
         if (_itemConfig != null)
         {
             _changeHandler?.Invoke(_itemConfig);

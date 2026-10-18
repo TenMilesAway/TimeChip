@@ -36,6 +36,9 @@ public enum MissionEventType
     MysteryWheelLottery,
     HomePurchase,
     HomeSatisfactionView,
+    CommunityCentreView,
+    ClinicView,
+    AdvanceTurn,
     Item,
     FishCatch,
 }

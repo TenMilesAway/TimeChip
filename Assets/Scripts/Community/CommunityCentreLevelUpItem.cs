@@ -70,6 +70,7 @@ public class CommunityCentreLevelUpItem : MonoBehaviour
 
     private void Select()
     {
+        UiButtonAudio.PlayClick();
         if (_proposalConfig != null)
         {
             _selectHandler?.Invoke(_proposalConfig);

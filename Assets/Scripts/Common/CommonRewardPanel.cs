@@ -9,6 +9,9 @@ public class CommonRewardPanel : UIBasePanel
     [SerializeField] private Button _btnSkip;                               // 跳过按钮
     [SerializeField] private Transform _commonRewardItemParent;             // 通用奖励物品父物体
     [SerializeField] private GameObject _textTip;                           // 提示文本
+    [SerializeField] private GameObject _textTitle;                         // 上方标题文本
+    [SerializeField] private GameObject _chestIcon;                         // 宝箱 Icon
+    [SerializeField] private GameObject _chestFX;                           // 宝箱特效
     [SerializeField, Min(0f)] private float _itemDisplayInterval = 0.35f;   // 奖励物品显示间隔
     [SerializeField, Min(1)] private int _simulationCoinIconCount = 8;      // 模拟币飞行图标数量
     [SerializeField] private bool _waitForFirstCoinArrival = true;          // 是否等待首枚图标抵达后入账
@@ -16,6 +19,7 @@ public class CommonRewardPanel : UIBasePanel
     private readonly List<CommonRewardItem> _rewardItems = new List<CommonRewardItem>(); // 奖励物品
 
     private int _presentationVersion; // 当前展示版本号，用于处理异步加载和展示的顺序问题
+    private bool _isPlayerItemLossPresentation; // 本次展示为扣除物品（负数量）
     private bool _rewardsAlreadyGranted; // 奖励是否已在展示前结算
     private int? _simulationCoinDisplayStart; // 预结算模拟币奖励的动画起始数量
     private System.Action _closeCallback;
@@ -41,15 +45,19 @@ public class CommonRewardPanel : UIBasePanel
         _rewardsAlreadyGranted = param != null && param.rewardsAlreadyGranted;
         _simulationCoinDisplayStart = param?.simulationCoinDisplayStart;
         _closeCallback = param?.callback;
-        ResetPresentation();
 
         if (!(param?.data is List<CommonRewardItemData> rewardDataList))
         {
+            _isPlayerItemLossPresentation = false;
+            ResetPresentation();
             Debug.LogError("CommonRewardPanel 需要 List<CommonRewardItemData> 数据");
             FinishPresentation();
             return;
         }
 
+        _isPlayerItemLossPresentation = param != null &&
+            (param.isPlayerItemLossPresentation || AreAllRewardsPlayerItemLoss(rewardDataList));
+        ResetPresentation();
         InitializeRewardsAsync(rewardDataList, _presentationVersion);
     }
 
@@ -193,7 +201,7 @@ public class CommonRewardPanel : UIBasePanel
         _presentationVersion++;
         DOTween.Kill(this);
         ClearRewardItems();
-        _textTip.SetActive(false);
+        ApplyCelebrationPresentationVisibility(false);
         _closeButton.interactable = false;
         _btnSkip.interactable = false;
     }
@@ -203,9 +211,75 @@ public class CommonRewardPanel : UIBasePanel
     /// </summary>
     private void FinishPresentation()
     {
-        _textTip.SetActive(true);
+        ApplyCelebrationPresentationVisibility(true);
         _closeButton.interactable = true;
         _btnSkip.interactable = true;
+    }
+
+    private static bool AreAllRewardsPlayerItemLoss(List<CommonRewardItemData> rewardDataList)
+    {
+        bool hasLossReward = false;
+        for (int i = 0; i < rewardDataList.Count; i++)
+        {
+            int itemCount = rewardDataList[i].itemCount;
+            if (itemCount == 0)
+            {
+                continue;
+            }
+
+            if (itemCount > 0)
+            {
+                return false;
+            }
+
+            hasLossReward = true;
+        }
+
+        return hasLossReward;
+    }
+
+    /// <summary>获得奖励时显示标题与宝箱装饰，结束后显示提示；扣除物品时隐藏标题与宝箱，提示仍按流程显示。</summary>
+    private void ApplyCelebrationPresentationVisibility(bool presentationFinished)
+    {
+        if (_textTip != null)
+        {
+            _textTip.SetActive(presentationFinished);
+        }
+
+        if (_isPlayerItemLossPresentation)
+        {
+            if (_textTitle != null)
+            {
+                _textTitle.SetActive(false);
+            }
+
+            if (_chestIcon != null)
+            {
+                _chestIcon.SetActive(false);
+            }
+
+            if (_chestFX != null)
+            {
+                _chestFX.SetActive(false);
+            }
+
+            return;
+        }
+
+        if (_textTitle != null)
+        {
+            _textTitle.SetActive(true);
+        }
+
+        if (_chestIcon != null)
+        {
+            _chestIcon.SetActive(true);
+        }
+
+        if (_chestFX != null)
+        {
+            _chestFX.SetActive(true);
+        }
     }
 
     /// <summary>

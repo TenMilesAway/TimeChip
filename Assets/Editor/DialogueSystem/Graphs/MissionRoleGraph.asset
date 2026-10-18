@@ -15,14 +15,26 @@ MonoBehaviour:
   <FileName>k__BackingField: MissionRole
   <Groups>k__BackingField:
   - <ID>k__BackingField: 8eb95753-d3e2-4727-ab30-20110912d1eb
-    <Name>k__BackingField: "\u718A\u5927\u5C71\u5F00\u59CB"
-    <Position>k__BackingField: {x: 170.4, y: 129.6}
+    <Name>k__BackingField: "200\u718A\u5927\u5C71\u5F00\u59CB"
+    <Position>k__BackingField: {x: 171, y: 130}
   - <ID>k__BackingField: a6a4dbc2-82ec-42d6-80cf-6833083cca57
-    <Name>k__BackingField: "\u718A\u5927\u5C71\u5B8C\u6210"
-    <Position>k__BackingField: {x: 170.4, y: 544.8}
+    <Name>k__BackingField: "200\u718A\u5927\u5C71\u5B8C\u6210"
+    <Position>k__BackingField: {x: 171, y: 546}
   - <ID>k__BackingField: ebe1586c-dbd0-4e9d-b67a-c5322855ca14
-    <Name>k__BackingField: "\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
-    <Position>k__BackingField: {x: 168.8, y: 948.8}
+    <Name>k__BackingField: "200\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
+    <Position>k__BackingField: {x: 169, y: 950}
+  - <ID>k__BackingField: 31d7249d-70b8-4bfd-91be-38206f4dc93c
+    <Name>k__BackingField: "201\u793E\u533A\u62A5\u5230"
+    <Position>k__BackingField: {x: 162, y: 1616}
+  - <ID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <Name>k__BackingField: "201\u8FDB\u5165\u793E\u533A"
+    <Position>k__BackingField: {x: 166, y: 2090}
+  - <ID>k__BackingField: a05e11fb-a9b9-4993-b770-403c466c5e84
+    <Name>k__BackingField: "202\u95EE\u8BCA"
+    <Position>k__BackingField: {x: 159, y: 2535}
+  - <ID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <Name>k__BackingField: "202\u8FDB\u5165\u533B\u52A1\u5BA4"
+    <Position>k__BackingField: {x: 162, y: 2985}
   <Nodes>k__BackingField:
   - <ID>k__BackingField: 4f5ffccc-c7a0-4082-95d9-71e6f295fc76
     <Name>k__BackingField: 1
@@ -35,7 +47,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 5
     <SpeakerExpressionPath>k__BackingField: 
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 196, y: 192}
+    <Position>k__BackingField: {x: 196, y: 191}
   - <ID>k__BackingField: 065aefe3-3326-4110-9631-1b9f770f19d4
     <Name>k__BackingField: 2
     <Text>k__BackingField: "\u4E0D\u5BF9\u2026\u2026\u5E94\u8BE5\u5E26\u4E86\u624D\u5BF9\u3002"
@@ -47,7 +59,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_confused]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 858.4, y: 192}
+    <Position>k__BackingField: {x: 858, y: 191}
   - <ID>k__BackingField: 32897cae-c9e3-4923-bcec-8820a7096044
     <Name>k__BackingField: 3
     <Text>k__BackingField: "\u9700\u8981\u5E2E\u5FD9\u5417?"
@@ -59,7 +71,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1200, y: 192}
+    <Position>k__BackingField: {x: 1200, y: 191}
   - <ID>k__BackingField: a63e4cf0-739a-45b3-addf-6edb032fd722
     <Name>k__BackingField: 4
     <Text>k__BackingField: "\u554A\uFF0C\u4E0D\u597D\u610F\u601D\uFF0C\u6321\u5230\u8DEF\u4E86\u5417?\u6211\u5F88\u5FEB\u5C31\u4FEE\u597D\u3002"
@@ -71,7 +83,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_normal]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1491.2, y: 192}
+    <Position>k__BackingField: {x: 1491, y: 191}
   - <ID>k__BackingField: dc535a54-93fc-43c7-bce2-a94730087a19
     <Name>k__BackingField: 5
     <Text>k__BackingField: "\u6CA1\u6709\u3002\u6211\u53EA\u662F\u770B\u4F60\u627E\u4E86\u534A\u5929\uFF0C\u662F\u7F3A\u4EC0\u4E48\u5DE5\u5177\u5417?"
@@ -83,7 +95,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_think]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 2155.2, y: 192}
+    <Position>k__BackingField: {x: 2155, y: 191}
   - <ID>k__BackingField: e23aee87-7560-4f77-8b40-25f7d38e9061
     <Name>k__BackingField: 6
     <Text>k__BackingField: "\u5DE5\u5177\u5012\u662F\u4E0D\u7F3A\uFF0C\u504F\u504F\u5C11\u4E86\u4E00\u5377\u5F3A\u529B\u80F6\u5E26\u3002\u6728\u677F\u8FD8\u6CA1\u56FA\u5B9A\uFF0C\u6211\u73B0\u5728\u4E5F\u4E0D\u65B9\u4FBF\u8D70\u5F00\u3002"
@@ -95,7 +107,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_sad]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 2826.4, y: 193.6}
+    <Position>k__BackingField: {x: 2826, y: 193}
   - <ID>k__BackingField: a4303156-4e78-44b6-84cb-c8a55e4493f5
     <Name>k__BackingField: 7
     <Text>k__BackingField: "\u6211\u6765\u4EE3\u52B3\u5427\uFF0C\u9644\u8FD1\u54EA\u91CC\u80FD\u4E70\u5230?"
@@ -107,7 +119,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_excited]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 3510.4, y: 193.6}
+    <Position>k__BackingField: {x: 3510, y: 193}
   - <ID>k__BackingField: 360d4c97-d787-4ae4-87ad-942a59e42a80
     <Name>k__BackingField: 8
     <Text>k__BackingField: "\u524D\u9762\u65B0\u5F00\u7684\u4FBF\u5229\u5E97\u5E94\u8BE5\u6709\uFF0C\u9EBB\u70E6\u4F60\u4E86\u3002"
@@ -119,7 +131,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_normal]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 4180, y: 193.6}
+    <Position>k__BackingField: {x: 4180, y: 193}
   - <ID>k__BackingField: 012943eb-2e23-49ad-8fce-c63f7f4e1594
     <Name>k__BackingField: 1
     <Text>k__BackingField: "\u662F\u8FD9\u79CD\u5F3A\u529B\u80F6\u5E26\u5417?"
@@ -131,7 +143,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 196, y: 607.2}
+    <Position>k__BackingField: {x: 196, y: 607}
   - <ID>k__BackingField: f7e2cfec-5a8b-4d11-8dc2-f5125b2a22b2
     <Name>k__BackingField: 2
     <Text>k__BackingField: "\u5BF9\uFF0C\u5C31\u662F\u5B83\u3002\u8C22\u8C22\u4F60\uFF0C\u7B49\u6211\u4E00\u4E0B\u3002"
@@ -143,7 +155,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_happy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 484.8, y: 607.2}
+    <Position>k__BackingField: {x: 485, y: 607}
   - <ID>k__BackingField: 5d6ffaf0-d821-4bd0-a8a8-3affec038ce2
     <Name>k__BackingField: 3
     <Text>k__BackingField: "(\u718A\u5927\u5C71\u63A5\u8FC7\u80F6\u5E26\uFF0C\u5C0F\u5FC3\u56FA\u5B9A\u4F4F\u6728\u677F\uFF0C\u968F\u540E\u91CD\u65B0\u62E7\u7D27\u8FDE\u63A5\u5904\u7684\u87BA\u4E1D)"
@@ -155,7 +167,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 5
     <SpeakerExpressionPath>k__BackingField: 
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1144.8, y: 608.8}
+    <Position>k__BackingField: {x: 1145, y: 609}
   - <ID>k__BackingField: 319d52bf-fe8c-419b-8a8c-aa6861624c45
     <Name>k__BackingField: 1
     <Text>k__BackingField: "\u95E8\u53E3\u7684\u611F\u5E94\u94C3\u54CD\u4E86\u4E00\u58F0\u3002\u67DC\u53F0\u540E\u7684\u72D0\u72F8\u62AC\u8D77\u5934\uFF0C\u76EE\u5149\u5728\u6211\u548C\u8D27\u67B6\u4E4B\u95F4\u8FC5\u901F\u8F6C\u4E86\u4E00\u5708\u3002"
@@ -167,7 +179,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 5
     <SpeakerExpressionPath>k__BackingField: 
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 194.4, y: 1011.99994}
+    <Position>k__BackingField: {x: 194, y: 1012}
   - <ID>k__BackingField: 5fe643a3-6d11-41e6-925c-f84e62caf117
     <Name>k__BackingField: 3
     <Text>k__BackingField: "\u4F60\u597D\uFF0C\u6211\u60F3\u4E70\u4E00\u5377\u80F6\u5E26\u3002"
@@ -179,7 +191,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_hi]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1534.4, y: 1015.2}
+    <Position>k__BackingField: {x: 1534, y: 1015}
   - <ID>k__BackingField: 4179fb54-fb3c-4ae2-8b45-d75cbe9b2207
     <Name>k__BackingField: 2
     <Text>k__BackingField: "\u6B22\u8FCE\u5149\u4E34\u3002\u7B2C\u4E00\u6B21\u6765\u5427?\u9700\u8981\u4EC0\u4E48\u53EF\u4EE5\u95EE\u6211\uFF0C\u81EA\u5DF1\u4E71\u7FFB\u4E5F\u884C\u2014\u2014\u53EA\u8981\u6700\u540E\u8BB0\u5F97\u7ED3\u8D26\u3002"
@@ -191,7 +203,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 6
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 863.2, y: 1013.60004}
+    <Position>k__BackingField: {x: 863, y: 1014}
   - <ID>k__BackingField: 384faf0a-26ca-47d6-a4c8-b39f3af4e467
     <Name>k__BackingField: 4
     <Text>k__BackingField: "\u4FEE\u6C34\u7BA1\u3001\u8865\u7EB8\u7BB1?\u8FD8\u662F......"
@@ -203,7 +215,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 6
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_confused]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1823.2, y: 1016.8}
+    <Position>k__BackingField: {x: 1823, y: 1017}
   - <ID>k__BackingField: acbebd1e-8d62-487a-bc17-7906f4f9b234
     <Name>k__BackingField: 9
     <Text>k__BackingField: "\u8FD9\u662F\u80F6\u5E26\u7684\u94B1......\u987A\u4FBF\uFF0C\u6211\u53EB\u718A\u5927\u5C71\uFF0C\u662F\u793E\u533A\u7684\u7EF4\u4FEE\u5DE5\u3002"
@@ -215,7 +227,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_normal]
     <Reward>k__BackingField: 101,100
-    <Position>k__BackingField: {x: 4868.8, y: 193.6}
+    <Position>k__BackingField: {x: 4869, y: 193}
   - <ID>k__BackingField: c662d9b9-3460-41f3-997b-1e3abdf1cd38
     <Name>k__BackingField: 10
     <Text>k__BackingField: "\u6211\u53EB\u732B\u5927\uFF0C\u4EA4\u7ED9\u6211\u5427!"
@@ -227,7 +239,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_thumb]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 5557.6, y: 193.6}
+    <Position>k__BackingField: {x: 5558, y: 193}
   - <ID>k__BackingField: af972b2c-bebb-4c5a-b33e-1954f6a255f0
     <Name>k__BackingField: 5
     <Text>k__BackingField: "\u90FD\u4E0D\u662F\uFF0C\u662F\u718A\u5927\u5C71\u8BA9\u6211\u6765\u7684\u3002"
@@ -239,7 +251,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_smile]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 2148, y: 1016.8}
+    <Position>k__BackingField: {x: 2148, y: 1017}
   - <ID>k__BackingField: 9f8388d1-279c-4930-ba10-a6b3ff8da22b
     <Name>k__BackingField: 6
     <Text>k__BackingField: "\u539F\u6765\u662F\u5927\u5C71\u5E08\u5085\uFF0C\u90A3\u5F97\u7528\u5F3A\u529B\u6B3E\uFF0C\u8BA9\u6211\u627E\u627E......\u627E\u5230\u5566\uFF0C\u7ED9\u4F60\uFF01\u627F\u8499\u7167\u987E\uFF0C100\u6A21\u62DF\u5E01~"
@@ -251,7 +263,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 6
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
     <Reward>k__BackingField: 5102,1
-    <Position>k__BackingField: {x: 2823.2, y: 1016.8}
+    <Position>k__BackingField: {x: 2823, y: 1017}
   - <ID>k__BackingField: a0f6427d-ef20-4649-be25-410035db8722
     <Name>k__BackingField: 7
     <Text>k__BackingField: "\u7ED9\u60A8\uFF01"
@@ -263,7 +275,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
     <Reward>k__BackingField: 101,-100
-    <Position>k__BackingField: {x: 3494.4, y: 1018.39996}
+    <Position>k__BackingField: {x: 3494, y: 1018}
   - <ID>k__BackingField: 0f702714-1adc-4fb5-8050-b70c4512e785
     <Name>k__BackingField: 8
     <Text>k__BackingField: "\u8C22\u8C22~\u6211\u53EB\u72D0\u5C0F\u6EE1\uFF0C\u662F\u8FD9\u5BB6\u5E97\u7684\u8001\u677F\u3002\u793E\u533A\u91CC\u7684\u65E5\u7528\u54C1\u3001\u98DF\u7269\u548C\u4E00\u4E9B\u4E0D\u592A\u5E38\u89C1\u7684\u5C0F\u4E1C\u897F\uFF0C\u8FD9\u91CC\u57FA\u672C\u90FD\u6709\uFF0C\u6709\u7A7A\u6765\u901B\u901B\u5662\uFF01"
@@ -275,7 +287,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 6
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_happy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 3784.8, y: 1019.99994}
+    <Position>k__BackingField: {x: 3785, y: 1020}
   - <ID>k__BackingField: 448485f1-c6c1-4ff2-9f6c-85dd4fe6754e
     <Name>k__BackingField: 4
     <Text>k__BackingField: "\u597D\u4E86\uFF0C\u8FD9\u6B21\u5C31\u7B97\u522E\u5927\u98CE\u4E5F\u4E0D\u4F1A\u5012\u4E86\uFF01"
@@ -287,7 +299,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 4
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_happy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1823.2, y: 610.39996}
+    <Position>k__BackingField: {x: 1823, y: 610}
   - <ID>k__BackingField: 89d96b7a-e787-44e0-9331-83ae909582a6
     <Name>k__BackingField: 5
     <Text>k__BackingField: "\u4ECA\u5929\u591A\u8C22\u4F60\u4E86\uFF0C\u732B\u5927\u3002\u4EE5\u540E\u9047\u5230\u9700\u8981\u4FEE\u7406\u7684\u4E1C\u897F\uFF0C\u53EF\u4EE5\u6765\u627E\u6211\u3002\u4E0B\u6B21\u6211\u5C3D\u91CF\u628A\u5DE5\u5177\u5E26\u9F50\u3002"
@@ -312,14 +324,270 @@ MonoBehaviour:
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_shy]
     <Reward>k__BackingField: 
     <Position>k__BackingField: {x: 3160, y: 612}
+  - <ID>k__BackingField: 76d2590f-ed69-49a8-8854-5d13ece73df4
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u770B\u6765\u5F97\u8D70\u4E00\u8D9F\u4E86\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 31d7249d-70b8-4bfd-91be-38206f4dc93c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1549, y: 1679}
+  - <ID>k__BackingField: 20e1de49-00ab-463e-b12f-b316b70f5171
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u642C\u8FDB\u65B0\u5BB6\u7684\u7B2C\u4E8C\u5929\uFF0C\u6211\u5728\u95E8\u7F1D\u91CC\u53D1\u73B0\u4E86\u4E00\u5F20\u793E\u533A\u901A\u77E5\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 1a8369df-bc26-48fa-8bbe-222561b593e2
+    <GroupID>k__BackingField: 31d7249d-70b8-4bfd-91be-38206f4dc93c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 5
+    <SpeakerExpressionPath>k__BackingField: 
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 187, y: 1678}
+  - <ID>k__BackingField: 2f849a21-d489-4f97-a57d-deee5ca45db6
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u4F60\u597D\uFF0C\u6B22\u8FCE\u6765\u5230\u793E\u533A\u4E2D\u5FC3\u3002\u770B\u7740\u6709\u4E9B\u9762\u751F\uFF0C\u662F\u521A\u642C\u6765\u7684\u4F4F\u6237\u5427?"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 5fd38511-9c11-4a24-acbf-c8cb4ebd0c7b
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 191, y: 2151}
+  - <ID>k__BackingField: 5fd38511-9c11-4a24-acbf-c8cb4ebd0c7b
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u60A8\u597D\uFF0C\u662F\u7684\u662F\u7684\uFF0C\u6211\u6765\u529E\u7406\u767B\u8BB0\u3002\u6211\u8FD8\u62C5\u5FC3\u81EA\u5DF1\u8D70\u9519\u4E86"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: e3615772-58e3-42c1-8ecf-4991406d75d2
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 868, y: 2151}
+  - <ID>k__BackingField: e3615772-58e3-42c1-8ecf-4991406d75d2
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u6CA1\u6709\u8D70\u9519\u3002\u901A\u5E38\u4F1A\u4E3B\u52A8\u63A8\u95E8\u8FDB\u6765\u7684\uFF0C\u4E0D\u9002\u65B0\u4F4F\u6237\uFF0C\u5C31\u662F\u6765\u53CD\u6620\u697C\u4E0A\u534A\u591C\u62D6\u6905\u5B50\u7684\u5C45\u6C11\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 8748abeb-a794-4d6d-a22b-f7e3ccc32e02
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1532, y: 2152}
+  - <ID>k__BackingField: 8748abeb-a794-4d6d-a22b-f7e3ccc32e02
+    <Name>k__BackingField: 4
+    <Text>k__BackingField: "\u6211\u53EB\u9E7F\u4F2F\u5B89\uFF0C\u8FD9\u91CC\u7684\u793E\u533A\u7F51\u683C\u5458\u3002\u63A5\u4E0B\u6765\uFF0C\u8BF7\u4F60\u586B\u4E0B\u8FD9\u5F20\u8868\u5427\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 81dba643-c185-46b9-aa51-046bee9479b5
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2214, y: 2153}
+  - <ID>k__BackingField: 81dba643-c185-46b9-aa51-046bee9479b5
+    <Name>k__BackingField: 5
+    <Text>k__BackingField: "\u8FD9\u4E48\u591A\uFF01\uFF01\uFF01\u642C\u4E2A\u5BB6\u8981\u586B\u7684\u4E1C\u897F\uFF0C\u6BD4\u6211\u4EE5\u524D\u5165\u804C\u8FD8\u591A\uFF01"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: d5086a87-d5f5-46cb-a5d2-1949a552a396
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_oh]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2881, y: 2153}
+  - <ID>k__BackingField: d5086a87-d5f5-46cb-a5d2-1949a552a396
+    <Name>k__BackingField: 6
+    <Text>k__BackingField: "\u653E\u5FC3\uFF0C\u6211\u4EEC\u8FD9\u91CC\u4E0D\u4F1A\u8BA9\u4F60\u505A\u4E94\u8F6E\u9762\u8BD5\uFF0C\u4E5F\u4E0D\u4F1A\u95EE\u4F60\u672A\u6765\u4E94\u5E74\u7684\u89C4\u5212\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 3b15e4b9-b64d-44e2-87a7-95544d23a75d
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_happy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 3559, y: 2153}
+  - <ID>k__BackingField: 3b15e4b9-b64d-44e2-87a7-95544d23a75d
+    <Name>k__BackingField: 7
+    <Text>k__BackingField: ......
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 5709886d-1632-466c-9fed-560b0b7ea8ee
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 4226, y: 2153}
+  - <ID>k__BackingField: 5709886d-1632-466c-9fed-560b0b7ea8ee
+    <Name>k__BackingField: 8
+    <Text>k__BackingField: "\u5BF9\u4E86\uFF0C\u8FD9\u662F\u7ED9\u65B0\u4EBA\u7684\u89C1\u9762\u793C\u3002\u793E\u533A\u8FD8\u4F1A\u53D1\u5E03\u4E00\u4E9B\u9700\u6C42\u4EFB\u52A1\uFF0C\u5B8C\u6210\u7684\u540C\u65F6\u4F1A\u5F97\u5230\u56DE\u8D60\u5662~\u6709\u65F6\u95F4\u53EF\u4EE5\u6765\u770B\u770B\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: d94b563e-5fb7-4b05-8afd-a50d438fbd35
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 3010,1
+    <Position>k__BackingField: {x: 4525, y: 2154}
+  - <ID>k__BackingField: 1a8369df-bc26-48fa-8bbe-222561b593e2
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u201C\u8BF7\u65B0\u4F4F\u6237\u524D\u5F80\u793E\u533A\u4E2D\u5FC3\u529E\u7406\u767B\u8BB0\u201D\uFF0C\u8FD9\u4E0B\u8FB9\u8FD8\u753B\u4E86\u4E00\u53EA\u7B11\u5F97\u5341\u5206\u6148\u7965\u7684\u5C0F\u9E7F\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 76d2590f-ed69-49a8-8854-5d13ece73df4
+    <GroupID>k__BackingField: 31d7249d-70b8-4bfd-91be-38206f4dc93c
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_think]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 868, y: 1678}
+  - <ID>k__BackingField: e747736d-a855-4181-b788-d0cb4d12f147
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u8FDE\u7EED\u5FD9\u4E86\u4E24\u5929\u4EE5\u540E\uFF0C\u6211\u53D1\u73B0\u8EAB\u4F53\u6709\u4E9B\u4E0D\u9002\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: b890fd84-3075-4e16-8ba7-46746b3fc88a
+    <GroupID>k__BackingField: a05e11fb-a9b9-4993-b770-403c466c5e84
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 5
+    <SpeakerExpressionPath>k__BackingField: 
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 184, y: 2596}
+  - <ID>k__BackingField: b890fd84-3075-4e16-8ba7-46746b3fc88a
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u5934\u6709\u70B9\u6655\uFF0C\u80A9\u8180\u4E5F\u9178......\u96BE\u9053\u8FD9\u5C31\u662F\u91CD\u5C31\u4E1A\u7684\u4EE3\u4EF7?"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: d50fee80-4ac8-4720-9cc0-1f7f17f88538
+    <GroupID>k__BackingField: a05e11fb-a9b9-4993-b770-403c466c5e84
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 868, y: 2597}
+  - <ID>k__BackingField: d50fee80-4ac8-4720-9cc0-1f7f17f88538
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u8EAB\u4F53\u4F3C\u4E4E\u6709\u4E9B\u4E0D\u9002\uFF0C\u8BF7\u5BBF\u4E3B\u53BB\u793E\u533A\u533B\u52A1\u5BA4\u770B\u770B\u5427\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: a05e11fb-a9b9-4993-b770-403c466c5e84
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 3
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1532, y: 2598}
+  - <ID>k__BackingField: 01f585d7-542c-4965-887a-0ae148a0204f
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u4F60\u597D\uFF0C\u8BF7\u5750\u3002\u54EA\u91CC\u4E0D\u8212\u670D?"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: ac9ec7c3-d471-44de-b43b-050488b086ce
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 8
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[tu_anning_doctor_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 187, y: 3047}
+  - <ID>k__BackingField: ac9ec7c3-d471-44de-b43b-050488b086ce
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u5934\u6655\u3001\u80A9\u9178\uFF0C\u8FD8\u6709\u4E00\u70B9\u6CA1\u529B\u6C14\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 50a69ded-fbf6-4f02-9a0c-bea09ad0e5db
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sweat]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 868, y: 3048}
+  - <ID>k__BackingField: 50a69ded-fbf6-4f02-9a0c-bea09ad0e5db
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u6700\u8FD1\u662F\u4E0D\u662F\u8FDE\u7EED\u505A\u4E86\u4E0D\u5C11\u4F53\u529B\u6D3B?"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: b3185d6d-cd60-4dbc-b96c-e73d3ea6db81
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 8
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[tu_anning_confused]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1532, y: 3049}
+  - <ID>k__BackingField: b3185d6d-cd60-4dbc-b96c-e73d3ea6db81
+    <Name>k__BackingField: 4
+    <Text>k__BackingField: "\u76EE\u524D\u53EA\u662F\u75B2\u52B3\u8FC7\u5EA6\uFF0C\u95EE\u9898\u4E0D\u5927\u3002\u597D\u597D\u4F11\u606F\u3001\u6309\u65F6\u5403\u996D\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 7b04b0fd-8c01-4b96-ae48-e2ea9d9b8a53
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 8
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[tu_anning_doctor_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2208, y: 3050}
+  - <ID>k__BackingField: 04bdfd20-75c9-483b-9bdf-5dc865918507
+    <Name>k__BackingField: 6
+    <Text>k__BackingField: "\u6211\u53EB\u5154\u5B89\u5B81\uFF0C\u662F\u8FD9\u91CC\u7684\u533B\u751F\u3002\u4EE5\u540E\u53EF\u4EE5\u6BCF\u4E2A\u6708\u90FD\u6765\u505A\u4E00\u6B21\u5065\u5EB7\u68C0\u67E5\uFF0C\u5BF9\u8EAB\u4F53\u597D\u4E9B\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 4d4c5ee9-72f8-42f6-9076-571c845ddc6c
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 8
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[tu_anning_doctor_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 3175, y: 3051}
+  - <ID>k__BackingField: 7b04b0fd-8c01-4b96-ae48-e2ea9d9b8a53
+    <Name>k__BackingField: 5
+    <Text>k__BackingField: "\u597D\u7684\u597D\u7684\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 04bdfd20-75c9-483b-9bdf-5dc865918507
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_sad]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2891, y: 3051}
+  - <ID>k__BackingField: 4d4c5ee9-72f8-42f6-9076-571c845ddc6c
+    <Name>k__BackingField: 7
+    <Text>k__BackingField: "\u597D\u561E\uFF0C\u8C22\u8C22\u5154\u533B\u751F!"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 891d6c54-e5e0-4b86-a79a-a0a176994849
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_happy]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 3847, y: 3052}
   <OldGroupNames>k__BackingField:
-  - "\u718A\u5927\u5C71\u5F00\u59CB"
-  - "\u718A\u5927\u5C71\u5B8C\u6210"
-  - "\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
+  - "200\u718A\u5927\u5C71\u5F00\u59CB"
+  - "200\u718A\u5927\u5C71\u5B8C\u6210"
+  - "200\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
+  - "201\u793E\u533A\u62A5\u5230"
+  - "201\u8FDB\u5165\u793E\u533A"
+  - "202\u95EE\u8BCA"
+  - "202\u8FDB\u5165\u533B\u52A1\u5BA4"
   <OldUngroupedNodeNames>k__BackingField: []
   <OldGroupedNodeNames>k__BackingField:
     list:
-    - Key: "\u718A\u5927\u5C71\u5F00\u59CB"
+    - Key: "200\u718A\u5927\u5C71\u5F00\u59CB"
       Value:
       - 1
       - 2
@@ -331,7 +599,7 @@ MonoBehaviour:
       - 8
       - 9
       - 10
-    - Key: "\u718A\u5927\u5C71\u5B8C\u6210"
+    - Key: "200\u718A\u5927\u5C71\u5B8C\u6210"
       Value:
       - 1
       - 2
@@ -339,7 +607,7 @@ MonoBehaviour:
       - 4
       - 5
       - 6
-    - Key: "\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
+    - Key: "200\u718A\u5927\u5C71\u8FDB\u5165\u4FBF\u5229\u5E97"
       Value:
       - 1
       - 3
@@ -349,3 +617,32 @@ MonoBehaviour:
       - 6
       - 7
       - 8
+    - Key: "201\u793E\u533A\u62A5\u5230"
+      Value:
+      - 3
+      - 1
+      - 2
+    - Key: "201\u8FDB\u5165\u793E\u533A"
+      Value:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+    - Key: "202\u95EE\u8BCA"
+      Value:
+      - 1
+      - 2
+      - 3
+    - Key: "202\u8FDB\u5165\u533B\u52A1\u5BA4"
+      Value:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 6
+      - 5
+      - 7

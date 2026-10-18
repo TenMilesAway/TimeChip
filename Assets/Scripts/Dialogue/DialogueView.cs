@@ -28,9 +28,12 @@ public class DialogueView : UIBasePanel
     private const string BearAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[xiong_dashan_normal]";
     private const string FoxAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]";
     private const string DeerAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]";
+    private const string RabbitAvatarPath =
+        "Assets/Art/Role/SpriteAtlas.spriteatlasv2[tu_anning_doctor_avatar]";
     private const string SystemAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]";
     private const string RoleSpriteAtlasPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2";
-    private const float BearAvatarScale = 1.3f;
+    private const float LargeAvatarScale = 1.3f;
+    private const float DaughterAvatarScale = 0.8f;
 
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtDialogue;
@@ -378,6 +381,8 @@ public class DialogueView : UIBasePanel
                 return "狐小满";
             case DSDialogueSpeaker.Deer:
                 return "鹿伯安";
+            case DSDialogueSpeaker.Rabbit:
+                return "兔安宁";
             case DSDialogueSpeaker.System:
                 return "系统";
             case DSDialogueSpeaker.Narrator:
@@ -404,9 +409,7 @@ public class DialogueView : UIBasePanel
         }
 
         _imgAvatar.gameObject.SetActive(true);
-        _imgAvatar.rectTransform.localScale = speaker == DSDialogueSpeaker.Bear
-            ? Vector3.one * BearAvatarScale
-            : Vector3.one;
+        _imgAvatar.rectTransform.localScale = GetAvatarScale(speaker);
         string avatarPath = string.IsNullOrEmpty(expressionPath)
             ? GetAvatarPath(speaker)
             : NormalizeExpressionReference(expressionPath);
@@ -584,6 +587,21 @@ public class DialogueView : UIBasePanel
         _isTyping = false;
     }
 
+    private static Vector3 GetAvatarScale(DSDialogueSpeaker speaker)
+    {
+        if (speaker == DSDialogueSpeaker.Bear || speaker == DSDialogueSpeaker.Deer)
+        {
+            return Vector3.one * LargeAvatarScale;
+        }
+
+        if (speaker == DSDialogueSpeaker.Daughter)
+        {
+            return Vector3.one * DaughterAvatarScale;
+        }
+
+        return Vector3.one;
+    }
+
     private static string GetAvatarPath(DSDialogueSpeaker speaker)
     {
         switch (speaker)
@@ -598,6 +616,8 @@ public class DialogueView : UIBasePanel
                 return FoxAvatarPath;
             case DSDialogueSpeaker.Deer:
                 return DeerAvatarPath;
+            case DSDialogueSpeaker.Rabbit:
+                return RabbitAvatarPath;
             case DSDialogueSpeaker.System:
                 return SystemAvatarPath;
             default:

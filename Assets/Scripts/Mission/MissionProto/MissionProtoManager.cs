@@ -93,6 +93,18 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireHomeSatisfactionView(target);
         }
+        else if (missionConfig.Message == "CommunityCentreView")
+        {
+            missionRequire = new MissionRequireCommunityCentreView(target);
+        }
+        else if (missionConfig.Message == "ClinicView")
+        {
+            missionRequire = new MissionRequireClinicView(target);
+        }
+        else if (missionConfig.Message == "AdvanceTurn")
+        {
+            missionRequire = new MissionRequireAdvanceTurn(target);
+        }
         else if (isFishCatchMission)
         {
             if (targetItemId > 0 && targetItemCount > 0)

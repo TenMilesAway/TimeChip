@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 11
   m_EditorClassIdentifier: 
   <DialogueName>k__BackingField: 11
-  <Text>k__BackingField: "\u8FD9\u6837\u4E0B\u53BB\u4E0D\u662F\u529E\u6CD5\uFF0C\u6211\u81F3\u5C11\u5F97\u51FA\u53BB\u627E\u4EFD\u96F6\u5DE5\u3002"
+  <Text>k__BackingField: "\u8FD9\u6837\u4E0B\u53BB\u4E0D\u662F\u529E\u6CD5\uFF0C\u54B1\u4EEC\u521A\u642C\u6765\u8FD9\u91CC\uFF0C\u5404\u79CD\u5730\u65B9\u90FD\u9700\u8981\u5F00\u9500\uFF0C\u6211\u81F3\u5C11\u5F97\u51FA\u53BB\u627E\u4EFD\u96F6\u5DE5\u3002"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
     <NextDialogue>k__BackingField: {fileID: 11400000, guid: cfdd0d7a6e7a2d34695bb6c8937317cb, type: 2}

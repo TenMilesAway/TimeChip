@@ -66,11 +66,16 @@ public class CommonChoosePanel : UIBasePanel
             : data.CancelText;
 
         _btnConfirm.onClick.RemoveAllListeners();
-        _btnConfirm.onClick.AddListener(() => data.ConfirmAction?.Invoke());
+        _btnConfirm.onClick.AddListener(() =>
+        {
+            UiButtonAudio.PlayClick();
+            data.ConfirmAction?.Invoke();
+        });
 
         _btnCancel.onClick.RemoveAllListeners();
         _btnCancel.onClick.AddListener(() =>
         {
+            UiButtonAudio.PlayClick();
             data.CancelAction?.Invoke();
             UIManager.GetInstance().ClosePanel(GetPanelName());
         });

@@ -34,7 +34,10 @@ public class CommonConfirmPanel : UIBasePanel
         _txtDetail.text = data.Detail;
         _btnConfirm.onClick.RemoveAllListeners();
         _btnConfirm.onClick.AddListener(() =>
-            UIManager.GetInstance().ClosePanel(GetPanelName()));
+        {
+            UiButtonAudio.PlayClick();
+            UIManager.GetInstance().ClosePanel(GetPanelName());
+        });
     }
 
     protected override void OnDestroy()

@@ -26,18 +26,18 @@
   {
     "id": "Clinic",
     "name": "医务室",
-    "unlockMissionId": 1003,
+    "unlockMissionId": 0,
     "unlockItemId": 0,
-    "unlockAge": 0,
-    "unlockMonth": 0
+    "unlockAge": 22,
+    "unlockMonth": 3
   },
   {
     "id": "CommunityCentre",
     "name": "社区中心",
-    "unlockMissionId": 1003,
+    "unlockMissionId": 0,
     "unlockItemId": 0,
-    "unlockAge": 0,
-    "unlockMonth": 0
+    "unlockAge": 22,
+    "unlockMonth": 2
   },
   {
     "id": "Subway",

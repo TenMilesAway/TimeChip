@@ -89,6 +89,7 @@ public class SettingView : UIBasePanel
 
     private void OnBackButtonClicked()
     {
+        UiButtonAudio.PlayClick();
         if (Launcher.Instance == null)
         {
             UIManager.GetInstance().ClosePanel(GetPanelName());

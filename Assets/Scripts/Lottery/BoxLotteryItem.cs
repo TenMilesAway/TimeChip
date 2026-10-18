@@ -93,6 +93,7 @@ public class BoxLotteryItem : MonoBehaviour
 
     private void Select()
     {
+        UiButtonAudio.PlayClick();
         Selected?.Invoke(this);
     }
 }
