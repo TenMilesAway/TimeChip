@@ -36,6 +36,7 @@ public class GlobalDefine
     public const string CommonConfirmPanel = "Assets/Art/Common/Prefab/CommonConfirmPanel.prefab";         // System
     public const string CommonChoosePanel = "Assets/Art/Common/Prefab/CommonChoosePanel.prefab";           // System
     public const string CommonUsePanel = "Assets/Art/Common/Prefab/CommonUsePanel.prefab";                 // System
+    public const string GameStamp = "Assets/Art/LittleGame/Prefab/GameStamp.prefab";                       // System
 
 
     // Item
@@ -46,4 +47,5 @@ public class GlobalDefine
     public const string MainMenuMissionItem = "Assets/Art/MainMenu/Prefab/MainMenuMissionItem.prefab";
     public const string ContainerItem = "Assets/Art/Community/Prefab/ContainerItem.prefab";
     public const string PortContainerItem = "Assets/Art/Community/Prefab/PortContainerItem.prefab";
+    public const string GameStampFile = "Assets/Art/LittleGame/Prefab/GameStampFile.prefab";
 }

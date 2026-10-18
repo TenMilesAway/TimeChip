@@ -9,16 +9,23 @@ public class MainMenuMissionItem : MonoBehaviour
     private const float CompleteBreathingDuration = 0.8f;
     private const float CompleteBreathingScale = 1.15f;
 
-    [SerializeField] private Text _txtTitle;         // 任务名称
-    [SerializeField] private Text _txtDes;           // 任务描述
-    [SerializeField] private Text _txtProgress;      // 任务进度, 例: 1 / 1
-    [SerializeField] private Image _imgComplete;     // 完成图标
-    [SerializeField] private Button _btnComplete;    // 任务完成按钮
-    [SerializeField] private Slider _sliderProgress; // 任务进度条
-    [SerializeField] private GameObject _goCompleteGroup; // 完成
+    [SerializeField] private Text _txtTitle;
+    [SerializeField] private Text _txtDes;
+    [SerializeField] private Text _txtProgress;
+    [SerializeField] private Image _imgComplete;
+    [SerializeField] private Button _btnComplete;
+    [SerializeField] private Slider _sliderProgress;
+    [SerializeField] private GameObject _goCompleteGroup;
+    [SerializeField] private GameObject _goGo;
+    [SerializeField] private Button _btnGo;
 
     private Vector3 _completeIconInitialScale;
     private bool _hasCompleteIconInitialScale;
+
+    private void Awake()
+    {
+        EnsureGoButton();
+    }
 
     public void SetData(
         cfg.Mission missionConfig,
@@ -32,6 +39,7 @@ public class MainMenuMissionItem : MonoBehaviour
             return;
         }
 
+        EnsureGoButton();
         _txtTitle.text = missionConfig.Name;
         _txtDes.text = missionConfig.Desc;
         if (MissionAPI.TryGetMissionTarget(
@@ -80,6 +88,22 @@ public class MainMenuMissionItem : MonoBehaviour
             StopCompleteBreathingAnimation();
         }
 
+        bool showGoButton = MissionGoActions.ShouldShowGoButton(missionConfig, mission);
+        if (_goGo != null)
+        {
+            _goGo.SetActive(showGoButton);
+        }
+
+        if (_btnGo != null)
+        {
+            _btnGo.onClick.RemoveAllListeners();
+            _btnGo.interactable = showGoButton;
+            if (showGoButton)
+            {
+                _btnGo.onClick.AddListener(() => MissionGoActions.TryRunGoAction(missionConfig));
+            }
+        }
+
         gameObject.SetActive(true);
     }
 
@@ -89,12 +113,50 @@ public class MainMenuMissionItem : MonoBehaviour
         _btnComplete.onClick.RemoveAllListeners();
         _btnComplete.interactable = false;
         _goCompleteGroup.SetActive(false);
+        if (_goGo != null)
+        {
+            _goGo.SetActive(false);
+        }
+
+        if (_btnGo != null)
+        {
+            _btnGo.onClick.RemoveAllListeners();
+            _btnGo.interactable = false;
+        }
+
         gameObject.SetActive(false);
     }
 
     private void OnDisable()
     {
         StopCompleteBreathingAnimation();
+    }
+
+    private void EnsureGoButton()
+    {
+        if (_btnGo != null || _goGo == null)
+        {
+            return;
+        }
+
+        _btnGo = _goGo.GetComponent<Button>();
+        if (_btnGo != null)
+        {
+            return;
+        }
+
+        Image clickImage = _goGo.GetComponentInChildren<Image>(true);
+        if (clickImage == null)
+        {
+            return;
+        }
+
+        _btnGo = clickImage.GetComponent<Button>();
+        if (_btnGo == null)
+        {
+            _btnGo = clickImage.gameObject.AddComponent<Button>();
+            _btnGo.targetGraphic = clickImage;
+        }
     }
 
     private void PlayCompleteBreathingAnimation()

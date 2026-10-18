@@ -41,4 +41,5 @@ public enum MissionEventType
     AdvanceTurn,
     Item,
     FishCatch,
+    GameStamp,
 }

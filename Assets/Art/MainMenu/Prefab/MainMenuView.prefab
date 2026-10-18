@@ -1149,6 +1149,7 @@ MonoBehaviour:
   _inventoryButton: {fileID: 7461574460553648334}
   _settingButton: {fileID: 4738462060727990303}
   _saveButton: {fileID: 7604707443055531197}
+  _gameStampButton: {fileID: 0}
   _buffParent: {fileID: 3026864693955986365}
   _goLoad: {fileID: 1885304055932669627}
   _goBottom: {fileID: 1463995235120349186}

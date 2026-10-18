@@ -16,6 +16,8 @@ public static class MissionAPI
         new Dictionary<string, PlayerMissionData>();
     private const int RandomMissionId = 3001;
     private const int RandomFishMissionId = 3004;
+    private const int RandomStampMissionId = 3005;
+
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
     private const string UnlockedHomeIdRangeCountPrefix = "unlockedHomeIdRangeCount:";
@@ -29,6 +31,15 @@ public static class MissionAPI
     private static bool _hasBroadcastSimulationCoinBalance;
     private static int _lastBroadcastSimulationCoinBalance;
 
+    /// <summary>离开游戏或重新初始化前清空运行时任务，避免串档。</summary>
+    public static void Shutdown()
+    {
+        UnsubscribePlayerEvents();
+        _isInitialized = false;
+        _hasBroadcastSimulationCoinBalance = false;
+        ClearRuntimeMissionsWithoutSave();
+    }
+
     /// <summary>由玩家存档初始化任务，并恢复未完成任务。</summary>
     public static void Initialize(PlayerInfoManager playerInfoManager, bool isNewGame)
     {
@@ -37,18 +48,29 @@ public static class MissionAPI
             throw new ArgumentNullException(nameof(playerInfoManager));
         }
 
-        UnsubscribePlayerEvents();
+        Shutdown();
         _playerInfoManager = playerInfoManager;
-        _hasBroadcastSimulationCoinBalance = false;
         _playerInfoManager.TurnAdvanced += OnTurnAdvanced;
         _playerInfoManager.PlayerInfoChanged += OnPlayerInfoChanged;
         MissionManager.AddComponent(SaveComponent);
         _isInitialized = true;
 
+        if (isNewGame)
+        {
+            _isSynchronizingMissions = true;
+            try
+            {
+                _playerInfoManager.SetActiveMissions(new List<PlayerMissionData>());
+            }
+            finally
+            {
+                _isSynchronizingMissions = false;
+            }
+        }
+
         _isRestoringMissions = true;
         try
         {
-            RemoveActiveMissions();
             RestoreMissions(_playerInfoManager.GetSnapshot().activeMissions);
         }
         finally
@@ -547,7 +569,8 @@ public static class MissionAPI
     {
         if (_playerInfoManager.HasGeneratedMonthlyRandomMissionOffer() ||
             MissionManager.GetMission(RandomMissionId.ToString()) != null ||
-            MissionManager.GetMission(RandomFishMissionId.ToString()) != null)
+            MissionManager.GetMission(RandomFishMissionId.ToString()) != null ||
+            MissionManager.GetMission(RandomStampMissionId.ToString()) != null)
         {
             return;
         }
@@ -560,17 +583,25 @@ public static class MissionAPI
             return;
         }
 
-        int missionId = TurnRandom.Range("Mission.MonthlyOffer.Type", 0, 2) == 0
-            ? RandomMissionId
-            : RandomFishMissionId;
-        if (missionId == RandomFishMissionId && !SubwayView.IsFishingUnlocked())
+        List<int> monthlyOfferCandidates = new List<int> { RandomMissionId };
+        if (SubwayView.IsFishingUnlocked())
         {
-            missionId = RandomMissionId;
+            monthlyOfferCandidates.Add(RandomFishMissionId);
         }
+
+        monthlyOfferCandidates.Add(RandomStampMissionId);
+        int missionId = monthlyOfferCandidates[
+            TurnRandom.Range("Mission.MonthlyOffer.Type", 0, monthlyOfferCandidates.Count)];
 
         if (!TryGetMissionConfig(missionId.ToString(), out cfg.Mission missionConfig))
         {
             _playerInfoManager.MarkMonthlyRandomMissionOfferGenerated();
+            return;
+        }
+
+        if (missionId == RandomStampMissionId)
+        {
+            _playerInfoManager.SetMonthlyRandomMissionOfferForMission(RandomStampMissionId);
             return;
         }
 
@@ -593,7 +624,9 @@ public static class MissionAPI
 
     private static bool IsMonthlyRandomMission(int missionId)
     {
-        return missionId == RandomMissionId || missionId == RandomFishMissionId;
+        return missionId == RandomMissionId ||
+            missionId == RandomFishMissionId ||
+            missionId == RandomStampMissionId;
     }
 
     private static bool TryPickRandomMissionTarget(
@@ -887,15 +920,23 @@ public static class MissionAPI
         }
     }
 
-    private static void RemoveActiveMissions()
+    private static void ClearRuntimeMissionsWithoutSave()
     {
-        Mission<MissionMessage>[] missions = MissionManager.GetMissions();
-        for (int i = 0; i < missions.Length; i++)
+        _isRestoringMissions = true;
+        try
         {
-            MissionManager.RemoveMission(missions[i].id);
-        }
+            Mission<MissionMessage>[] missions = MissionManager.GetMissions();
+            for (int i = 0; i < missions.Length; i++)
+            {
+                MissionManager.RemoveMission(missions[i].id);
+            }
 
-        MissionTimings.Clear();
+            MissionTimings.Clear();
+        }
+        finally
+        {
+            _isRestoringMissions = false;
+        }
     }
 
     private static void UnsubscribePlayerEvents()

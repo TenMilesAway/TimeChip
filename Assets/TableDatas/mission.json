@@ -254,5 +254,21 @@
     "failure": "",
     "dialogueStart": "",
     "dialogueEnd": ""
+  },
+  {
+    "id": 3005,
+    "name": "鹿伯安的委托",
+    "desc": "帮鹿伯安完成文件盖章挑战",
+    "message": "GameStamp",
+    "icon": 3011,
+    "condition": "",
+    "target": "1",
+    "targetType": "",
+    "randomTarget": "",
+    "reward": "3001,1;4023,3",
+    "deadline": "1",
+    "failure": "",
+    "dialogueStart": "MissionThree,5",
+    "dialogueEnd": ""
   }
 ]

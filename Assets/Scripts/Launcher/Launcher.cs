@@ -234,6 +234,7 @@ public class Launcher : SingletonMono<Launcher>
             return;
         }
 
+        MissionAPI.Shutdown();
         _gameSaveData = CreateDefaultGameSaveData();
         SaveGameData();
         BeginLaunch(_gameSaveData, true);
@@ -543,6 +544,8 @@ public class Launcher : SingletonMono<Launcher>
             maxHealth = 100,
             simulationCoins = 100,
             workedThisTurn = false,
+            activeMissions = new List<PlayerMissionData>(),
+            completedMissionIds = new List<string>(),
             inventory = new List<PlayerInventoryItem>
             {
                 new PlayerInventoryItem
@@ -607,6 +610,7 @@ public class Launcher : SingletonMono<Launcher>
     private void ReturnToStartMenuInternal(bool deleteSave)
     {
         PlayerInfoManager.GetInstance().TurnCompleted -= SaveAfterTurnCompleted;
+        MissionAPI.Shutdown();
 
         if (deleteSave)
         {

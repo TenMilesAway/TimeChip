@@ -68,6 +68,7 @@ public class MainMenuView : UIBasePanel
         _inventoryButton.onClick.AddListener(OpenInventory);
         _settingButton.onClick.AddListener(OpenSetting);
         _saveButton.onClick.AddListener(SaveGame);
+
         _btnShowMission.onClick.AddListener(ToggleMissions);
 
         _beginMoveAction = BeginMoveMissionPanel;

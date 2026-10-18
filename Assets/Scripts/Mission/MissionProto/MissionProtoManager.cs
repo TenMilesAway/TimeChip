@@ -105,6 +105,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireAdvanceTurn(target);
         }
+        else if (missionConfig.Message == "GameStamp")
+        {
+            missionRequire = new MissionRequireGameStamp(target);
+        }
         else if (isFishCatchMission)
         {
             if (targetItemId > 0 && targetItemCount > 0)

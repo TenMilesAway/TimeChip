@@ -1097,6 +1097,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.randomMissionOfferMonth == _data.currentMonth &&
             missionId > 0 &&
             (missionId == 3004 ||
+             missionId == 3005 ||
              (_data.randomMissionTargetItemId > 0 &&
               _data.randomMissionTargetCount > 0));
     }
@@ -1142,6 +1143,24 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.randomMissionOfferId = missionId;
         _data.randomMissionTargetItemId = itemId;
         _data.randomMissionTargetCount = count;
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>保存本月生成的无道具目标的随机委托（如盖章挑战）。</summary>
+    public void SetMonthlyRandomMissionOfferForMission(int missionId)
+    {
+        if (missionId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(missionId));
+        }
+
+        _data.randomMissionOfferGenerated = true;
+        _data.hasRandomMissionOffer = true;
+        _data.randomMissionOfferAge = _data.currentAge;
+        _data.randomMissionOfferMonth = _data.currentMonth;
+        _data.randomMissionOfferId = missionId;
+        _data.randomMissionTargetItemId = 0;
+        _data.randomMissionTargetCount = 0;
         NotifyPlayerInfoChanged();
     }
 

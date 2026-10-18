@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: RemoteLittleGame
+  m_EditorClassIdentifier: 
+  m_GroupName: RemoteLittleGame
+  m_Data:
+    m_SerializedData: []
+  m_GUID: fef7ab5e8c033cd4f9bf8a3c04024626
+  m_SerializeEntries:
+  - m_GUID: 671c640e6b2356a47867e1e3884db5d6
+    m_Address: Assets/Art/LittleGame/SpritesBig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81a491f4926a98e458fb1226f50245c8
+    m_Address: Assets/Art/LittleGame/SpriteAtlas.spriteatlasv2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab68a28f1bc28fd4da0db9ac60a69d5f
+    m_Address: Assets/Art/LittleGame/Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ef55c5825ba41194bae41ff33ccbb0c2, type: 2}
+    - {fileID: 11400000, guid: 025a5dc69acee57409ded1bd41759e9a, type: 2}

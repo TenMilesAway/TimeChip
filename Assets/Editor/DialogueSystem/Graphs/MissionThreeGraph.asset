@@ -29,6 +29,9 @@ MonoBehaviour:
   - <ID>k__BackingField: 62a1c8fc-9e0a-4c8a-8268-58dd5d747b99
     <Name>k__BackingField: "\u6D77\u6D0B\u4E4B\u5FC3\u7ED3\u675F"
     <Position>k__BackingField: {x: 480, y: 3374}
+  - <ID>k__BackingField: 0371318e-d5c4-44e4-ac6b-7db146e8ec97
+    <Name>k__BackingField: "3005\u9E7F\u4F2F\u5B89\u7684\u59D4\u6258"
+    <Position>k__BackingField: {x: 480, y: 3810}
   <Nodes>k__BackingField:
   - <ID>k__BackingField: e6c3bf8a-727d-474b-9eb4-96b151f317e2
     <Name>k__BackingField: 1
@@ -186,12 +189,37 @@ MonoBehaviour:
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[system]
     <Reward>k__BackingField: 
     <Position>k__BackingField: {x: 1511, y: 1789}
+  - <ID>k__BackingField: 12e13226-e0d0-4740-a731-367571590c72
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u4F60\u6765\u5F97\u6B63\u597D\u3002\u793E\u533A\u6700\u8FD1\u79EF\u4E86\u51E0\u4EFD\u6587\u4EF6\uFF0C\u80FD\u5E2E\u6211\u76D6\u4E00\u4E0B\u7AE0\u5417?"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: a04f98f4-cebf-4ed9-b173-03b47edba5ef
+    <GroupID>k__BackingField: 0371318e-d5c4-44e4-ac6b-7db146e8ec97
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 505, y: 3871}
+  - <ID>k__BackingField: a04f98f4-cebf-4ed9-b173-03b47edba5ef
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u5B8C\u6210\u540E\u6211\u4F1A\u4ED8\u7ED9\u4F60\u62A5\u916C\u7684\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 0371318e-d5c4-44e4-ac6b-7db146e8ec97
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 7
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[lu_boan_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1195, y: 3871}
   <OldGroupNames>k__BackingField:
   - "\u795E\u79D8\u8F6C\u76D8\u5F00\u59CB"
   - "\u8349\u8393\u5C0F\u718A\u5F00\u59CB"
   - "\u8349\u8393\u5C0F\u718A\u7ED3\u675F"
   - "\u6D77\u6D0B\u4E4B\u5FC3\u5F00\u59CB"
   - "\u6D77\u6D0B\u4E4B\u5FC3\u7ED3\u675F"
+  - "3005\u9E7F\u4F2F\u5B89\u7684\u59D4\u6258"
   <OldUngroupedNodeNames>k__BackingField: []
   <OldGroupedNodeNames>k__BackingField:
     list:
@@ -215,6 +243,10 @@ MonoBehaviour:
       - 1
       - 2
     - Key: "\u6D77\u6D0B\u4E4B\u5FC3\u7ED3\u675F"
+      Value:
+      - 1
+      - 2
+    - Key: "3005\u9E7F\u4F2F\u5B89\u7684\u59D4\u6258"
       Value:
       - 1
       - 2

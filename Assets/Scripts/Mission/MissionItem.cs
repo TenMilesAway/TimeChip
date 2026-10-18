@@ -12,6 +12,7 @@ public class MissionItem : MonoBehaviour
     [SerializeField] private Text _txtDetail;
     [SerializeField] private Text _txtProgress;
     [SerializeField] private Button _btnGet;
+    [SerializeField] private Button _btnGo;
     [SerializeField] private Slider _sliderProgress;
     [SerializeField] private MissionRewardItem[] _rewardItems;
 
@@ -81,6 +82,17 @@ public class MissionItem : MonoBehaviour
             });
         }
 
+        if (_btnGo != null)
+        {
+            _btnGo.onClick.RemoveAllListeners();
+            bool showGoButton = MissionGoActions.ShouldShowGoButton(missionConfig, mission);
+            _btnGo.gameObject.SetActive(showGoButton);
+            if (showGoButton)
+            {
+                _btnGo.onClick.AddListener(() => MissionGoActions.TryRunGoAction(missionConfig));
+            }
+        }
+
         gameObject.SetActive(true);
         SetIconAsync(missionConfig, _requestVersion);
         SetRewardsAsync(missionConfig, _requestVersion);
@@ -91,6 +103,12 @@ public class MissionItem : MonoBehaviour
         _requestVersion++;
         _imgIcon.sprite = null;
         _btnGet.onClick.RemoveAllListeners();
+        if (_btnGo != null)
+        {
+            _btnGo.onClick.RemoveAllListeners();
+            _btnGo.gameObject.SetActive(false);
+        }
+
         for (int i = 0; i < _rewardItems.Length; i++)
         {
             _rewardItems[i].Clear();

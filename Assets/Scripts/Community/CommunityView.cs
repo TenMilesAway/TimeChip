@@ -524,7 +524,11 @@ public class CommunityView : UIBasePanel
             .GetOrDefault(targetItemId);
         string targetName = targetItem == null ? targetItemId.ToString() : targetItem.Name;
         string missionDescription;
-        if (missionConfig.Message == "FishCatch")
+        if (missionConfig.Message == "GameStamp")
+        {
+            missionDescription = missionConfig.Desc;
+        }
+        else if (missionConfig.Message == "FishCatch")
         {
             if (targetItem == null || targetItemCount <= 0)
             {
@@ -545,15 +549,19 @@ public class CommunityView : UIBasePanel
                 targetItemCount);
         }
 
-        UIManager.GetInstance().OpenPanel(
-            GlobalDefine.CommonConfirmPanel,
-            UILayer.System,
-            new OpenUIParam
-            {
-                data = new CommonConfirmData(
-                    missionConfig.Name,
-                    "任务已开启，需要完成任务目标：\n" + missionDescription)
-            });
+        if (string.IsNullOrEmpty(missionConfig.DialogueStart))
+        {
+            UIManager.GetInstance().OpenPanel(
+                GlobalDefine.CommonConfirmPanel,
+                UILayer.System,
+                new OpenUIParam
+                {
+                    data = new CommonConfirmData(
+                        missionConfig.Name,
+                        "任务已开启，需要完成任务目标：\n" + missionDescription)
+                });
+        }
+
         RefreshMissionNotice();
     }
 
