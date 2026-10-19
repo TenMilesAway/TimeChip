@@ -2,7 +2,7 @@
   {
     "id": 100,
     "name": "第一桶金",
-    "desc": "在24岁前积累5000模拟币，然后去看看外边的世界吧",
+    "desc": "在24岁前积累模拟币，然后去看看外边的世界吧",
     "message": "SimulationCoinBalance",
     "icon": 1002,
     "condition": "mission:1003;force:22,2",
@@ -50,7 +50,7 @@
   {
     "id": 200,
     "name": "代购",
-    "desc": "熊大山工具带得很齐，却唯独忘记了最普通的强力胶带",
+    "desc": "熊大山工具带得很齐，却唯独忘记了胶带",
     "message": "Item",
     "icon": 5102,
     "condition": "force:22,4",
@@ -66,7 +66,7 @@
   {
     "id": 201,
     "name": "社区报到",
-    "desc": "进入社区",
+    "desc": "进入沿江社区中心",
     "message": "CommunityCentreView",
     "icon": 3011,
     "condition": "force:22,2",
@@ -82,7 +82,7 @@
   {
     "id": 202,
     "name": "问诊",
-    "desc": "进入医务室",
+    "desc": "进入沿江医务室",
     "message": "ClinicView",
     "icon": 1050,
     "condition": "force:22,3",

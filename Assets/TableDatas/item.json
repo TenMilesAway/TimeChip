@@ -252,6 +252,20 @@
     "replace": 0
   },
   {
+    "id": 3012,
+    "name": "高级社区物资礼盒",
+    "level": 3,
+    "inventoryType": 1,
+    "type": "礼盒",
+    "category": 3,
+    "desc": "为社区贡献卓越力量后获得的最高回馈，可以获得更丰富的物资",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_3]",
+    "canUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "3001,1,55;3002,1,25;101,888,100;101,1288,100;101,1888,50;1010,3,100;1011,2,80",
+    "replace": 0
+  },
+  {
     "id": 3020,
     "name": "初级材料礼盒",
     "level": 1,

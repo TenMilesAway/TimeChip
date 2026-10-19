@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public sealed class GuideMask : MonoBehaviour
 {
     private const int SystemSortingOrder = 999;
+    private const string GuideFontAssetName = "荆南圆体";
+    private const string GuideFontFamilyName = "KeinannMaruPOP";
+
+    private static Font guideFont;
 
     private static readonly Color MaskColor = new Color(0f, 0f, 0f, 0.65f);
 
@@ -153,22 +157,57 @@ public sealed class GuideMask : MonoBehaviour
         return text;
     }
 
-    private Font GetGuideFont()
+    private static Font GetGuideFont()
     {
-        Text targetText = targetRectTransform.GetComponentInChildren<Text>(true);
-        if (targetText != null && targetText.font != null)
+        if (guideFont != null)
         {
-            return targetText.font;
+            return guideFont;
         }
 
-        Text canvasText = targetRectTransform.GetComponentInParent<Canvas>()
-            .GetComponentInChildren<Text>(true);
-        if (canvasText != null && canvasText.font != null)
+        Font[] fonts = Resources.FindObjectsOfTypeAll<Font>();
+        for (int i = 0; i < fonts.Length; i++)
         {
-            return canvasText.font;
+            Font font = fonts[i];
+            if (!IsGuideFont(font))
+            {
+                continue;
+            }
+
+            guideFont = font;
+            return guideFont;
         }
 
+        Debug.LogError("未找到荆南圆体，新手引导文字改用内置字体。");
         return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+    }
+
+    private static bool IsGuideFont(Font font)
+    {
+        if (font == null)
+        {
+            return false;
+        }
+
+        if (font.name == GuideFontAssetName)
+        {
+            return true;
+        }
+
+        string[] fontNames = font.fontNames;
+        if (fontNames == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < fontNames.Length; i++)
+        {
+            if (fontNames[i] == GuideFontFamilyName)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void UpdateBlockers()

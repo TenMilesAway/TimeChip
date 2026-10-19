@@ -147,10 +147,10 @@ public sealed class PlayerInfoData
     public bool purchasedClinicItemThisTurn;
 
     /// <summary>治疗服务一的当前价格</summary>
-    public int cureService1Price = 300;
+    public int cureService1Price = 100;
 
     /// <summary>治疗服务二的当前价格</summary>
-    public int cureService2Price = 600;
+    public int cureService2Price = 300;
 
     /// <summary>玩家拥有的可叠加道具列表</summary>
     public List<PlayerInventoryItem> inventory = new List<PlayerInventoryItem>();
@@ -425,8 +425,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private const int MinCommunityCentreLevel = 1;
     private const int MaxCommunityCentreLevel = 6;
     private const int CommunitySupplyGiftBoxItemId = 3010;
-    private const int CureService1PriceIncrease = 30;
-    private const int CureService2PriceIncrease = 60;
+    private const int CureService1PriceIncrease = 10;
+    private const int CureService2PriceIncrease = 30;
     public const int MaxWorkLevel = 5;
     private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
     private static readonly int[] CommunityCentreExperienceRequirements =
@@ -753,15 +753,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         int itemId,
         out int experienceGained)
     {
-        const int redundancyItemCategory = 4;
         const int communityExperienceReward = 10;
         experienceGained = 0;
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(itemId);
-        if (itemConfig == null ||
-            itemConfig.Category != redundancyItemCategory ||
-            itemConfig.Id == CommunitySupplyGiftBoxItemId)
+        if (!CommunityCentreRedundancyHelper.CanSubmitAsRedundancy(itemConfig))
         {
             return CommunityCentreRedundancySubmitResult.InvalidItem;
         }
@@ -776,7 +773,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
         }
 
-        AddItem(CommunitySupplyGiftBoxItemId, 1);
+        AddItem(CommunityCentreRedundancyHelper.GetSubmitRewardItemId(itemConfig), 1);
         experienceGained = AddCommunityCentreExperience(communityExperienceReward);
         return CommunityCentreRedundancySubmitResult.Success;
     }
@@ -2471,8 +2468,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 _data.communityCentreNeeds.RemoveAt(i);
             }
         }
-        _data.cureService1Price = Mathf.Max(300, _data.cureService1Price);
-        _data.cureService2Price = Mathf.Max(600, _data.cureService2Price);
+        _data.cureService1Price = Mathf.Max(100, _data.cureService1Price);
+        _data.cureService2Price = Mathf.Max(300, _data.cureService2Price);
         if (_data.inventory == null)
         {
             _data.inventory = new List<PlayerInventoryItem>();

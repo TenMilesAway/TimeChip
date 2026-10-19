@@ -8,7 +8,6 @@ public class CommunityCentreView : UIBasePanel
 {
     private const int MonthlyNeedCount = 3;
     private const string CommunityNeedMaterialType = "材料";
-    private const int RedundancyItemCategory = 4;
     private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int CommunityCentreScaleId = 8;
     private const int RedundancyItemsPerPage = 4;
@@ -299,8 +298,8 @@ public class CommunityCentreView : UIBasePanel
                     previousProgress);
                 ShowCommunitySupplyGiftBoxReward();
                 CommonTipView.Show(bonusExperienceGained > 0
-                    ? $"提交成功，社区经验 +{experienceGained}（额外经验 +{bonusExperienceGained}）"
-                    : $"提交成功，社区经验 +{experienceGained}");
+                    ? $"提交成功，社区经验 +<color=#00FFFA>{experienceGained}</color>（额外经验 +<color=#00FFFA>{bonusExperienceGained}</color>）"
+                    : $"提交成功，社区经验 +<color=#00FFFA>{experienceGained}</color>");
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreNeedSubmitResult.InsufficientItem:
@@ -701,8 +700,7 @@ public class CommunityCentreView : UIBasePanel
         for (int i = 0; i < items.Count; i++)
         {
             cfg.Item itemConfig = items[i];
-            if (itemConfig.Category == RedundancyItemCategory &&
-                itemConfig.Id != CommunitySupplyGiftBoxItemId &&
+            if (CommunityCentreRedundancyHelper.CanSubmitAsRedundancy(itemConfig) &&
                 playerInfoManager.GetItemCount(itemConfig.Id) > 1)
             {
                 _redundancyItemConfigs.Add(itemConfig);
@@ -825,8 +823,9 @@ public class CommunityCentreView : UIBasePanel
                     playerInfoManager,
                     previousLevel,
                     previousProgress);
-                ShowCommunitySupplyGiftBoxReward();
-                CommonTipView.Show($"提交成功，社区经验 +{experienceGained}");
+                ShowRedundancySubmitReward(
+                    CommunityCentreRedundancyHelper.GetSubmitRewardItemId(_selectedRedundancyItem));
+                CommonTipView.Show($"提交成功，社区经验 +<color=#00FFFA>{experienceGained}</color>");
                 GameManager.Audio.Play(AudioDefine.SFXBuy);
                 break;
             case CommunityCentreRedundancySubmitResult.InsufficientRedundancy:
@@ -843,13 +842,18 @@ public class CommunityCentreView : UIBasePanel
 
     private static void ShowCommunitySupplyGiftBoxReward()
     {
+        ShowRedundancySubmitReward(CommunitySupplyGiftBoxItemId);
+    }
+
+    private static void ShowRedundancySubmitReward(int rewardItemId)
+    {
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = new List<CommonRewardItemData>
             {
                 new CommonRewardItemData
                 {
-                    itemId = CommunitySupplyGiftBoxItemId,
+                    itemId = rewardItemId,
                     itemCount = 1
                 }
             },

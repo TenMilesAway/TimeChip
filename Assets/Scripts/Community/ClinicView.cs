@@ -8,9 +8,9 @@ public class ClinicView : UIBasePanel
     [SerializeField] private Text _txtHealth;         // 健康值文本
     [SerializeField] private Text _txtCureService1;   // 治疗服务1价格
     [SerializeField] private Text _txtCureService2;   // 治疗服务2价格
-    [SerializeField] private Text _txtCureItem1;      // 治疗物品1价格, 500
-    [SerializeField] private Text _txtCureItem2;      // 治疗物品2价格, 998
-    [SerializeField] private Text _txtCureItem3;      // 治疗物品3价格, 1488
+    [SerializeField] private Text _txtCureItem1;      // 治疗物品1价格, 100
+    [SerializeField] private Text _txtCureItem2;      // 治疗物品2价格, 200
+    [SerializeField] private Text _txtCureItem3;      // 治疗物品3价格, 300
 
     [SerializeField] private Button _btnExamination;  // 体检按钮
     [SerializeField] private Button _btnCure1;        // 治疗服务1按钮
@@ -24,9 +24,9 @@ public class ClinicView : UIBasePanel
     private const int CureItem1Id = 1050;
     private const int CureItem2Id = 1051;
     private const int CureItem3Id = 1052;
-    private const int CureItem1Price = 500;
-    private const int CureItem2Price = 998;
-    private const int CureItem3Price = 1488;
+    private const int CureItem1Price = 100;
+    private const int CureItem2Price = 200;
+    private const int CureItem3Price = 300;
     private const int ExaminationCost = 50;
     private const int ExaminationMinimumHealthRecovery = 3;
     private const int ExaminationMaximumHealthRecovery = 8;
@@ -162,7 +162,7 @@ public class ClinicView : UIBasePanel
                 ExaminationMaximumHealthRecovery + 1);
             playerInfoManager.ChangeHealth(healthRecovery);
             CommonTipView.Show(
-                $"体检成功，健康值 +{playerInfoManager.Health - healthBefore}");
+                $"体检成功，健康值 +<color=#FA9C00>{playerInfoManager.Health - healthBefore}</color>");
             return;
         }
 
@@ -189,7 +189,8 @@ public class ClinicView : UIBasePanel
         switch (result)
         {
             case ClinicTreatmentResult.Success:
-                CommonTipView.Show($"治疗成功，健康值 +{playerInfoManager.Health - healthBefore}");
+                CommonTipView.Show(
+                    $"治疗成功，健康值 +<color=#FA9C00>{playerInfoManager.Health - healthBefore}</color>");
                 break;
             case ClinicTreatmentResult.AlreadyTreated:
                 CommonTipView.Show("本回合已使用治疗服务");

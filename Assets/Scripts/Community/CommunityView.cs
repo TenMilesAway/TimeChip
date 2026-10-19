@@ -33,8 +33,6 @@ public class CommunityView : UIBasePanel
     private const string StrayCatFoodBowlFunctionId = "StrayCatFoodBowl";
     private const string DonationFunctionId = "Donation";
     private const int CommunityCentreNeedCount = 3;
-    private const int CommunityCentreRedundancyItemCategory = 4;
-    private const int CommunitySupplyGiftBoxItemId = 3010;
     private const int BearTapeMissionId = 200;
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
     private const int CommunityReportMissionId = 201;
@@ -752,8 +750,7 @@ public class CommunityView : UIBasePanel
         for (int i = 0; i < items.Count; i++)
         {
             cfg.Item item = items[i];
-            if (item.Category == CommunityCentreRedundancyItemCategory &&
-                item.Id != CommunitySupplyGiftBoxItemId &&
+            if (CommunityCentreRedundancyHelper.CanSubmitAsRedundancy(item) &&
                 playerInfoManager.GetItemCount(item.Id) > 1)
             {
                 return true;
@@ -974,7 +971,8 @@ public class CommunityView : UIBasePanel
         }
 
         playerInfoManager.AddCommunityCentreExperience(LostWalletCommunityExperienceReward);
-        CommonTipView.Show($"上交钱包，社区经验 +{LostWalletCommunityExperienceReward}");
+        CommonTipView.Show(
+            $"上交钱包，社区经验 +<color=#00FFFA>{LostWalletCommunityExperienceReward}</color>");
     }
 
     private void BindStrayCatFoodBowlButtons()
@@ -1286,7 +1284,7 @@ public class CommunityView : UIBasePanel
         }
 
         playerInfoManager.ChangeHealth(-healthCost);
-        CommonTipView.Show($"翻找垃圾桶消耗 {healthCost} 点健康值");
+        CommonTipView.Show($"翻找垃圾桶消耗 <color=#FA9C00>{healthCost}</color> 点健康值");
         trashCan.SetActive(false);
         LotteryView.GrantAndPresentReward(reward);
     }
