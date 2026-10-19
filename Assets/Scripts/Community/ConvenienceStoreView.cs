@@ -282,11 +282,18 @@ internal static class ConvenienceStorePricing
 {
     private const int BearTapeConvenienceId = 200;
     private const int BearTapeFixedPrice = 100;
+    private const float SuperMarketWinDiscountMultiplier = 0.9f;
 
     public static int GetPrice(cfg.Convenience offer)
     {
-        return offer.Id == BearTapeConvenienceId
+        int price = offer.Id == BearTapeConvenienceId
             ? BearTapeFixedPrice
             : BuffSystem.GetInstance().CalculateShopPrice(offer.Price);
+        if (PlayerInfoManager.GetInstance().HasConvenienceSuperMarketMonthlyDiscount())
+        {
+            price = Mathf.Max(1, Mathf.RoundToInt(price * SuperMarketWinDiscountMultiplier));
+        }
+
+        return price;
     }
 }

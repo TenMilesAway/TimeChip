@@ -212,6 +212,24 @@ public sealed class PlayerInfoData
     /// <summary>当月便利店商品及其剩余购买次数</summary>
     public List<PlayerConvenienceOffer> convenienceOffers = new List<PlayerConvenienceOffer>();
 
+    /// <summary>便利店超市小游戏上次判定的年龄</summary>
+    public int convenienceSuperMarketRefreshAge = -1;
+
+    /// <summary>便利店超市小游戏上次判定的月份</summary>
+    public int convenienceSuperMarketRefreshMonth = -1;
+
+    /// <summary>当前回合进入便利店是否命中超市小游戏</summary>
+    public bool convenienceSuperMarketTriggered;
+
+    /// <summary>当前回合超市小游戏是否已触发并播放</summary>
+    public bool convenienceSuperMarketConsumed;
+
+    /// <summary>超市小游戏胜利折扣生效的年龄</summary>
+    public int convenienceSuperMarketDiscountAge = -1;
+
+    /// <summary>超市小游戏胜利折扣生效的月份</summary>
+    public int convenienceSuperMarketDiscountMonth = -1;
+
     /// <summary>河边商店商品及其剩余购买次数</summary>
     public List<PlayerFishStoreOffer> fishStoreOffers = new List<PlayerFishStoreOffer>();
 
@@ -1053,6 +1071,60 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.donationAvailable = false;
         NotifyPlayerInfoChanged();
         return true;
+    }
+
+    public bool TryGetCurrentTurnConvenienceSuperMarketTriggered(out bool triggered)
+    {
+        triggered = false;
+        if (_data.convenienceSuperMarketRefreshAge != _data.currentAge ||
+            _data.convenienceSuperMarketRefreshMonth != _data.currentMonth)
+        {
+            return false;
+        }
+
+        triggered = _data.convenienceSuperMarketTriggered;
+        return true;
+    }
+
+    public void SetCurrentTurnConvenienceSuperMarketTriggered(bool triggered)
+    {
+        _data.convenienceSuperMarketRefreshAge = _data.currentAge;
+        _data.convenienceSuperMarketRefreshMonth = _data.currentMonth;
+        _data.convenienceSuperMarketTriggered = triggered;
+        _data.convenienceSuperMarketConsumed = false;
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool CanPlayCurrentTurnConvenienceSuperMarketMiniGame()
+    {
+        return TryGetCurrentTurnConvenienceSuperMarketTriggered(out bool triggered) &&
+            triggered &&
+            !_data.convenienceSuperMarketConsumed;
+    }
+
+    public bool TryConsumeCurrentTurnConvenienceSuperMarketMiniGame()
+    {
+        if (!CanPlayCurrentTurnConvenienceSuperMarketMiniGame())
+        {
+            return false;
+        }
+
+        _data.convenienceSuperMarketConsumed = true;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public bool HasConvenienceSuperMarketMonthlyDiscount()
+    {
+        return _data.convenienceSuperMarketDiscountAge == _data.currentAge &&
+            _data.convenienceSuperMarketDiscountMonth == _data.currentMonth;
+    }
+
+    public void GrantConvenienceSuperMarketMonthlyDiscount()
+    {
+        _data.convenienceSuperMarketDiscountAge = _data.currentAge;
+        _data.convenienceSuperMarketDiscountMonth = _data.currentMonth;
+        NotifyPlayerInfoChanged();
     }
 
     /// <summary>初始化玩家数据; 未提供初始数据时使用默认值</summary>
@@ -2695,6 +2767,12 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             convenienceOfferAge = source.convenienceOfferAge,
             convenienceOfferMonth = source.convenienceOfferMonth,
             convenienceOffers = CreateConvenienceOfferCopy(source.convenienceOffers),
+            convenienceSuperMarketRefreshAge = source.convenienceSuperMarketRefreshAge,
+            convenienceSuperMarketRefreshMonth = source.convenienceSuperMarketRefreshMonth,
+            convenienceSuperMarketTriggered = source.convenienceSuperMarketTriggered,
+            convenienceSuperMarketConsumed = source.convenienceSuperMarketConsumed,
+            convenienceSuperMarketDiscountAge = source.convenienceSuperMarketDiscountAge,
+            convenienceSuperMarketDiscountMonth = source.convenienceSuperMarketDiscountMonth,
             fishStoreOffers = CreateFishStoreOfferCopy(source.fishStoreOffers),
             fishStoreBaitRefreshAge = source.fishStoreBaitRefreshAge,
             fishStoreBaitRefreshMonth = source.fishStoreBaitRefreshMonth,

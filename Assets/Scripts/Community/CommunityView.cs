@@ -35,6 +35,10 @@ public class CommunityView : UIBasePanel
     private const int CommunityCentreNeedCount = 3;
     private const int BearTapeMissionId = 200;
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
+    private const string ConvenienceSuperMarketDialogueConfig = "MiniGame,0";
+    private const string ConvenienceSuperMarketSpawnProbabilityId = "ConvenienceStore.SuperMarket.Spawn";
+    // 测试阶段 100% 触发；正式发布前改为 false。
+    private const bool ForceConvenienceSuperMarketMiniGameTriggerForTesting = true;
     private const int CommunityReportMissionId = 201;
     private const string CommunityEnterDialogueConfig = "MissionRole,4";
     private const int ClinicConsultationMissionId = 202;
@@ -242,7 +246,7 @@ public class CommunityView : UIBasePanel
                             playerInfoManager.TryMarkBearConvenienceDialoguePlayed();
                         }
 
-                        UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+                        TryOpenConvenienceStoreView();
                     });
                 if (isQueued)
                 {
@@ -253,7 +257,70 @@ public class CommunityView : UIBasePanel
             }
         }
 
+        TryOpenConvenienceStoreView();
+    }
+
+    private void TryOpenConvenienceStoreView()
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (ShouldPlayConvenienceSuperMarketMiniGame(playerInfoManager))
+        {
+            bool isQueued = MissionDialogueService.TryPlayStandaloneDialogue(
+                ConvenienceSuperMarketDialogueConfig,
+                dialoguePlayed =>
+                {
+                    if (this == null)
+                    {
+                        return;
+                    }
+
+                    if (dialoguePlayed &&
+                        playerInfoManager.TryConsumeCurrentTurnConvenienceSuperMarketMiniGame())
+                    {
+                        OpenConvenienceSuperMarketMiniGame();
+                        return;
+                    }
+
+                    UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+                });
+            if (isQueued)
+            {
+                return;
+            }
+        }
+
         UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+    }
+
+    private void OpenConvenienceSuperMarketMiniGame()
+    {
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.GameSuperMarket,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new GameSuperMarketOpenParam
+                {
+                    onCompleted = _ =>
+                    {
+                        UIManager.GetInstance().OpenPanel(GlobalDefine.ConvenienceStoreView);
+                    }
+                }
+            });
+    }
+
+    private bool ShouldPlayConvenienceSuperMarketMiniGame(PlayerInfoManager playerInfoManager)
+    {
+        if (!playerInfoManager.TryGetCurrentTurnConvenienceSuperMarketTriggered(out bool triggered))
+        {
+            triggered = ForceConvenienceSuperMarketMiniGameTriggerForTesting ||
+                TurnRandom.Chance(
+                    ConvenienceSuperMarketSpawnProbabilityId,
+                    GameProbability.Get(ConvenienceSuperMarketSpawnProbabilityId));
+            playerInfoManager.SetCurrentTurnConvenienceSuperMarketTriggered(triggered);
+        }
+
+        return playerInfoManager.CanPlayCurrentTurnConvenienceSuperMarketMiniGame();
     }
 
     public void OnClickClinic()

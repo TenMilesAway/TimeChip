@@ -28,5 +28,10 @@
     "id": "Mission.MonthlyOffer.Spawn",
     "probability": 0.3,
     "desc": "每月生成随机社区委托的概率"
+  },
+  {
+    "id": "ConvenienceStore.SuperMarket.Spawn",
+    "probability": 1,
+    "desc": "每回合进入便利店触发超市找物小游戏的概率"
   }
 ]

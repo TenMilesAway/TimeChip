@@ -32,6 +32,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22e1aae06d4640949ab9b46e825d2f85
+    m_Address: Assets/Art/LittleGame/Sprites/SuperMarket
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ef9776a8c7c2aa541bc5c4ec64e1523d, type: 2}
   m_SchemaSet:

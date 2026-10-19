@@ -38,11 +38,32 @@ public static class MissionDialogueService
             return false;
         }
 
+        return EnqueueStandaloneDialogue(missionConfig, dialogueConfig, "临时", onCompleted);
+    }
+
+    public static bool TryPlayStandaloneDialogue(
+        string dialogueConfig,
+        System.Action<bool> onCompleted)
+    {
+        if (string.IsNullOrWhiteSpace(dialogueConfig))
+        {
+            return false;
+        }
+
+        return EnqueueStandaloneDialogue(null, dialogueConfig, "独立", onCompleted);
+    }
+
+    private static bool EnqueueStandaloneDialogue(
+        cfg.Mission missionConfig,
+        string dialogueConfig,
+        string phase,
+        System.Action<bool> onCompleted)
+    {
         DialogueQueue.Enqueue(new DialogueRequest
         {
             MissionConfig = missionConfig,
             DialogueConfig = dialogueConfig,
-            Phase = "临时",
+            Phase = phase,
             OnCompleted = onCompleted
         });
         PlayNextDialogue();
@@ -114,7 +135,7 @@ public static class MissionDialogueService
                     out int groupIndex))
             {
                 Debug.LogWarning(
-                    $"[任务系统] 任务[{request.MissionConfig.Id}]对话配置格式错误({request.Phase}): {request.DialogueConfig}");
+                    $"[任务系统] 任务[{FormatMissionId(request.MissionConfig)}]对话配置格式错误({request.Phase}): {request.DialogueConfig}");
                 request.OnCompleted?.Invoke(false);
                 continue;
             }
@@ -125,7 +146,7 @@ public static class MissionDialogueService
             if (container == null)
             {
                 Debug.LogWarning(
-                    $"[任务系统] 任务[{request.MissionConfig.Id}]无法加载对话文件({request.Phase}): {fileName}");
+                    $"[任务系统] 任务[{FormatMissionId(request.MissionConfig)}]无法加载对话文件({request.Phase}): {fileName}");
                 request.OnCompleted?.Invoke(false);
                 if (TryStartGuidesAfterSkippedStartDialogue(request))
                 {
@@ -140,7 +161,7 @@ public static class MissionDialogueService
             if (lines.Count == 0)
             {
                 Debug.LogWarning(
-                    $"[任务系统] 任务[{request.MissionConfig.Id}]对话组为空({request.Phase}): {fileName},{groupIndex}");
+                    $"[任务系统] 任务[{FormatMissionId(request.MissionConfig)}]对话组为空({request.Phase}): {fileName},{groupIndex}");
                 request.OnCompleted?.Invoke(false);
                 if (TryStartGuidesAfterSkippedStartDialogue(request))
                 {
@@ -212,6 +233,11 @@ public static class MissionDialogueService
             request.MissionConfig.Id,
             OnMissionGuidesCompleted);
         return true;
+    }
+
+    private static string FormatMissionId(cfg.Mission missionConfig)
+    {
+        return missionConfig == null ? "独立" : missionConfig.Id.ToString();
     }
 
     private static bool TryParseDialoguePointer(string value, out string fileName, out int groupIndex)
