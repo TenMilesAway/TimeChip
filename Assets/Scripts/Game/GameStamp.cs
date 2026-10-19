@@ -12,6 +12,7 @@ public class GameStamp : UIBasePanel
     [SerializeField] private Transform _fileParent;
     [SerializeField] private Transform _stampBottom;
     [SerializeField] private Transform _stampMid;
+    [SerializeField] private Transform _startText;
     [SerializeField] private RectTransform _rectJudgeZone;
     [SerializeField] private GameObject[] _goTargets;
     [SerializeField, Min(1f)] private float _gameDuration = 15f;
@@ -31,11 +32,14 @@ public class GameStamp : UIBasePanel
     [SerializeField, Min(0.01f)] private float _stampBottomIdleHalfCycleDuration = 1.6f;
     [SerializeField, Min(0f)] private float _stampMissCooldownDuration = 3f;
     [SerializeField, Range(0f, 1f)] private float _stampBottomDisabledAlpha = 0.5f;
+    [SerializeField] private float _startTextIdleScaleMultiplier = 1.08f;
+    [SerializeField, Min(0.01f)] private float _startTextIdleHalfCycleDuration = 0.9f;
 
     private const string FailMessage = "游戏失败";
     private const string SuccessTipMessage = "挑战成功";
 
     private static readonly object StampBottomIdleTweenId = new object();
+    private static readonly object StartTextIdleTweenId = new object();
 
     private readonly List<GameStampFile> _activeFiles = new List<GameStampFile>();
     private readonly List<Vector3> _targetDefaultScales = new List<Vector3>();
@@ -55,10 +59,15 @@ public class GameStamp : UIBasePanel
     private Coroutine _stampCooldownCoroutine;
     private CanvasGroup _stampBottomCanvasGroup;
     private float _stampBottomDefaultAlpha = 1f;
+    private Vector3 _startTextDefaultScale = Vector3.one;
 
     private void Awake()
     {
         _resourceTag = GetInstanceID().ToString();
+        if (_startText != null)
+        {
+            _startTextDefaultScale = _startText.localScale;
+        }
         if (_stampMid != null)
         {
             _stampMidDefaultScale = _stampMid.localScale;
@@ -101,6 +110,7 @@ public class GameStamp : UIBasePanel
         StopStampCooldown();
         StopGameLoops();
         StopStampBottomIdleAnimation();
+        StopStartTextAnimation();
         ClearActiveFiles();
         DOTween.Kill(this);
     }
@@ -108,6 +118,7 @@ public class GameStamp : UIBasePanel
     protected override void OnDestroy()
     {
         StopStampBottomIdleAnimation();
+        StopStartTextAnimation();
 
         if (_btnPoint != null)
         {
@@ -163,6 +174,7 @@ public class GameStamp : UIBasePanel
     {
         StopGameLoops();
         StopStampBottomIdleAnimation();
+        StopStartTextAnimation();
         ClearActiveFiles();
         DOTween.Kill(this);
 
@@ -178,6 +190,7 @@ public class GameStamp : UIBasePanel
         SetTargetsVisible(0);
         ResetStampVisuals();
         EnsureStampBottomIdleAnimation();
+        EnsureStartTextVisibleAndIdleAnimation();
 
         if (_btnPoint != null)
         {
@@ -215,6 +228,7 @@ public class GameStamp : UIBasePanel
     private void StartGame()
     {
         StopStampBottomIdleAnimation();
+        HideStartText();
         _isGameStarted = true;
         _remainingTime = _gameDuration;
         RefreshTimeText(_remainingTime);
@@ -538,6 +552,45 @@ public class GameStamp : UIBasePanel
         if (_stampBottom != null)
         {
             _stampBottom.localScale = _stampBottomDefaultScale;
+        }
+    }
+
+    private void EnsureStartTextVisibleAndIdleAnimation()
+    {
+        if (_isGameStarted || _startText == null)
+        {
+            return;
+        }
+
+        _startText.gameObject.SetActive(true);
+        _startText.localScale = _startTextDefaultScale;
+        if (DOTween.IsTweening(StartTextIdleTweenId))
+        {
+            return;
+        }
+
+        _startText
+            .DOScale(_startTextDefaultScale * _startTextIdleScaleMultiplier, _startTextIdleHalfCycleDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetTarget(StartTextIdleTweenId);
+    }
+
+    private void HideStartText()
+    {
+        StopStartTextAnimation();
+        if (_startText != null)
+        {
+            _startText.gameObject.SetActive(false);
+        }
+    }
+
+    private void StopStartTextAnimation()
+    {
+        DOTween.Kill(StartTextIdleTweenId);
+        if (_startText != null)
+        {
+            _startText.localScale = _startTextDefaultScale;
         }
     }
 
