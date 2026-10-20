@@ -69,6 +69,12 @@ public class CommunityView : UIBasePanel
     [SerializeField] private GameObject[] _goLostWallets;           // 遗失的钱包点位
     [SerializeField] private GameObject[] _goStaryCatFoodBowls;     // 流浪猫食物盆点位
     [SerializeField] private GameObject _goDonation;                // 社区募捐箱点位
+    [Header("节日")]
+    [SerializeField] private GameObject _january1;                  // 新年1: 母女
+    [SerializeField] private GameObject _january2;                  // 新年2: 鹿伯安
+    [SerializeField] private GameObject _may;                       // 端午: 狐小满
+    [SerializeField] private GameObject _august;                    // 中秋: 兔安宁
+    [SerializeField] private GameObject _december;                  // 圣诞: 鹿伯安
 
     [Space(10)]
     [SerializeField] private GameObject _goWorkRedPoint;            // 零工中心红点
