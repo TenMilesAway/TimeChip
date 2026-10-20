@@ -34,6 +34,8 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "homeSatisfactionBuff",
         "function",
         "random",
+        "exchangeGroup",
+        "exchange",
     };
 
     #region Getter

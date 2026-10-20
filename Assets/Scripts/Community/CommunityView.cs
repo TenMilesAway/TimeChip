@@ -21,6 +21,7 @@ public class CommunityView : UIBasePanel
     private Coroutine _trashCanReminderCoroutine;
     private Tween _noticeReminderTween;
     private Vector3 _noticeOriginalScale;
+    private Button _btnMay;
     private const string HomeStoreFunctionId = "HomeStore";
     private const string ConvenienceStoreFunctionId = "ConvenienceStore";
     private const string ClinicFunctionId = "Clinic";
@@ -52,6 +53,8 @@ public class CommunityView : UIBasePanel
     private const int DriedFishItemId = 5005;
     private const int DonationLotteryPoolId = 11;
     private const int DonationCost = 30;
+    private const int MayFestivalMonth = 5;
+    private const int MayFestivalExchangeGroupId = 1;
 
     [SerializeField] private Button _btnWork;             // 零工中心
     [SerializeField] private Button _btnHomeStore;        // 家具店
@@ -88,6 +91,7 @@ public class CommunityView : UIBasePanel
         BindLostWalletButtons();
         BindStrayCatFoodBowlButtons();
         BindDonationButton();
+        BindMayFestivalButton();
 
         if (_btnConvenienceStore == null)
         {
@@ -134,9 +138,12 @@ public class CommunityView : UIBasePanel
         playerInfoManager.TurnAdvanced += RefreshStrayCatFoodBowlSpawns;
         playerInfoManager.TurnAdvanced -= RefreshDonationSpawn;
         playerInfoManager.TurnAdvanced += RefreshDonationSpawn;
+        playerInfoManager.TurnAdvanced -= RefreshMayFestivalDisplay;
+        playerInfoManager.TurnAdvanced += RefreshMayFestivalDisplay;
         playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
         playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
         RefreshFunctionUnlocks(playerInfoManager);
+        RefreshMayFestivalDisplay();
         RefreshMissionNotice();
         StartTrashCanReminder();
     }
@@ -150,6 +157,7 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshLostWalletSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshMayFestivalDisplay;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
     }
@@ -168,7 +176,13 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshLostWalletSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshMayFestivalDisplay;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
+
+        if (_btnMay != null)
+        {
+            _btnMay.onClick.RemoveListener(OnClickMayFestival);
+        }
 
         if (_btnConvenienceStore != null)
         {
@@ -466,6 +480,59 @@ public class CommunityView : UIBasePanel
                         UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
                         TryPurchaseVendingMachine();
                     })
+            });
+    }
+
+    private void BindMayFestivalButton()
+    {
+        if (_may == null)
+        {
+            return;
+        }
+
+        if (_btnMay == null)
+        {
+            _btnMay = _may.GetComponent<Button>();
+        }
+
+        if (_btnMay == null)
+        {
+            Debug.LogError("CommunityView 的五月节日点位缺少 Button 组件。", this);
+            return;
+        }
+
+        _btnMay.onClick.AddListener(OnClickMayFestival);
+        _may.SetActive(false);
+    }
+
+    private void RefreshMayFestivalDisplay()
+    {
+        if (_may == null)
+        {
+            return;
+        }
+
+        bool visible = PlayerInfoManager.GetInstance().CurrentMonth == MayFestivalMonth;
+        _may.SetActive(visible);
+    }
+
+    private void OnClickMayFestival()
+    {
+        UiButtonAudio.PlayClick();
+        if (_may == null || !_may.activeInHierarchy)
+        {
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonExchangePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonExchangeOpenParam
+                {
+                    exchangeGroupId = MayFestivalExchangeGroupId
+                }
             });
     }
 

@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "groupId": 1,
+    "costItems": "5201,1;5202,1;5200,1",
+    "rewardItems": "3100,1"
+  },
+  {
+    "id": 2,
+    "groupId": 1,
+    "costItems": "5203,10",
+    "rewardItems": "3101,1"
+  }
+]

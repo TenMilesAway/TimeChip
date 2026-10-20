@@ -93,6 +93,14 @@ public partial class Tables
     /// ??????
     /// </summary>
     public RandomTable RandomTable {get; }
+    /// <summary>
+    /// 兑换组配置
+    /// </summary>
+    public ExchangeGroupTable ExchangeGroupTable {get; }
+    /// <summary>
+    /// 兑换条目配置
+    /// </summary>
+    public ExchangeTable ExchangeTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -117,6 +125,8 @@ public partial class Tables
         FishTable = new FishTable(loader("fish"));
         FishBaitTable = new FishBaitTable(loader("fishBait"));
         RandomTable = new RandomTable(loader("random"));
+        ExchangeGroupTable = new ExchangeGroupTable(loader("exchangeGroup"));
+        ExchangeTable = new ExchangeTable(loader("exchange"));
         ResolveRef();
     }
     
@@ -142,6 +152,8 @@ public partial class Tables
         FishTable.ResolveRef(this);
         FishBaitTable.ResolveRef(this);
         RandomTable.ResolveRef(this);
+        ExchangeGroupTable.ResolveRef(this);
+        ExchangeTable.ResolveRef(this);
     }
 }
 
