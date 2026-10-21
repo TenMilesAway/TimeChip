@@ -322,6 +322,34 @@
     "replace": 0
   },
   {
+    "id": 3102,
+    "name": "新春福袋",
+    "level": 3,
+    "inventoryType": 1,
+    "type": "节日礼盒",
+    "category": 3,
+    "desc": "绣着吉祥纹样的福袋，装着新年第一份喜气",
+    "icon": "Assets/Art/LittleGame/SpriteAtlas.spriteatlasv2[lucky_pouch]",
+    "canUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "101,200,100",
+    "replace": 0
+  },
+  {
+    "id": 3103,
+    "name": "新春红包",
+    "level": 3,
+    "inventoryType": 1,
+    "type": "节日礼盒",
+    "category": 3,
+    "desc": "厚实的大红包，藏着长辈沉甸甸的祝福",
+    "icon": "Assets/Art/LittleGame/SpriteAtlas.spriteatlasv2[red_envelope]",
+    "canUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "101,300,100",
+    "replace": 0
+  },
+  {
     "id": 4000,
     "name": "电动踏板车",
     "level": 2,

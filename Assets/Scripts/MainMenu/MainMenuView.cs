@@ -26,7 +26,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _inventoryButton;
     [SerializeField] private Button _settingButton;
     [SerializeField] private Button _saveButton;
-    [SerializeField] private Button _gameButton;
+    [SerializeField] private Button _gameTest;
 
     [SerializeField] private Transform _buffParent;
     [SerializeField] private GameObject _goLoad;
@@ -69,9 +69,9 @@ public class MainMenuView : UIBasePanel
         _inventoryButton.onClick.AddListener(OpenInventory);
         _settingButton.onClick.AddListener(OpenSetting);
         _saveButton.onClick.AddListener(SaveGame);
-        if (_gameButton != null)
+        if (_gameTest != null)
         {
-            _gameButton.onClick.AddListener(OpenGameSuperMarket);
+            _gameTest.onClick.AddListener(OpenGameSpringFestival);
         }
 
         _btnShowMission.onClick.AddListener(ToggleMissions);
@@ -166,9 +166,9 @@ public class MainMenuView : UIBasePanel
             _saveButton.onClick.RemoveListener(SaveGame);
         }
 
-        if (_gameButton != null)
+        if (_gameTest != null)
         {
-            _gameButton.onClick.RemoveListener(OpenGameSuperMarket);
+            _gameTest.onClick.RemoveListener(OpenGameSpringFestival);
         }
 
         if (_btnShowMission != null)
@@ -279,10 +279,10 @@ public class MainMenuView : UIBasePanel
             param: new OpenUIParam { data = true });
     }
 
-    private void OpenGameSuperMarket()
+    private void OpenGameSpringFestival()
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.GameSuperMarket, UILayer.System);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.GameSpringFestival, UILayer.System);
     }
 
     private void SaveGame()
