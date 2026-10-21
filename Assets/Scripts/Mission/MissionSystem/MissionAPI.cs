@@ -364,6 +364,19 @@ public static class MissionAPI
         for (int i = 0; i < conditions.Length; i++)
         {
             string itemCondition = conditions[i].Trim();
+            if (itemCondition.StartsWith("currentMonth:"))
+            {
+                if (int.TryParse(itemCondition.Substring(13), out int requiredMonth) &&
+                    requiredMonth >= 1 &&
+                    requiredMonth <= 12 &&
+                    _playerInfoManager.CurrentMonth == requiredMonth)
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
             if (itemCondition.StartsWith("date:") || itemCondition.StartsWith("force:"))
             {
                 int separatorIndex = itemCondition.IndexOf(':');

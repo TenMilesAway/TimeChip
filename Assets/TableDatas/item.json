@@ -276,7 +276,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_1]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,100",
+    "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,100;5200,1,15;5201,1,15;5202,1,15;5203,1,8;5203,2,5;5203,3,2",
     "replace": 0
   },
   {
@@ -304,7 +304,7 @@
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[zongzi]",
     "canUse": 1,
     "rewardScale": 6000,
-    "useEffect": "101,200,100",
+    "useEffect": "103,5,40;103,8,40;101,200,15;101,500,5",
     "replace": 0
   },
   {

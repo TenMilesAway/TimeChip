@@ -42,4 +42,5 @@ public enum MissionEventType
     Item,
     FishCatch,
     GameStamp,
+    ConvenienceStorePurchase,
 }

@@ -96,6 +96,22 @@
     "dialogueEnd": ""
   },
   {
+    "id": 203,
+    "name": "小满看店",
+    "desc": "端午时节，在狐小满的便利店购买任意一件商品",
+    "message": "ConvenienceStorePurchase",
+    "icon": 5201,
+    "condition": "currentMonth:5",
+    "target": "1",
+    "targetType": "",
+    "randomTarget": "",
+    "reward": "5200,1;5201,1;5202,1;5203,3",
+    "deadline": "",
+    "failure": "",
+    "dialogueStart": "",
+    "dialogueEnd": ""
+  },
+  {
     "id": 1000,
     "name": "外出捕食",
     "desc": "完成一次零工",

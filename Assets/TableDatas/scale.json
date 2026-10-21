@@ -52,5 +52,17 @@
     "name": "portContainerItem",
     "desc": "在港口集装箱时的倍率",
     "scaleValue": 7000
+  },
+  {
+    "id": 10,
+    "name": "exchangeLeft",
+    "desc": "兑换面板左侧的倍率",
+    "scaleValue": 7000
+  },
+  {
+    "id": 11,
+    "name": "exchangeRight",
+    "desc": "兑换面板右侧的倍率",
+    "scaleValue": 10000
   }
 ]

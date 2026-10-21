@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class CommonExchangeGroup : MonoBehaviour
 {
     private const float IconScaleDivisor = 10000f;
+    private const string ExchangeLeftScaleName = "exchangeLeft";
+    private const string ExchangeRightScaleName = "exchangeRight";
 
     [SerializeField] private Button _btnExchange;
     [SerializeField] private GameObject[] _goExchangeNeedItems;
@@ -76,6 +78,8 @@ public class CommonExchangeGroup : MonoBehaviour
             return;
         }
 
+        float exchangeLeftScaleMultiplier = GetScaleMultiplier(ExchangeLeftScaleName);
+        float exchangeRightScaleMultiplier = GetScaleMultiplier(ExchangeRightScaleName);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         for (int i = 0; i < _goExchangeNeedItems.Length; i++)
         {
@@ -107,7 +111,8 @@ public class CommonExchangeGroup : MonoBehaviour
                 LoadIconAsync(
                     _imgExchangeNeedItems[i],
                     cost.ItemId,
-                    _presentationVersion);
+                    _presentationVersion,
+                    exchangeLeftScaleMultiplier);
             }
         }
 
@@ -118,7 +123,11 @@ public class CommonExchangeGroup : MonoBehaviour
 
         if (_imgExchangeGetItem != null)
         {
-            LoadIconAsync(_imgExchangeGetItem, rewardItemId, _presentationVersion);
+            LoadIconAsync(
+                _imgExchangeGetItem,
+                rewardItemId,
+                _presentationVersion,
+                exchangeRightScaleMultiplier);
         }
 
         if (_btnExchange != null)
@@ -157,7 +166,32 @@ public class CommonExchangeGroup : MonoBehaviour
         RefreshPresentation();
     }
 
-    private async void LoadIconAsync(Image targetImage, int itemId, int presentationVersion)
+    private static float GetScaleMultiplier(string scaleName)
+    {
+        cfg.Scale scaleConfig = GetScaleConfig(scaleName);
+        return scaleConfig == null ? 1f : scaleConfig.ScaleValue / IconScaleDivisor;
+    }
+
+    private static cfg.Scale GetScaleConfig(string scaleName)
+    {
+        IReadOnlyList<cfg.Scale> scales = DataTableMananger.GetInstance().Tables.ScaleTable.DataList;
+        for (int i = 0; i < scales.Count; i++)
+        {
+            if (scales[i].Name == scaleName)
+            {
+                return scales[i];
+            }
+        }
+
+        Debug.LogError($"缩放配置不存在: [{scaleName}]");
+        return null;
+    }
+
+    private async void LoadIconAsync(
+        Image targetImage,
+        int itemId,
+        int presentationVersion,
+        float panelScaleMultiplier)
     {
         if (targetImage == null)
         {
@@ -185,7 +219,7 @@ public class CommonExchangeGroup : MonoBehaviour
 
         targetImage.sprite = icon;
         targetImage.SetNativeSize();
-        float scale = iconScale / IconScaleDivisor;
+        float scale = iconScale / IconScaleDivisor * panelScaleMultiplier;
         targetImage.rectTransform.localScale = Vector3.one * scale;
     }
 }

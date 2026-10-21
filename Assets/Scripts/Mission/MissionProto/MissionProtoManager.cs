@@ -101,6 +101,10 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         {
             missionRequire = new MissionRequireClinicView(target);
         }
+        else if (missionConfig.Message == "ConvenienceStorePurchase")
+        {
+            missionRequire = new MissionRequireConvenienceStorePurchase(target);
+        }
         else if (missionConfig.Message == "AdvanceTurn")
         {
             missionRequire = new MissionRequireAdvanceTurn(target);
