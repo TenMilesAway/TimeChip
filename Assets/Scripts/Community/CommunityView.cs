@@ -55,6 +55,8 @@ public class CommunityView : UIBasePanel
     private const int DonationCost = 30;
     private const int MayFestivalMonth = 5;
     private const int MayFestivalExchangeGroupId = 1;
+    private const int DragonBoatPromotionMissionId = 4000;
+    private const string DragonBoatPromotionStartDialogueConfig = "Festival,0";
 
     [SerializeField] private Button _btnWork;             // 零工中心
     [SerializeField] private Button _btnHomeStore;        // 家具店
@@ -524,6 +526,33 @@ public class CommunityView : UIBasePanel
             return;
         }
 
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.CurrentMonth == MayFestivalMonth &&
+            !playerInfoManager.HasCompletedMission(DragonBoatPromotionMissionId) &&
+            !MissionAPI.IsMissionInProgress(DragonBoatPromotionMissionId))
+        {
+            if (MissionAPI.TryStartDragonBoatPromotionMission(playStartDialogue: false) &&
+                MissionDialogueService.TryPlayStandaloneDialogue(
+                    DragonBoatPromotionStartDialogueConfig,
+                    _ =>
+                    {
+                        if (this == null)
+                        {
+                            return;
+                        }
+
+                        OpenMayFestivalExchangePanel();
+                    }))
+            {
+                return;
+            }
+        }
+
+        OpenMayFestivalExchangePanel();
+    }
+
+    private void OpenMayFestivalExchangePanel()
+    {
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonExchangePanel,
             UILayer.System,

@@ -17,6 +17,8 @@ public static class MissionAPI
     private const int RandomMissionId = 3001;
     private const int RandomFishMissionId = 3004;
     private const int RandomStampMissionId = 3005;
+    /// <summary>由社区 _may 点击开启，不参与自动接取。</summary>
+    private const int DragonBoatPromotionMissionId = 4000;
 
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
@@ -30,6 +32,7 @@ public static class MissionAPI
     private static bool _isClaimingMission;
     private static bool _hasBroadcastSimulationCoinBalance;
     private static int _lastBroadcastSimulationCoinBalance;
+    private static bool _dragonBoatPromotionMayButtonStartAuthorized;
 
     /// <summary>离开游戏或重新初始化前清空运行时任务，避免串档。</summary>
     public static void Shutdown()
@@ -138,6 +141,40 @@ public static class MissionAPI
 
         Mission<MissionMessage> mission = MissionManager.GetMission(missionId.ToString());
         return mission != null && !mission.IsFinished;
+    }
+
+    /// <summary>仅由社区 <c>_may</c> 按钮点击开启端午促销（任务 4000）。</summary>
+    public static bool TryStartDragonBoatPromotionMission(bool playStartDialogue = true)
+    {
+        if (!_isInitialized || _playerInfoManager == null)
+        {
+            return false;
+        }
+
+        string missionIdText = DragonBoatPromotionMissionId.ToString();
+        PlayerInfoData playerData = _playerInfoManager.GetSnapshot();
+        if (playerData.completedMissionIds.Contains(missionIdText) ||
+            MissionManager.GetMission(missionIdText) != null)
+        {
+            return false;
+        }
+
+        if (!TryGetMissionConfig(missionIdText, out cfg.Mission missionConfig))
+        {
+            return false;
+        }
+
+        _dragonBoatPromotionMayButtonStartAuthorized = true;
+        try
+        {
+            StartMission(missionConfig, playStartDialogue);
+        }
+        finally
+        {
+            _dragonBoatPromotionMayButtonStartAuthorized = false;
+        }
+
+        return MissionManager.GetMission(missionIdText) != null;
     }
 
     /// <summary>获取已启动任务固定后的随机道具目标。</summary>
@@ -286,6 +323,11 @@ public static class MissionAPI
             for (int i = 0; i < configs.Count; i++)
             {
                 cfg.Mission missionConfig = configs[i];
+                if (missionConfig.Id == DragonBoatPromotionMissionId)
+                {
+                    continue;
+                }
+
                 string missionId = missionConfig.Id.ToString();
                 if (MissionManager.GetMission(missionId) != null ||
                     playerData.completedMissionIds.Contains(missionId) ||
@@ -348,6 +390,11 @@ public static class MissionAPI
 
     private static bool CanStartMission(cfg.Mission missionConfig, bool allowInitialMissions)
     {
+        if (missionConfig.Id == DragonBoatPromotionMissionId)
+        {
+            return false;
+        }
+
         if (IsMonthlyRandomMission(missionConfig.Id))
         {
             return false;
@@ -473,8 +520,14 @@ public static class MissionAPI
         return false;
     }
 
-    private static void StartMission(cfg.Mission missionConfig)
+    private static void StartMission(cfg.Mission missionConfig, bool playStartDialogue = true)
     {
+        if (missionConfig.Id == DragonBoatPromotionMissionId &&
+            !_dragonBoatPromotionMayButtonStartAuthorized)
+        {
+            return;
+        }
+
         PlayerMissionData missionData = CreateMissionData(missionConfig, null);
         if (IsMonthlyRandomMission(missionConfig.Id))
         {
@@ -506,7 +559,11 @@ public static class MissionAPI
 
             Debug.Log("[任务系统] 开启任务: " + missionConfig.Id + " - " + missionConfig.Name);
             ShowMissionStartedTip(missionConfig);
-            MissionDialogueService.TryPlayStartDialogue(missionConfig);
+            if (playStartDialogue)
+            {
+                MissionDialogueService.TryPlayStartDialogue(missionConfig);
+            }
+
             BroadcastSimulationCoinBalance(force: true);
             SynchronizeAdvanceTurnMissions();
             return;

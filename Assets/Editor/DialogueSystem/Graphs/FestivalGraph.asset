@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0202a3095b7477a4091d56344f0af6b3, type: 3}
+  m_Name: FestivalGraph
+  m_EditorClassIdentifier: 
+  <FileName>k__BackingField: Festival
+  <Groups>k__BackingField:
+  - <ID>k__BackingField: 215c4560-4099-44c9-88af-86ee7c35ffb3
+    <Name>k__BackingField: "4000\u7AEF\u5348\u8282\u5F00\u59CB"
+    <Position>k__BackingField: {x: 445, y: 2852}
+  - <ID>k__BackingField: 82b79eaa-338f-4a51-8db2-1e3baa3efbda
+    <Name>k__BackingField: "4000\u7AEF\u5348\u8282\u7ED3\u675F"
+    <Position>k__BackingField: {x: 450, y: 3286}
+  <Nodes>k__BackingField:
+  - <ID>k__BackingField: 5fcba360-6601-4bb1-af3d-ec5daf3aff43
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u4E94\u6708\u6E7F\u6C14\u6E10\u91CD\uFF0C\u4FBF\u5229\u5E97\u95E8\u53E3\u6302\u8D77\u4E86\u827E\u8349\uFF0C\u7A7A\u6C14\u91CC\u90FD\u662F\u7CEF\u7C73\u548C\u6E05\u9999\u7684\u5473\u9053\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 39c94458-f7e5-405f-94b1-e2ad91773eef
+    <GroupID>k__BackingField: 215c4560-4099-44c9-88af-86ee7c35ffb3
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 5
+    <SpeakerExpressionPath>k__BackingField: 
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 470, y: 2914}
+  - <ID>k__BackingField: 39c94458-f7e5-405f-94b1-e2ad91773eef
+    <Name>k__BackingField: 2
+    <Text>k__BackingField: "\u4F60\u6765\u5F97\u6B63\u597D\uFF01\u7AEF\u5348\u4FC3\u9500\u5F00\u59CB\u4E86\u2014\u2014\u8FD9\u4E2A\u6708\u53EA\u8981\u5728\u6211\u8FD9\u513F\u4E70\u4EFB\u610F\u4E00\u4EF6\u5546\u54C1\uFF0C\u7CBD\u53F6\u3001\u9EBB\u7EF3\u3001\u7CEF\u7C73\u5404\u7ED9\u4F60\u4E09\u5957\uFF0C\u827E\u8349\u518D\u9644\u5341\u628A\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: d650f954-b546-4d56-a7c4-104811a31d52
+    <GroupID>k__BackingField: 215c4560-4099-44c9-88af-86ee7c35ffb3
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 6
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1132, y: 2915}
+  - <ID>k__BackingField: d650f954-b546-4d56-a7c4-104811a31d52
+    <Name>k__BackingField: 3
+    <Text>k__BackingField: "\u72D0\u8001\u677F\u4ECA\u5929\u5F88\u6177\u6168\u554A\uFF01"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 6c0ceb40-50bd-4da9-98c7-28ad6cefc9c1
+    <GroupID>k__BackingField: 215c4560-4099-44c9-88af-86ee7c35ffb3
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 0
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_excited]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 1796, y: 2915}
+  - <ID>k__BackingField: 4535b632-0e8a-4cf5-9af0-98e66863207a
+    <Name>k__BackingField: 1
+    <Text>k__BackingField: "\u6750\u6599\u90FD\u5230\u8D26\u5566\uFF01\u60F3\u505A\u7CBD\u5B50\u5C31\u51D1\u9F50\u90A3\u4E09\u6837\uFF0C\u827E\u8349\u591F\u4E86\u4E5F\u80FD\u6362\u798F\u888B\u2014\u2014\u5151\u6362\u53F0\u4E00\u76F4\u5728\u8FD9\u91CC\uFF0C\u6211\u4E0D\u6536\u624B\u7EED\u8D39\u54E6\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 82b79eaa-338f-4a51-8db2-1e3baa3efbda
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 6
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 475, y: 3348}
+  - <ID>k__BackingField: 6c0ceb40-50bd-4da9-98c7-28ad6cefc9c1
+    <Name>k__BackingField: 4
+    <Text>k__BackingField: "\u8FC7\u8282\u561B\uFF0C\u603B\u5F97\u8BA9\u5927\u5BB6\u628A\u624B\u827A\u7EC3\u8D77\u6765\u3002\u6210\u54C1\u60F3\u6362\u7CBD\u5B50\u6216\u827E\u8349\u798F\u888B\uFF0C\u6765\u8FD9\u627E\u6211\u5C31\u884C\u3002"
+    <Choices>k__BackingField:
+    - <Text>k__BackingField: Next Dialogue
+      <NodeID>k__BackingField: 
+    <GroupID>k__BackingField: 215c4560-4099-44c9-88af-86ee7c35ffb3
+    <DialogueType>k__BackingField: 0
+    <Speaker>k__BackingField: 6
+    <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[hu_xiaoman_avatar]
+    <Reward>k__BackingField: 
+    <Position>k__BackingField: {x: 2106, y: 2916}
+  <OldGroupNames>k__BackingField:
+  - "4000\u7AEF\u5348\u8282\u5F00\u59CB"
+  - "4000\u7AEF\u5348\u8282\u7ED3\u675F"
+  <OldUngroupedNodeNames>k__BackingField: []
+  <OldGroupedNodeNames>k__BackingField:
+    list:
+    - Key: "4000\u7AEF\u5348\u8282\u5F00\u59CB"
+      Value:
+      - 1
+      - 2
+      - 3
+      - 4
+    - Key: "4000\u7AEF\u5348\u8282\u7ED3\u675F"
+      Value:
+      - 1
