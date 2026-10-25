@@ -13,6 +13,9 @@ public sealed class GlobalInfoData
 
     /// <summary>各成长卡牌的全局状态</summary>
     public List<GrowCardData> growCards = new List<GrowCardData>();
+
+    /// <summary>已解锁的 Grow2 天赋 ID</summary>
+    public List<int> unlockedGrow2TalentIds = new List<int>();
 }
 
 /// <summary>
@@ -115,6 +118,14 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
     {
         EnsureInitialized();
         return CreateGrowCardCopies(_data.growCards);
+    }
+
+    /// <summary>将回忆点设为指定值（用于 GM / 测试）</summary>
+    public void SetMemoryPoints(int memoryPoints)
+    {
+        EnsureInitialized();
+        _data.memoryPoints = Mathf.Max(0, memoryPoints);
+        NotifyChanged();
     }
 
     /// <summary>增加回忆点，数量必须为正数</summary>
@@ -220,6 +231,64 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
     /// <summary>
     /// 尝试消耗回忆点并将已解锁卡牌提升一星
     /// </summary>
+    public HashSet<int> GetUnlockedGrow2TalentIdSet()
+    {
+        EnsureInitialized();
+        NormalizeGrow2Talents();
+        return new HashSet<int>(_data.unlockedGrow2TalentIds);
+    }
+
+    public bool IsGrow2TalentUnlocked(int grow2Id)
+    {
+        EnsureInitialized();
+        return _data.unlockedGrow2TalentIds != null && _data.unlockedGrow2TalentIds.Contains(grow2Id);
+    }
+
+    public bool CanUnlockGrow2Talent(int grow2Id, Grow2TalentGraph graph)
+    {
+        EnsureInitialized();
+        if (graph == null || !graph.TryGetNode(grow2Id, out cfg.Grow2 config))
+        {
+            return false;
+        }
+
+        if (IsGrow2TalentUnlocked(grow2Id))
+        {
+            return false;
+        }
+
+        if (!graph.IsPrerequisiteSatisfied(grow2Id, GetUnlockedGrow2TalentIdSet()))
+        {
+            return false;
+        }
+
+        return _data.memoryPoints >= config.MemoryPointCost;
+    }
+
+    public bool TryUnlockGrow2Talent(int grow2Id, Grow2TalentGraph graph)
+    {
+        EnsureInitialized();
+        if (!CanUnlockGrow2Talent(grow2Id, graph))
+        {
+            return false;
+        }
+
+        cfg.Grow2 config = DataTableMananger.GetInstance().Tables.Grow2Table.Get(grow2Id);
+        _data.memoryPoints -= config.MemoryPointCost;
+        if (_data.unlockedGrow2TalentIds == null)
+        {
+            _data.unlockedGrow2TalentIds = new List<int>();
+        }
+
+        if (!_data.unlockedGrow2TalentIds.Contains(grow2Id))
+        {
+            _data.unlockedGrow2TalentIds.Add(grow2Id);
+        }
+
+        NotifyChanged();
+        return true;
+    }
+
     public bool TryUpgradeGrowCard(int growId, int memoryPointCost)
     {
         if (memoryPointCost <= 0)
@@ -340,6 +409,7 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         _data = _data ?? new GlobalInfoData();
         _data.memoryPoints = Mathf.Max(0, _data.memoryPoints);
         _data.growCards = _data.growCards ?? new List<GrowCardData>();
+        NormalizeGrow2Talents();
 
         HashSet<int> knownIds = new HashSet<int>();
         for (int index = _data.growCards.Count - 1; index >= 0; index--)
@@ -352,6 +422,20 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
             }
 
             card.starLevel = Mathf.Clamp(card.starLevel, 0, MaxGrowCardStarLevel);
+        }
+    }
+
+    private void NormalizeGrow2Talents()
+    {
+        _data.unlockedGrow2TalentIds = _data.unlockedGrow2TalentIds ?? new List<int>();
+        HashSet<int> knownGrow2Ids = new HashSet<int>();
+        for (int index = _data.unlockedGrow2TalentIds.Count - 1; index >= 0; index--)
+        {
+            int grow2Id = _data.unlockedGrow2TalentIds[index];
+            if (grow2Id <= 0 || !knownGrow2Ids.Add(grow2Id))
+            {
+                _data.unlockedGrow2TalentIds.RemoveAt(index);
+            }
         }
     }
 
@@ -390,7 +474,10 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         return new GlobalInfoData
         {
             memoryPoints = source.memoryPoints,
-            growCards = CreateGrowCardCopies(source.growCards)
+            growCards = CreateGrowCardCopies(source.growCards),
+            unlockedGrow2TalentIds = source.unlockedGrow2TalentIds != null
+                ? new List<int>(source.unlockedGrow2TalentIds)
+                : new List<int>()
         };
     }
 

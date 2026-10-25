@@ -86,5 +86,13 @@
     "unlockItemId": 0,
     "unlockAge": 0,
     "unlockMonth": 0
+  },
+  {
+    "id": "CommunityCentreNoticeMission3005",
+    "name": "布告鹿伯安委托",
+    "unlockMissionId": 201,
+    "unlockItemId": 0,
+    "unlockAge": 0,
+    "unlockMonth": 0
   }
 ]

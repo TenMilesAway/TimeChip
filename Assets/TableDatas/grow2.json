@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1001,
+    "name": "时光回响",
+    "branch": "通用",
+    "prerequisiteId": 0,
+    "memoryPointCost": 30,
+    "effect": "MemoryGainPct",
+    "effectValue": 2,
+    "effectDesc": "获得回忆点数+2%"
+  },
+  {
+    "id": 1002,
+    "name": "健壮",
+    "branch": "健康",
+    "prerequisiteId": 1001,
+    "memoryPointCost": 45,
+    "effect": "Health",
+    "effectValue": 1,
+    "effectDesc": "健康消耗-1"
+  },
+  {
+    "id": 1003,
+    "name": "多金",
+    "branch": "经营",
+    "prerequisiteId": 1001,
+    "memoryPointCost": 45,
+    "effect": "WorkIncomePct",
+    "effectValue": 5,
+    "effectDesc": "零工收益+10"
+  },
+  {
+    "id": 1004,
+    "name": "探索",
+    "branch": "探索",
+    "prerequisiteId": 1001,
+    "memoryPointCost": 45,
+    "effect": "CommunityRandomPct",
+    "effectValue": 1,
+    "effectDesc": "社区随机事件概率小幅提升"
+  },
+  {
+    "id": 1005,
+    "name": "健壮II",
+    "branch": "健康",
+    "prerequisiteId": 1002,
+    "memoryPointCost": 75,
+    "effect": "HealthFree",
+    "effectValue": 2,
+    "effectDesc": "2%概率不消耗健康值"
+  },
+  {
+    "id": 1006,
+    "name": "多金II",
+    "branch": "经营",
+    "prerequisiteId": 1003,
+    "memoryPointCost": 75,
+    "effect": "ShopDiscountPct",
+    "effectValue": 3,
+    "effectDesc": "便利店价格-10"
+  },
+  {
+    "id": 1007,
+    "name": "探索II",
+    "branch": "探索",
+    "prerequisiteId": 1004,
+    "memoryPointCost": 75,
+    "effect": "FishRarePct",
+    "effectValue": 1,
+    "effectDesc": "钓鱼获得稀有鱼概率小幅提升"
+  },
+  {
+    "id": 1008,
+    "name": "健壮III",
+    "branch": "健康",
+    "prerequisiteId": 1005,
+    "memoryPointCost": 120,
+    "effect": "OfflineCapHours",
+    "effectValue": 1,
+    "effectDesc": "健康消耗-1"
+  },
+  {
+    "id": 1009,
+    "name": "多金III",
+    "branch": "经营",
+    "prerequisiteId": 1006,
+    "memoryPointCost": 120,
+    "effect": "MissionRewardPct",
+    "effectValue": 10,
+    "effectDesc": "家具店价格-10"
+  },
+  {
+    "id": 1010,
+    "name": "探索III",
+    "branch": "探索",
+    "prerequisiteId": 1007,
+    "memoryPointCost": 120,
+    "effect": "LotteryLuck",
+    "effectValue": 5,
+    "effectDesc": "抽奖获得高品阶奖励小幅提升"
+  }
+]

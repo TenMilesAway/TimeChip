@@ -204,9 +204,13 @@ public static class GuideService
     private static async void ShowFirstMissionRewardGuide(string instruction, Action<bool> onCompleted)
     {
         MissionView missionView = await GetOrOpenPanelAsync<MissionView>(GlobalDefine.MissionView);
-        if (missionView == null || !missionView.TryGetFirstMissionClaimButton(out Button claimButton))
+        if (missionView == null ||
+            !missionView.TryGetMissionClaimButton(
+                MissionView.GuideRewardMissionId,
+                out Button claimButton))
         {
-            Debug.LogError("无法启动第一个任务领奖引导。");
+            Debug.LogError(
+                $"无法启动任务 [{MissionView.GuideRewardMissionId}] 领奖引导。");
             onCompleted?.Invoke(false);
             return;
         }

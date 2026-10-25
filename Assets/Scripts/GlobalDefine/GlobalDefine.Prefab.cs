@@ -10,6 +10,7 @@ public class GlobalDefine
     public const string HomeView = "Assets/Art/Home/Prefab/HomeView.prefab";                               // Mid+
     public const string MissionView = "Assets/Art/Mission/Prefabs/MissionView.prefab";                     // Mid+
     public const string GrowView = "Assets/Art/Grow/Prefab/GrowView.prefab";                               // Mid+
+    public const string GrowView2 = "Assets/Art/Grow/Prefab/GrowView2.prefab";                             // Mid+
     public const string SubwayView = "Assets/Art/Community/Prefab/SubwayView.prefab";                      // Mid+
     public const string FishView = "Assets/Art/Community/Prefab/FishView.prefab";                          // Mid+
     public const string PortView = "Assets/Art/Community/Prefab/PortView.prefab";                          // Mid+
@@ -39,7 +40,7 @@ public class GlobalDefine
     public const string GameStamp = "Assets/Art/LittleGame/Prefab/GameStamp.prefab";                       // System
     public const string GameSuperMarket = "Assets/Art/LittleGame/Prefab/GameSuperMarket.prefab";           // System
     public const string CommonExchangePanel = "Assets/Art/Common/Prefab/CommonExchangePanel.prefab";       // System
-    public const string GameSpringFestival = "Assets/Art/LittleGame/Prefab/GameSpringFestival.prefab"; // System
+    public const string GameSpringFestival = "Assets/Art/LittleGame/Prefab/GameSpringFestival.prefab";     // System
 
 
     // Item

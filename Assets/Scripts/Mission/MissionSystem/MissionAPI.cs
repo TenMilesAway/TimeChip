@@ -17,6 +17,8 @@ public static class MissionAPI
     private const int RandomMissionId = 3001;
     private const int RandomFishMissionId = 3004;
     private const int RandomStampMissionId = 3005;
+    private const string CommunityCentreNoticeMission3005FunctionId =
+        "CommunityCentreNoticeMission3005";
     /// <summary>由社区 _may 点击开启，不参与自动接取。</summary>
     private const int DragonBoatPromotionMissionId = 4000;
 
@@ -585,8 +587,14 @@ public static class MissionAPI
     /// <summary>公告栏展示本月待领取的随机委托时返回 true。</summary>
     public static bool HasMonthlyRandomMissionOffer()
     {
-        return _isInitialized && _playerInfoManager != null &&
-            _playerInfoManager.HasMonthlyRandomMissionOffer();
+        if (!_isInitialized || _playerInfoManager == null ||
+            !_playerInfoManager.HasMonthlyRandomMissionOffer())
+        {
+            return false;
+        }
+
+        return IsMonthlyRandomMissionOfferAccessible(
+            _playerInfoManager.GetMonthlyRandomMissionOfferId());
     }
 
     /// <summary>由公告栏领取本月的随机委托。</summary>
@@ -604,6 +612,8 @@ public static class MissionAPI
                 _playerInfoManager.GetMonthlyRandomMissionOfferId().ToString(),
                 out missionConfig) ||
             (missionConfig.Id == RandomFishMissionId && !SubwayView.IsFishingUnlocked()) ||
+            (missionConfig.Id == RandomStampMissionId &&
+             !IsCommunityCentreNoticeStampMissionUnlocked()) ||
             MissionManager.GetMission(missionConfig.Id.ToString()) != null)
         {
             return false;
@@ -659,7 +669,11 @@ public static class MissionAPI
             monthlyOfferCandidates.Add(RandomFishMissionId);
         }
 
-        monthlyOfferCandidates.Add(RandomStampMissionId);
+        if (IsCommunityCentreNoticeStampMissionUnlocked())
+        {
+            monthlyOfferCandidates.Add(RandomStampMissionId);
+        }
+
         int missionId = monthlyOfferCandidates[
             TurnRandom.Range("Mission.MonthlyOffer.Type", 0, monthlyOfferCandidates.Count)];
 
@@ -697,6 +711,27 @@ public static class MissionAPI
         return missionId == RandomMissionId ||
             missionId == RandomFishMissionId ||
             missionId == RandomStampMissionId;
+    }
+
+    private static bool IsCommunityCentreNoticeStampMissionUnlocked()
+    {
+        return FunctionUnlockService.IsUnlocked(CommunityCentreNoticeMission3005FunctionId);
+    }
+
+    private static bool IsMonthlyRandomMissionOfferAccessible(int missionId)
+    {
+        if (missionId == RandomFishMissionId && !SubwayView.IsFishingUnlocked())
+        {
+            return false;
+        }
+
+        if (missionId == RandomStampMissionId &&
+            !IsCommunityCentreNoticeStampMissionUnlocked())
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static bool TryPickRandomMissionTarget(

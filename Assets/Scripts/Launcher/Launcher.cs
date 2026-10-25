@@ -27,6 +27,8 @@ public class Launcher : SingletonMono<Launcher>
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
     [SerializeField] private Text _txtLoad;                       // 加载进度文本
     [SerializeField] private bool _enableGmPanel;                 // 是否启用 GM 面板
+    [SerializeField] private bool _debugGrantMemoryPointsOnStart; // 测试：启动时赋予回忆点
+    [SerializeField] private int _debugMemoryPoints = 9999;       // 测试回忆点数量
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
@@ -61,7 +63,20 @@ public class Launcher : SingletonMono<Launcher>
         _growButton.interactable = false;
         _loadSaveButton.interactable = PlayerPrefsSaveSystem.Exists(PlayerSaveSlotId);
 
+        ApplyDebugMemoryGrantIfNeeded();
         InitializeTablesForGrowButtonAsync();
+    }
+
+    private void ApplyDebugMemoryGrantIfNeeded()
+    {
+        if (!_debugGrantMemoryPointsOnStart)
+        {
+            return;
+        }
+
+        GlobalInfoManager.GetInstance().Init();
+        GlobalInfoManager.GetInstance().SetMemoryPoints(_debugMemoryPoints);
+        GlobalInfoManager.GetInstance().Save();
     }
 
     private async void InitializeTablesForGrowButtonAsync()
@@ -373,28 +388,24 @@ public class Launcher : SingletonMono<Launcher>
             return;
         }
 
-        if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.GrowView, "时光藏馆"))
+        if (!await DownloadMenuPanelDependenciesAsync(GlobalDefine.GrowView2, "时光藏馆"))
         {
             CancelMenuPanelTransition();
             return;
         }
 
         await DataTableMananger.GetInstance().Init();
-        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
-        if (tables == null)
+        if (DataTableMananger.GetInstance().Tables == null)
         {
             Debug.LogError("数据表初始化失败，无法打开成长界面", this);
             CancelMenuPanelTransition();
             return;
         }
 
-        GlobalInfoManager globalInfoManager = GlobalInfoManager.GetInstance();
-        globalInfoManager.Init();
-        globalInfoManager.EnsureGrowCards(
-            tables.GrowTable.DataMap.Keys);
+        GlobalInfoManager.GetInstance().Init();
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(
-            GlobalDefine.GrowView,
+            GlobalDefine.GrowView2,
             action: CompleteMenuPanelTransition);
     }
 

@@ -24,6 +24,7 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "convenience",
         "buffConfig",
         "grow",
+        "grow2",
         "communityCentre",
         "subway",
         "fishStore",

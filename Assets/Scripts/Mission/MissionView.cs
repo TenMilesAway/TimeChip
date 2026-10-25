@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class MissionView : UIBasePanel
 {
+    public const int GuideRewardMissionId = 1000;
+
     [SerializeField] private Text _txtCurrentPage;
     [SerializeField] private Text _txtMaxPage;
     [SerializeField] private Button _btnPrevious;
@@ -166,16 +168,51 @@ public class MissionView : UIBasePanel
 
     public bool TryGetFirstMissionClaimButton(out Button claimButton)
     {
-        if (_missionItems != null &&
-            _missionItems.Length > 0 &&
-            _missionItems[0] != null &&
-            _missionItems[0].TryGetClaimButton(out claimButton))
+        return TryGetMissionClaimButton(GuideRewardMissionId, out claimButton);
+    }
+
+    public bool TryGetMissionClaimButton(int missionId, out Button claimButton)
+    {
+        claimButton = null;
+        if (!_isUiReady || missionId <= 0)
+        {
+            return false;
+        }
+
+        RefreshMissions();
+
+        int missionIndex = -1;
+        for (int i = 0; i < _missions.Count; i++)
+        {
+            if (int.TryParse(_missions[i].id, out int activeMissionId) &&
+                activeMissionId == missionId)
+            {
+                missionIndex = i;
+                break;
+            }
+        }
+
+        if (missionIndex < 0)
+        {
+            Debug.LogError($"MissionView 未找到进行中的任务: [{missionId}]", this);
+            return false;
+        }
+
+        int requiredPage = missionIndex / _missionItems.Length + 1;
+        if (_currentPage != requiredPage)
+        {
+            _currentPage = requiredPage;
+            RefreshPage();
+        }
+
+        int slotIndex = missionIndex % _missionItems.Length;
+        if (_missionItems[slotIndex] != null &&
+            _missionItems[slotIndex].TryGetClaimButton(out claimButton))
         {
             return true;
         }
 
-        claimButton = null;
-        Debug.LogError("MissionView 的第一个任务没有可点击的领奖按钮。", this);
+        Debug.LogError($"MissionView 任务 [{missionId}] 没有可点击的领奖按钮。", this);
         return false;
     }
 

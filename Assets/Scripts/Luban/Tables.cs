@@ -101,6 +101,10 @@ public partial class Tables
     /// 兑换条目配置
     /// </summary>
     public ExchangeTable ExchangeTable {get; }
+    /// <summary>
+    /// 天赋树 Grow2 节点配置
+    /// </summary>
+    public Grow2Table Grow2Table {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -127,6 +131,7 @@ public partial class Tables
         RandomTable = new RandomTable(loader("random"));
         ExchangeGroupTable = new ExchangeGroupTable(loader("exchangeGroup"));
         ExchangeTable = new ExchangeTable(loader("exchange"));
+        Grow2Table = new Grow2Table(loader("grow2"));
         ResolveRef();
     }
     
@@ -154,6 +159,7 @@ public partial class Tables
         RandomTable.ResolveRef(this);
         ExchangeGroupTable.ResolveRef(this);
         ExchangeTable.ResolveRef(this);
+        Grow2Table.ResolveRef(this);
     }
 }
 
