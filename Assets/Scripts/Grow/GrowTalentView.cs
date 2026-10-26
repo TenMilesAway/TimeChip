@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GrowView2 : UIBasePanel
+public class GrowTalentView : UIBasePanel
 {
     private const string HiddenText = "???";
 

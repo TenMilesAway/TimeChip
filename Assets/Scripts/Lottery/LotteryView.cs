@@ -1019,9 +1019,15 @@ public class LotteryView : UIBasePanel
         }
 
         long totalWeight = 0;
+        long[] adjustedWeights = new long[rewards.Count];
+        Grow2TalentEffectSystem grow2Effects = Grow2TalentEffectSystem.GetInstance();
         for (int i = 0; i < rewards.Count; i++)
         {
-            totalWeight += rewards[i].Weight;
+            adjustedWeights[i] = grow2Effects.GetLotteryRewardWeight(
+                rewards[i].ItemId,
+                rewards[i].ItemCount,
+                rewards[i].Weight);
+            totalWeight += adjustedWeights[i];
         }
 
         long randomValue = TurnRandom.Range(randomKey, totalWeight);
@@ -1030,7 +1036,7 @@ public class LotteryView : UIBasePanel
         for (int i = 0; i < rewards.Count; i++)
         {
             LotteryReward lotteryReward = rewards[i];
-            accumulatedWeight += lotteryReward.Weight;
+            accumulatedWeight += adjustedWeights[i];
 
             if (randomValue < accumulatedWeight || i == rewards.Count - 1)
             {

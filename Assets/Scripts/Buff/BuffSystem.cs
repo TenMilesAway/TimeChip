@@ -127,17 +127,19 @@ public sealed class BuffSystem : Singleton<BuffSystem>
                 ref healthCostMultiplier);
         }
 
-        return new WorkBuffResult(
-            Mathf.Max(0, Mathf.RoundToInt(coinReward * coinMultiplier)),
-            Mathf.Max(0, Mathf.RoundToInt(healthCost * healthCostMultiplier)));
+        int finalCoinReward = Mathf.Max(0, Mathf.RoundToInt(coinReward * coinMultiplier));
+        int finalHealthCost = Mathf.Max(0, Mathf.RoundToInt(healthCost * healthCostMultiplier));
+        Grow2TalentEffectSystem.GetInstance().ApplyWorkCoinBonus(ref finalCoinReward);
+        return new WorkBuffResult(finalCoinReward, finalHealthCost);
     }
 
     /// <summary>计算受当前永久 BUFF 影响后的商店价格。</summary>
     public int CalculateShopPrice(int basePrice)
     {
-        return Mathf.Max(
+        int price = Mathf.Max(
             0,
             Mathf.CeilToInt(Mathf.Max(0, basePrice) * GetEffectMultiplier("ShopPriceMultiplier")));
+        return Grow2TalentEffectSystem.GetInstance().ApplyShopPriceDiscount(price);
     }
 
     /// <summary>计算受当前永久 BUFF 影响后的社区经验。</summary>

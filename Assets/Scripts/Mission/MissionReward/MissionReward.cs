@@ -13,6 +13,7 @@ public class MissionRewardCommon : MissionReward
             return;
         }
 
+        Grow2TalentEffectSystem.GetInstance().ApplyMissionRewardBonus(rewards);
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = rewards

@@ -606,7 +606,8 @@ public class CommunityView : UIBasePanel
         {
             isAvailable = TurnRandom.Chance(
                 "Community.Donation.Spawn",
-                GameProbability.Get("Community.Donation.Spawn"));
+                Grow2TalentEffectSystem.GetConfiguredCommunitySpawnProbability(
+                    "Community.Donation.Spawn"));
             playerInfoManager.SetCurrentTurnDonationAvailable(isAvailable);
         }
 
@@ -1042,7 +1043,8 @@ public class CommunityView : UIBasePanel
         {
             visiblePointIndex = TurnRandom.Chance(
                 "Community.LostWallet.Spawn",
-                GameProbability.Get("Community.LostWallet.Spawn"))
+                Grow2TalentEffectSystem.GetConfiguredCommunitySpawnProbability(
+                    "Community.LostWallet.Spawn"))
                 ? TurnRandom.Range(
                     "Community.LostWallet.Point",
                     0,
@@ -1194,7 +1196,8 @@ public class CommunityView : UIBasePanel
         {
             visiblePointIndex = TurnRandom.Chance(
                 "Community.StrayCatFoodBowl.Spawn",
-                GameProbability.Get("Community.StrayCatFoodBowl.Spawn"))
+                Grow2TalentEffectSystem.GetConfiguredCommunitySpawnProbability(
+                    "Community.StrayCatFoodBowl.Spawn"))
                 ? TurnRandom.Range(
                     "Community.StrayCatFoodBowl.Point",
                     0,
@@ -1295,7 +1298,8 @@ public class CommunityView : UIBasePanel
             int childCount = point == null ? 0 : point.transform.childCount;
             bool shouldSpawn = childCount > 0 && TurnRandom.Chance(
                 $"Community.TrashCan.{pointIndex}.Spawn",
-                GameProbability.Get("Community.TrashCan.Spawn"));
+                Grow2TalentEffectSystem.GetConfiguredCommunitySpawnProbability(
+                    "Community.TrashCan.Spawn"));
             childIndices.Add(shouldSpawn
                 ? TurnRandom.Range(
                     $"Community.TrashCan.{pointIndex}.Child",
@@ -1426,8 +1430,10 @@ public class CommunityView : UIBasePanel
             $"Community.TrashCan.{pointIndex}.{childIndex}.HealthCost",
             MinimumTrashCanHealthCost,
             MaximumTrashCanHealthCost + 1);
+        Grow2TalentEffectSystem grow2Effects = Grow2TalentEffectSystem.GetInstance();
+        int healthCostPreview = grow2Effects.GetHealthCostPreview(healthCost);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        if (playerInfoManager.Health < healthCost)
+        if (playerInfoManager.Health < healthCostPreview)
         {
             CommonTipView.Show($"健康值不足，需要至少 {healthCost} 点健康值");
             return;
@@ -1452,6 +1458,9 @@ public class CommunityView : UIBasePanel
             return;
         }
 
+        healthCost = grow2Effects.ResolveHealthCost(
+            healthCost,
+            $"Community.TrashCan.{pointIndex}.{childIndex}.HealthFree");
         playerInfoManager.ChangeHealth(-healthCost);
         CommonTipView.Show($"翻找垃圾桶消耗 <color=#FA9C00>{healthCost}</color> 点健康值");
         trashCan.SetActive(false);

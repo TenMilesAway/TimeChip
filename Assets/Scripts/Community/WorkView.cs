@@ -208,7 +208,9 @@ public class WorkView : UIBasePanel
         }
 
         WorkBuffResult workResult = BuffSystem.GetInstance().CalculateWorkResult(workConfig);
-        if (playerInfoManager.Health < workResult.HealthCost)
+        int healthCostPreview = Grow2TalentEffectSystem.GetInstance()
+            .GetHealthCostPreview(workResult.HealthCost);
+        if (playerInfoManager.Health < healthCostPreview)
         {
             CommonTipView.Show("体力不足，无法完成零工");
             return;
@@ -229,7 +231,10 @@ public class WorkView : UIBasePanel
             return;
         }
 
-        playerInfoManager.ChangeHealth(-workResult.HealthCost);
+        int healthCost = Grow2TalentEffectSystem.GetInstance().ResolveHealthCost(
+            workResult.HealthCost,
+            $"Work.HealthFree.{workConfig.Id}");
+        playerInfoManager.ChangeHealth(-healthCost);
         int coinReward = CalculateCoinReward(workResult.CoinReward, workConfig.CoinRewardSection);
         int workExperience = Mathf.Max(0, workConfig.Exp);
         playerInfoManager.AddSimulationCoins(coinReward);

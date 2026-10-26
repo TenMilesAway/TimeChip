@@ -317,7 +317,8 @@ public class FishView : UIBasePanel
 
             if (fishConfigs[i].FishDegree <= currentFishDegree)
             {
-                totalWeight += fishConfigs[i].Weight;
+                totalWeight += Grow2TalentEffectSystem.GetInstance()
+                    .GetFishWeight(fishConfigs[i], fishConfigs[i].Weight);
             }
         }
 
@@ -348,7 +349,9 @@ public class FishView : UIBasePanel
                 continue;
             }
 
-            roll -= fishConfigs[i].Weight;
+            long weight = Grow2TalentEffectSystem.GetInstance()
+                .GetFishWeight(fishConfigs[i], fishConfigs[i].Weight);
+            roll -= weight;
             if (roll < 0)
             {
                 selectedFish = fishConfigs[i];

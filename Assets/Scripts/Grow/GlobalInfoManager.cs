@@ -137,7 +137,8 @@ public class GlobalInfoManager : Singleton<GlobalInfoManager>
         }
 
         EnsureInitialized();
-        _data.memoryPoints = checked(_data.memoryPoints + amount);
+        int adjustedAmount = Grow2TalentEffectSystem.GetInstance().ApplyMemoryGainBonus(amount);
+        _data.memoryPoints = checked(_data.memoryPoints + adjustedAmount);
         NotifyChanged();
     }
 
