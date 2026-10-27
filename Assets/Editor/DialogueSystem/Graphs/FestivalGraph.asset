@@ -35,7 +35,7 @@ MonoBehaviour:
     <Position>k__BackingField: {x: 470, y: 2914}
   - <ID>k__BackingField: 39c94458-f7e5-405f-94b1-e2ad91773eef
     <Name>k__BackingField: 2
-    <Text>k__BackingField: "\u4F60\u6765\u5F97\u6B63\u597D\uFF01\u7AEF\u5348\u4FC3\u9500\u5F00\u59CB\u4E86\u2014\u2014\u8FD9\u4E2A\u6708\u53EA\u8981\u5728\u6211\u8FD9\u513F\u4E70\u4EFB\u610F\u4E00\u4EF6\u5546\u54C1\uFF0C\u7CBD\u53F6\u3001\u9EBB\u7EF3\u3001\u7CEF\u7C73\u5404\u7ED9\u4F60\u4E09\u5957\uFF0C\u827E\u8349\u518D\u9644\u5341\u628A\u3002"
+    <Text>k__BackingField: "\u4F60\u6765\u5F97\u6B63\u597D\uFF01\u7AEF\u5348\u4FC3\u9500\u5F00\u59CB\u4E86\u2014\u2014<color=#00FFFA>\u8FD9\u4E2A\u6708</color>\u53EA\u8981\u5728\u6211\u8FD9\u513F\u4E70<color=#00FFFA>\u4EFB\u610F\u4E00\u4EF6\u5546\u54C1</color>\uFF0C\u7CBD\u53F6\u3001\u9EBB\u7EF3\u3001\u7CEF\u7C73\u5404\u7ED9\u4F60\u4E09\u5957\uFF0C\u827E\u8349\u518D\u9644\u5341\u628A\u3002"
     <Choices>k__BackingField:
     - <Text>k__BackingField: Next Dialogue
       <NodeID>k__BackingField: d650f954-b546-4d56-a7c4-104811a31d52

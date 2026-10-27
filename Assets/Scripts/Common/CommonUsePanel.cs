@@ -19,12 +19,12 @@ public class CommonUsePanel : UIBasePanel
 
     private void Awake()
     {
-        _btnLeft.onClick.AddListener(() => SetAmount(_amount - 1));
-        _btnLeftMax.onClick.AddListener(() => SetAmount(1));
-        _btnRight.onClick.AddListener(() => SetAmount(_amount + 1));
-        _btnRightMax.onClick.AddListener(() => SetAmount(_maxAmount));
-        _btnUse.onClick.AddListener(UseItems);
-        _btnCancel.onClick.AddListener(ClosePanel);
+        UiButtonAudio.Bind(_btnLeft, () => SetAmount(_amount - 1));
+        UiButtonAudio.Bind(_btnLeftMax, () => SetAmount(1));
+        UiButtonAudio.Bind(_btnRight, () => SetAmount(_amount + 1));
+        UiButtonAudio.Bind(_btnRightMax, () => SetAmount(_maxAmount));
+        UiButtonAudio.Bind(_btnUse, UseItems);
+        UiButtonAudio.Bind(_btnCancel, ClosePanel);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -44,7 +44,6 @@ public class CommonUsePanel : UIBasePanel
         _maxAmount = data.maxAmount;
         _useCallback = data.useCallback;
         SetAmount(_maxAmount);
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     protected override void CloseHandle()
@@ -84,7 +83,6 @@ public class CommonUsePanel : UIBasePanel
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         _useCallback = null;
         UIManager.GetInstance().ClosePanel(GetPanelName());
         callback(_amount);

@@ -26,7 +26,7 @@ public class CommonRewardItem : MonoBehaviour
 
     private void Awake()
     {
-        _btnDetail.onClick.AddListener(OpenItemDetail);
+        UiButtonAudio.Bind(_btnDetail, OpenItemDetail);
     }
 
     private void OnDestroy()
@@ -75,7 +75,6 @@ public class CommonRewardItem : MonoBehaviour
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonItemDetailView,
             param: new OpenUIParam { data = ItemId });

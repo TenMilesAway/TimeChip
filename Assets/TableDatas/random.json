@@ -31,7 +31,12 @@
   },
   {
     "id": "ConvenienceStore.SuperMarket.Spawn",
-    "probability": 1,
-    "desc": "每回合进入便利店触发超市找物小游戏的概率"
+    "probability": 0.05,
+    "desc": "每回合进入便利店触发狐小满打折活动（超市找物小游戏）的概率"
+  },
+  {
+    "id": "Community.Centre.Submit.PrimaryGiftBox",
+    "probability": 0.5,
+    "desc": "社区中心提交材料获得初级社区物资礼盒的概率"
   }
 ]

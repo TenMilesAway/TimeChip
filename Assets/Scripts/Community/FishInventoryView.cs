@@ -48,17 +48,15 @@ public class FishInventoryView : UIBasePanel
             return;
         }
 
-        _previousPageButton.onClick.AddListener(ShowPreviousPage);
-        _nextPageButton.onClick.AddListener(ShowNextPage);
-        _btnUse.onClick.AddListener(UseSelectedItem);
+        UiButtonAudio.Bind(_previousPageButton, ShowPreviousPage);
+        UiButtonAudio.Bind(_nextPageButton, ShowNextPage);
+        UiButtonAudio.Bind(_btnUse, UseSelectedItem);
         HideDetail();
     }
 
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
-
-        GameManager.Audio.Play(AudioDefine.SFXClick);
 
         if (_isUiReady)
         {
@@ -164,7 +162,6 @@ public class FishInventoryView : UIBasePanel
 
     private void ShowPreviousPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage <= 1)
         {
             return;
@@ -235,7 +232,6 @@ public class FishInventoryView : UIBasePanel
 
     private void SelectItem(int itemIndex)
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         ShowItemDetailAsync(itemIndex);
     }
 

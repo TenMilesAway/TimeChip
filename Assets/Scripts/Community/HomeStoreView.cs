@@ -40,11 +40,11 @@ public class HomeStoreView : UIBasePanel
             int category = _tagCategories[i];
             UnityAction clickHandler = () => SelectCategory(category);
             _tagClickHandlers.Add(clickHandler);
-            _tagButtons[i].onClick.AddListener(clickHandler);
+            UiButtonAudio.Bind(_tagButtons[i], clickHandler);
         }
 
-        _previousPageButton.onClick.AddListener(ShowPreviousPage);
-        _nextPageButton.onClick.AddListener(ShowNextPage);
+        UiButtonAudio.Bind(_previousPageButton, ShowPreviousPage);
+        UiButtonAudio.Bind(_nextPageButton, ShowNextPage);
         PlayerInfoManager.GetInstance().PlayerInfoChanged += OnPlayerInfoChanged;
         BuffSystem.GetInstance().BuffsChanged += RefreshHomeItemPrices;
     }
@@ -57,8 +57,6 @@ public class HomeStoreView : UIBasePanel
 
         SelectCategory(AllCategory);
         LoadHomeItemsAsync(++_itemRequestVersion);
-
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     protected override void CloseHandle()
@@ -113,7 +111,6 @@ public class HomeStoreView : UIBasePanel
 
         UpdateTagSelection();
         RefreshPage();
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     /// <summary>
@@ -121,8 +118,6 @@ public class HomeStoreView : UIBasePanel
     /// </summary>
     private void ShowPreviousPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
-
         if (_currentPage > 1)
         {
             _currentPage--;
@@ -135,8 +130,6 @@ public class HomeStoreView : UIBasePanel
     /// </summary>
     private void ShowNextPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
-
         if (_currentPage < GetMaxPage())
         {
             _currentPage++;

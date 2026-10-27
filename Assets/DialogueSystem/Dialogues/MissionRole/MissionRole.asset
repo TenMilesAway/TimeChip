@@ -71,7 +71,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: cf79392032b75fa4c8f92d2fbb65875f, type: 2}
       - {fileID: 11400000, guid: 3c66e3408f7e0d4409e9cbee7bc68c99, type: 2}
       - {fileID: 11400000, guid: 7a1afe9eb648ea8459910666ad64774e, type: 2}
-      - {fileID: 11400000, guid: 3f3170565a535ee418488d47635975c6, type: 2}
       - {fileID: 11400000, guid: 2157bc56238586d4eb4b5914855e6d6e, type: 2}
       - {fileID: 11400000, guid: 69154b4badd33d9498d6f82b4063d48d, type: 2}
+      - {fileID: 11400000, guid: 3f3170565a535ee418488d47635975c6, type: 2}
   <UngroupedDialogues>k__BackingField: []

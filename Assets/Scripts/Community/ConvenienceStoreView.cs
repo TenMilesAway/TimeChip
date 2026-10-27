@@ -39,8 +39,6 @@ public class ConvenienceStoreView : UIBasePanel
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
-
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     protected override void CloseHandle()

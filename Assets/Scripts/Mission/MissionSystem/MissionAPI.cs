@@ -597,6 +597,24 @@ public static class MissionAPI
             _playerInfoManager.GetMonthlyRandomMissionOfferId());
     }
 
+    /// <summary>公告栏当前是否可领取随机委托（与 <see cref="TryStartMonthlyRandomMission"/> 前置条件一致，无副作用）。</summary>
+    public static bool CanAcceptMonthlyRandomMissionFromNotice()
+    {
+        if (!HasMonthlyRandomMissionOffer())
+        {
+            return false;
+        }
+
+        if (!TryGetMissionConfig(
+                _playerInfoManager.GetMonthlyRandomMissionOfferId().ToString(),
+                out cfg.Mission missionConfig))
+        {
+            return false;
+        }
+
+        return MissionManager.GetMission(missionConfig.Id.ToString()) == null;
+    }
+
     /// <summary>由公告栏领取本月的随机委托。</summary>
     public static bool TryStartMonthlyRandomMission(
         out cfg.Mission missionConfig,

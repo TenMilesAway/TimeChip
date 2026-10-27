@@ -10,6 +10,8 @@ public class CommonExchangeGroup : MonoBehaviour
     private const string ExchangeRightScaleName = "exchangeRight";
 
     [SerializeField] private Button _btnExchange;
+    [SerializeField] private Button[] _btnNeedItems;             // 兑换消耗物品按钮, 左侧, 最多 3 个
+    [SerializeField] private Button _btnGetItem;                 // 兑换获得物品按钮, 右侧
     [SerializeField] private GameObject[] _goExchangeNeedItems;
     [SerializeField] private Image[] _imgExchangeNeedItems;
     [SerializeField] private Text[] _txtExchangeNeedItems;
@@ -21,14 +23,29 @@ public class CommonExchangeGroup : MonoBehaviour
     private Action _onExchanged;
     private int _presentationVersion;
     private string _resourceTag;
+    private int _rewardItemId;
+    private readonly List<int> _needItemIds = new List<int>(3);
 
     private void Awake()
     {
         _resourceTag = GetInstanceID().ToString();
-        if (_btnExchange != null)
+        UiButtonAudio.Bind(_btnExchange, OnClickExchange);
+        if (_btnNeedItems != null)
         {
-            _btnExchange.onClick.AddListener(OnClickExchange);
+            for (int index = 0; index < _btnNeedItems.Length; index++)
+            {
+                Button needItemButton = _btnNeedItems[index];
+                if (needItemButton == null)
+                {
+                    continue;
+                }
+
+                int capturedIndex = index;
+                UiButtonAudio.Bind(needItemButton, () => OnClickNeedItemDetail(capturedIndex));
+            }
         }
+
+        UiButtonAudio.Bind(_btnGetItem, OnClickGetItemDetail);
     }
 
     private void OnDestroy()
@@ -36,6 +53,19 @@ public class CommonExchangeGroup : MonoBehaviour
         if (_btnExchange != null)
         {
             _btnExchange.onClick.RemoveListener(OnClickExchange);
+        }
+
+        if (_btnNeedItems != null)
+        {
+            for (int index = 0; index < _btnNeedItems.Length; index++)
+            {
+                _btnNeedItems[index]?.onClick.RemoveAllListeners();
+            }
+        }
+
+        if (_btnGetItem != null)
+        {
+            _btnGetItem.onClick.RemoveListener(OnClickGetItemDetail);
         }
     }
 
@@ -81,6 +111,8 @@ public class CommonExchangeGroup : MonoBehaviour
         float exchangeLeftScaleMultiplier = GetScaleMultiplier(ExchangeLeftScaleName);
         float exchangeRightScaleMultiplier = GetScaleMultiplier(ExchangeRightScaleName);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        _needItemIds.Clear();
+        _rewardItemId = rewardItemId;
         for (int i = 0; i < _goExchangeNeedItems.Length; i++)
         {
             bool visible = i < costs.Count;
@@ -95,6 +127,12 @@ public class CommonExchangeGroup : MonoBehaviour
             }
 
             ExchangeCostEntry cost = costs[i];
+            _needItemIds.Add(cost.ItemId);
+            if (_btnNeedItems != null && i < _btnNeedItems.Length && _btnNeedItems[i] != null)
+            {
+                _btnNeedItems[i].interactable = true;
+            }
+
             if (_txtExchangeNeedItems != null && i < _txtExchangeNeedItems.Length && _txtExchangeNeedItems[i] != null)
             {
                 _txtExchangeNeedItems[i].text = cost.Count.ToString();
@@ -130,10 +168,62 @@ public class CommonExchangeGroup : MonoBehaviour
                 exchangeRightScaleMultiplier);
         }
 
+        if (_btnNeedItems != null)
+        {
+            for (int index = _needItemIds.Count; index < _btnNeedItems.Length; index++)
+            {
+                if (_btnNeedItems[index] != null)
+                {
+                    _btnNeedItems[index].interactable = false;
+                }
+            }
+        }
+
+        if (_btnGetItem != null)
+        {
+            _btnGetItem.interactable = _rewardItemId > 0;
+        }
+
         if (_btnExchange != null)
         {
             _btnExchange.interactable = ExchangeService.CanAfford(_exchangeConfig.CostItems);
         }
+    }
+
+    private void OnClickNeedItemDetail(int needItemIndex)
+    {
+        if (needItemIndex < 0 || needItemIndex >= _needItemIds.Count)
+        {
+            return;
+        }
+
+        OpenItemDetail(_needItemIds[needItemIndex]);
+    }
+
+    private void OnClickGetItemDetail()
+    {
+        OpenItemDetail(_rewardItemId);
+    }
+
+    private static void OpenItemDetail(int itemId)
+    {
+        if (itemId <= 0)
+        {
+            return;
+        }
+
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables == null ||
+            (tables.ItemTable.GetOrDefault(itemId) == null &&
+             tables.BaseTable.GetOrDefault(itemId) == null))
+        {
+            Debug.LogError($"兑换物品详情配置不存在: [{itemId}]");
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonItemDetailView,
+            param: new OpenUIParam { data = itemId });
     }
 
     private void OnClickExchange()
@@ -143,7 +233,6 @@ public class CommonExchangeGroup : MonoBehaviour
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (!ExchangeConfigParser.TryParseRewardItem(
                 _exchangeConfig.RewardItems,
                 out int rewardItemId,

@@ -38,8 +38,7 @@ public class CommunityView : UIBasePanel
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
     private const string ConvenienceSuperMarketDialogueConfig = "MiniGame,0";
     private const string ConvenienceSuperMarketSpawnProbabilityId = "ConvenienceStore.SuperMarket.Spawn";
-    // 测试阶段 100% 触发；正式发布前改为 false。
-    private const bool ForceConvenienceSuperMarketMiniGameTriggerForTesting = true;
+    private const bool ForceConvenienceSuperMarketMiniGameTriggerForTesting = false;
     private const int CommunityReportMissionId = 201;
     private const string CommunityEnterDialogueConfig = "MissionRole,4";
     private const int ClinicConsultationMissionId = 202;
@@ -838,14 +837,21 @@ public class CommunityView : UIBasePanel
 
     private void RefreshMissionNotice()
     {
-        bool hasOffer = FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId) &&
-            MissionAPI.HasMonthlyRandomMissionOffer();
-        if (_goHasNotice != null)
+        bool isNoticeUnlocked = FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId);
+        bool canAcceptMission = isNoticeUnlocked &&
+            MissionAPI.CanAcceptMonthlyRandomMissionFromNotice();
+
+        if (_btnCommunityCentreNotice != null && isNoticeUnlocked)
         {
-            _goHasNotice.SetActive(hasOffer);
+            _btnCommunityCentreNotice.interactable = canAcceptMission;
         }
 
-        if (hasOffer)
+        if (_goHasNotice != null)
+        {
+            _goHasNotice.SetActive(canAcceptMission);
+        }
+
+        if (canAcceptMission)
         {
             StartMissionNoticeReminder();
         }

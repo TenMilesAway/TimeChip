@@ -51,11 +51,11 @@ public class WorkView : UIBasePanel
             int workTypeIndex = i;
             UnityAction clickHandler = () => SelectWorkType(workTypeIndex);
             _tagClickHandlers.Add(clickHandler);
-            _btnTags[i].onClick.AddListener(clickHandler);
+            UiButtonAudio.Bind(_btnTags[i], clickHandler);
         }
 
-        _btnPrevious.onClick.AddListener(ShowPreviousPage);
-        _btnNext.onClick.AddListener(ShowNextPage);
+        UiButtonAudio.Bind(_btnPrevious, ShowPreviousPage);
+        UiButtonAudio.Bind(_btnNext, ShowNextPage);
         PlayerInfoManager.GetInstance().PlayerInfoChanged += OnPlayerInfoChanged;
     }
 
@@ -122,12 +122,10 @@ public class WorkView : UIBasePanel
 
         UpdateTagSelection();
         RefreshPage();
-        GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
     private void ShowPreviousPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage <= 1)
         {
             return;
@@ -139,7 +137,6 @@ public class WorkView : UIBasePanel
 
     private void ShowNextPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage >= GetMaxPage())
         {
             return;
@@ -192,8 +189,6 @@ public class WorkView : UIBasePanel
     private void TryCompleteWork(cfg.Work workConfig)
     {
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-
-        GameManager.Audio.Play(AudioDefine.SFXClick);
 
         if (playerInfoManager.WorkedThisTurn)
         {

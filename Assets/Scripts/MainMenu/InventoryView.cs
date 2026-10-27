@@ -51,18 +51,16 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        _previousPageButton.onClick.AddListener(ShowPreviousPage);
-        _nextPageButton.onClick.AddListener(ShowNextPage);
-        _btnUse.onClick.AddListener(UseSelectedItem);
-        _btnUseMore.onClick.AddListener(OpenBatchUsePanel);
+        UiButtonAudio.Bind(_previousPageButton, ShowPreviousPage);
+        UiButtonAudio.Bind(_nextPageButton, ShowNextPage);
+        UiButtonAudio.Bind(_btnUse, UseSelectedItem);
+        UiButtonAudio.Bind(_btnUseMore, OpenBatchUsePanel);
         HideDetail();
     }
 
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
-
-        GameManager.Audio.Play(AudioDefine.SFXClick);
 
         if (_isUiReady)
         {
@@ -178,7 +176,6 @@ public class InventoryView : UIBasePanel
 
     private void ShowPreviousPage()
     {
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         if (_currentPage <= 1)
         {
             return;
@@ -254,7 +251,6 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         ShowItemDetailAsync(itemIndex);
     }
 
@@ -376,7 +372,6 @@ public class InventoryView : UIBasePanel
             return;
         }
 
-        GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.CommonUsePanel, UILayer.System, new OpenUIParam
         {
             data = new CommonUsePanelData

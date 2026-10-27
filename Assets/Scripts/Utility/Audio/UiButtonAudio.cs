@@ -9,6 +9,16 @@ public static class UiButtonAudio
         GameManager.Audio.Play(AudioDefine.SFXClick);
     }
 
+    public static void AttachClickSound(Button button)
+    {
+        if (button == null || button.GetComponent<UIButtonClickSound>() != null)
+        {
+            return;
+        }
+
+        button.gameObject.AddComponent<UIButtonClickSound>();
+    }
+
     public static void Bind(Button button, UnityAction action)
     {
         if (button == null)
@@ -16,10 +26,7 @@ public static class UiButtonAudio
             return;
         }
 
-        button.onClick.AddListener(() =>
-        {
-            PlayClick();
-            action?.Invoke();
-        });
+        AttachClickSound(button);
+        button.onClick.AddListener(action);
     }
 }

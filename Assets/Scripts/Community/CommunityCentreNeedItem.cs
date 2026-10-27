@@ -21,7 +21,7 @@ public class CommunityCentreNeedItem : MonoBehaviour
 
     private void Awake()
     {
-        _btnSubmit.onClick.AddListener(Submit);
+        UiButtonAudio.Bind(_btnSubmit, Submit);
     }
 
     private void OnDestroy()
@@ -86,7 +86,6 @@ public class CommunityCentreNeedItem : MonoBehaviour
 
     private void Submit()
     {
-        UiButtonAudio.PlayClick();
         _submitHandler?.Invoke();
     }
 }

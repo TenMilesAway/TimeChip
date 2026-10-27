@@ -443,6 +443,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private const int MinCommunityCentreLevel = 1;
     private const int MaxCommunityCentreLevel = 6;
     private const int CommunitySupplyGiftBoxItemId = 3010;
+    private const string CommunityCentreSubmitPrimaryGiftBoxProbabilityId =
+        "Community.Centre.Submit.PrimaryGiftBox";
     private const int CureService1PriceIncrease = 10;
     private const int CureService2PriceIncrease = 30;
     public const int MaxWorkLevel = 5;
@@ -712,14 +714,16 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
-    /// <summary>提交一个当月社区需求，并发放社区物资礼盒、随机社区经验及全数提交奖励。</summary>
+    /// <summary>提交一个当月社区需求，按概率发放初级社区物资礼盒、随机社区经验及全数提交奖励。</summary>
     public CommunityCentreNeedSubmitResult TrySubmitCommunityCentreNeed(
         int index,
         out int experienceGained,
-        out int bonusExperienceGained)
+        out int bonusExperienceGained,
+        out int rewardItemIdGranted)
     {
         experienceGained = 0;
         bonusExperienceGained = 0;
+        rewardItemIdGranted = 0;
         if (_data.communityCentreNeeds == null ||
             !HasMonthlyCommunityCentreNeeds(_data.communityCentreNeeds.Count) ||
             index < 0 || index >= _data.communityCentreNeeds.Count)
@@ -752,7 +756,14 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         need.submitted = true;
-        AddItem(CommunitySupplyGiftBoxItemId, 1);
+        if (RollCommunityCentrePrimaryGiftBox(
+                $"{CommunityCentreSubmitPrimaryGiftBoxProbabilityId}.Need." +
+                $"{_data.currentAge}.{_data.currentMonth}.{index}"))
+        {
+            AddItem(CommunitySupplyGiftBoxItemId, 1);
+            rewardItemIdGranted = CommunitySupplyGiftBoxItemId;
+        }
+
         experienceGained = baseExperienceGained;
         if (AreAllCommunityCentreNeedsSubmitted() &&
             !_data.communityCentreAllNeedsBonusGranted)
@@ -766,13 +777,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return CommunityCentreNeedSubmitResult.Success;
     }
 
-    /// <summary>提交一个冗余社区道具，换取社区物资礼盒和社区经验。</summary>
+    /// <summary>提交一个冗余社区道具，按阶数回馈礼盒（初级礼盒受概率表控制）和社区经验。</summary>
     public CommunityCentreRedundancySubmitResult TrySubmitCommunityCentreRedundancyItem(
         int itemId,
-        out int experienceGained)
+        out int experienceGained,
+        out int rewardItemIdGranted)
     {
         const int communityExperienceReward = 10;
         experienceGained = 0;
+        rewardItemIdGranted = 0;
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable
             .GetOrDefault(itemId);
@@ -786,14 +799,39 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
         }
 
+        int itemCountBeforeConsume = GetItemCount(itemId);
         if (!TryConsumeItem(itemId))
         {
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
         }
 
-        AddItem(CommunityCentreRedundancyHelper.GetSubmitRewardItemId(itemConfig), 1);
+        int configuredRewardItemId =
+            CommunityCentreRedundancyHelper.GetSubmitRewardItemId(itemConfig);
+        if (configuredRewardItemId == CommunitySupplyGiftBoxItemId)
+        {
+            if (RollCommunityCentrePrimaryGiftBox(
+                    $"{CommunityCentreSubmitPrimaryGiftBoxProbabilityId}.Redundancy." +
+                    $"{_data.currentAge}.{_data.currentMonth}.{itemId}.{itemCountBeforeConsume}"))
+            {
+                AddItem(CommunitySupplyGiftBoxItemId, 1);
+                rewardItemIdGranted = CommunitySupplyGiftBoxItemId;
+            }
+        }
+        else if (configuredRewardItemId > 0)
+        {
+            AddItem(configuredRewardItemId, 1);
+            rewardItemIdGranted = configuredRewardItemId;
+        }
+
         experienceGained = AddCommunityCentreExperience(communityExperienceReward);
         return CommunityCentreRedundancySubmitResult.Success;
+    }
+
+    private static bool RollCommunityCentrePrimaryGiftBox(string eventKey)
+    {
+        return TurnRandom.Chance(
+            eventKey,
+            GameProbability.Get(CommunityCentreSubmitPrimaryGiftBoxProbabilityId));
     }
 
     /// <summary>获取玩家在本回合是否已经打工</summary>

@@ -22,6 +22,8 @@ public class InventoryItem : MonoBehaviour
             _button = gameObject.AddComponent<Button>();
             _button.targetGraphic = GetComponent<Graphic>();
         }
+
+        UiButtonAudio.AttachClickSound(_button);
     }
 
     public void SetData(Sprite icon, int amount, string type, int rewardScale, UnityAction clickHandler)
@@ -46,11 +48,10 @@ public class InventoryItem : MonoBehaviour
         _imgIcon.rectTransform.localScale = Vector3.one * (rewardScale / RewardScaleDivisor);
         _txtNum.text = "×" + amount.ToString();
         _txtType.text = type;
-        _button.onClick.AddListener(() =>
+        if (clickHandler != null)
         {
-            UiButtonAudio.PlayClick();
-            clickHandler?.Invoke();
-        });
+            _button.onClick.AddListener(clickHandler);
+        }
     }
 
     public void Clear()
