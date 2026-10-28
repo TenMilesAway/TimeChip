@@ -41,6 +41,7 @@ public class GlobalDefine
     public const string GameSuperMarket = "Assets/Art/LittleGame/Prefab/GameSuperMarket.prefab";           // System
     public const string CommonExchangePanel = "Assets/Art/Common/Prefab/CommonExchangePanel.prefab";       // System
     public const string GameSpringFestival = "Assets/Art/LittleGame/Prefab/GameSpringFestival.prefab";     // System
+    public const string CommonOptionalPanel = "Assets/Art/Common/Prefab/CommonOptionalPanel.prefab";       // System
 
 
     // Item
@@ -56,4 +57,5 @@ public class GlobalDefine
     public const string GameSuperMarketTarget = "Assets/Art/LittleGame/Prefab/GameSuperMarketTarget.prefab";
     public const string CommonExchangeGroup = "Assets/Art/Common/Prefab/CommonExchangeGroup.prefab";
     public const string GameSpringFestivalItem = "Assets/Art/LittleGame/Prefab/GameSpringFestivalItem.prefab";
+    public const string CommonOptionalItem = "Assets/Art/Common/Prefab/CommonOptionalItem.prefab";
 }

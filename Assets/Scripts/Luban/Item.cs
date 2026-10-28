@@ -32,6 +32,7 @@ public sealed partial class Item : Luban.BeanBase
         Desc = (string)_obj.GetValue("desc");
         Icon = (string)_obj.GetValue("icon");
         CanUse = (int)_obj.GetValue("canUse");
+        NoBatchUse = (int)_obj.GetValue("noBatchUse");
         RewardScale = (int)_obj.GetValue("rewardScale");
         UseEffect = (string)_obj.GetValue("useEffect");
         Replace = (int)_obj.GetValue("replace");
@@ -75,9 +76,13 @@ public sealed partial class Item : Luban.BeanBase
     /// </summary>
     public readonly string Icon;
     /// <summary>
-    /// 1为可在背包使用
+    /// 0不可使用，1普通使用，2自选宝箱
     /// </summary>
     public readonly int CanUse;
+    /// <summary>
+    /// 1为不可在背包批量使用
+    /// </summary>
+    public readonly int NoBatchUse;
     /// <summary>
     /// 奖励面板下的缩放
     /// </summary>
@@ -111,6 +116,7 @@ public sealed partial class Item : Luban.BeanBase
         + "desc:" + Desc + ","
         + "icon:" + Icon + ","
         + "canUse:" + CanUse + ","
+        + "noBatchUse:" + NoBatchUse + ","
         + "rewardScale:" + RewardScale + ","
         + "useEffect:" + UseEffect + ","
         + "replace:" + Replace + ","

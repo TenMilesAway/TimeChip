@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class InventoryView : UIBasePanel
 {
     private const int ItemsPerPage = 16;
+    private const int InventoryCanUseNormal = 1;
+    private const int InventoryCanUseOptionalBox = 2;
     private const float RewardScaleDivisor = 10000f;
     [SerializeField, Min(1)] private int _batchUseItemsPerFrame = 10;
     private static readonly Color RareLevelColor = new Color(0.2f, 0.6f, 1f);
@@ -275,11 +277,12 @@ public class InventoryView : UIBasePanel
         _txtNum.gameObject.SetActive(true);
         _txtNumSplit.gameObject.SetActive(false);  // 默认隐藏
         _txtNumPrefix.gameObject.SetActive(true);
-        _btnUse.gameObject.SetActive(entry.Item.CanUse == 1);
-        _btnUse.interactable = entry.Item.CanUse == 1 && !_isUsingSelectedItem;
-        _btnUseMore.gameObject.SetActive(entry.Item.CanUse == 1 && entry.Amount > 1);
-        _btnUseMore.interactable =
-            entry.Item.CanUse == 1 && entry.Amount > 1 && !_isUsingSelectedItem;
+        bool canUseInInventory = CanUseItemInInventory(entry.Item);
+        bool canBatchUse = CanBatchUseItemInInventory(entry.Item, entry.Amount);
+        _btnUse.gameObject.SetActive(canUseInInventory);
+        _btnUse.interactable = canUseInInventory && !_isUsingSelectedItem;
+        _btnUseMore.gameObject.SetActive(canBatchUse);
+        _btnUseMore.interactable = canBatchUse && !_isUsingSelectedItem;
         _goType.SetActive(true);
         _imgIcon.gameObject.SetActive(false);
         _imgIconBg.gameObject.SetActive(true);
@@ -347,15 +350,42 @@ public class InventoryView : UIBasePanel
         }
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_selectedItemId);
-        if (itemConfig == null || itemConfig.CanUse != 1)
+        if (!CanUseItemInInventory(itemConfig))
         {
             Debug.LogError($"无法使用背包道具: [{_selectedItemId}]", this);
+            return;
+        }
+
+        if (itemConfig.CanUse == InventoryCanUseOptionalBox)
+        {
+            OpenOptionalBoxPanel(itemConfig);
             return;
         }
 
         _isUsingSelectedItem = true;
         _btnUse.interactable = false;
         await UseItemsAsync(itemConfig, 1);
+    }
+
+    private void OpenOptionalBoxPanel(cfg.Item itemConfig)
+    {
+        _isUsingSelectedItem = true;
+        _btnUse.interactable = false;
+        _btnUseMore.interactable = false;
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonOptionalPanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonOptionalPanelData(
+                    itemConfig.Id,
+                    onClosed: () =>
+                    {
+                        _isUsingSelectedItem = false;
+                        RefreshInventory();
+                    })
+            });
     }
 
     private void OpenBatchUsePanel()
@@ -367,7 +397,7 @@ public class InventoryView : UIBasePanel
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(_selectedItemId);
         int availableAmount = itemConfig == null ? 0 : PlayerInfoManager.GetInstance().GetItemCount(itemConfig.Id);
-        if (itemConfig == null || itemConfig.CanUse != 1 || availableAmount <= 1)
+        if (!CanBatchUseItemInInventory(itemConfig, availableAmount))
         {
             return;
         }
@@ -391,7 +421,7 @@ public class InventoryView : UIBasePanel
         }
 
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(itemId);
-        if (itemConfig == null || itemConfig.CanUse != 1 || amount <= 0 ||
+        if (!CanBatchUseItemInInventory(itemConfig, amount) || amount <= 0 ||
             amount > PlayerInfoManager.GetInstance().GetItemCount(itemId))
         {
             Debug.LogError($"无法批量使用背包道具: [{itemId}], [{amount}]", this);
@@ -669,6 +699,27 @@ public class InventoryView : UIBasePanel
         }
 
         return null;
+    }
+
+    private static bool CanUseItemInInventory(cfg.Item itemConfig)
+    {
+        if (itemConfig == null)
+        {
+            return false;
+        }
+
+        return itemConfig.CanUse == InventoryCanUseNormal ||
+            itemConfig.CanUse == InventoryCanUseOptionalBox;
+    }
+
+    private static bool CanBatchUseItemInInventory(cfg.Item itemConfig, int amount)
+    {
+        if (itemConfig == null || amount <= 1)
+        {
+            return false;
+        }
+
+        return itemConfig.CanUse == InventoryCanUseNormal && itemConfig.NoBatchUse != 1;
     }
 
     private readonly struct InventoryEntry

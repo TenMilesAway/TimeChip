@@ -64,5 +64,11 @@
     "name": "exchangeRight",
     "desc": "兑换面板右侧的倍率",
     "scaleValue": 10000
+  },
+  {
+    "id": 12,
+    "name": "optionalPanel",
+    "desc": "自选宝箱面板中的倍率",
+    "scaleValue": 7500
   }
 ]

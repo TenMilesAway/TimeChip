@@ -9,6 +9,7 @@
     "desc": "一枚亮晶晶的模拟币，使用后获取少量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_1]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 2500,
     "useEffect": "101,100,100",
     "replace": 0
@@ -23,6 +24,7 @@
     "desc": "一叠金灿灿的模拟币，使用后获取一些模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_2]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 3000,
     "useEffect": "101,300,100",
     "replace": 0
@@ -37,6 +39,7 @@
     "desc": "钱袋已经被撑得圆滚滚的，使用后获取中量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_3]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "101,1000,100",
     "replace": 0
@@ -51,6 +54,7 @@
     "desc": "箱子里全是模拟币，使用后获取大量模拟币",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_4]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "101,2000,100",
     "replace": 0
@@ -65,6 +69,7 @@
     "desc": "现在，需要担心的是该怎么把钱花完",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_coin_5]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 3200,
     "useEffect": "101,5000,100",
     "replace": 0
@@ -79,6 +84,7 @@
     "desc": "凝结着一小段时光的特殊货币，投入时光礼物箱，或许能换回一份来自未来的惊喜",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_coin]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 102
@@ -93,6 +99,7 @@
     "desc": "滴滴滴，转盘币！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_wheel_coin]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 104
@@ -107,6 +114,7 @@
     "desc": "嘟嘟嘟，秘匣币！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_lottery_secret_box_coin]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 3500,
     "useEffect": "",
     "replace": 105
@@ -121,6 +129,7 @@
     "desc": "嘟嘟嘟，星阵币！！！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_time_core_matrix_token]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 106
@@ -135,6 +144,7 @@
     "desc": "稍微治疗一下你的伤势",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_bandage]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "103,5,100",
     "replace": 0
@@ -149,6 +159,7 @@
     "desc": "吃下这颗胶囊就好啦",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_vitality_capsule]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "103,10,100",
     "replace": 0
@@ -163,6 +174,7 @@
     "desc": "里面什么都有，帮助你快速恢复健康",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[medical_item_kit]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "103,15,100",
     "replace": 0
@@ -177,6 +189,7 @@
     "desc": "搬空家具城指日可待！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_furniture_coupon]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 3200,
     "useEffect": "",
     "replace": 0
@@ -191,6 +204,7 @@
     "desc": "里面包含各类初级零工所需的凭证",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_2]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "3001,1,10;4000,1,50;4001,1,50;4003,1,50;4004,1,50;4008,1,50;4009,1,50;4013,1,50;4014,1,50;4018,1,50;4019,1,50;4023,1,100",
     "replace": 0
@@ -205,6 +219,7 @@
     "desc": "里面包含各类中级零工所需的凭证",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_3]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "3002,1,10;4002,1,50;4005,1,50;4006,1,50;4010,1,50;4011,1,50;4015,1,50;4016,1,50;4020,1,50;4021,1,50;4024,1,100",
     "replace": 0
@@ -219,8 +234,54 @@
     "desc": "里面包含各类高级零工所需的凭证",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_4]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "4007,1,50;4012,1,50;4017,1,50;4022,1,50;4025,1,100,4026,1,50;4027,1,20",
+    "replace": 0
+  },
+  {
+    "id": 3003,
+    "name": "初级零工自选礼盒",
+    "level": 3,
+    "inventoryType": 1,
+    "type": "礼盒",
+    "category": 3,
+    "desc": "可以自由选择一个初级零工所需的凭证",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_optional_box_1]",
+    "canUse": 2,
+    "noBatchUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "4000,1,100;4001,1,100;4003,1,100;4004,1,100;4008,1,100;4009,1,100;4013,1,100;4014,1,100;4018,1,100;4019,1,100;4023,1,100",
+    "replace": 0
+  },
+  {
+    "id": 3004,
+    "name": "中级零工自选礼盒",
+    "level": 4,
+    "inventoryType": 1,
+    "type": "礼盒",
+    "category": 3,
+    "desc": "可以自由选择一个中级零工所需的凭证",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_optional_box_2]",
+    "canUse": 2,
+    "noBatchUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "4002,1,100;4005,1,100;4006,1,100;4010,1,100;4011,1,100;4015,1,100;4016,1,100;4020,1,100;4021,1,100;4024,1,100",
+    "replace": 0
+  },
+  {
+    "id": 3005,
+    "name": "高级零工自选礼盒",
+    "level": 5,
+    "inventoryType": 1,
+    "type": "礼盒",
+    "category": 3,
+    "desc": "可以自由选择一个高级零工所需的凭证",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_optional_box_3]",
+    "canUse": 2,
+    "noBatchUse": 1,
+    "rewardScale": 6000,
+    "useEffect": "4007,1,100;4012,1,100;4017,1,100;4022,1,100;4025,1,100;4026,1,100;4027,1,100",
     "replace": 0
   },
   {
@@ -233,6 +294,7 @@
     "desc": "社区给居民提交材料的回馈奖励，可以获得各种物资",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_1]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "3011,1,10;101,100,100;1010,1,100;1011,1,10;3000,1,10",
     "replace": 0
@@ -247,6 +309,7 @@
     "desc": "帮助社区居民获得的回馈奖励，可以获得各种物资",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_2]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "101,500,100;101,888,100;1010,2,100;1011,1,50;3000,1,50",
     "replace": 0
@@ -261,6 +324,7 @@
     "desc": "为社区贡献卓越力量后获得的最高回馈，可以获得更丰富的物资",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_3]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "3001,1,55;3002,1,25;101,888,100;101,1288,100;101,1888,50;1010,3,100;1011,2,80",
     "replace": 0
@@ -275,6 +339,7 @@
     "desc": "鼓鼓的礼盒，开启有较小概率获得更高一阶的材料",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_1]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "5000,1,100;5001,1,100;5002,1,100;5003,1,100;5004,1,100;5005,1,100;5200,1,15;5201,1,15;5202,1,15;5203,1,8;5203,2,5;5203,3,2",
     "replace": 0
@@ -289,6 +354,7 @@
     "desc": "水中的礼盒，开启可获得各式各样的道具",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[gift_box_0]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "101,200,100",
     "replace": 0
@@ -303,6 +369,7 @@
     "desc": "刚出锅的粽子，粽叶清香与软糯米香交织，趁热最好吃",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[zongzi]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "103,5,40;103,8,40;101,100,15;101,500,5",
     "replace": 0
@@ -317,6 +384,7 @@
     "desc": "装满艾草的香囊，随身佩戴，寄托平安顺遂的美好",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[sachet]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "101,200,100",
     "replace": 0
@@ -331,6 +399,7 @@
     "desc": "绣着吉祥纹样的福袋，装着新年第一份喜气",
     "icon": "Assets/Art/LittleGame/SpriteAtlas.spriteatlasv2[lucky_pouch]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "101,200,100",
     "replace": 0
@@ -345,6 +414,7 @@
     "desc": "厚实的大红包，藏着长辈沉甸甸的祝福",
     "icon": "Assets/Art/LittleGame/SpriteAtlas.spriteatlasv2[red_envelope]",
     "canUse": 1,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "101,300,100",
     "replace": 0
@@ -359,6 +429,7 @@
     "desc": "拧下车把，城市的每条小路都能变成赚钱捷径",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -373,6 +444,7 @@
     "desc": "装得下半座仓库",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -387,6 +459,7 @@
     "desc": "薄薄一张纸，却能打开大型工程的厚重大门",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_base_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -401,6 +474,7 @@
     "desc": "教文字和图片各就各位，拯救摇摇欲坠的海报",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_1]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -415,6 +489,7 @@
     "desc": "接住稍纵即逝的灵感，再把它们画成可以交稿的样子",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_2]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -429,6 +504,7 @@
     "desc": "提前看看成品，避免创意只活在想象之中",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 3800,
     "useEffect": "",
     "replace": 0
@@ -443,6 +519,7 @@
     "desc": "让颜色、图形和字体一眼看出是同一家人",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4500,
     "useEffect": "",
     "replace": 0
@@ -457,6 +534,7 @@
     "desc": "获得让平面创意站起来，并占满整个展厅的资格",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_art_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4500,
     "useEffect": "",
     "replace": 0
@@ -471,6 +549,7 @@
     "desc": "集齐结构、样式与交互，网页终于不再各长各的",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_1]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -485,6 +564,7 @@
     "desc": "小小页面装下大大功能",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_2]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -499,6 +579,7 @@
     "desc": "教一群机器分头搬数据",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -513,6 +594,7 @@
     "desc": "让四处乱跑的数据排好队",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -527,6 +609,7 @@
     "desc": "从拖动一个方块开始，不知不觉搭出一整个世界",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_it_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -541,6 +624,7 @@
     "desc": "东西不算多，但足够让坏掉的家电重新反省",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_1]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -555,6 +639,7 @@
     "desc": "专治滴答作响，以及半夜突然有想法的水管",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_2]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4200,
     "useEffect": "",
     "replace": 0
@@ -569,6 +654,7 @@
     "desc": "电路虽然不会说话，但屏幕上的波形很会告密",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4400,
     "useEffect": "",
     "replace": 0
@@ -583,6 +669,7 @@
     "desc": "拧紧螺丝已经不够，让整台设备重新升级",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -597,6 +684,7 @@
     "desc": "专门处理肉眼看不见、维修报价却看得很清楚的问题",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_fix_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4000,
     "useEffect": "",
     "replace": 0
@@ -611,6 +699,7 @@
     "desc": "负责把路过脑海的句子当场逮住，并按在纸上",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_1]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5500,
     "useEffect": "",
     "replace": 0
@@ -625,6 +714,7 @@
     "desc": "普通东西翻上几页，也能发现自己其实很有优势",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_2]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5500,
     "useEffect": "",
     "replace": 0
@@ -639,6 +729,7 @@
     "desc": "忠实记录每句话，包括那句“这段千万别写”",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4500,
     "useEffect": "",
     "replace": 0
@@ -653,6 +744,7 @@
     "desc": "纸上的人物开始互相制造麻烦",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4500,
     "useEffect": "",
     "replace": 0
@@ -667,6 +759,7 @@
     "desc": "装得下目标、流程和预算",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_write_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 4500,
     "useEffect": "",
     "replace": 0
@@ -681,6 +774,7 @@
     "desc": "一张突然送上门的工作，撕下票根就没有犹豫时间",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_1]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -695,6 +789,7 @@
     "desc": "有效期和机会一样短暂，验票之后立即失效",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_2]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5500,
     "useEffect": "",
     "replace": 0
@@ -709,6 +804,7 @@
     "desc": "看起来不像群发的，至少封蜡盖得非常认真",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_3]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -723,6 +819,7 @@
     "desc": "把准备与野心装订成册，提交后静候命运翻页",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_4]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5200,
     "useEffect": "",
     "replace": 0
@@ -737,6 +834,7 @@
     "desc": "有人替你敲开命运的大门，可惜这封信只能用一次",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_work_luck_5]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5500,
     "useEffect": "",
     "replace": 0
@@ -751,6 +849,7 @@
     "desc": "有了这张卡，就可以去你想去的地方",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[time_chip_metro_card]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 3200,
     "useEffect": "",
     "replace": 0
@@ -765,6 +864,7 @@
     "desc": "一切秩序即将崩塌，宇宙论为一片死寂虚空，而野生狗奶依旧存在",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_wild_dog_milk]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -779,6 +879,7 @@
     "desc": "量子叠加，薛定谔的终极定理，超出三界之外，不在五行之中，售价十四",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_live_shrimp(dead)]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -793,6 +894,7 @@
     "desc": "最后的考古学家在虚空尽头挖出一块牌子，写着：”免费米饭，两元\"",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_free_rice_two_yuan]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -807,6 +909,7 @@
     "desc": "吃下它，你将重新站在那个岔路口，再一次，做出同样的选择",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_spring_autumn_ham]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 7000,
     "useEffect": "",
     "replace": 0
@@ -821,6 +924,7 @@
     "desc": "似曾相识故人来",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[icon_basketball_trainee_chicken]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -835,6 +939,7 @@
     "desc": "是猫猫最喜欢的食物",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[item_dried_fish]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -849,6 +954,7 @@
     "desc": "60cm巨无霸，超长长长长长长长长长长长长蛋挞！",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[item_extra_long_egg_tart]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -863,6 +969,7 @@
     "desc": "女儿一直想要的草莓小熊，为什么会从河里钓起来?",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[rare_pink_bear_plush_icon]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -877,6 +984,7 @@
     "desc": "完美的吊坠，送给喵夫人最为合适了",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[rare_ocean_heart_pendant_icon]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -891,6 +999,7 @@
     "desc": "熊大山需要的强力胶带，快交给他吧!",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[dream_city_strong_duct_tape_icon]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -905,6 +1014,7 @@
     "desc": "洁白饱满的糯米，蒸熟后软软糯糯的",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[glutinous_rice]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -919,6 +1029,7 @@
     "desc": "清新翠绿的粽叶，轻轻折起，就能把香气和心意一起包进去",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[zongzi_leaves]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -933,6 +1044,7 @@
     "desc": "结实耐用的麻绳，负责把粽子牢牢捆好",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[hemp_cord]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -947,6 +1059,7 @@
     "desc": "一束带着清香的艾草。插在门边，连路过的风都染上了端午的味道。",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[mugwort]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 6000,
     "useEffect": "",
     "replace": 0
@@ -961,6 +1074,7 @@
     "desc": "总爱成群贴着水面穿梭，个头不大，逃跑时倒是格外认真",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_01_white_strip]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -975,6 +1089,7 @@
     "desc": "河畔最常见的老住户，性情温和，似乎已经看惯了岸边的钓鱼人",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_02_crucian]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -989,6 +1104,7 @@
     "desc": "身体滑溜得几乎抓不住，一眨眼就能钻进河底的泥沙里",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_03_loach]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1003,6 +1119,7 @@
     "desc": "摆动鲜艳的红色尾鳍缓缓游过，据说遇见它会带来一点小好运",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_04_redtail_carp]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1017,6 +1134,7 @@
     "desc": "喜欢藏在水草丰茂的地方，胃口很好，几乎从不浪费任何一片嫩叶",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_05_grass_carp]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1031,6 +1149,7 @@
     "desc": "银亮的鱼身会映出水面的天光，受到惊吓时常会突然跃出水面",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_06_silver_carp]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1045,6 +1164,7 @@
     "desc": "披着整齐的深色条纹，是河中敏捷的猎手，上钩后依然很有力气",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_07_river_perch]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1059,6 +1179,7 @@
     "desc": "华丽斑纹是天然的伪装，静止时几乎能与河底的碎石融为一体",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_08_mandarin_fish]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1073,6 +1194,7 @@
     "desc": "长长的胡须可以感知水流变化，即使在昏暗的河底也不会迷路",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_09_blue_catfish]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1087,6 +1209,7 @@
     "desc": "白橙相间的鳞片十分耀眼，传说放进水缸里，家中的好运会悄悄增加",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_10_lucky_koi]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1101,6 +1224,7 @@
     "desc": "只在月光洒满河面时出现，游过之后，水中会留下一道淡淡的银蓝微光",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_11_moonlight_trout]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1115,6 +1239,7 @@
     "desc": "鳞片间流动着细小的时间刻度，据说凝视它太久，会想起一段已经遗忘的往事",
     "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[fish_12_timefish]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1129,6 +1254,7 @@
     "desc": "练习圆钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_01_beginner]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1143,6 +1269,7 @@
     "desc": "灵巧细钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_02_agile]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1157,6 +1284,7 @@
     "desc": "宽口鱼钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_03_wide]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1171,6 +1299,7 @@
     "desc": "稳固倒刺钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_04_barbed]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1185,6 +1314,7 @@
     "desc": "双重稳固钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_05_double]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1199,6 +1329,7 @@
     "desc": "时光鱼钩",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_hook_06_time]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1213,6 +1344,7 @@
     "desc": "面团",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_dough]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1227,6 +1359,7 @@
     "desc": "蚯蚓",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_worm]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1241,6 +1374,7 @@
     "desc": "玉米",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_corn]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1255,6 +1389,7 @@
     "desc": "小虾",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_shrimp]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1269,6 +1404,7 @@
     "desc": "紫金果",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_scent_fruit]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
@@ -1283,6 +1419,7 @@
     "desc": "时光果",
     "icon": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[fishing_bait_time]",
     "canUse": 0,
+    "noBatchUse": 0,
     "rewardScale": 5000,
     "useEffect": "",
     "replace": 0
