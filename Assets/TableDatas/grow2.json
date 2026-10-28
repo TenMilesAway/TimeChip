@@ -57,7 +57,7 @@
     "memoryPointCost": 75,
     "effect": "ShopDiscount",
     "effectValue": 10,
-    "effectDesc": "购物价格-10"
+    "effectDesc": "便利店价格-10"
   },
   {
     "id": 1007,
@@ -87,7 +87,7 @@
     "memoryPointCost": 120,
     "effect": "MissionReward",
     "effectValue": 10,
-    "effectDesc": "任务奖励+10"
+    "effectDesc": "家具店价格-10"
   },
   {
     "id": 1010,
@@ -97,6 +97,6 @@
     "memoryPointCost": 120,
     "effect": "LotteryLuck",
     "effectValue": 5,
-    "effectDesc": "抽奖获得品质大于3的物品概率小幅提升"
+    "effectDesc": "抽奖获得高品阶奖励小幅提升"
   }
 ]

@@ -606,6 +606,13 @@ public class Launcher : SingletonMono<Launcher>
 
     private void ReturnToStartMenuInternal(bool deleteSave)
     {
+        if (deleteSave)
+        {
+            List<string> completedMissionIds =
+                PlayerInfoManager.GetInstance().GetSnapshot().completedMissionIds;
+            MissionSettlementMemory.GrantForCompletedMissions(completedMissionIds);
+        }
+
         PlayerInfoManager.GetInstance().TurnCompleted -= SaveAfterTurnCompleted;
         MissionAPI.Shutdown();
         Grow2TalentEffectSystem.GetInstance().Clear();

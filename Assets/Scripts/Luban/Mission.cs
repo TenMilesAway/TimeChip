@@ -37,6 +37,7 @@ public sealed partial class Mission : Luban.BeanBase
         Failure = (string)_obj.GetValue("failure");
         DialogueStart = (string)_obj.GetValue("dialogueStart");
         DialogueEnd = (string)_obj.GetValue("dialogueEnd");
+        SettlementMemoryPoint = (int)_obj.GetValue("settlementMemoryPoint");
     }
 
     public static Mission DeserializeMission(JToken _buf)
@@ -100,6 +101,10 @@ public sealed partial class Mission : Luban.BeanBase
     /// 任务结束时对话
     /// </summary>
     public readonly string DialogueEnd;
+    /// <summary>
+    /// 娓告垙缁撶畻鍙幏寰楃殑鍥炲繂鐐规暟
+    /// </summary>
+    public readonly int SettlementMemoryPoint;
 
 
     public const int __ID__ = -1560864404;
@@ -126,6 +131,7 @@ public sealed partial class Mission : Luban.BeanBase
         + "failure:" + Failure + ","
         + "dialogueStart:" + DialogueStart + ","
         + "dialogueEnd:" + DialogueEnd + ","
+        + "settlementMemoryPoint:" + SettlementMemoryPoint + ","
         + "}";
     }
 }

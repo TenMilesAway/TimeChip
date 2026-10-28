@@ -13,7 +13,8 @@
     "deadline": "24,1",
     "failure": "gameover",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "MissionMain,0",
+    "settlementMemoryPoint": 10
   },
   {
     "id": 101,
@@ -29,7 +30,8 @@
     "deadline": "26,1",
     "failure": "gameover",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 20
   },
   {
     "id": 102,
@@ -41,11 +43,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "",
+    "reward": "101100",
     "deadline": "",
     "failure": "",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 5
   },
   {
     "id": 200,
@@ -57,11 +60,12 @@
     "target": "5102,1",
     "targetType": "collect",
     "randomTarget": "",
-    "reward": "",
+    "reward": "101100",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionRole,0",
-    "dialogueEnd": "MissionRole,1"
+    "dialogueEnd": "MissionRole,1",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 201,
@@ -73,11 +77,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "",
+    "reward": "101100",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionRole,3",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 202,
@@ -89,11 +94,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "",
+    "reward": "101100",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionRole,5",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 1000,
@@ -109,7 +115,8 @@
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionOne,0",
-    "dialogueEnd": "MissionOne,1"
+    "dialogueEnd": "MissionOne,1",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 1001,
@@ -125,7 +132,8 @@
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionOne,2",
-    "dialogueEnd": "MissionOne,3"
+    "dialogueEnd": "MissionOne,3",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 1002,
@@ -137,11 +145,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "101,500",
+    "reward": "101200",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionOne,4",
-    "dialogueEnd": "MissionOne,5"
+    "dialogueEnd": "MissionOne,5",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 1003,
@@ -153,11 +162,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "101,500",
+    "reward": "101200",
     "deadline": "",
     "failure": "",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 2000,
@@ -173,7 +183,8 @@
     "deadline": "6",
     "failure": "gameover",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3000,
@@ -185,11 +196,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "",
+    "reward": "101100",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionThree,0",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3001,
@@ -205,7 +217,8 @@
     "deadline": "1",
     "failure": "",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3002,
@@ -217,11 +230,12 @@
     "target": "5101,1",
     "targetType": "collect",
     "randomTarget": "",
-    "reward": "3001,1;4023,3",
+    "reward": "3012,1",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionThree,3",
-    "dialogueEnd": "MissionThree,4"
+    "dialogueEnd": "MissionThree,4",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3003,
@@ -233,11 +247,12 @@
     "target": "5100,1",
     "targetType": "collect",
     "randomTarget": "",
-    "reward": "3001,1;4023,3",
+    "reward": "3012,1",
     "deadline": "",
     "failure": "",
     "dialogueStart": "MissionThree,1",
-    "dialogueEnd": "MissionThree,2"
+    "dialogueEnd": "MissionThree,2",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3004,
@@ -249,11 +264,12 @@
     "target": "6000,3;6001,3;6002,3;6003,2;6004,2;6005,2;6006,1;6007,1;6008,1;6009,1;6010,1",
     "targetType": "collect",
     "randomTarget": "6000,3,10;6001,3,10;6002,3,10;6003,2,10;6004,2,10;6005,2,10;6006,1,10;6007,1,10;6008,1,10;6009,1,10;6010,1,10",
-    "reward": "3001,1;4023,3",
-    "deadline": "",
+    "reward": "3011,1;101,100",
+    "deadline": "2",
     "failure": "",
     "dialogueStart": "",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 3005,
@@ -265,11 +281,12 @@
     "target": "1",
     "targetType": "",
     "randomTarget": "",
-    "reward": "3001,1;4023,3",
+    "reward": "3011,1",
     "deadline": "1",
     "failure": "",
     "dialogueStart": "MissionThree,5",
-    "dialogueEnd": ""
+    "dialogueEnd": "",
+    "settlementMemoryPoint": 0
   },
   {
     "id": 4000,
@@ -285,6 +302,7 @@
     "deadline": "",
     "failure": "",
     "dialogueStart": "Festival,0",
-    "dialogueEnd": "Festival,1"
+    "dialogueEnd": "Festival,1",
+    "settlementMemoryPoint": 0
   }
 ]
