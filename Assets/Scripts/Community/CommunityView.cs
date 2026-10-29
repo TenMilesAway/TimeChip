@@ -38,7 +38,6 @@ public class CommunityView : UIBasePanel
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
     private const string ConvenienceSuperMarketDialogueConfig = "MiniGame,0";
     private const string ConvenienceSuperMarketSpawnProbabilityId = "ConvenienceStore.SuperMarket.Spawn";
-    private const bool ForceConvenienceSuperMarketMiniGameTriggerForTesting = false;
     private const int CommunityReportMissionId = 201;
     private const string CommunityEnterDialogueConfig = "MissionRole,4";
     private const int ClinicConsultationMissionId = 202;
@@ -334,8 +333,7 @@ public class CommunityView : UIBasePanel
     {
         if (!playerInfoManager.TryGetCurrentTurnConvenienceSuperMarketTriggered(out bool triggered))
         {
-            triggered = ForceConvenienceSuperMarketMiniGameTriggerForTesting ||
-                TurnRandom.Chance(
+            triggered = TurnRandom.Chance(
                     ConvenienceSuperMarketSpawnProbabilityId,
                     GameProbability.Get(ConvenienceSuperMarketSpawnProbabilityId));
             playerInfoManager.SetCurrentTurnConvenienceSuperMarketTriggered(triggered);

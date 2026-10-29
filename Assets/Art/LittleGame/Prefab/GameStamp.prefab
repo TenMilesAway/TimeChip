@@ -84,8 +84,8 @@ MonoBehaviour:
   _gameDuration: 15
   _leftBoundary: -280
   _rightBoundary: 280
-  _minFileSpeed: 150
-  _maxFileSpeed: 230
+  _minFileSpeed: 480
+  _maxFileSpeed: 720
   _fileSpawnInterval: 2.4
   _fileSpawnScaleDuration: 0.22
   _fileDespawnScaleDuration: 0.18

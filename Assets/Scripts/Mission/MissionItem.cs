@@ -131,6 +131,19 @@ public class MissionItem : MonoBehaviour
         return false;
     }
 
+    public bool TryGetGoButton(out Button goButton)
+    {
+        if (_btnGo != null &&
+            _btnGo.gameObject.activeInHierarchy)
+        {
+            goButton = _btnGo;
+            return true;
+        }
+
+        goButton = null;
+        return false;
+    }
+
     private async void SetIconAsync(cfg.Mission missionConfig, int requestVersion)
     {
         cfg.Item itemConfig = DataTableMananger.GetInstance().Tables.ItemTable.GetOrDefault(missionConfig.Icon);

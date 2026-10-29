@@ -33,6 +33,10 @@ public sealed class PlayerInfoData
     /// <summary>普通抽奖已提交的抽奖序号，只增不减，避免结果只由货币余额决定</summary>
     public int normalLotteryDrawSerial;
 
+    /// <summary>各奖池大奖保底进度，自上次获得大奖以来的抽奖次数</summary>
+    public List<PlayerLotteryGrandPrizeProgress> lotteryGrandPrizeProgressList =
+        new List<PlayerLotteryGrandPrizeProgress>();
+
     /// <summary>神秘转盘已提交的抽奖序号，只增不减，避免结果只由转盘币余额决定</summary>
     public int mysteryWheelDrawSerial;
 
@@ -312,6 +316,14 @@ public sealed class PlayerMysteryWheelReward
 {
     public int itemId;
     public int amount;
+}
+
+/// <summary>奖池大奖保底进度</summary>
+[Serializable]
+public sealed class PlayerLotteryGrandPrizeProgress
+{
+    public int lotteryPoolId;
+    public int progress;
 }
 
 /// <summary>时光星阵单张已翻开卡牌的奖励</summary>
@@ -1430,6 +1442,53 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     public void AdvanceNormalLotteryDrawSerial()
     {
         SetValue(ref _data.normalLotteryDrawSerial, _data.normalLotteryDrawSerial + 1);
+    }
+
+    /// <summary>获取指定奖池自上次获得大奖以来的抽奖次数</summary>
+    public int GetLotteryGrandPrizeProgress(int lotteryPoolId)
+    {
+        if (_data.lotteryGrandPrizeProgressList == null)
+        {
+            return 0;
+        }
+
+        for (int i = 0; i < _data.lotteryGrandPrizeProgressList.Count; i++)
+        {
+            PlayerLotteryGrandPrizeProgress entry = _data.lotteryGrandPrizeProgressList[i];
+            if (entry.lotteryPoolId == lotteryPoolId)
+            {
+                return entry.progress;
+            }
+        }
+
+        return 0;
+    }
+
+    /// <summary>更新指定奖池的大奖保底进度</summary>
+    public void SetLotteryGrandPrizeProgress(int lotteryPoolId, int progress)
+    {
+        if (_data.lotteryGrandPrizeProgressList == null)
+        {
+            _data.lotteryGrandPrizeProgressList = new List<PlayerLotteryGrandPrizeProgress>();
+        }
+
+        progress = Mathf.Max(0, progress);
+        for (int i = 0; i < _data.lotteryGrandPrizeProgressList.Count; i++)
+        {
+            PlayerLotteryGrandPrizeProgress entry = _data.lotteryGrandPrizeProgressList[i];
+            if (entry.lotteryPoolId == lotteryPoolId)
+            {
+                SetValue(ref entry.progress, progress);
+                return;
+            }
+        }
+
+        _data.lotteryGrandPrizeProgressList.Add(new PlayerLotteryGrandPrizeProgress
+        {
+            lotteryPoolId = lotteryPoolId,
+            progress = progress
+        });
+        NotifyPlayerInfoChanged();
     }
 
     /// <summary>神秘转盘抽奖成功提交后推进序号，保证下一次随机键不同</summary>
@@ -2686,6 +2745,20 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.mysteryWheelRewards = new List<PlayerMysteryWheelReward>();
         }
 
+        if (_data.lotteryGrandPrizeProgressList == null)
+        {
+            _data.lotteryGrandPrizeProgressList = new List<PlayerLotteryGrandPrizeProgress>();
+        }
+
+        for (int i = _data.lotteryGrandPrizeProgressList.Count - 1; i >= 0; i--)
+        {
+            PlayerLotteryGrandPrizeProgress entry = _data.lotteryGrandPrizeProgressList[i];
+            if (entry == null || entry.lotteryPoolId <= 0 || entry.progress < 0)
+            {
+                _data.lotteryGrandPrizeProgressList.RemoveAt(i);
+            }
+        }
+
         for (int i = _data.mysteryWheelRewards.Count - 1; i >= 0; i--)
         {
             PlayerMysteryWheelReward reward = _data.mysteryWheelRewards[i];
@@ -2745,6 +2818,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             simulationCoins = source.simulationCoins,
             timeCoins = source.timeCoins,
             normalLotteryDrawSerial = source.normalLotteryDrawSerial,
+            lotteryGrandPrizeProgressList = CreateLotteryGrandPrizeProgressCopy(
+                source.lotteryGrandPrizeProgressList),
             mysteryWheelDrawSerial = source.mysteryWheelDrawSerial,
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
@@ -3066,6 +3141,31 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 {
                     convenienceId = offer.convenienceId,
                     remainingCount = offer.remainingCount
+                });
+            }
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerLotteryGrandPrizeProgress> CreateLotteryGrandPrizeProgressCopy(
+        List<PlayerLotteryGrandPrizeProgress> source)
+    {
+        List<PlayerLotteryGrandPrizeProgress> copy = new List<PlayerLotteryGrandPrizeProgress>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerLotteryGrandPrizeProgress entry = source[i];
+            if (entry != null && entry.lotteryPoolId > 0 && entry.progress >= 0)
+            {
+                copy.Add(new PlayerLotteryGrandPrizeProgress
+                {
+                    lotteryPoolId = entry.lotteryPoolId,
+                    progress = entry.progress
                 });
             }
         }

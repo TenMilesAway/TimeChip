@@ -10,7 +10,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": "3003,1,30"
   },
   {
     "id": 2,
@@ -23,7 +24,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 3,
@@ -36,7 +38,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 4,
@@ -49,7 +52,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 5,
@@ -62,7 +66,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 6,
@@ -75,7 +80,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 7,
@@ -88,7 +94,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 8,
@@ -101,7 +108,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 9,
@@ -114,7 +122,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 10,
@@ -127,7 +136,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 11,
@@ -140,7 +150,8 @@
     "minRewardCount": 0,
     "maxRewardCount": 0,
     "minPrice": 0,
-    "maxPrice": 0
+    "maxPrice": 0,
+    "grandPrize": ""
   },
   {
     "id": 12,
@@ -153,7 +164,8 @@
     "minRewardCount": 1,
     "maxRewardCount": 3,
     "minPrice": 50,
-    "maxPrice": 100
+    "maxPrice": 100,
+    "grandPrize": ""
   },
   {
     "id": 13,
@@ -166,7 +178,8 @@
     "minRewardCount": 2,
     "maxRewardCount": 4,
     "minPrice": 100,
-    "maxPrice": 200
+    "maxPrice": 200,
+    "grandPrize": ""
   },
   {
     "id": 14,
@@ -179,7 +192,8 @@
     "minRewardCount": 3,
     "maxRewardCount": 6,
     "minPrice": 200,
-    "maxPrice": 400
+    "maxPrice": 400,
+    "grandPrize": ""
   },
   {
     "id": 15,
@@ -192,7 +206,8 @@
     "minRewardCount": 4,
     "maxRewardCount": 8,
     "minPrice": 400,
-    "maxPrice": 800
+    "maxPrice": 800,
+    "grandPrize": ""
   },
   {
     "id": 16,
@@ -205,6 +220,7 @@
     "minRewardCount": 5,
     "maxRewardCount": 10,
     "minPrice": 800,
-    "maxPrice": 1600
+    "maxPrice": 1600,
+    "grandPrize": ""
   }
 ]

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MissionView : UIBasePanel
 {
     public const int GuideRewardMissionId = 1000;
+    public const int GuideGoMissionId = 3005;
 
     [SerializeField] private Text _txtCurrentPage;
     [SerializeField] private Text _txtMaxPage;
@@ -213,6 +214,51 @@ public class MissionView : UIBasePanel
         }
 
         Debug.LogError($"MissionView 任务 [{missionId}] 没有可点击的领奖按钮。", this);
+        return false;
+    }
+
+    public bool TryGetMissionGoButton(int missionId, out Button goButton)
+    {
+        goButton = null;
+        if (!_isUiReady || missionId <= 0)
+        {
+            return false;
+        }
+
+        RefreshMissions();
+
+        int missionIndex = -1;
+        for (int i = 0; i < _missions.Count; i++)
+        {
+            if (int.TryParse(_missions[i].id, out int activeMissionId) &&
+                activeMissionId == missionId)
+            {
+                missionIndex = i;
+                break;
+            }
+        }
+
+        if (missionIndex < 0)
+        {
+            Debug.LogError($"MissionView 未找到进行中的任务: [{missionId}]", this);
+            return false;
+        }
+
+        int requiredPage = missionIndex / _missionItems.Length + 1;
+        if (_currentPage != requiredPage)
+        {
+            _currentPage = requiredPage;
+            RefreshPage();
+        }
+
+        int slotIndex = missionIndex % _missionItems.Length;
+        if (_missionItems[slotIndex] != null &&
+            _missionItems[slotIndex].TryGetGoButton(out goButton))
+        {
+            return true;
+        }
+
+        Debug.LogError($"MissionView 任务 [{missionId}] 没有可点击的前往完成按钮。", this);
         return false;
     }
 

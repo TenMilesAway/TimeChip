@@ -34,6 +34,7 @@ public sealed partial class Lottery : Luban.BeanBase
         MaxRewardCount = (int)_obj.GetValue("maxRewardCount");
         MinPrice = (int)_obj.GetValue("minPrice");
         MaxPrice = (int)_obj.GetValue("maxPrice");
+        GrandPrize = (string)_obj.GetValue("grandPrize");
     }
 
     public static Lottery DeserializeLottery(JToken _buf)
@@ -85,6 +86,10 @@ public sealed partial class Lottery : Luban.BeanBase
     /// 最高模拟币价格
     /// </summary>
     public readonly int MaxPrice;
+    /// <summary>
+    /// 大奖配置(道具id,数量,保底次数)
+    /// </summary>
+    public readonly string GrandPrize;
 
 
     public const int __ID__ = 2019323689;
@@ -108,6 +113,7 @@ public sealed partial class Lottery : Luban.BeanBase
         + "maxRewardCount:" + MaxRewardCount + ","
         + "minPrice:" + MinPrice + ","
         + "maxPrice:" + MaxPrice + ","
+        + "grandPrize:" + GrandPrize + ","
         + "}";
     }
 }

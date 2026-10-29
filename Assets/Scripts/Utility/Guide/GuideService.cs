@@ -11,6 +11,7 @@ public static class GuideService
     private const string FirstWorkItemTarget = "FirstWorkItem";
     private const string MissionButtonTarget = "MissionButton";
     private const string FirstMissionRewardTarget = "FirstMissionReward";
+    private const string Mission3005GoButtonTarget = "Mission3005GoButton";
     private const string LotteryButtonTarget = "LotteryButton";
     private const string SingleLotteryButtonTarget = "SingleLotteryButton";
     private const string LotteryPoolSwitchButtonTarget = "LotteryPoolSwitchButton";
@@ -106,6 +107,9 @@ public static class GuideService
                 break;
             case FirstMissionRewardTarget:
                 ShowFirstMissionRewardGuide(guide.Content, onCompleted);
+                break;
+            case Mission3005GoButtonTarget:
+                ShowMission3005GoButtonGuide(guide.Content, onCompleted);
                 break;
             case LotteryButtonTarget:
                 ShowLotteryButtonGuide(guide.Content, onCompleted);
@@ -216,6 +220,21 @@ public static class GuideService
         }
 
         ShowButtonGuide(claimButton, instruction, onCompleted);
+    }
+
+    private static async void ShowMission3005GoButtonGuide(string instruction, Action<bool> onCompleted)
+    {
+        MissionView missionView = await GetOrOpenPanelAsync<MissionView>(GlobalDefine.MissionView);
+        if (missionView == null ||
+            !missionView.TryGetMissionGoButton(MissionView.GuideGoMissionId, out Button goButton))
+        {
+            Debug.LogError(
+                $"无法启动任务 [{MissionView.GuideGoMissionId}] 前往完成引导。");
+            onCompleted?.Invoke(false);
+            return;
+        }
+
+        ShowButtonGuide(goButton, instruction, onCompleted);
     }
 
     private static async void ShowLotteryButtonGuide(string instruction, Action<bool> onCompleted)

@@ -40,6 +40,7 @@ public class LotteryView : UIBasePanel
     [SerializeField] private Button _btnChangeBox;     // 切换至时光秘匣
     [SerializeField] private Button _btnChangeCard;    // 切换至时光星阵
     [SerializeField] private Button _btnCloseChangeLottery; // 关闭切换抽奖类型界面按钮
+    [SerializeField] private Button _btnViewRewardPool;     // 查看奖池
 
 
     [Header("普通抽奖")]
@@ -204,6 +205,11 @@ public class LotteryView : UIBasePanel
             _btnChangeMys.onClick.RemoveListener(SwitchToMysteryWheelLottery);
             _btnChangeBox.onClick.RemoveListener(SwitchToBoxLottery);
             _btnChangeCard.onClick.RemoveListener(SwitchToCardLottery);
+            if (_btnViewRewardPool != null)
+            {
+                _btnViewRewardPool.onClick.RemoveListener(OpenRewardPoolPanel);
+            }
+
             _boxButton.onClick.RemoveListener(StartBoxLottery);
             _cardButton.onClick.RemoveListener(StartCardLottery);
 
@@ -277,6 +283,11 @@ public class LotteryView : UIBasePanel
         _btnChangeMys.onClick.AddListener(SwitchToMysteryWheelLottery);
         _btnChangeBox.onClick.AddListener(SwitchToBoxLottery);
         _btnChangeCard.onClick.AddListener(SwitchToCardLottery);
+        if (_btnViewRewardPool != null)
+        {
+            UiButtonAudio.Bind(_btnViewRewardPool, OpenRewardPoolPanel);
+        }
+
         _boxButton.onClick.AddListener(StartBoxLottery);
         _cardButton.onClick.AddListener(StartCardLottery);
         for (int i = 0; i < _boxLotteryItem.Length; i++)
@@ -304,10 +315,12 @@ public class LotteryView : UIBasePanel
 
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         string drawKey = $"Lottery.Normal.{playerInfoManager.NormalLotteryDrawSerial}";
-        if (!TryDrawRewards(
+        int grandPrizeProgress = playerInfoManager.GetLotteryGrandPrizeProgress(LotteryPoolId);
+        if (!TryDrawRewardsWithGrandPrize(
                 LotteryPoolId,
                 drawCount,
                 drawKey,
+                ref grandPrizeProgress,
                 out List<CommonRewardItemData> rewards))
         {
             Debug.LogError($"抽奖奖励配置无效: [{LotteryPoolId}]", this);
@@ -319,6 +332,7 @@ public class LotteryView : UIBasePanel
             return;
         }
 
+        playerInfoManager.SetLotteryGrandPrizeProgress(LotteryPoolId, grandPrizeProgress);
         playerInfoManager.AdvanceNormalLotteryDrawSerial();
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.NormalLottery));
@@ -404,6 +418,151 @@ public class LotteryView : UIBasePanel
     private void SwitchToCardLottery()
     {
         SwitchLotteryMode(LotteryMode.Card);
+    }
+
+    private void OpenRewardPoolPanel()
+    {
+        if (!TryCreateCurrentRewardPoolPanelData(out CommonRewardPoolPanelData panelData))
+        {
+            Debug.LogError("无法构建当前奖池展示数据。", this);
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonRewardPoolPanel,
+            param: new OpenUIParam { data = panelData });
+    }
+
+    private bool TryCreateCurrentRewardPoolPanelData(out CommonRewardPoolPanelData panelData)
+    {
+        panelData = null;
+        LotteryMode lotteryMode = GetActiveLotteryMode();
+        int lotteryPoolId = GetLotteryPoolIdForMode(lotteryMode);
+        bool applyGrow2TalentWeights = lotteryMode != LotteryMode.Box;
+        return TryCreateWeightedRewardPoolPanelData(
+            lotteryPoolId,
+            applyGrow2TalentWeights,
+            out panelData);
+    }
+
+    public static bool TryCreateWeightedRewardPoolPanelData(
+        int lotteryPoolId,
+        bool applyGrow2TalentWeights,
+        out CommonRewardPoolPanelData panelData)
+    {
+        panelData = null;
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null || string.IsNullOrWhiteSpace(lotteryConfig.Rewards))
+        {
+            return false;
+        }
+
+        List<LotteryReward> rewards = ParseRewards(lotteryConfig.Rewards);
+        if (rewards.Count == 0)
+        {
+            return false;
+        }
+
+        long totalWeight = 0;
+        long[] adjustedWeights = new long[rewards.Count];
+        Grow2TalentEffectSystem grow2Effects = Grow2TalentEffectSystem.GetInstance();
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            LotteryReward reward = rewards[i];
+            adjustedWeights[i] = applyGrow2TalentWeights
+                ? grow2Effects.GetLotteryRewardWeight(
+                    reward.ItemId,
+                    reward.ItemCount,
+                    reward.Weight)
+                : reward.Weight;
+            totalWeight += adjustedWeights[i];
+        }
+
+        if (totalWeight <= 0)
+        {
+            return false;
+        }
+
+        bool hasGrandPrizeEntry = false;
+        TryParseGrandPrize(
+            lotteryConfig.GrandPrize,
+            out int grandItemId,
+            out int grandItemCount,
+            out int _);
+
+        List<CommonRewardPoolEntry> entries = new List<CommonRewardPoolEntry>(rewards.Count);
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            LotteryReward reward = rewards[i];
+            double probabilityPercent = adjustedWeights[i] * 100.0 / totalWeight;
+            bool isGrandPrize = grandItemId > 0 &&
+                reward.ItemId == grandItemId &&
+                reward.ItemCount == grandItemCount;
+            if (isGrandPrize)
+            {
+                hasGrandPrizeEntry = true;
+            }
+
+            entries.Add(new CommonRewardPoolEntry(
+                reward.ItemId,
+                reward.ItemCount,
+                probabilityPercent,
+                isGrandPrize));
+        }
+
+        if (grandItemId > 0 && grandItemCount > 0 && !hasGrandPrizeEntry)
+        {
+            entries.Insert(0, new CommonRewardPoolEntry(
+                grandItemId,
+                grandItemCount,
+                0,
+                isGrandPrize: true));
+        }
+        else
+        {
+            MoveGrandPrizeEntryToFront(entries);
+        }
+
+        panelData = new CommonRewardPoolPanelData(lotteryConfig.Name, entries);
+        return true;
+    }
+
+    private static void MoveGrandPrizeEntryToFront(List<CommonRewardPoolEntry> entries)
+    {
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (!entries[i].IsGrandPrize)
+            {
+                continue;
+            }
+
+            if (i == 0)
+            {
+                return;
+            }
+
+            CommonRewardPoolEntry grandPrizeEntry = entries[i];
+            entries.RemoveAt(i);
+            entries.Insert(0, grandPrizeEntry);
+            return;
+        }
+    }
+
+    private static int GetLotteryPoolIdForMode(LotteryMode lotteryMode)
+    {
+        switch (lotteryMode)
+        {
+            case LotteryMode.MysteryWheel:
+                return MysteryWheelPoolId;
+            case LotteryMode.Box:
+                return BoxLotteryPoolId;
+            case LotteryMode.Card:
+                return CardLotteryPoolId;
+            default:
+                return LotteryPoolId;
+        }
     }
 
     private LotteryMode GetActiveLotteryMode()
@@ -1120,6 +1279,101 @@ public class LotteryView : UIBasePanel
         }
 
         return true;
+    }
+
+    private bool TryDrawRewardsWithGrandPrize(
+        int lotteryPoolId,
+        int drawCount,
+        string drawKey,
+        ref int grandPrizeProgress,
+        out List<CommonRewardItemData> rewards)
+    {
+        rewards = null;
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null)
+        {
+            return false;
+        }
+
+        if (!TryParseGrandPrize(
+                lotteryConfig.GrandPrize,
+                out int grandItemId,
+                out int grandItemCount,
+                out int pityCount))
+        {
+            return TryDrawRewards(lotteryPoolId, drawCount, drawKey, out rewards);
+        }
+
+        rewards = new List<CommonRewardItemData>(drawCount);
+        for (int i = 0; i < drawCount; i++)
+        {
+            grandPrizeProgress++;
+            CommonRewardItemData reward;
+            if (grandPrizeProgress >= pityCount)
+            {
+                reward = new CommonRewardItemData
+                {
+                    itemId = grandItemId,
+                    itemCount = grandItemCount
+                };
+                grandPrizeProgress = 0;
+            }
+            else if (!TryDrawReward(
+                         lotteryPoolId,
+                         $"{drawKey}.{i}",
+                         out reward))
+            {
+                rewards.Clear();
+                return false;
+            }
+            else if (IsGrandPrizeReward(reward, grandItemId, grandItemCount))
+            {
+                grandPrizeProgress = 0;
+            }
+
+            rewards.Add(reward);
+        }
+
+        return true;
+    }
+
+    private static bool TryParseGrandPrize(
+        string grandPrizeConfig,
+        out int itemId,
+        out int itemCount,
+        out int pityCount)
+    {
+        itemId = 0;
+        itemCount = 0;
+        pityCount = 0;
+        if (string.IsNullOrWhiteSpace(grandPrizeConfig))
+        {
+            return false;
+        }
+
+        string[] values = grandPrizeConfig.Split(',');
+        if (values.Length != 3 ||
+            !int.TryParse(values[0], out itemId) ||
+            !int.TryParse(values[1], out itemCount) ||
+            !int.TryParse(values[2], out pityCount) ||
+            itemId <= 0 || itemCount <= 0 || pityCount <= 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool IsGrandPrizeReward(
+        CommonRewardItemData reward,
+        int grandItemId,
+        int grandItemCount)
+    {
+        return reward != null &&
+            reward.itemId == grandItemId &&
+            reward.itemCount == grandItemCount;
     }
 
     private bool TryDrawUniqueRewards(

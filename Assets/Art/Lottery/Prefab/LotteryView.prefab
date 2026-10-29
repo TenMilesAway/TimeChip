@@ -5366,6 +5366,7 @@ MonoBehaviour:
   _btnChangeBox: {fileID: 3679580223540819625}
   _btnChangeCard: {fileID: 9212512314191951095}
   _btnCloseChangeLottery: {fileID: 1833700975450734864}
+  _btnViewRewardPool: {fileID: 8297166827205765836}
   _lotteryBox: {fileID: 8873311931351243764}
   _bubbles:
   - {fileID: 1727724004848688952}

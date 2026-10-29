@@ -18,8 +18,8 @@ public class GameStamp : UIBasePanel
     [SerializeField, Min(1f)] private float _gameDuration = 15f;
     [SerializeField] private float _leftBoundary = -280f;
     [SerializeField] private float _rightBoundary = 280f;
-    [SerializeField, Min(0f)] private float _minFileSpeed = 210f;
-    [SerializeField, Min(0f)] private float _maxFileSpeed = 300f;
+    [SerializeField, Min(0f)] private float _minFileSpeed = 650f;
+    [SerializeField, Min(0f)] private float _maxFileSpeed = 900f;
     [SerializeField, Min(0.1f)] private float _fileSpawnInterval = 2.4f;
     [SerializeField, Min(0.01f)] private float _fileSpawnScaleDuration = 0.22f;
     [SerializeField, Min(0.01f)] private float _fileDespawnScaleDuration = 0.18f;

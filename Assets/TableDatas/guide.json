@@ -77,18 +77,18 @@
     "content": "点击购买按钮"
   },
   {
-    "id": 1011,
-    "missionId": 1003,
+    "id": 1016,
+    "missionId": 3005,
     "step": 1,
-    "target": "HomeButton",
-    "content": "点击小屋按钮"
+    "target": "MissionButton",
+    "content": "点击任务按钮，查看鹿伯安的委托"
   },
   {
-    "id": 1012,
-    "missionId": 1003,
+    "id": 1017,
+    "missionId": 3005,
     "step": 2,
-    "target": "HomeSatisfactionDetailButton",
-    "content": "点击满意度面板"
+    "target": "Mission3005GoButton",
+    "content": "点击前往完成，开始文件盖章挑战"
   },
   {
     "id": 1013,
