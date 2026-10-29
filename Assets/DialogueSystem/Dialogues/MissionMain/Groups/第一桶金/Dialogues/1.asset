@@ -16,7 +16,7 @@ MonoBehaviour:
   <Text>k__BackingField: "\u4F60\u642C\u6765\u4EE5\u540E\uFF0C\u597D\u50CF\u8FD8\u6CA1\u53BB\u8FC7\u793E\u533A\u5916\u9762\u5427?"
   <Choices>k__BackingField:
   - <Text>k__BackingField: Next Dialogue
-    <NextDialogue>k__BackingField: {fileID: 0}
+    <NextDialogue>k__BackingField: {fileID: 11400000, guid: 29f52bb0a67f22d4ca5b751c1806768d, type: 2}
   <DialogueType>k__BackingField: 0
   <Speaker>k__BackingField: 1
   <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_delighted]
