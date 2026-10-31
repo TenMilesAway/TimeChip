@@ -173,7 +173,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u63D0\u793A\uFF1A\u63D0\u4EA4\u540E\u83B7\u5F97<color=#FF2800>\u521D\u7EA7\u793E\u533A\u7269\u8D44\u793C\u76D2
+  m_Text: "\u63D0\u793A\uFF1A\u63D0\u4EA4\u540E\u53EF\u80FD\u83B7\u5F97<color=#FF2800>\u521D\u7EA7\u793E\u533A\u7269\u8D44\u793C\u76D2
     * 1</color>"
 --- !u!1 &731039386170911071
 GameObject:

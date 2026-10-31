@@ -17,6 +17,7 @@ public static class MissionAPI
     private const int RandomMissionId = 3001;
     private const int RandomFishMissionId = 3004;
     private const int RandomStampMissionId = 3005;
+    private const int CommunityReportMissionId = 201;
     private const string CommunityCentreNoticeMission3005FunctionId =
         "CommunityCentreNoticeMission3005";
     /// <summary>由社区 _may 点击开启，不参与自动接取。</summary>
@@ -600,6 +601,11 @@ public static class MissionAPI
     /// <summary>公告栏当前是否可领取随机委托（与 <see cref="TryStartMonthlyRandomMission"/> 前置条件一致，无副作用）。</summary>
     public static bool CanAcceptMonthlyRandomMissionFromNotice()
     {
+        if (!IsCommunityCentreNoticeMissionClaimUnlocked())
+        {
+            return false;
+        }
+
         if (!HasMonthlyRandomMissionOffer())
         {
             return false;
@@ -626,6 +632,7 @@ public static class MissionAPI
         targetItemCount = 0;
         if (!_isInitialized ||
             !_playerInfoManager.HasMonthlyRandomMissionOffer() ||
+            !IsCommunityCentreNoticeMissionClaimUnlocked() ||
             !TryGetMissionConfig(
                 _playerInfoManager.GetMonthlyRandomMissionOfferId().ToString(),
                 out missionConfig) ||
@@ -736,8 +743,19 @@ public static class MissionAPI
         return FunctionUnlockService.IsUnlocked(CommunityCentreNoticeMission3005FunctionId);
     }
 
+    private static bool IsCommunityCentreNoticeMissionClaimUnlocked()
+    {
+        return _playerInfoManager != null &&
+            _playerInfoManager.HasCompletedMission(CommunityReportMissionId);
+    }
+
     private static bool IsMonthlyRandomMissionOfferAccessible(int missionId)
     {
+        if (!IsCommunityCentreNoticeMissionClaimUnlocked())
+        {
+            return false;
+        }
+
         if (missionId == RandomFishMissionId && !SubwayView.IsFishingUnlocked())
         {
             return false;

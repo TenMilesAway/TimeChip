@@ -589,13 +589,44 @@ public class Launcher : SingletonMono<Launcher>
             GameSaveData.CurrentSchemaVersion);
     }
 
-    /// <summary>任务失败时展示游戏结束面板，等待玩家确认返回</summary>
-    private void ShowGameOverPanel()
+    /// <summary>设置内主动结档：结算回忆点、展示结束面板并删除存档</summary>
+    public void RequestVoluntaryGameOver()
     {
+        if (_gameSaveData == null)
+        {
+            return;
+        }
+
+        List<string> completedMissionIds =
+            PlayerInfoManager.GetInstance().GetSnapshot().completedMissionIds;
+        int memoryPoints = MissionSettlementMemory.SumForCompletedMissions(completedMissionIds);
+        MissionSettlementMemory.GrantForCompletedMissions(completedMissionIds);
+
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonOverPanel,
             UILayer.System,
-            new OpenUIParam { callback = ReturnToStartMenu });
+            new OpenUIParam
+            {
+                data = new CommonOverPanelData(memoryPoints, isVoluntarySettlement: true),
+                callback = () => ReturnToStartMenuInternal(deleteSave: true, grantMemory: false)
+            });
+    }
+
+    /// <summary>任务失败时展示游戏结束面板，等待玩家确认返回</summary>
+    private void ShowGameOverPanel()
+    {
+        List<string> completedMissionIds =
+            PlayerInfoManager.GetInstance().GetSnapshot().completedMissionIds;
+        int memoryPoints = MissionSettlementMemory.SumForCompletedMissions(completedMissionIds);
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonOverPanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonOverPanelData(memoryPoints, isVoluntarySettlement: false),
+                callback = ReturnToStartMenu
+            });
     }
 
     /// <summary>玩家确认后清除存档并回到启动菜单</summary>
@@ -604,9 +635,9 @@ public class Launcher : SingletonMono<Launcher>
         ReturnToStartMenuInternal(deleteSave: true);
     }
 
-    private void ReturnToStartMenuInternal(bool deleteSave)
+    private void ReturnToStartMenuInternal(bool deleteSave, bool grantMemory = true)
     {
-        if (deleteSave)
+        if (deleteSave && grantMemory)
         {
             List<string> completedMissionIds =
                 PlayerInfoManager.GetInstance().GetSnapshot().completedMissionIds;

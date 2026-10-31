@@ -110,5 +110,19 @@
     "step": 3,
     "target": "MysteryWheelPoolButton",
     "content": "选择神秘转盘奖池"
+  },
+  {
+    "id": 1011,
+    "missionId": 1003,
+    "step": 1,
+    "target": "HomeButton",
+    "content": "点击小屋按钮，进入你的家"
+  },
+  {
+    "id": 1012,
+    "missionId": 1003,
+    "step": 2,
+    "target": "HomeSatisfactionDetailButton",
+    "content": "点击查看满意度面板"
   }
 ]

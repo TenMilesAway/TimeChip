@@ -40,6 +40,9 @@ public sealed class PlayerInfoData
     /// <summary>神秘转盘已提交的抽奖序号，只增不减，避免结果只由转盘币余额决定</summary>
     public int mysteryWheelDrawSerial;
 
+    /// <summary>社区中心初级礼盒概率判定序号，每次提交物资独立掷骰</summary>
+    public int communityCentrePrimaryGiftBoxRollSerial;
+
     /// <summary>玩家持有的转盘币数量</summary>
     public int wheelCoins;
 
@@ -768,9 +771,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         }
 
         need.submitted = true;
-        if (RollCommunityCentrePrimaryGiftBox(
-                $"{CommunityCentreSubmitPrimaryGiftBoxProbabilityId}.Need." +
-                $"{_data.currentAge}.{_data.currentMonth}.{index}"))
+        if (RollCommunityCentrePrimaryGiftBox($"Need.{index}"))
         {
             AddItem(CommunitySupplyGiftBoxItemId, 1);
             rewardItemIdGranted = CommunitySupplyGiftBoxItemId;
@@ -789,7 +790,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return CommunityCentreNeedSubmitResult.Success;
     }
 
-    /// <summary>提交一个冗余社区道具，按阶数回馈礼盒（初级礼盒受概率表控制）和社区经验。</summary>
+    /// <summary>提交一个冗余社区道具，按阶数固定回馈礼盒和社区经验。</summary>
     public CommunityCentreRedundancySubmitResult TrySubmitCommunityCentreRedundancyItem(
         int itemId,
         out int experienceGained,
@@ -811,7 +812,6 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
         }
 
-        int itemCountBeforeConsume = GetItemCount(itemId);
         if (!TryConsumeItem(itemId))
         {
             return CommunityCentreRedundancySubmitResult.InsufficientRedundancy;
@@ -819,17 +819,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         int configuredRewardItemId =
             CommunityCentreRedundancyHelper.GetSubmitRewardItemId(itemConfig);
-        if (configuredRewardItemId == CommunitySupplyGiftBoxItemId)
-        {
-            if (RollCommunityCentrePrimaryGiftBox(
-                    $"{CommunityCentreSubmitPrimaryGiftBoxProbabilityId}.Redundancy." +
-                    $"{_data.currentAge}.{_data.currentMonth}.{itemId}.{itemCountBeforeConsume}"))
-            {
-                AddItem(CommunitySupplyGiftBoxItemId, 1);
-                rewardItemIdGranted = CommunitySupplyGiftBoxItemId;
-            }
-        }
-        else if (configuredRewardItemId > 0)
+        if (configuredRewardItemId > 0)
         {
             AddItem(configuredRewardItemId, 1);
             rewardItemIdGranted = configuredRewardItemId;
@@ -839,11 +829,16 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         return CommunityCentreRedundancySubmitResult.Success;
     }
 
-    private static bool RollCommunityCentrePrimaryGiftBox(string eventKey)
+    private bool RollCommunityCentrePrimaryGiftBox(string rollCategoryKey)
     {
-        return TurnRandom.Chance(
-            eventKey,
+        int rollSerial = _data.communityCentrePrimaryGiftBoxRollSerial;
+        bool won = TurnRandom.Chance(
+            $"{CommunityCentreSubmitPrimaryGiftBoxProbabilityId}.{rollCategoryKey}.{rollSerial}",
             GameProbability.Get(CommunityCentreSubmitPrimaryGiftBoxProbabilityId));
+        SetValue(
+            ref _data.communityCentrePrimaryGiftBoxRollSerial,
+            rollSerial + 1);
+        return won;
     }
 
     /// <summary>获取玩家在本回合是否已经打工</summary>
@@ -2821,6 +2816,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             lotteryGrandPrizeProgressList = CreateLotteryGrandPrizeProgressCopy(
                 source.lotteryGrandPrizeProgressList),
             mysteryWheelDrawSerial = source.mysteryWheelDrawSerial,
+            communityCentrePrimaryGiftBoxRollSerial =
+                source.communityCentrePrimaryGiftBoxRollSerial,
             wheelCoins = source.wheelCoins,
             boxCoins = source.boxCoins,
             cardCoins = source.cardCoins,

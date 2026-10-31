@@ -37,6 +37,6 @@
   {
     "id": "Community.Centre.Submit.PrimaryGiftBox",
     "probability": 0.5,
-    "desc": "社区中心提交材料获得初级社区物资礼盒的概率"
+    "desc": "社区中心每次提交材料时独立判定获得初级社区物资礼盒的概率"
   }
 ]

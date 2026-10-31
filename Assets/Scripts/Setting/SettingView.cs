@@ -10,6 +10,9 @@ public class SettingView : UIBasePanel
     [SerializeField] private Slider _sliderSFX;
     [SerializeField] private Toggle _toggleVibra;
     [SerializeField] private Button _btnBack;
+    [SerializeField] private Button _btnOver;
+
+    private bool _closingForVoluntaryEnd;
 
     protected override void InitHandle(OpenUIParam param)
     {
@@ -21,10 +24,14 @@ public class SettingView : UIBasePanel
         {
             _btnBack.gameObject.SetActive(true);
             _btnBack.onClick.AddListener(OnBackButtonClicked);
+
+            _btnOver.gameObject.SetActive(true);
+            _btnOver.onClick.AddListener(OnOverButtonClicked);
         }
         else
         {
             _btnBack.gameObject.SetActive(false);
+            _btnOver.gameObject.SetActive(false);
         }
 
         _sliderMusic.onValueChanged.AddListener(OnMusicVolumeChanged);
@@ -48,8 +55,9 @@ public class SettingView : UIBasePanel
         _sliderSFX.onValueChanged.RemoveListener(OnSFXVolumeChanged);
         _toggleVibra.onValueChanged.RemoveListener(OnVibrationChanged);
         _btnBack.onClick.RemoveListener(OnBackButtonClicked);
+        _btnOver.onClick.RemoveListener(OnOverButtonClicked);
 
-        if (Launcher.Instance != null)
+        if (!_closingForVoluntaryEnd && Launcher.Instance != null)
         {
             Launcher.Instance.ReturnToLauncherMenu();
         }
@@ -97,6 +105,38 @@ public class SettingView : UIBasePanel
         }
 
         Launcher.Instance.SaveAndReturnToMainInterface();
+    }
+
+    private void OnOverButtonClicked()
+    {
+        UiButtonAudio.PlayClick();
+
+        if (Launcher.Instance == null)
+        {
+            return;
+        }
+
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonChoosePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonChooseData(
+                    "主动结档",
+                    "确认后将结算本局回忆点数并删除当前存档，是否继续?",
+                    OnConfirmVoluntaryGameOver,
+                    null,
+                    "确认结档",
+                    "取消")
+            });
+    }
+
+    private void OnConfirmVoluntaryGameOver()
+    {
+        _closingForVoluntaryEnd = true;
+        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+        UIManager.GetInstance().ClosePanel(GetPanelName());
+        Launcher.Instance.RequestVoluntaryGameOver();
     }
 
     private static float VolumeDbToSliderValue(float volumeDb)

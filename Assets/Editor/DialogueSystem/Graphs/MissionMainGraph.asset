@@ -16,7 +16,7 @@ MonoBehaviour:
   <Groups>k__BackingField:
   - <ID>k__BackingField: 4f35dd98-f8ed-4892-b357-0736c5430b7b
     <Name>k__BackingField: "\u7B2C\u4E00\u6876\u91D1"
-    <Position>k__BackingField: {x: 788.7999, y: 1879.2002}
+    <Position>k__BackingField: {x: 789, y: 1881}
   <Nodes>k__BackingField:
   - <ID>k__BackingField: 7ea2df50-6aed-410d-adf0-6020137110a9
     <Name>k__BackingField: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 1
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_delighted]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 814.4, y: 1941.6001}
+    <Position>k__BackingField: {x: 814, y: 1942}
   - <ID>k__BackingField: 587d731b-5e47-4d3c-a51d-890c3ee901f6
     <Name>k__BackingField: 2
     <Text>k__BackingField: "\u53BB\u8FC7\uFF0C\u697C\u4E0B\u4FBF\u5229\u5E97\uFF0C\u5355\u7A0B\u4E94\u5206\u949F\uFF0C\u8FD8\u8FF7\u8DEF\u4E86\u4E00\u6B21\u3002"
@@ -41,10 +41,10 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_shy]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 1504.8, y: 1941.6001}
+    <Position>k__BackingField: {x: 1505, y: 1942}
   - <ID>k__BackingField: bbccc9df-7661-4d7d-b1ef-80bd1f15ff0a
     <Name>k__BackingField: 3
-    <Text>k__BackingField: "\u6211\u8BF4\u7684\u662F\u66F4\u8FDC\u7684\u5730\u65B9\uFF0C\u5750\u5730\u94C1\u53BB\u770B\u770B\u8FD9\u5EA7\u57CE\u5E02"
+    <Text>k__BackingField: "\u6211\u8BF4\u7684\u662F\u66F4\u8FDC\u7684\u5730\u65B9\uFF0C\u5750\u5730\u94C1\u53BB\u770B\u770B\u8FD9\u5EA7\u57CE\u5E02\u3002"
     <Choices>k__BackingField:
     - <Text>k__BackingField: Next Dialogue
       <NodeID>k__BackingField: 979479a8-6228-4f7e-a4de-8b248d92307d
@@ -53,10 +53,10 @@ MonoBehaviour:
     <Speaker>k__BackingField: 1
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_excited]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 2172.8, y: 1943.2001}
+    <Position>k__BackingField: {x: 2173, y: 1943}
   - <ID>k__BackingField: 979479a8-6228-4f7e-a4de-8b248d92307d
     <Name>k__BackingField: 4
-    <Text>k__BackingField: "\u90A3\u6211\u5F97\u5148\u6512\u591F\u6A21\u62DF\u5E01\uFF0C\u518D\u529E\u4E00\u5F20\u5730\u94C1\u5361\u3002"
+    <Text>k__BackingField: "\u90A3\u6211\u5F97\u5148\u6512\u591F\u6A21\u62DF\u5E01\uFF0C\u518D\u529E\u4E00\u5F20<color=#00FFFA>\u5730\u94C1\u5361</color>\u3002"
     <Choices>k__BackingField:
     - <Text>k__BackingField: Next Dialogue
       <NodeID>k__BackingField: 9389eca7-5df1-4b38-a908-a5daf5ed49f2
@@ -65,7 +65,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_smile]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 2855.2, y: 1944.8}
+    <Position>k__BackingField: {x: 2855, y: 1945}
   - <ID>k__BackingField: 9389eca7-5df1-4b38-a908-a5daf5ed49f2
     <Name>k__BackingField: 5
     <Text>k__BackingField: "\u53EF\u4EE5\u5440\uFF0C\u5916\u9762\u7684\u4E16\u754C\u5F88\u5927\uFF0C\u65B0\u673A\u4F1A\u90FD\u4E0D\u53EA\u5728\u793E\u533A\u91CC\u3002"
@@ -77,7 +77,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 1
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend_delighted]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 3543.2, y: 1946.4}
+    <Position>k__BackingField: {x: 3543, y: 1946}
   - <ID>k__BackingField: 3cf3d786-5a65-42cd-ba84-9e076b417fce
     <Name>k__BackingField: 6
     <Text>k__BackingField: "\u6512\u94B1\u6512\u94B1\uFF01"
@@ -89,7 +89,7 @@ MonoBehaviour:
     <Speaker>k__BackingField: 0
     <SpeakerExpressionPath>k__BackingField: Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me_excited]
     <Reward>k__BackingField: 
-    <Position>k__BackingField: {x: 4213.6, y: 1946.4}
+    <Position>k__BackingField: {x: 4214, y: 1946}
   <OldGroupNames>k__BackingField:
   - "\u7B2C\u4E00\u6876\u91D1"
   <OldUngroupedNodeNames>k__BackingField: []
