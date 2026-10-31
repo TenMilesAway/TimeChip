@@ -84,6 +84,7 @@ public class LotteryView : UIBasePanel
     private bool _isLotteryInProgress;                      // 是否正在抽奖
     private Coroutine _rewardPresentationCoroutine;         // 延迟显示奖励的协程
     private List<CommonRewardItemData> _pendingRewards;     // 待展示的已结算奖励
+    private int _pendingGrandPrizeSplitLotteryPoolId;       // 待展示奖励的大奖拆分奖池 ID（0 表示不拆分）
     private int? _pendingSimulationCoinDisplayStart;        // 待展示奖励的模拟币动画起始数量
     private readonly List<CommonRewardItemData> _mysteryWheelRewards =
         new List<CommonRewardItemData>(MysteryWheelRewardCount);
@@ -92,6 +93,7 @@ public class LotteryView : UIBasePanel
     private int _selectedBoxIndex = -1;
 
     private const int LotteryPoolId = 1;                    // 奖池 ID
+    private const string NormalLotteryGrandPrizeProbabilityId = "Lottery.Normal.GrandPrize";
     private const int MysteryWheelPoolId = 2;               // 神秘转盘奖池 ID
     private const int BoxLotteryPoolId = 3;                 // 时光秘匣奖池 ID
     private const int CardLotteryPoolId = 4;                // 时光星阵奖池 ID
@@ -341,7 +343,8 @@ public class LotteryView : UIBasePanel
         ScheduleRewardPresentation(
             rewards,
             LotteryDuration + LotteryRevealDuration + 0.01f,
-            simulationCoinDisplayStart);
+            simulationCoinDisplayStart,
+            LotteryPoolId);
 
         _isLotteryInProgress = true;
         _normalButton.interactable = false;
@@ -514,10 +517,13 @@ public class LotteryView : UIBasePanel
 
         if (grandItemId > 0 && grandItemCount > 0 && !hasGrandPrizeEntry)
         {
+            double grandPrizeProbabilityPercent = lotteryPoolId == LotteryPoolId
+                ? GameProbability.Get(NormalLotteryGrandPrizeProbabilityId) * 100.0
+                : 0;
             entries.Insert(0, new CommonRewardPoolEntry(
                 grandItemId,
                 grandItemCount,
-                0,
+                grandPrizeProbabilityPercent,
                 isGrandPrize: true));
         }
         else
@@ -1306,12 +1312,37 @@ public class LotteryView : UIBasePanel
             return TryDrawRewards(lotteryPoolId, drawCount, drawKey, out rewards);
         }
 
+        if (LotteryGrandPrizeTestDraw.IsEnabled && lotteryPoolId == LotteryPoolId)
+        {
+            return LotteryGrandPrizeTestDraw.TryBuildNormalPoolRewards(
+                drawCount,
+                drawKey,
+                grandItemId,
+                grandItemCount,
+                ref grandPrizeProgress,
+                (string rewardDrawKey, out CommonRewardItemData reward) =>
+                    TryDrawReward(lotteryPoolId, rewardDrawKey, out reward),
+                out rewards);
+        }
+
         rewards = new List<CommonRewardItemData>(drawCount);
         for (int i = 0; i < drawCount; i++)
         {
             grandPrizeProgress++;
             CommonRewardItemData reward;
             if (grandPrizeProgress >= pityCount)
+            {
+                reward = new CommonRewardItemData
+                {
+                    itemId = grandItemId,
+                    itemCount = grandItemCount
+                };
+                grandPrizeProgress = 0;
+            }
+            else if (lotteryPoolId == LotteryPoolId &&
+                     TurnRandom.Chance(
+                         $"{drawKey}.{i}.GrandPrize",
+                         GameProbability.Get(NormalLotteryGrandPrizeProbabilityId)))
             {
                 reward = new CommonRewardItemData
                 {
@@ -1337,6 +1368,79 @@ public class LotteryView : UIBasePanel
         }
 
         return true;
+    }
+
+    private static bool TrySeparateGrandPrizeRewards(
+        int lotteryPoolId,
+        List<CommonRewardItemData> rewards,
+        out List<CommonRewardItemData> grandPrizeRewards,
+        out List<CommonRewardItemData> otherRewards)
+    {
+        grandPrizeRewards = new List<CommonRewardItemData>();
+        otherRewards = new List<CommonRewardItemData>();
+        if (rewards == null || rewards.Count == 0)
+        {
+            return false;
+        }
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null ||
+            !TryParseGrandPrize(
+                lotteryConfig.GrandPrize,
+                out int grandItemId,
+                out int grandItemCount,
+                out _))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            CommonRewardItemData reward = rewards[i];
+            if (IsGrandPrizeReward(reward, grandItemId, grandItemCount))
+            {
+                grandPrizeRewards.Add(reward);
+            }
+            else
+            {
+                otherRewards.Add(reward);
+            }
+        }
+
+        return grandPrizeRewards.Count > 0;
+    }
+
+    private static bool ContainsGrandPrizeReward(
+        int lotteryPoolId,
+        List<CommonRewardItemData> rewards)
+    {
+        if (rewards == null || rewards.Count == 0)
+        {
+            return false;
+        }
+
+        cfg.Lottery lotteryConfig = DataTableMananger.GetInstance().Tables.LotteryTable
+            .GetOrDefault(lotteryPoolId);
+        if (lotteryConfig == null ||
+            !TryParseGrandPrize(
+                lotteryConfig.GrandPrize,
+                out int grandItemId,
+                out int grandItemCount,
+                out _))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < rewards.Count; i++)
+        {
+            if (IsGrandPrizeReward(rewards[i], grandItemId, grandItemCount))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool TryParseGrandPrize(
@@ -1848,11 +1952,13 @@ public class LotteryView : UIBasePanel
     private void ScheduleRewardPresentation(
         List<CommonRewardItemData> rewards,
         float delay,
-        int? simulationCoinDisplayStart)
+        int? simulationCoinDisplayStart,
+        int grandPrizeSplitLotteryPoolId = 0)
     {
         CancelRewardPresentation();
         _pendingRewards = new List<CommonRewardItemData>(rewards);
         _pendingSimulationCoinDisplayStart = simulationCoinDisplayStart;
+        _pendingGrandPrizeSplitLotteryPoolId = grandPrizeSplitLotteryPoolId;
         _rewardPresentationCoroutine = StartCoroutine(
             PresentRewardsAfterDelay(delay));
     }
@@ -1874,15 +1980,17 @@ public class LotteryView : UIBasePanel
 
         List<CommonRewardItemData> rewards = _pendingRewards;
         int? simulationCoinDisplayStart = _pendingSimulationCoinDisplayStart;
+        int grandPrizeSplitLotteryPoolId = _pendingGrandPrizeSplitLotteryPoolId;
         _pendingRewards = null;
         _pendingSimulationCoinDisplayStart = null;
+        _pendingGrandPrizeSplitLotteryPoolId = 0;
         if (_rewardPresentationCoroutine != null)
         {
             StopCoroutine(_rewardPresentationCoroutine);
             _rewardPresentationCoroutine = null;
         }
 
-        PresentRewards(rewards, simulationCoinDisplayStart);
+        PresentRewards(rewards, simulationCoinDisplayStart, grandPrizeSplitLotteryPoolId);
     }
 
     private void CancelRewardPresentation()
@@ -1895,6 +2003,7 @@ public class LotteryView : UIBasePanel
 
         _pendingRewards = null;
         _pendingSimulationCoinDisplayStart = null;
+        _pendingGrandPrizeSplitLotteryPoolId = 0;
     }
 
     private static void PreserveSimulationCoinDisplay(int? simulationCoinDisplayStart)
@@ -1914,13 +2023,42 @@ public class LotteryView : UIBasePanel
 
     private static void PresentRewards(
         List<CommonRewardItemData> rewards,
-        int? simulationCoinDisplayStart = null)
+        int? simulationCoinDisplayStart = null,
+        int grandPrizeSplitLotteryPoolId = 0)
     {
+        if (grandPrizeSplitLotteryPoolId > 0 &&
+            TrySeparateGrandPrizeRewards(
+                grandPrizeSplitLotteryPoolId,
+                rewards,
+                out List<CommonRewardItemData> grandPrizeRewards,
+                out List<CommonRewardItemData> otherRewards) &&
+            grandPrizeRewards.Count > 0 &&
+            otherRewards.Count > 0)
+        {
+            UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+            {
+                data = grandPrizeRewards,
+                rewardsAlreadyGranted = true,
+                isGrandPrizePresentation = true
+            });
+            UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+            {
+                data = otherRewards,
+                rewardsAlreadyGranted = true,
+                simulationCoinDisplayStart = simulationCoinDisplayStart
+            });
+            return;
+        }
+
+        bool isGrandPrizePresentation = grandPrizeSplitLotteryPoolId > 0 &&
+            ContainsGrandPrizeReward(grandPrizeSplitLotteryPoolId, rewards);
+
         UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
         {
             data = rewards,
             rewardsAlreadyGranted = true,
-            simulationCoinDisplayStart = simulationCoinDisplayStart
+            simulationCoinDisplayStart = simulationCoinDisplayStart,
+            isGrandPrizePresentation = isGrandPrizePresentation
         });
     }
 

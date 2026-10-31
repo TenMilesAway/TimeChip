@@ -38,5 +38,10 @@
     "id": "Community.Centre.Submit.PrimaryGiftBox",
     "probability": 0.5,
     "desc": "社区中心每次提交材料时独立判定获得初级社区物资礼盒的概率"
+  },
+  {
+    "id": "Lottery.Normal.GrandPrize",
+    "probability": 0.001,
+    "desc": "普通奖池单次抽奖获得大奖的概率"
   }
 ]

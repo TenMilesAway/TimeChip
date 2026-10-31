@@ -59,9 +59,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isBlockingWindow: 1
+  _txtTitle: {fileID: 3994484098788173035}
   _closeButton: {fileID: 2783895132834295775}
   _btnSkip: {fileID: 6496661153951508010}
   _commonRewardItemParent: {fileID: 1684944769624840978}
+  _chestTrans: {fileID: 4736444399282253513}
   _textTip: {fileID: 5682434526538362458}
   _textTitle: {fileID: 4346771760148698340}
   _chestIcon: {fileID: 4935499750520528665}

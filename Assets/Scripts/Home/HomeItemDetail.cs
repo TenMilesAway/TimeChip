@@ -18,6 +18,9 @@ public sealed class HomeItemDetailData
 
 public class HomeItemDetail : UIBasePanel
 {
+    private const int FurnitureDiscountCouponItemId = 2000;
+    private const float FurnitureDiscountMultiplier = 0.8f;
+
     [SerializeField] private Image _icon;                                                     // 图片
     [SerializeField] private Text _nameText;                                                  // 名称
     [SerializeField] private Text _satisfactionText;                                          // 满意度
@@ -77,16 +80,66 @@ public class HomeItemDetail : UIBasePanel
     /// </summary>
     public void Purchase()
     {
-        if (_homeConfig == null || PlayerInfoManager.GetInstance().IsHomeUnlocked(_homeConfig.Id)) return;
+        if (_homeConfig == null || PlayerInfoManager.GetInstance().IsHomeUnlocked(_homeConfig.Id))
+        {
+            return;
+        }
 
         GameManager.Audio.Play(AudioDefine.SFXClick);
 
-        int purchaseCost = GetPurchaseCost();
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (playerInfoManager.GetItemCount(FurnitureDiscountCouponItemId) <= 0)
+        {
+            CompletePurchase(useFurnitureDiscountCoupon: false);
+            return;
+        }
+
+        int fullPrice = GetPurchaseCost(applyFurnitureDiscountCoupon: false);
+        int discountedPrice = GetPurchaseCost(applyFurnitureDiscountCoupon: true);
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonChoosePanel,
+            UILayer.System,
+            new OpenUIParam
+            {
+                data = new CommonChooseData(
+                    "使用家具折扣券",
+                    $"是否使用<color=#00FFFA>家具折扣券</color>?本次购买花费 {discountedPrice} 模拟币 (原价 {fullPrice})",
+                    () =>
+                    {
+                        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+                        CompletePurchase(useFurnitureDiscountCoupon: true);
+                    },
+                    () =>
+                    {
+                        UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
+                        CompletePurchase(useFurnitureDiscountCoupon: false);
+                    },
+                    "使用",
+                    "不使用")
+            });
+    }
+
+    private void CompletePurchase(bool useFurnitureDiscountCoupon)
+    {
+        if (_homeConfig == null || PlayerInfoManager.GetInstance().IsHomeUnlocked(_homeConfig.Id))
+        {
+            return;
+        }
+
+        int purchaseCost = GetPurchaseCost(applyFurnitureDiscountCoupon: useFurnitureDiscountCoupon);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (!playerInfoManager.TrySpendSimulationCoins(purchaseCost))
         {
             CommonTipView.Show(
                 $"模拟币不足，无法购买家具: [<color=#00FFFA>{_homeConfig.Name}</color>]");
+            return;
+        }
+
+        if (useFurnitureDiscountCoupon &&
+            !playerInfoManager.TryConsumeItem(FurnitureDiscountCouponItemId))
+        {
+            CommonTipView.Show("家具折扣券不足，购买已取消");
+            playerInfoManager.AddSimulationCoins(purchaseCost);
             return;
         }
 
@@ -111,7 +164,17 @@ public class HomeItemDetail : UIBasePanel
         _priceText.text = $"-{purchaseCost}";
         _purchaseButton.interactable = false;
         OnClose();
-        CommonTipView.Show($"购买成功，获得家具: <color=#00FFFA>{suffix}</color>");
+
+        if (useFurnitureDiscountCoupon)
+        {
+            CommonTipView.Show(
+                $"购买成功，获得家具: <color=#00FFFA>{suffix}</color>，失去<color=#00FFFA>家具折扣券</color> ×1");
+        }
+        else
+        {
+            CommonTipView.Show($"购买成功，获得家具: <color=#00FFFA>{suffix}</color>");
+        }
+
         GameManager.Audio.Play(AudioDefine.SFXBuy);
     }
 
@@ -140,11 +203,17 @@ public class HomeItemDetail : UIBasePanel
     /// <summary>
     /// 获得购买价格
     /// </summary>
-    private int GetPurchaseCost()
+    private int GetPurchaseCost(bool applyFurnitureDiscountCoupon = false)
     {
         int basePrice = _homeConfig.Price +
             (_prerequisiteConfig == null ? 0 : _prerequisiteConfig.Price);
-        return BuffSystem.GetInstance().CalculateShopPrice(basePrice);
+        int price = BuffSystem.GetInstance().CalculateShopPrice(basePrice);
+        if (!applyFurnitureDiscountCoupon)
+        {
+            return price;
+        }
+
+        return Mathf.Max(0, Mathf.CeilToInt(price * FurnitureDiscountMultiplier));
     }
 
     /// <summary>

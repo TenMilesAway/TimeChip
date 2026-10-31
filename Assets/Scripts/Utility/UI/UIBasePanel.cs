@@ -14,6 +14,7 @@ public class OpenUIParam
     public bool rewardsAlreadyGranted; // 奖励是否已在打开面板前结算
     public int? simulationCoinDisplayStart; // 已结算模拟币奖励的动画起始数量
     public bool isPlayerItemLossPresentation; // 本次仅展示玩家失去的道具（与获得分两次播放）
+    public bool isGrandPrizePresentation; // 本次为抽中大奖的庆祝展示
 }
 
 /// <summary>

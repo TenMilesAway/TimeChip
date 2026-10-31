@@ -7,7 +7,7 @@ public sealed class GMPanel : MonoBehaviour
     private const int MaxGrantCount = 99999;
 
     private readonly Rect _buttonRect = new Rect(12f, 12f, 84f, 36f);
-    private Rect _windowRect = new Rect(12f, 56f, 340f, 330f);
+    private Rect _windowRect = new Rect(12f, 56f, 340f, 370f);
 
     private bool _isOpen;
     private string _itemIdInput = string.Empty;
@@ -70,7 +70,18 @@ public sealed class GMPanel : MonoBehaviour
             TrySetMemoryPoints(9999);
         }
 
-        GUI.Label(new Rect(16f, 256f, 294f, 48f), _message);
+        string lotteryTestLabel = LotteryGrandPrizeTestDraw.IsEnabled
+            ? "关闭普通抽奖大奖测试"
+            : "开启普通抽奖大奖测试";
+        if (GUI.Button(new Rect(16f, 256f, 294f, 30f), lotteryTestLabel))
+        {
+            LotteryGrandPrizeTestDraw.SetEnabled(!LotteryGrandPrizeTestDraw.IsEnabled);
+            _message = LotteryGrandPrizeTestDraw.IsEnabled
+                ? "已开启：单抽必中大奖；五连首格大奖+后四格普通。"
+                : "已关闭普通抽奖大奖测试。";
+        }
+
+        GUI.Label(new Rect(16f, 294f, 294f, 48f), _message);
         GUI.DragWindow(new Rect(0f, 0f, 340f, 24f));
     }
 

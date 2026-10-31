@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class CommonRewardPanel : UIBasePanel
 {
+    [SerializeField] private Text _txtTitle;                                // 标题文本
     [SerializeField] private Button _closeButton;                           // 关闭按钮
     [SerializeField] private Button _btnSkip;                               // 跳过按钮
     [SerializeField] private Transform _commonRewardItemParent;             // 通用奖励物品父物体
+    [SerializeField] private Transform _chestTrans;                         // 宝箱位置
     [SerializeField] private GameObject _textTip;                           // 提示文本
     [SerializeField] private GameObject _textTitle;                         // 上方标题文本
     [SerializeField] private GameObject _chestIcon;                         // 宝箱 Icon
@@ -23,9 +25,16 @@ public class CommonRewardPanel : UIBasePanel
     private bool _rewardsAlreadyGranted; // 奖励是否已在展示前结算
     private int? _simulationCoinDisplayStart; // 预结算模拟币奖励的动画起始数量
     private System.Action _closeCallback;
+    private bool _isGrandPrizePresentation;
+    private string _defaultTitleText;
+    private Color _defaultTitleColor;
+    private bool _hasCachedDefaultTitleStyle;
+
+    private static readonly Color GrandPrizeTitleColor = new Color(1f, 0.82f, 0.2f, 1f);
 
     private void Awake()
     {
+        CacheDefaultTitleStyle();
         _closeButton.onClick.AddListener(ClosePanel);
         _btnSkip.onClick.AddListener(SkipAllQueuedRewards);
     }
@@ -57,7 +66,16 @@ public class CommonRewardPanel : UIBasePanel
 
         _isPlayerItemLossPresentation = param != null &&
             (param.isPlayerItemLossPresentation || AreAllRewardsPlayerItemLoss(rewardDataList));
+        _isGrandPrizePresentation = param != null &&
+            param.isGrandPrizePresentation &&
+            !_isPlayerItemLossPresentation;
         ResetPresentation();
+        ApplyTitlePresentation(_isGrandPrizePresentation);
+        if (_isGrandPrizePresentation)
+        {
+            PlayGrandPrizeChestAnimation();
+        }
+
         InitializeRewardsAsync(rewardDataList, _presentationVersion);
     }
 
@@ -200,7 +218,14 @@ public class CommonRewardPanel : UIBasePanel
     {
         _presentationVersion++;
         DOTween.Kill(this);
+        if (_chestTrans != null)
+        {
+            DOTween.Kill(_chestTrans);
+        }
+
         ClearRewardItems();
+        ResetChestTransform();
+        ApplyTitlePresentation(false);
         ApplyCelebrationPresentationVisibility(false);
         _closeButton.interactable = false;
         _btnSkip.interactable = false;
@@ -280,6 +305,77 @@ public class CommonRewardPanel : UIBasePanel
         {
             _chestFX.SetActive(true);
         }
+    }
+
+    private void CacheDefaultTitleStyle()
+    {
+        if (_hasCachedDefaultTitleStyle || _txtTitle == null)
+        {
+            return;
+        }
+
+        _defaultTitleText = _txtTitle.text;
+        _defaultTitleColor = _txtTitle.color;
+        _hasCachedDefaultTitleStyle = true;
+    }
+
+    private void ApplyTitlePresentation(bool isGrandPrizePresentation)
+    {
+        CacheDefaultTitleStyle();
+        if (_txtTitle == null)
+        {
+            return;
+        }
+
+        if (isGrandPrizePresentation)
+        {
+            _txtTitle.text = "恭喜获得大奖";
+            _txtTitle.color = GrandPrizeTitleColor;
+            return;
+        }
+
+        _txtTitle.text = _hasCachedDefaultTitleStyle ? _defaultTitleText : _txtTitle.text;
+        _txtTitle.color = _hasCachedDefaultTitleStyle ? _defaultTitleColor : _txtTitle.color;
+    }
+
+    private void ResetChestTransform()
+    {
+        if (_chestTrans == null)
+        {
+            return;
+        }
+
+        _chestTrans.localScale = Vector3.one;
+        _chestTrans.localRotation = Quaternion.identity;
+    }
+
+    private void PlayGrandPrizeChestAnimation()
+    {
+        if (_chestTrans == null)
+        {
+            return;
+        }
+
+        Transform chest = _chestTrans;
+        DOTween.Kill(chest);
+        ResetChestTransform();
+
+        const float chargeDuration = 0.3f;
+        const float burstDuration = 0.24f;
+        const float settleDuration = 0.16f;
+        Vector3 baseScale = Vector3.one;
+
+        Sequence sequence = DOTween.Sequence().SetTarget(this);
+        sequence.Append(
+            chest.DOScale(baseScale * 0.78f, chargeDuration).SetEase(Ease.InOutSine));
+        sequence.Join(
+            chest.DOLocalRotate(new Vector3(0f, 0f, -8f), chargeDuration).SetEase(Ease.InOutSine));
+        sequence.Append(
+            chest.DOScale(baseScale * 1.42f, burstDuration).SetEase(Ease.OutBack));
+        sequence.Join(chest.DOLocalRotate(Vector3.zero, burstDuration * 0.75f));
+        sequence.Append(
+            chest.DOScale(baseScale * 1.06f, settleDuration).SetEase(Ease.OutQuad));
+        sequence.Append(chest.DOScale(baseScale, settleDuration).SetEase(Ease.InOutSine));
     }
 
     /// <summary>
