@@ -22,6 +22,7 @@ public class CommunityView : UIBasePanel
     private Tween _noticeReminderTween;
     private Vector3 _noticeOriginalScale;
     private Button _btnMay;
+    private Button _btnAugust;
     private const string HomeStoreFunctionId = "HomeStore";
     private const string ConvenienceStoreFunctionId = "ConvenienceStore";
     private const string ClinicFunctionId = "Clinic";
@@ -92,6 +93,7 @@ public class CommunityView : UIBasePanel
         BindStrayCatFoodBowlButtons();
         BindDonationButton();
         BindMayFestivalButton();
+        BindAugustFestivalButton();
 
         if (_btnConvenienceStore == null)
         {
@@ -140,10 +142,13 @@ public class CommunityView : UIBasePanel
         playerInfoManager.TurnAdvanced += RefreshDonationSpawn;
         playerInfoManager.TurnAdvanced -= RefreshMayFestivalDisplay;
         playerInfoManager.TurnAdvanced += RefreshMayFestivalDisplay;
+        playerInfoManager.TurnAdvanced -= RefreshAugustFestivalDisplay;
+        playerInfoManager.TurnAdvanced += RefreshAugustFestivalDisplay;
         playerInfoManager.PlayerInfoChanged -= RefreshFunctionUnlocks;
         playerInfoManager.PlayerInfoChanged += RefreshFunctionUnlocks;
         RefreshFunctionUnlocks(playerInfoManager);
         RefreshMayFestivalDisplay();
+        RefreshAugustFestivalDisplay();
         RefreshMissionNotice();
         StartTrashCanReminder();
     }
@@ -158,6 +163,7 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshMayFestivalDisplay;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshAugustFestivalDisplay;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
         base.HideHandle();
     }
@@ -177,11 +183,17 @@ public class CommunityView : UIBasePanel
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshStrayCatFoodBowlSpawns;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshDonationSpawn;
         PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshMayFestivalDisplay;
+        PlayerInfoManager.GetInstance().TurnAdvanced -= RefreshAugustFestivalDisplay;
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshFunctionUnlocks;
 
         if (_btnMay != null)
         {
             _btnMay.onClick.RemoveListener(OnClickMayFestival);
+        }
+
+        if (_btnAugust != null)
+        {
+            _btnAugust.onClick.RemoveListener(OnClickAugustFestival);
         }
 
         if (_btnConvenienceStore != null)
@@ -546,6 +558,57 @@ public class CommunityView : UIBasePanel
         }
 
         OpenMayFestivalExchangePanel();
+    }
+
+    private void BindAugustFestivalButton()
+    {
+        if (_august == null)
+        {
+            return;
+        }
+
+        if (_btnAugust == null)
+        {
+            _btnAugust = _august.GetComponent<Button>();
+        }
+
+        if (_btnAugust == null)
+        {
+            Debug.LogError("CommunityView 的中秋点位缺少 Button 组件。", this);
+            return;
+        }
+
+        _btnAugust.onClick.AddListener(OnClickAugustFestival);
+        _august.SetActive(false);
+    }
+
+    private void RefreshAugustFestivalDisplay()
+    {
+        if (_august == null)
+        {
+            return;
+        }
+
+        bool visible = PlayerInfoManager.GetInstance().CurrentMonth == PlayerInfoManager.AugustFestivalMonth;
+        _august.SetActive(visible);
+        if (visible)
+        {
+            PlayerInfoManager.GetInstance().EnsureAugustLanternRiddlesInitialized();
+        }
+    }
+
+    private void OnClickAugustFestival()
+    {
+        UiButtonAudio.PlayClick();
+        if (_august == null || !_august.activeInHierarchy)
+        {
+            return;
+        }
+
+        PlayerInfoManager.GetInstance().EnsureAugustLanternRiddlesInitialized();
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.GameLantern,
+            UILayer.System);
     }
 
     private void OpenMayFestivalExchangePanel()

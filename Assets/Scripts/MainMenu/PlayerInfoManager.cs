@@ -264,6 +264,18 @@ public sealed class PlayerInfoData
 
     /// <summary>已领取的时光星阵附加奖励索引</summary>
     public List<int> claimedCardLotteryAdditionIndices = new List<int>();
+
+    /// <summary>八月灯谜上次刷新的年龄</summary>
+    public int augustLanternRiddleAge = -1;
+
+    /// <summary>八月灯谜上次刷新的月份</summary>
+    public int augustLanternRiddleMonth = -1;
+
+    /// <summary>当月随机抽中的四条灯谜配置 id，顺序对应四个花灯</summary>
+    public List<int> augustLanternRiddleIds = new List<int>();
+
+    /// <summary>四个花灯槽位的作答结果，取值见 <see cref="AugustLanternRiddleAnswerState"/></summary>
+    public List<int> augustLanternRiddleAnswerStates = new List<int>();
 }
 
 public enum FishStorePurchaseResult
@@ -463,6 +475,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
     private const int CureService1PriceIncrease = 10;
     private const int CureService2PriceIncrease = 30;
     public const int MaxWorkLevel = 5;
+    public const int AugustFestivalMonth = 8;
+    public const int AugustLanternRiddleSlotCount = 4;
     private static readonly int[] WorkLevelExperienceRequirements = { 100, 240, 540, 1100 };
     private static readonly int[] CommunityCentreExperienceRequirements =
         { 300, 500, 1000, 1500, 3000 };
@@ -1182,6 +1196,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.turnRandomSeed = CreateInitialTurnRandomSeed();
         }
 
+        EnsureAugustLanternRiddlesInitialized();
         NotifyPlayerInfoChanged();
     }
 
@@ -1836,6 +1851,162 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         NotifyPlayerInfoChanged();
     }
 
+    /// <summary>八月且尚未为本月生成灯谜时，从配置表随机抽取四条不重复的灯谜。</summary>
+    public void EnsureAugustLanternRiddlesInitialized()
+    {
+        if (_data.currentMonth != AugustFestivalMonth)
+        {
+            return;
+        }
+
+        if (HasAugustLanternRiddlesForCurrentMonth())
+        {
+            return;
+        }
+
+        RefreshLanternRiddlesForCurrentTurn();
+    }
+
+    /// <summary>按当前回合重新随机四条灯谜并重置作答进度（每回合推进时调用）。</summary>
+    public void RefreshLanternRiddlesForCurrentTurn()
+    {
+        cfg.Tables tables = DataTableMananger.GetInstance().Tables;
+        if (tables?.LanternTable == null)
+        {
+            Debug.LogError("灯谜配置表尚未加载，无法刷新灯谜。");
+            return;
+        }
+
+        IReadOnlyList<cfg.Lantern> allRiddles = tables.LanternTable.DataList;
+        if (allRiddles == null || allRiddles.Count < AugustLanternRiddleSlotCount)
+        {
+            Debug.LogError(
+                $"灯谜数量不足，需要至少 {AugustLanternRiddleSlotCount} 条，当前为 {allRiddles?.Count ?? 0}。");
+            return;
+        }
+
+        List<int> candidateIds = new List<int>(allRiddles.Count);
+        for (int i = 0; i < allRiddles.Count; i++)
+        {
+            cfg.Lantern entry = allRiddles[i];
+            if (entry != null && entry.Id > 0)
+            {
+                candidateIds.Add(entry.Id);
+            }
+        }
+
+        if (candidateIds.Count < AugustLanternRiddleSlotCount)
+        {
+            Debug.LogError("灯谜配置 id 无效，无法刷新灯谜。");
+            return;
+        }
+
+        List<int> pickedIds = new List<int>(AugustLanternRiddleSlotCount);
+        List<int> pool = new List<int>(candidateIds);
+        for (int pickIndex = 0; pickIndex < AugustLanternRiddleSlotCount; pickIndex++)
+        {
+            int choiceIndex = TurnRandom.Range(
+                $"AugustLantern.Pick.{_data.turnRandomSeed}.{pickIndex}",
+                0,
+                pool.Count);
+            pickedIds.Add(pool[choiceIndex]);
+            pool.RemoveAt(choiceIndex);
+        }
+
+        _data.augustLanternRiddleAge = _data.currentAge;
+        _data.augustLanternRiddleMonth = _data.currentMonth;
+        _data.augustLanternRiddleIds = pickedIds;
+        _data.augustLanternRiddleAnswerStates = new List<int>(AugustLanternRiddleSlotCount);
+        for (int i = 0; i < AugustLanternRiddleSlotCount; i++)
+        {
+            _data.augustLanternRiddleAnswerStates.Add((int)AugustLanternRiddleAnswerState.Unanswered);
+        }
+
+        NotifyPlayerInfoChanged();
+    }
+
+    public bool HasAugustLanternRiddlesForCurrentMonth()
+    {
+        return _data.augustLanternRiddleAge == _data.currentAge &&
+            _data.augustLanternRiddleMonth == _data.currentMonth &&
+            _data.augustLanternRiddleIds != null &&
+            _data.augustLanternRiddleIds.Count == AugustLanternRiddleSlotCount &&
+            _data.augustLanternRiddleAnswerStates != null &&
+            _data.augustLanternRiddleAnswerStates.Count == AugustLanternRiddleSlotCount;
+    }
+
+    public bool TryGetAugustLanternRiddleIdAt(int slotIndex, out int riddleId)
+    {
+        riddleId = 0;
+        if (!HasAugustLanternRiddlesForCurrentMonth() ||
+            slotIndex < 0 ||
+            slotIndex >= AugustLanternRiddleSlotCount)
+        {
+            return false;
+        }
+
+        riddleId = _data.augustLanternRiddleIds[slotIndex];
+        return riddleId > 0;
+    }
+
+    public AugustLanternRiddleAnswerState GetAugustLanternRiddleAnswerStateAt(int slotIndex)
+    {
+        if (!HasAugustLanternRiddlesForCurrentMonth() ||
+            slotIndex < 0 ||
+            slotIndex >= AugustLanternRiddleSlotCount)
+        {
+            return AugustLanternRiddleAnswerState.Unanswered;
+        }
+
+        int rawState = _data.augustLanternRiddleAnswerStates[slotIndex];
+        if (rawState == (int)AugustLanternRiddleAnswerState.Correct)
+        {
+            return AugustLanternRiddleAnswerState.Correct;
+        }
+
+        if (rawState == (int)AugustLanternRiddleAnswerState.Wrong)
+        {
+            return AugustLanternRiddleAnswerState.Wrong;
+        }
+
+        return AugustLanternRiddleAnswerState.Unanswered;
+    }
+
+    public bool AreAllAugustLanternRiddlesAnswered()
+    {
+        if (!HasAugustLanternRiddlesForCurrentMonth())
+        {
+            return false;
+        }
+
+        for (int i = 0; i < AugustLanternRiddleSlotCount; i++)
+        {
+            if (GetAugustLanternRiddleAnswerStateAt(i) == AugustLanternRiddleAnswerState.Unanswered)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool TryRecordAugustLanternRiddleAnswer(int slotIndex, bool isCorrect)
+    {
+        if (!HasAugustLanternRiddlesForCurrentMonth() ||
+            slotIndex < 0 ||
+            slotIndex >= AugustLanternRiddleSlotCount ||
+            GetAugustLanternRiddleAnswerStateAt(slotIndex) != AugustLanternRiddleAnswerState.Unanswered)
+        {
+            return false;
+        }
+
+        _data.augustLanternRiddleAnswerStates[slotIndex] = isCorrect
+            ? (int)AugustLanternRiddleAnswerState.Correct
+            : (int)AugustLanternRiddleAnswerState.Wrong;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
     /// <summary>获取指定星阵卡牌已保存的奖励。</summary>
     public bool TryGetCardLotteryItemAt(int index, out int itemId, out int amount)
     {
@@ -2427,6 +2598,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         TurnAdvanced?.Invoke();
         NotifyPlayerInfoChanged();
+        RefreshLanternRiddlesForCurrentTurn();
         TurnCompleted?.Invoke();
     }
 
@@ -2790,6 +2962,29 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.claimedCardLotteryAdditionIndices.RemoveAll(index => index < 0 ||
             index >= _data.cardLotteryAdditionRewards.Count ||
             !claimedCardAdditionIndices.Add(index));
+
+        if (_data.augustLanternRiddleIds == null)
+        {
+            _data.augustLanternRiddleIds = new List<int>();
+        }
+
+        if (_data.augustLanternRiddleAnswerStates == null)
+        {
+            _data.augustLanternRiddleAnswerStates = new List<int>();
+        }
+
+        _data.augustLanternRiddleIds.RemoveAll(id => id <= 0);
+        for (int i = _data.augustLanternRiddleAnswerStates.Count - 1; i >= 0; i--)
+        {
+            int state = _data.augustLanternRiddleAnswerStates[i];
+            if (state != (int)AugustLanternRiddleAnswerState.Correct &&
+                state != (int)AugustLanternRiddleAnswerState.Wrong &&
+                state != (int)AugustLanternRiddleAnswerState.Unanswered)
+            {
+                _data.augustLanternRiddleAnswerStates[i] =
+                    (int)AugustLanternRiddleAnswerState.Unanswered;
+            }
+        }
     }
 
     /// <summary>通知所有订阅者玩家数据已更新</summary>
@@ -2895,7 +3090,15 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             claimedCardLotteryAdditionIndices =
                 source.claimedCardLotteryAdditionIndices == null
                     ? new List<int>()
-                    : new List<int>(source.claimedCardLotteryAdditionIndices)
+                    : new List<int>(source.claimedCardLotteryAdditionIndices),
+            augustLanternRiddleAge = source.augustLanternRiddleAge,
+            augustLanternRiddleMonth = source.augustLanternRiddleMonth,
+            augustLanternRiddleIds = source.augustLanternRiddleIds == null
+                ? new List<int>()
+                : new List<int>(source.augustLanternRiddleIds),
+            augustLanternRiddleAnswerStates = source.augustLanternRiddleAnswerStates == null
+                ? new List<int>()
+                : new List<int>(source.augustLanternRiddleAnswerStates)
         };
     }
 

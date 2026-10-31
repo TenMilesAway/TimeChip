@@ -37,6 +37,7 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "random",
         "exchangeGroup",
         "exchange",
+        "lantern",
     };
 
     #region Getter

@@ -71,7 +71,7 @@ public class MainMenuView : UIBasePanel
         _saveButton.onClick.AddListener(SaveGame);
         if (_gameTest != null)
         {
-            _gameTest.onClick.AddListener(OpenGameSpringFestival);
+            _gameTest.onClick.AddListener(OpenGameLantern);
         }
 
         _btnShowMission.onClick.AddListener(ToggleMissions);
@@ -168,7 +168,7 @@ public class MainMenuView : UIBasePanel
 
         if (_gameTest != null)
         {
-            _gameTest.onClick.RemoveListener(OpenGameSpringFestival);
+            _gameTest.onClick.RemoveListener(OpenGameLantern);
         }
 
         if (_btnShowMission != null)
@@ -279,10 +279,16 @@ public class MainMenuView : UIBasePanel
             param: new OpenUIParam { data = true });
     }
 
-    private void OpenGameSpringFestival()
+    private void OpenGameLantern()
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        UIManager.GetInstance().OpenPanel(GlobalDefine.GameSpringFestival, UILayer.System);
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        if (!playerInfoManager.HasAugustLanternRiddlesForCurrentMonth())
+        {
+            playerInfoManager.RefreshLanternRiddlesForCurrentTurn();
+        }
+
+        UIManager.GetInstance().OpenPanel(GlobalDefine.GameLantern, UILayer.System);
     }
 
     private void SaveGame()

@@ -105,6 +105,10 @@ public partial class Tables
     /// 天赋树 Grow2 节点配置
     /// </summary>
     public Grow2Table Grow2Table {get; }
+    /// <summary>
+    /// 中秋灯谜与花灯配置
+    /// </summary>
+    public LanternTable LanternTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -132,6 +136,7 @@ public partial class Tables
         ExchangeGroupTable = new ExchangeGroupTable(loader("exchangeGroup"));
         ExchangeTable = new ExchangeTable(loader("exchange"));
         Grow2Table = new Grow2Table(loader("grow2"));
+        LanternTable = new LanternTable(loader("lantern"));
         ResolveRef();
     }
     
@@ -160,6 +165,7 @@ public partial class Tables
         ExchangeGroupTable.ResolveRef(this);
         ExchangeTable.ResolveRef(this);
         Grow2Table.ResolveRef(this);
+        LanternTable.ResolveRef(this);
     }
 }
 

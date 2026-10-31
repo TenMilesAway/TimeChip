@@ -41,6 +41,7 @@ public class GlobalDefine
     public const string GameSuperMarket = "Assets/Art/LittleGame/Prefab/GameSuperMarket.prefab";           // System
     public const string CommonExchangePanel = "Assets/Art/Common/Prefab/CommonExchangePanel.prefab";       // System
     public const string GameSpringFestival = "Assets/Art/LittleGame/Prefab/GameSpringFestival.prefab";     // System
+    public const string GameLantern = "Assets/Art/LittleGame/Prefab/GameLantern.prefab";                   // System
     public const string CommonOptionalPanel = "Assets/Art/Common/Prefab/CommonOptionalPanel.prefab";       // System
     public const string CommonRewardPoolPanel = "Assets/Art/Common/Prefab/CommonRewardPoolPanel.prefab";   // System
 
