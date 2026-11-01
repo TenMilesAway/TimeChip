@@ -268,6 +268,11 @@ public class GameLantern : UIBasePanel
             return;
         }
 
+        if (isCorrect)
+        {
+            GameLanternRewardService.TryGrantCorrectAnswerSimulationCoins(_activeSlotIndex);
+        }
+
         if (_goQuestMain != null)
         {
             _goQuestMain.SetActive(false);
@@ -286,6 +291,11 @@ public class GameLantern : UIBasePanel
 
         _activeSlotIndex = -1;
         _correctAnswerButtonIndex = -1;
+
+        if (playerInfoManager.AreAllAugustLanternRiddlesAnswered())
+        {
+            GameLanternRewardService.TryGrantCompletionLotteryReward();
+        }
     }
 
     private void SetAnswerButtonsInteractable(bool interactable)

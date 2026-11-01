@@ -276,6 +276,9 @@ public sealed class PlayerInfoData
 
     /// <summary>四个花灯槽位的作答结果，取值见 <see cref="AugustLanternRiddleAnswerState"/></summary>
     public List<int> augustLanternRiddleAnswerStates = new List<int>();
+
+    /// <summary>八月灯谜本回合结算奖池是否已发放</summary>
+    public bool augustLanternCompletionRewardGranted;
 }
 
 public enum FishStorePurchaseResult
@@ -1922,6 +1925,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data.augustLanternRiddleAnswerStates.Add((int)AugustLanternRiddleAnswerState.Unanswered);
         }
 
+        _data.augustLanternCompletionRewardGranted = false;
+
         NotifyPlayerInfoChanged();
     }
 
@@ -2003,6 +2008,37 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         _data.augustLanternRiddleAnswerStates[slotIndex] = isCorrect
             ? (int)AugustLanternRiddleAnswerState.Correct
             : (int)AugustLanternRiddleAnswerState.Wrong;
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    public int CountAugustLanternCorrectAnswers()
+    {
+        if (!HasAugustLanternRiddlesForCurrentMonth())
+        {
+            return 0;
+        }
+
+        int correctCount = 0;
+        for (int i = 0; i < AugustLanternRiddleSlotCount; i++)
+        {
+            if (GetAugustLanternRiddleAnswerStateAt(i) == AugustLanternRiddleAnswerState.Correct)
+            {
+                correctCount++;
+            }
+        }
+
+        return correctCount;
+    }
+
+    public bool TryMarkAugustLanternCompletionRewardGranted()
+    {
+        if (!AreAllAugustLanternRiddlesAnswered() || _data.augustLanternCompletionRewardGranted)
+        {
+            return false;
+        }
+
+        _data.augustLanternCompletionRewardGranted = true;
         NotifyPlayerInfoChanged();
         return true;
     }
@@ -3098,7 +3134,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 : new List<int>(source.augustLanternRiddleIds),
             augustLanternRiddleAnswerStates = source.augustLanternRiddleAnswerStates == null
                 ? new List<int>()
-                : new List<int>(source.augustLanternRiddleAnswerStates)
+                : new List<int>(source.augustLanternRiddleAnswerStates),
+            augustLanternCompletionRewardGranted = source.augustLanternCompletionRewardGranted
         };
     }
 

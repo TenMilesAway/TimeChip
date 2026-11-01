@@ -111,8 +111,9 @@ public class MainMenuView : UIBasePanel
 
     protected override void HideHandle()
     {
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshPlayerInfo;
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnMissionDataChanged;
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.PlayerInfoChanged -= RefreshPlayerInfo;
+        playerInfoManager.PlayerInfoChanged -= OnMissionDataChanged;
         BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
         ClearBuffItems();
         ClearMissionItems();
@@ -121,8 +122,9 @@ public class MainMenuView : UIBasePanel
 
     protected override void OnDestroy()
     {
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshPlayerInfo;
-        PlayerInfoManager.GetInstance().PlayerInfoChanged -= OnMissionDataChanged;
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.PlayerInfoChanged -= RefreshPlayerInfo;
+        playerInfoManager.PlayerInfoChanged -= OnMissionDataChanged;
         BuffSystem.GetInstance().BuffsChanged -= RefreshBuffItems;
         ClearBuffItems();
         ClearMissionItems();
@@ -283,6 +285,7 @@ public class MainMenuView : UIBasePanel
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.EnsureAugustLanternRiddlesInitialized();
         if (!playerInfoManager.HasAugustLanternRiddlesForCurrentMonth())
         {
             playerInfoManager.RefreshLanternRiddlesForCurrentTurn();

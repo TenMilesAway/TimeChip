@@ -53,6 +53,7 @@ public class CommunityView : UIBasePanel
     private const int DonationLotteryPoolId = 11;
     private const int DonationCost = 30;
     private const int MayFestivalMonth = 5;
+    private const int AugustFestivalMonth = 8;
     private const int MayFestivalExchangeGroupId = 1;
     private const int DragonBoatPromotionMissionId = 4000;
     private const string DragonBoatPromotionStartDialogueConfig = "Festival,0";
@@ -589,7 +590,7 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        bool visible = PlayerInfoManager.GetInstance().CurrentMonth == PlayerInfoManager.AugustFestivalMonth;
+        bool visible = PlayerInfoManager.GetInstance().CurrentMonth == AugustFestivalMonth;
         _august.SetActive(visible);
         if (visible)
         {
@@ -605,7 +606,18 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        PlayerInfoManager.GetInstance().EnsureAugustLanternRiddlesInitialized();
+        OpenAugustLanternGame();
+    }
+
+    private static void OpenAugustLanternGame()
+    {
+        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        playerInfoManager.EnsureAugustLanternRiddlesInitialized();
+        if (!playerInfoManager.HasAugustLanternRiddlesForCurrentMonth())
+        {
+            playerInfoManager.RefreshLanternRiddlesForCurrentTurn();
+        }
+
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.GameLantern,
             UILayer.System);
