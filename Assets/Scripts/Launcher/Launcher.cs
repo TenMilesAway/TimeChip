@@ -27,6 +27,7 @@ public class Launcher : SingletonMono<Launcher>
     [SerializeField] private GameObject _loadingRoot;             // 加载界面根节点
     [SerializeField] private Text _txtLoad;                       // 加载进度文本
     [SerializeField] private bool _enableGmPanel;                 // 是否启用 GM 面板
+    [SerializeField] private bool _seedBuffUiTestDataOnNewGame = true; // 新游戏进入主界面时注入 BUFF UI 测试数据
 
     private LauncherProcess _process = LauncherProcess.None;      // 当前 Launcher 状态
     private bool _isInitializingData;                             // 是否正在初始化数据
@@ -326,6 +327,11 @@ public class Launcher : SingletonMono<Launcher>
         BuffSystem.GetInstance().Initialize(PlayerInfoManager.GetInstance());
 
         bool isNewGame = _isNewGame;
+        if (_seedBuffUiTestDataOnNewGame && isNewGame)
+        {
+            BuffSystem.GetInstance().ApplyUiTestSeed();
+        }
+
         MissionAPI.Initialize(PlayerInfoManager.GetInstance(), isNewGame);
         if (isNewGame)
         {

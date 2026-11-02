@@ -18,6 +18,22 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     /// <summary>激活 BUFF 列表变化时触发，供表现层刷新图标。</summary>
     public event Action BuffsChanged;
 
+    /// <summary>是否为永久生效的 BUFF 实例（含配置为 Permanent 或 remainingTurns 为 -1）。</summary>
+    public static bool IsPermanentActiveBuff(ActiveBuffData activeBuff, cfg.BuffConfig config)
+    {
+        if (activeBuff == null || config == null)
+        {
+            return false;
+        }
+
+        if (activeBuff.remainingTurns < 0)
+        {
+            return true;
+        }
+
+        return ParseDurationType(config.DurationType) == BuffDurationType.Permanent;
+    }
+
     public void Initialize(PlayerInfoManager playerInfoManager)
     {
         if (playerInfoManager == null)
@@ -483,5 +499,53 @@ public sealed class BuffSystem : Singleton<BuffSystem>
     private static cfg.BuffConfig GetConfig(int buffId)
     {
         return DataTableMananger.GetInstance().Tables.BuffConfigTable.GetOrDefault(buffId);
+    }
+
+    private static readonly int[] UiTestPermanentBuffIds = { 2001, 2002, 2004, 2005 };
+    private static readonly int[] UiTestTimedBuffIds = { 1001, 1002, 1003 };
+
+    /// <summary>UI 测试：4 条永久 BUFF + 3 条期限 BUFF（覆盖当前激活列表，不含弹窗）。</summary>
+    public void ApplyUiTestSeed()
+    {
+        List<ActiveBuffData> buffs = new List<ActiveBuffData>();
+        for (int i = 0; i < UiTestPermanentBuffIds.Length; i++)
+        {
+            int buffId = UiTestPermanentBuffIds[i];
+            cfg.BuffConfig config = GetConfig(buffId);
+            if (config == null)
+            {
+                Debug.LogError($"BUFF UI 测试数据配置不存在: [{buffId}]");
+                continue;
+            }
+
+            buffs.Add(new ActiveBuffData
+            {
+                buffId = buffId,
+                remainingTurns = GetRemainingTurns(config),
+                sourceId = 0
+            });
+        }
+
+        for (int i = 0; i < UiTestTimedBuffIds.Length; i++)
+        {
+            int buffId = UiTestTimedBuffIds[i];
+            cfg.BuffConfig config = GetConfig(buffId);
+            if (config == null)
+            {
+                Debug.LogError($"BUFF UI 测试数据配置不存在: [{buffId}]");
+                continue;
+            }
+
+            buffs.Add(new ActiveBuffData
+            {
+                buffId = buffId,
+                remainingTurns = GetRemainingTurns(config),
+                sourceId = 0
+            });
+        }
+
+        _playerInfoManager.SetActiveBuffs(buffs);
+        RefreshHomeSatisfactionBuff();
+        BuffsChanged?.Invoke();
     }
 }

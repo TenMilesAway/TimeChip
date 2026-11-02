@@ -34,6 +34,7 @@ public class GlobalDefine
     public const string CommonMessageView = "Assets/Art/Common/Prefab/CommonMessageView.prefab";           // System, 10
     public const string SettingView = "Assets/Art/Setting/Prefab/SettingView.prefab";                      // System
     public const string CommonItemDetailView = "Assets/Art/Common/Prefab/CommonItemDetailView.prefab";     // System
+    public const string CommonPermanentBuffListView = "Assets/Art/Common/Prefab/CommonPermanentBuffListView.prefab"; // System
     public const string CommonConfirmPanel = "Assets/Art/Common/Prefab/CommonConfirmPanel.prefab";         // System
     public const string CommonChoosePanel = "Assets/Art/Common/Prefab/CommonChoosePanel.prefab";           // System
     public const string CommonUsePanel = "Assets/Art/Common/Prefab/CommonUsePanel.prefab";                 // System
@@ -51,6 +52,7 @@ public class GlobalDefine
     public const string CommonTip = "Assets/Art/Common/Prefab/CommonTip.prefab";
     public const string HomeItem = "Assets/Art/Community/Prefab/HomeItem.prefab";
     public const string BuffItem = "Assets/Art/MainMenu/Prefab/BuffItem.prefab";
+    public const string CommonPermanentBuffListEntry = "Assets/Art/Common/Prefab/CommonPermanentBuffListEntry.prefab";
     public const string MainMenuMissionItem = "Assets/Art/MainMenu/Prefab/MainMenuMissionItem.prefab";
     public const string ContainerItem = "Assets/Art/Community/Prefab/ContainerItem.prefab";
     public const string PortContainerItem = "Assets/Art/Community/Prefab/PortContainerItem.prefab";

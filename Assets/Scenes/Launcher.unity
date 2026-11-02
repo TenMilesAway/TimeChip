@@ -713,6 +713,7 @@ MonoBehaviour:
   _loadingRoot: {fileID: 1145158635}
   _txtLoad: {fileID: 1971887378}
   _enableGmPanel: 1
+  _seedBuffUiTestDataOnNewGame: 1
 --- !u!1 &366578004
 GameObject:
   m_ObjectHideFlags: 0

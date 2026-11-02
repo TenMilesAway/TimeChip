@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,43 @@ public class BuffItem : MonoBehaviour
         _btnDetail.onClick.RemoveAllListeners();
         _btnDetail.onClick.AddListener(() => OpenDetail(buffConfig, activeBuff));
         SetIconAsync(buffConfig, resourceTag, _presentationVersion);
+    }
+
+    /// <summary>将多条永久 BUFF 收纳为一个入口图标，点击打开永久 BUFF 列表。</summary>
+    public void SetPermanentGroupData(IReadOnlyList<ActiveBuffData> permanentBuffs, string resourceTag)
+    {
+        _presentationVersion++;
+        if (permanentBuffs == null ||
+            permanentBuffs.Count == 0 ||
+            !HasValidUiReferences())
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        ActiveBuffData displayBuff = permanentBuffs[0];
+        for (int i = 1; i < permanentBuffs.Count; i++)
+        {
+            if (permanentBuffs[i].buffId < displayBuff.buffId)
+            {
+                displayBuff = permanentBuffs[i];
+            }
+        }
+
+        cfg.BuffConfig displayConfig = DataTableMananger.GetInstance().Tables.BuffConfigTable
+            .GetOrDefault(displayBuff.buffId);
+        if (displayConfig == null)
+        {
+            Debug.LogError($"永久 BUFF 收纳图标配置不存在: [{displayBuff.buffId}]", this);
+            gameObject.SetActive(false);
+            return;
+        }
+
+        _txtName.text = "增益";
+        _txtRemain.text = permanentBuffs.Count > 1 ? $"×{permanentBuffs.Count}" : "增益";
+        _btnDetail.onClick.RemoveAllListeners();
+        _btnDetail.onClick.AddListener(OpenPermanentBuffList);
+        SetIconAsync(displayConfig, resourceTag, _presentationVersion);
     }
 
     public void Clear()
@@ -68,6 +106,14 @@ public class BuffItem : MonoBehaviour
                     buffConfig,
                     activeBuff.remainingTurns)
             });
+    }
+
+    private void OpenPermanentBuffList()
+    {
+        UiButtonAudio.PlayClick();
+        UIManager.GetInstance().OpenPanel(
+            GlobalDefine.CommonPermanentBuffListView,
+            UILayer.System);
     }
 
     private async void SetIconAsync(cfg.BuffConfig buffConfig, string resourceTag, int presentationVersion)

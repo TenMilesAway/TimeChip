@@ -424,6 +424,10 @@ public class MainMenuView : UIBasePanel
     {
         List<ActiveBuffData> activeBuffs = PlayerInfoManager.GetInstance().GetActiveBuffs();
         string resourceTag = GetInstanceID().ToString();
+        List<ActiveBuffData> permanentBuffs = new List<ActiveBuffData>();
+        List<(cfg.BuffConfig config, ActiveBuffData data)> temporaryBuffs =
+            new List<(cfg.BuffConfig, ActiveBuffData)>();
+
         for (int i = 0; i < activeBuffs.Count; i++)
         {
             ActiveBuffData activeBuff = activeBuffs[i];
@@ -435,26 +439,97 @@ public class MainMenuView : UIBasePanel
                 continue;
             }
 
-            GameObject buffItemObject = await UnityObjectPoolFactory.GetInstance()
-                .GetItem<GameObject>(GlobalDefine.BuffItem, resourceTag);
-            if (refreshVersion != _buffRefreshVersion || !isActiveAndEnabled)
+            if (BuffSystem.IsPermanentActiveBuff(activeBuff, buffConfig))
             {
-                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
-                return;
-            }
-
-            BuffItem buffItem = buffItemObject.GetComponent<BuffItem>();
-            if (buffItem == null)
-            {
-                Debug.LogError("BuffItem 预制体缺少 BuffItem 组件。", buffItemObject);
-                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+                permanentBuffs.Add(activeBuff);
                 continue;
             }
 
-            buffItem.transform.SetParent(_buffParent, false);
-            _buffItems.Add(buffItem);
-            buffItem.SetData(buffConfig, activeBuff, resourceTag);
+            temporaryBuffs.Add((buffConfig, activeBuff));
         }
+
+        permanentBuffs.Sort((left, right) => left.buffId.CompareTo(right.buffId));
+
+        if (permanentBuffs.Count > 0)
+        {
+            if (!await TryCreatePermanentBuffGroupItemAsync(permanentBuffs, resourceTag, refreshVersion))
+            {
+                return;
+            }
+        }
+
+        for (int i = 0; i < temporaryBuffs.Count; i++)
+        {
+            (cfg.BuffConfig buffConfig, ActiveBuffData activeBuff) = temporaryBuffs[i];
+            if (!await TryCreateSingleBuffItemAsync(buffConfig, activeBuff, resourceTag, refreshVersion))
+            {
+                return;
+            }
+        }
+    }
+
+    private async System.Threading.Tasks.Task<bool> TryCreatePermanentBuffGroupItemAsync(
+        List<ActiveBuffData> permanentBuffs,
+        string resourceTag,
+        int refreshVersion)
+    {
+        GameObject buffItemObject = await UnityObjectPoolFactory.GetInstance()
+            .GetItem<GameObject>(GlobalDefine.BuffItem, resourceTag);
+        if (refreshVersion != _buffRefreshVersion || !isActiveAndEnabled)
+        {
+            if (buffItemObject != null)
+            {
+                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+            }
+
+            return false;
+        }
+
+        BuffItem buffItem = buffItemObject.GetComponent<BuffItem>();
+        if (buffItem == null)
+        {
+            Debug.LogError("BuffItem 预制体缺少 BuffItem 组件。", buffItemObject);
+            UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+            return true;
+        }
+
+        buffItem.transform.SetParent(_buffParent, false);
+        buffItem.transform.SetAsFirstSibling();
+        _buffItems.Add(buffItem);
+        buffItem.SetPermanentGroupData(permanentBuffs, resourceTag);
+        return true;
+    }
+
+    private async System.Threading.Tasks.Task<bool> TryCreateSingleBuffItemAsync(
+        cfg.BuffConfig buffConfig,
+        ActiveBuffData activeBuff,
+        string resourceTag,
+        int refreshVersion)
+    {
+        GameObject buffItemObject = await UnityObjectPoolFactory.GetInstance()
+            .GetItem<GameObject>(GlobalDefine.BuffItem, resourceTag);
+        if (refreshVersion != _buffRefreshVersion || !isActiveAndEnabled)
+        {
+            if (buffItemObject != null)
+            {
+                UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+            }
+
+            return false;
+        }
+
+        BuffItem buffItem = buffItemObject.GetComponent<BuffItem>();
+        if (buffItem == null)
+        {
+            Debug.LogError("BuffItem 预制体缺少 BuffItem 组件。", buffItemObject);
+            UnityObjectPoolFactory.GetInstance().PutItem(GlobalDefine.BuffItem, buffItemObject);
+            return true;
+        }
+
+        buffItem.transform.SetParent(_buffParent, false);
+        _buffItems.Add(buffItem);
+        buffItem.SetData(buffConfig, activeBuff, resourceTag);
+        return true;
     }
 
     private void ClearBuffItems()
