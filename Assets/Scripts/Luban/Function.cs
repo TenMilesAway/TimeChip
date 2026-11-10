@@ -23,7 +23,7 @@ public sealed partial class Function : Luban.BeanBase
     public Function(JToken _buf) 
     {
         JObject _obj = _buf as JObject;
-        Id = (string)_obj.GetValue("id");
+        Id = (int)_obj.GetValue("id");
         Name = (string)_obj.GetValue("name");
         UnlockMissionId = (int)_obj.GetValue("unlockMissionId");
         UnlockItemId = (int)_obj.GetValue("unlockItemId");
@@ -39,7 +39,7 @@ public sealed partial class Function : Luban.BeanBase
     /// <summary>
     /// 功能 ID
     /// </summary>
-    public readonly string Id;
+    public readonly int Id;
     /// <summary>
     /// 功能名称
     /// </summary>

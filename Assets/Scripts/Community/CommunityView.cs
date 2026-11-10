@@ -23,17 +23,6 @@ public class CommunityView : UIBasePanel
     private Vector3 _noticeOriginalScale;
     private Button _btnMay;
     private Button _btnAugust;
-    private const string HomeStoreFunctionId = "HomeStore";
-    private const string ConvenienceStoreFunctionId = "ConvenienceStore";
-    private const string ClinicFunctionId = "Clinic";
-    private const string CommunityCentreFunctionId = "CommunityCentre";
-    private const string CommunityCentreNoticeFunctionId = "CommunityCentreNotice";
-    private const string TrashCanFunctionId = "TrashCan";
-    private const string SubwayFunctionId = "Subway";
-    private const string VendingMachineFunctionId = "VendingMachine";
-    private const string LostWalletFunctionId = "LostWallet";
-    private const string StrayCatFoodBowlFunctionId = "StrayCatFoodBowl";
-    private const string DonationFunctionId = "Donation";
     private const int CommunityCentreNeedCount = 3;
     private const int BearTapeMissionId = 200;
     private const string BearConvenienceDialogueConfig = "MissionRole,2";
@@ -234,7 +223,7 @@ public class CommunityView : UIBasePanel
     public void OnClickHomeStore()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(HomeStoreFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.HomeStore))
         {
             return;
         }
@@ -245,7 +234,7 @@ public class CommunityView : UIBasePanel
     public void OnClickConvenienceStore()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(ConvenienceStoreFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.ConvenienceStore))
         {
             return;
         }
@@ -358,7 +347,7 @@ public class CommunityView : UIBasePanel
     public void OnClickClinic()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(ClinicFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.Clinic))
         {
             return;
         }
@@ -406,7 +395,7 @@ public class CommunityView : UIBasePanel
     public void OnClickCommunityCentre()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(CommunityCentreFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.CommunityCentre))
         {
             return;
         }
@@ -454,7 +443,7 @@ public class CommunityView : UIBasePanel
     public void OnClickSubway()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(SubwayFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.Subway))
         {
             return;
         }
@@ -466,7 +455,7 @@ public class CommunityView : UIBasePanel
     private void OnClickVendingMachine()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(VendingMachineFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.VendingMachine))
         {
             return;
         }
@@ -667,7 +656,7 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        if (!FunctionUnlockService.IsUnlocked(DonationFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.Donation))
         {
             _goDonation.SetActive(false);
             return;
@@ -689,7 +678,7 @@ public class CommunityView : UIBasePanel
     private void OnClickDonation()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(DonationFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.Donation))
         {
             return;
         }
@@ -745,7 +734,7 @@ public class CommunityView : UIBasePanel
     private void OnClickCommunityCentreNotice()
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.CommunityCentreNotice))
         {
             return;
         }
@@ -849,7 +838,7 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        if (!FunctionUnlockService.IsUnlocked(TrashCanFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.TrashCan))
         {
             HideTrashCans();
             return;
@@ -872,15 +861,15 @@ public class CommunityView : UIBasePanel
 
     private void RefreshFunctionUnlocks(PlayerInfoManager playerInfoManager)
     {
-        SetFunctionButtonVisibility(_btnHomeStore, HomeStoreFunctionId);
-        SetFunctionButtonVisibility(_btnConvenienceStore, ConvenienceStoreFunctionId);
-        SetFunctionButtonVisibility(_btnCilinic, ClinicFunctionId);
-        SetFunctionButtonVisibility(_btnCommunityCentre, CommunityCentreFunctionId);
+        SetFunctionButtonVisibility(_btnHomeStore, GameFunctionId.HomeStore);
+        SetFunctionButtonVisibility(_btnConvenienceStore, GameFunctionId.ConvenienceStore);
+        SetFunctionButtonVisibility(_btnCilinic, GameFunctionId.Clinic);
+        SetFunctionButtonVisibility(_btnCommunityCentre, GameFunctionId.CommunityCentre);
         SetFunctionButtonVisibility(
             _btnCommunityCentreNotice,
-            CommunityCentreNoticeFunctionId);
-        SetFunctionButtonVisibility(_btnSubway, SubwayFunctionId);
-        SetFunctionButtonVisibility(_btnVendingMachine, VendingMachineFunctionId);
+            GameFunctionId.CommunityCentreNotice);
+        SetFunctionButtonVisibility(_btnSubway, GameFunctionId.Subway);
+        SetFunctionButtonVisibility(_btnVendingMachine, GameFunctionId.VendingMachine);
         RefreshRedPoints(playerInfoManager);
         RefreshTrashCanSpawns();
         RefreshVendingMachineStock();
@@ -900,7 +889,7 @@ public class CommunityView : UIBasePanel
         if (_goCommunityCentreRedPoint != null)
         {
             bool isCommunityCentreUnlocked =
-                FunctionUnlockService.IsUnlocked(CommunityCentreFunctionId);
+                FunctionUnlockService.IsUnlocked(GameFunctionId.CommunityCentre);
             _goCommunityCentreRedPoint.SetActive(
                 isCommunityCentreUnlocked &&
                 (HasSubmittableCommunityCentreMaterial(playerInfoManager) ||
@@ -910,7 +899,7 @@ public class CommunityView : UIBasePanel
 
     private void RefreshMissionNotice()
     {
-        bool isNoticeUnlocked = FunctionUnlockService.IsUnlocked(CommunityCentreNoticeFunctionId);
+        bool isNoticeUnlocked = FunctionUnlockService.IsUnlocked(GameFunctionId.CommunityCentreNotice);
         bool canAcceptMission = isNoticeUnlocked &&
             MissionAPI.CanAcceptMonthlyRandomMissionFromNotice();
 
@@ -1009,7 +998,7 @@ public class CommunityView : UIBasePanel
         return false;
     }
 
-    private static void SetFunctionButtonVisibility(Button button, string functionId)
+    private static void SetFunctionButtonVisibility(Button button, int functionId)
     {
         if (button != null)
         {
@@ -1019,7 +1008,7 @@ public class CommunityView : UIBasePanel
 
     private void RefreshVendingMachineStock()
     {
-        if (!FunctionUnlockService.IsUnlocked(VendingMachineFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.VendingMachine))
         {
             SetVendingMachineStockVisibility(false, false);
             return;
@@ -1109,7 +1098,7 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        if (!FunctionUnlockService.IsUnlocked(LostWalletFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.LostWallet))
         {
             SetLostWalletVisibility(-1);
             return;
@@ -1148,7 +1137,7 @@ public class CommunityView : UIBasePanel
     private void OnClickLostWallet(int pointIndex)
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(LostWalletFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.LostWallet))
         {
             return;
         }
@@ -1262,7 +1251,7 @@ public class CommunityView : UIBasePanel
             return;
         }
 
-        if (!FunctionUnlockService.IsUnlocked(StrayCatFoodBowlFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.StrayCatFoodBowl))
         {
             SetStrayCatFoodBowlVisibility(-1);
             return;
@@ -1301,7 +1290,7 @@ public class CommunityView : UIBasePanel
     private void OnClickStrayCatFoodBowl(int pointIndex)
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(StrayCatFoodBowlFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.StrayCatFoodBowl))
         {
             return;
         }
@@ -1500,7 +1489,7 @@ public class CommunityView : UIBasePanel
     private void TrySearchTrashCan(int pointIndex, int childIndex, GameObject trashCan)
     {
         UiButtonAudio.PlayClick();
-        if (!FunctionUnlockService.IsUnlocked(TrashCanFunctionId))
+        if (!FunctionUnlockService.IsUnlocked(GameFunctionId.TrashCan))
         {
             return;
         }

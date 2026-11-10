@@ -18,8 +18,8 @@ public static class MissionAPI
     private const int RandomFishMissionId = 3004;
     private const int RandomStampMissionId = 3005;
     private const int CommunityReportMissionId = 201;
-    private const string CommunityCentreNoticeMission3005FunctionId =
-        "CommunityCentreNoticeMission3005";
+    private const int CommunityCentreNoticeMission3005FunctionId =
+        GameFunctionId.CommunityCentreNoticeMission3005;
     /// <summary>由社区 _may 点击开启，不参与自动接取。</summary>
     private const int DragonBoatPromotionMissionId = 4000;
 

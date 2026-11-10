@@ -20,12 +20,12 @@ namespace cfg
 /// </summary>
 public partial class FunctionTable
 {
-    private readonly System.Collections.Generic.Dictionary<string, Function> _dataMap;
+    private readonly System.Collections.Generic.Dictionary<int, Function> _dataMap;
     private readonly System.Collections.Generic.List<Function> _dataList;
     
     public FunctionTable(JArray _buf)
     {
-        _dataMap = new System.Collections.Generic.Dictionary<string, Function>(_buf.Count);
+        _dataMap = new System.Collections.Generic.Dictionary<int, Function>(_buf.Count);
         _dataList = new System.Collections.Generic.List<Function>(_buf.Count);
         
         foreach(JObject _ele in _buf)
@@ -38,12 +38,12 @@ public partial class FunctionTable
     }
 
 
-    public System.Collections.Generic.IReadOnlyDictionary<string, Function> DataMap => _dataMap;
+    public System.Collections.Generic.IReadOnlyDictionary<int, Function> DataMap => _dataMap;
     public System.Collections.Generic.IReadOnlyList<Function> DataList => _dataList;
 
-    public Function GetOrDefault(string key) => _dataMap.TryGetValue(key, out var v) ? v : default;
-    public Function Get(string key) => _dataMap[key];
-    public Function this[string key] => _dataMap[key];
+    public Function GetOrDefault(int key) => _dataMap.TryGetValue(key, out var v) ? v : default;
+    public Function Get(int key) => _dataMap[key];
+    public Function this[int key] => _dataMap[key];
 
     public void ResolveRef(Tables tables)
     {

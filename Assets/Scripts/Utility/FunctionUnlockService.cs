@@ -3,11 +3,11 @@ using UnityEngine;
 /// <summary>根据功能解锁配置判断玩家是否可以使用指定功能。</summary>
 public static class FunctionUnlockService
 {
-    public static bool IsUnlocked(string functionId)
+    public static bool IsUnlocked(int functionId)
     {
-        if (string.IsNullOrWhiteSpace(functionId))
+        if (functionId <= 0)
         {
-            Debug.LogError("功能 ID 不能为空。");
+            Debug.LogError("功能 ID 无效。");
             return false;
         }
 

@@ -23,6 +23,7 @@ public class GlobalDefine
     public const string ConvenienceStoreView = "Assets/Art/Community/Prefab/ConvenienceStoreView.prefab";  // Super+
     public const string HomeDetailView = "Assets/Art/Home/Prefab/HomeDetailView.prefab";                   // Super+
     public const string ClinicView = "Assets/Art/Community/Prefab/ClinicView.prefab";                      // Super+
+    public const string KitchenView = "Assets/Art/Community/Prefab/KitchenView.prefab";                    // Super+
     public const string CommunityCentreView = "Assets/Art/Community/Prefab/CommunityCentreView.prefab";    // Super+
     public const string PortContainerView = "Assets/Art/Community/Prefab/PortContainerView.prefab";        // Super+
     public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";              // Super++

@@ -71,7 +71,7 @@ public class MainMenuView : UIBasePanel
         _saveButton.onClick.AddListener(SaveGame);
         if (_gameTest != null)
         {
-            _gameTest.onClick.AddListener(OpenGameLantern);
+            _gameTest.onClick.AddListener(OpenKitchenView);
         }
 
         _btnShowMission.onClick.AddListener(ToggleMissions);
@@ -170,7 +170,7 @@ public class MainMenuView : UIBasePanel
 
         if (_gameTest != null)
         {
-            _gameTest.onClick.RemoveListener(OpenGameLantern);
+            _gameTest.onClick.RemoveListener(OpenKitchenView);
         }
 
         if (_btnShowMission != null)
@@ -281,17 +281,10 @@ public class MainMenuView : UIBasePanel
             param: new OpenUIParam { data = true });
     }
 
-    private void OpenGameLantern()
+    private void OpenKitchenView()
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        playerInfoManager.EnsureAugustLanternRiddlesInitialized();
-        if (!playerInfoManager.HasAugustLanternRiddlesForCurrentMonth())
-        {
-            playerInfoManager.RefreshLanternRiddlesForCurrentTurn();
-        }
-
-        UIManager.GetInstance().OpenPanel(GlobalDefine.GameLantern, UILayer.System);
+        UIManager.GetInstance().OpenPanel(GlobalDefine.KitchenView);
     }
 
     private void SaveGame()
