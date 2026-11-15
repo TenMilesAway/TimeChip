@@ -141,6 +141,15 @@ public sealed class PlayerInfoData
     public List<PlayerPortContainerOffer> portContainerOffers =
         new List<PlayerPortContainerOffer>();
 
+    /// <summary>厨房订单上次刷新的年龄</summary>
+    public int kitchenOrderRefreshAge = -1;
+
+    /// <summary>厨房订单上次刷新的月份</summary>
+    public int kitchenOrderRefreshMonth = -1;
+
+    /// <summary>当前回合厨房订单（固定 4 条）</summary>
+    public List<PlayerKitchenOrder> kitchenOrders = new List<PlayerKitchenOrder>();
+
     /// <summary>标识玩家在当前回合是否已经打工</summary>
     public bool workedThisTurn;
 
@@ -681,6 +690,159 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
         offer.purchased = true;
         NotifyPlayerInfoChanged();
         return true;
+    }
+
+    public bool HasCurrentTurnKitchenOrders()
+    {
+        return _data.kitchenOrderRefreshAge == _data.currentAge &&
+            _data.kitchenOrderRefreshMonth == _data.currentMonth &&
+            _data.kitchenOrders != null &&
+            _data.kitchenOrders.Count == KitchenOrderTurnService.OrdersPerTurn;
+    }
+
+    public bool TryGetCurrentTurnKitchenOrders(out List<PlayerKitchenOrder> orders)
+    {
+        orders = null;
+        if (!HasCurrentTurnKitchenOrders())
+        {
+            return false;
+        }
+
+        orders = CreateKitchenOrderCopies(_data.kitchenOrders);
+        return true;
+    }
+
+    public void SetCurrentTurnKitchenOrders(IReadOnlyList<PlayerKitchenOrder> orders)
+    {
+        if (orders == null || orders.Count != KitchenOrderTurnService.OrdersPerTurn)
+        {
+            Debug.LogError(
+                $"厨房订单数量必须为 {KitchenOrderTurnService.OrdersPerTurn} 条。");
+            return;
+        }
+
+        _data.kitchenOrderRefreshAge = _data.currentAge;
+        _data.kitchenOrderRefreshMonth = _data.currentMonth;
+        _data.kitchenOrders = CreateKitchenOrderCopies(orders);
+        NotifyPlayerInfoChanged();
+    }
+
+    public void RefreshKitchenOrdersForCurrentTurn()
+    {
+        List<PlayerKitchenOrder> orders = new List<PlayerKitchenOrder>(
+            KitchenOrderTurnService.OrdersPerTurn);
+        for (int i = 0; i < KitchenOrderTurnService.OrdersPerTurn; i++)
+        {
+            if (!KitchenOrderGenerator.TryGenerate(
+                    $"Kitchen.Order.{_data.currentAge}.{_data.currentMonth}.{i}",
+                    out KitchenRuntimeOrder runtimeOrder))
+            {
+                Debug.LogError($"厨房订单生成失败: slot [{i}]");
+                return;
+            }
+
+            orders.Add(KitchenOrderTurnService.ToPlayerOrder(runtimeOrder));
+        }
+
+        SetCurrentTurnKitchenOrders(orders);
+    }
+
+    public bool TryDeliverKitchenOrderDish(
+        int orderIndex,
+        out bool orderJustCompleted,
+        out List<CommonRewardItemData> completionRewards,
+        out int? simulationCoinDisplayStart)
+    {
+        orderJustCompleted = false;
+        completionRewards = null;
+        simulationCoinDisplayStart = null;
+        if (_data.kitchenOrders == null ||
+            orderIndex < 0 ||
+            orderIndex >= _data.kitchenOrders.Count)
+        {
+            return false;
+        }
+
+        PlayerKitchenOrder order = _data.kitchenOrders[orderIndex];
+        if (order == null || order.isCompleted || !order.TryGetCurrentRequiredDish(out int requiredDishId))
+        {
+            return false;
+        }
+
+        int consumeItemId = KitchenDishMatchRules.GetPreferredConsumeItemId(requiredDishId, this);
+        if (consumeItemId <= 0 || !TryConsumeItem(consumeItemId))
+        {
+            return false;
+        }
+
+        bool willCompleteOrder = order.deliveredDishCount + 1 >= order.RequiredDishCount;
+        if (willCompleteOrder)
+        {
+            completionRewards = BuildKitchenOrderCompletionRewards(order);
+            if (order.rewardSimulationCoins > 0)
+            {
+                simulationCoinDisplayStart = _data.simulationCoins;
+            }
+        }
+
+        order.deliveredDishCount++;
+        if (willCompleteOrder)
+        {
+            CompleteKitchenOrder(order);
+            orderJustCompleted = completionRewards != null && completionRewards.Count > 0;
+        }
+
+        NotifyPlayerInfoChanged();
+        return true;
+    }
+
+    private static List<CommonRewardItemData> BuildKitchenOrderCompletionRewards(
+        PlayerKitchenOrder order)
+    {
+        List<CommonRewardItemData> rewards = new List<CommonRewardItemData>(2);
+        if (order == null)
+        {
+            return rewards;
+        }
+
+        if (order.rewardSimulationCoins > 0)
+        {
+            rewards.Add(new CommonRewardItemData
+            {
+                itemId = BasePropertyId.SimulationCoin,
+                itemCount = order.rewardSimulationCoins
+            });
+        }
+
+        if (order.rewardGiftItemId > 0 && order.rewardGiftCount > 0)
+        {
+            rewards.Add(new CommonRewardItemData
+            {
+                itemId = order.rewardGiftItemId,
+                itemCount = order.rewardGiftCount
+            });
+        }
+
+        return rewards;
+    }
+
+    private void CompleteKitchenOrder(PlayerKitchenOrder order)
+    {
+        if (order == null || order.isCompleted)
+        {
+            return;
+        }
+
+        order.isCompleted = true;
+        if (order.rewardSimulationCoins > 0)
+        {
+            AddSimulationCoins(order.rewardSimulationCoins);
+        }
+
+        if (order.rewardGiftItemId > 0 && order.rewardGiftCount > 0)
+        {
+            AddItem(order.rewardGiftItemId, order.rewardGiftCount);
+        }
     }
 
     /// <summary>当月社区需求是否已生成且数量有效</summary>
@@ -2632,6 +2794,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             RefreshFishStoreOffers(tables.FishStoreTable.DataList);
         }
 
+        RefreshKitchenOrdersForCurrentTurn();
+
         TurnAdvanced?.Invoke();
         NotifyPlayerInfoChanged();
         RefreshLanternRiddlesForCurrentTurn();
@@ -3083,6 +3247,9 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             portContainerRefreshAge = source.portContainerRefreshAge,
             portContainerRefreshMonth = source.portContainerRefreshMonth,
             portContainerOffers = CreatePortContainerOfferCopies(source.portContainerOffers),
+            kitchenOrderRefreshAge = source.kitchenOrderRefreshAge,
+            kitchenOrderRefreshMonth = source.kitchenOrderRefreshMonth,
+            kitchenOrders = CreateKitchenOrderCopies(source.kitchenOrders),
             workedThisTurn = source.workedThisTurn,
             examinedThisTurn = source.examinedThisTurn,
             treatedThisTurn = source.treatedThisTurn,
@@ -3192,6 +3359,47 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 rewardCount = offer.rewardCount,
                 purchased = offer.purchased
             });
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerKitchenOrder> CreateKitchenOrderCopies(
+        IReadOnlyList<PlayerKitchenOrder> source)
+    {
+        List<PlayerKitchenOrder> copy = new List<PlayerKitchenOrder>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerKitchenOrder order = source[i];
+            if (order == null)
+            {
+                continue;
+            }
+
+            PlayerKitchenOrder duplicate = new PlayerKitchenOrder
+            {
+                orderTypeId = order.orderTypeId,
+                avatarIcon = order.avatarIcon,
+                deliveredDishCount = order.deliveredDishCount,
+                isCompleted = order.isCompleted,
+                rewardSimulationCoins = order.rewardSimulationCoins,
+                rewardGiftItemId = order.rewardGiftItemId,
+                rewardGiftCount = order.rewardGiftCount,
+            };
+            if (order.requiredDishItemIds != null)
+            {
+                for (int j = 0; j < order.requiredDishItemIds.Count; j++)
+                {
+                    duplicate.requiredDishItemIds.Add(order.requiredDishItemIds[j]);
+                }
+            }
+
+            copy.Add(duplicate);
         }
 
         return copy;

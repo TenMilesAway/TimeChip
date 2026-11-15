@@ -56,7 +56,7 @@ public sealed partial class Item : Luban.BeanBase
     /// </summary>
     public readonly int Level;
     /// <summary>
-    /// 背包类型：0不显示，1普通背包，2钓鱼背包
+    /// 背包类型：0不显示，1普通背包，2钓鱼背包，3厨房食材背包，4厨房菜品背包
     /// </summary>
     public readonly int InventoryType;
     /// <summary>

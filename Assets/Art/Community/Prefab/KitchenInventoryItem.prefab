@@ -451,6 +451,8 @@ MonoBehaviour:
   _txtType: {fileID: 6921308380665937134}
   _txtNum: {fileID: 2634168353780285748}
   _imgIcon: {fileID: 7662459388885007109}
+  _btnDetail: {fileID: 2448026645255552030}
+  _goNum: {fileID: 6088771324318489026}
   _goType: {fileID: 8701114399742906988}
 --- !u!114 &1460924929058466362
 MonoBehaviour:

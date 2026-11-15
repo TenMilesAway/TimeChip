@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "便餐订单",
+    "avatarPool": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_1];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_2];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_3];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_4];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_5]",
+    "dishPool": "7000;7006;7008",
+    "dishCountMin": 1,
+    "dishCountMax": 1,
+    "rewardCoinMin": 15,
+    "rewardCoinMax": 30,
+    "rewardGiftItemId": 3040,
+    "rewardGiftCountMin": 0,
+    "rewardGiftCountMax": 1,
+    "spawnWeight": 30
+  },
+  {
+    "id": 2,
+    "name": "家常订单",
+    "avatarPool": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_1];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_2];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_3];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_4];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_5]",
+    "dishPool": "7000;7006;7008",
+    "dishCountMin": 1,
+    "dishCountMax": 2,
+    "rewardCoinMin": 28,
+    "rewardCoinMax": 50,
+    "rewardGiftItemId": 3040,
+    "rewardGiftCountMin": 0,
+    "rewardGiftCountMax": 1,
+    "spawnWeight": 26
+  },
+  {
+    "id": 3,
+    "name": "时令订单",
+    "avatarPool": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_1];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_2];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_3];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_4];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_5]",
+    "dishPool": "7000;7002;7004;7006",
+    "dishCountMin": 2,
+    "dishCountMax": 2,
+    "rewardCoinMin": 45,
+    "rewardCoinMax": 80,
+    "rewardGiftItemId": 3040,
+    "rewardGiftCountMin": 1,
+    "rewardGiftCountMax": 1,
+    "spawnWeight": 22
+  },
+  {
+    "id": 4,
+    "name": "盛宴订单",
+    "avatarPool": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_1];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_2];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_3];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_4];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_5]",
+    "dishPool": "7002;7004;7006;7008",
+    "dishCountMin": 2,
+    "dishCountMax": 3,
+    "rewardCoinMin": 70,
+    "rewardCoinMax": 120,
+    "rewardGiftItemId": 3040,
+    "rewardGiftCountMin": 1,
+    "rewardGiftCountMax": 2,
+    "spawnWeight": 16
+  },
+  {
+    "id": 5,
+    "name": "贵客订单",
+    "avatarPool": "Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_1];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_2];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_3];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_4];Assets/Art/Community/SpriteAtlas.spriteatlasv2[port_avatar_5]",
+    "dishPool": "7000;7002;7004;7006;7008",
+    "dishCountMin": 3,
+    "dishCountMax": 3,
+    "rewardCoinMin": 100,
+    "rewardCoinMax": 180,
+    "rewardGiftItemId": 3040,
+    "rewardGiftCountMin": 1,
+    "rewardGiftCountMax": 3,
+    "spawnWeight": 10
+  }
+]

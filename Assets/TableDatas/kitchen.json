@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "切鸡肉",
+    "recipeType": "Cut",
+    "outputItemId": 7102,
+    "perfectOutputItemId": 7102,
+    "basePerfectRate": 0,
+    "premiumPerfectBonus": 0,
+    "materials": "7100,1"
+  },
+  {
+    "id": 2,
+    "name": "切优质鸡肉",
+    "recipeType": "Cut",
+    "outputItemId": 7103,
+    "perfectOutputItemId": 7103,
+    "basePerfectRate": 0,
+    "premiumPerfectBonus": 0,
+    "materials": "7101,1"
+  },
+  {
+    "id": 3,
+    "name": "红烧鱼",
+    "recipeType": "Cook",
+    "outputItemId": 7000,
+    "perfectOutputItemId": 7001,
+    "basePerfectRate": 0.2,
+    "premiumPerfectBonus": 0.15,
+    "materials": "7106,1;7120,1;7116,1"
+  },
+  {
+    "id": 4,
+    "name": "香菇鸡肉饭",
+    "recipeType": "Cook",
+    "outputItemId": 7002,
+    "perfectOutputItemId": 7003,
+    "basePerfectRate": 0.18,
+    "premiumPerfectBonus": 0.12,
+    "materials": "7110,1;7102,1;7114,1"
+  },
+  {
+    "id": 5,
+    "name": "虾仁蔬菜面",
+    "recipeType": "Cook",
+    "outputItemId": 7004,
+    "perfectOutputItemId": 7005,
+    "basePerfectRate": 0.18,
+    "premiumPerfectBonus": 0.12,
+    "materials": "7118,1;7108,1;7112,1"
+  },
+  {
+    "id": 6,
+    "name": "番茄炒蛋",
+    "recipeType": "Cook",
+    "outputItemId": 7006,
+    "perfectOutputItemId": 7007,
+    "basePerfectRate": 0.22,
+    "premiumPerfectBonus": 0.15,
+    "materials": "7124,1;7104,1"
+  },
+  {
+    "id": 7,
+    "name": "蔬菜豆腐汤",
+    "recipeType": "Cook",
+    "outputItemId": 7008,
+    "perfectOutputItemId": 7009,
+    "basePerfectRate": 0.2,
+    "premiumPerfectBonus": 0.12,
+    "materials": "7108,1;7122,1"
+  }
+]

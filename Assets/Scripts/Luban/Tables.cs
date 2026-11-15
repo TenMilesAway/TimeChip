@@ -109,6 +109,14 @@ public partial class Tables
     /// 中秋灯谜与花灯配置
     /// </summary>
     public LanternTable LanternTable {get; }
+    /// <summary>
+    /// 地铁厨房配方
+    /// </summary>
+    public KitchenTable KitchenTable {get; }
+    /// <summary>
+    /// 地铁厨房订单类别与随机生成参数
+    /// </summary>
+    public KitchenOrderTable KitchenOrderTable {get; }
 
 
       public Tables(System.Func<string, JArray> loader)
@@ -137,6 +145,8 @@ public partial class Tables
         ExchangeTable = new ExchangeTable(loader("exchange"));
         Grow2Table = new Grow2Table(loader("grow2"));
         LanternTable = new LanternTable(loader("lantern"));
+        KitchenTable = new KitchenTable(loader("kitchen"));
+        KitchenOrderTable = new KitchenOrderTable(loader("kitchenOrder"));
         ResolveRef();
     }
     
@@ -166,6 +176,8 @@ public partial class Tables
         ExchangeTable.ResolveRef(this);
         Grow2Table.ResolveRef(this);
         LanternTable.ResolveRef(this);
+        KitchenTable.ResolveRef(this);
+        KitchenOrderTable.ResolveRef(this);
     }
 }
 

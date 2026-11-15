@@ -23,7 +23,7 @@ public class GlobalDefine
     public const string ConvenienceStoreView = "Assets/Art/Community/Prefab/ConvenienceStoreView.prefab";  // Super+
     public const string HomeDetailView = "Assets/Art/Home/Prefab/HomeDetailView.prefab";                   // Super+
     public const string ClinicView = "Assets/Art/Community/Prefab/ClinicView.prefab";                      // Super+
-    public const string KitchenView = "Assets/Art/Community/Prefab/KitchenView.prefab";                    // Super+
+    public const string KitchenView = "Assets/Art/Community/Prefab/KitchenView.prefab";                    // Super+, 10
     public const string CommunityCentreView = "Assets/Art/Community/Prefab/CommunityCentreView.prefab";    // Super+
     public const string PortContainerView = "Assets/Art/Community/Prefab/PortContainerView.prefab";        // Super+
     public const string HomeItemDetail = "Assets/Art/Community/Prefab/HomeItemDetail.prefab";              // Super++
@@ -57,6 +57,7 @@ public class GlobalDefine
     public const string MainMenuMissionItem = "Assets/Art/MainMenu/Prefab/MainMenuMissionItem.prefab";
     public const string ContainerItem = "Assets/Art/Community/Prefab/ContainerItem.prefab";
     public const string PortContainerItem = "Assets/Art/Community/Prefab/PortContainerItem.prefab";
+    public const string KitchenOrderReward = "Assets/Art/Community/Prefab/KitchenOrderReward.prefab";
     public const string GameStampFile = "Assets/Art/LittleGame/Prefab/GameStampFile.prefab";
     public const string GameSuperMarketItem = "Assets/Art/LittleGame/Prefab/GameSuperMarketItem.prefab";
     public const string GameSuperMarketTarget = "Assets/Art/LittleGame/Prefab/GameSuperMarketTarget.prefab";

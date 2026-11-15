@@ -38,6 +38,8 @@ public class DataTableMananger : Singleton<DataTableMananger>
         "exchangeGroup",
         "exchange",
         "lantern",
+        "kitchen",
+        "kitchenOrder",
     };
 
     #region Getter

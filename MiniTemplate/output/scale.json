@@ -34,5 +34,29 @@
     "name": "work",
     "desc": "在零工面板时的倍率",
     "scaleValue": 12000
+  },
+  {
+    "id": 13,
+    "name": "kitchenOrderRewardCoin",
+    "desc": "厨房订单奖励模拟币图标",
+    "scaleValue": 1600
+  },
+  {
+    "id": 14,
+    "name": "kitchenOrderRewardItem",
+    "desc": "厨房订单奖励道具图标倍率（叠在 missionReward 6000 上再乘 3400/10000）",
+    "scaleValue": 3400
+  },
+  {
+    "id": 15,
+    "name": "kitchenOrderAvatar",
+    "desc": "厨房订单顾客头像",
+    "scaleValue": 3000
+  },
+  {
+    "id": 16,
+    "name": "kitchenOrderDish",
+    "desc": "厨房订单当前菜品图标",
+    "scaleValue": 8000
   }
 ]
