@@ -1,4 +1,4 @@
-/// <summary>灶台成品新鲜度：超时未取则变为不新鲜菜品。</summary>
+/// <summary>灶台成品新鲜度：超时未取则变为糊掉的餐品（道具 7010）。</summary>
 public static class KitchenDishFreshnessRules
 {
     public const int StaleDishItemId = 7010;

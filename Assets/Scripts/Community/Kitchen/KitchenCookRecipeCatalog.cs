@@ -5,19 +5,23 @@ public static class KitchenCookRecipeCatalog
 {
     private const string RecipeTypeCook = "Cook";
 
-    public static bool TryMatchCookRecipe(
+    /// <summary>灶台材料无法匹配任一烹饪配方时产出的道具 ID。</summary>
+    public const int MishmashDishItemId = 7011;
+
+    /// <summary>开始烹饪所需的最少灶台材料数量（含配方烹饪与乱炖）。</summary>
+    public const int MinCookMaterialCount = 2;
+
+    public static bool TryCollectPlacedCookMaterials(
         IReadOnlyList<int> hearthSlotItemIds,
-        out cfg.Kitchen recipe,
-        out List<int> orderedMaterialItemIds)
+        out List<int> placedItemIds)
     {
-        recipe = null;
-        orderedMaterialItemIds = null;
+        placedItemIds = null;
         if (hearthSlotItemIds == null || hearthSlotItemIds.Count == 0)
         {
             return false;
         }
 
-        List<int> placedItemIds = new List<int>(hearthSlotItemIds.Count);
+        placedItemIds = new List<int>(hearthSlotItemIds.Count);
         for (int i = 0; i < hearthSlotItemIds.Count; i++)
         {
             int itemId = hearthSlotItemIds[i];
@@ -27,7 +31,29 @@ public static class KitchenCookRecipeCatalog
             }
         }
 
-        if (placedItemIds.Count == 0)
+        return placedItemIds.Count > 0;
+    }
+
+    public static bool HasMinimumCookMaterials(
+        IReadOnlyList<int> hearthSlotItemIds,
+        out List<int> placedItemIds)
+    {
+        if (!TryCollectPlacedCookMaterials(hearthSlotItemIds, out placedItemIds))
+        {
+            return false;
+        }
+
+        return placedItemIds.Count >= MinCookMaterialCount;
+    }
+
+    public static bool TryMatchCookRecipe(
+        IReadOnlyList<int> hearthSlotItemIds,
+        out cfg.Kitchen recipe,
+        out List<int> orderedMaterialItemIds)
+    {
+        recipe = null;
+        orderedMaterialItemIds = null;
+        if (!TryCollectPlacedCookMaterials(hearthSlotItemIds, out List<int> placedItemIds))
         {
             return false;
         }

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 public class MainMenuView : UIBasePanel
 {
-    private const int BearMissionId = 200;
+    private const int ProxyPurchaseMissionId = 200;
     private const int HomeTutorialCompleteMissionId = 1003;
     private const int CommunityReportMissionId = 201;
     private const int ClinicConsultationMissionId = 202;
@@ -194,10 +194,10 @@ public class MainMenuView : UIBasePanel
         GameManager.Audio.Play(AudioDefine.SFXClick);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
         if (playerInfoManager.CurrentAge == 22 &&
-            playerInfoManager.CurrentMonth == 6 &&
-            !playerInfoManager.HasCompletedMission(BearMissionId))
+            playerInfoManager.CurrentMonth == 4 &&
+            !playerInfoManager.HasCompletedMission(ProxyPurchaseMissionId))
         {
-            CommonMessageView.Show("需要完成熊大山的任务，才能结束本月噢");
+            CommonMessageView.Show("需要完成「代购」任务，才能结束本月噢");
             return;
         }
 

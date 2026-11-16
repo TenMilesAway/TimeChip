@@ -232,6 +232,7 @@ public class WorkView : UIBasePanel
         playerInfoManager.ChangeHealth(-healthCost);
         int coinReward = CalculateCoinReward(workResult.CoinReward, workConfig.CoinRewardSection);
         int workExperience = Mathf.Max(0, workConfig.Exp);
+        int? simulationCoinDisplayStart = coinReward > 0 ? playerInfoManager.SimulationCoins : (int?)null;
         playerInfoManager.AddSimulationCoins(coinReward);
         if (workExperience > 0)
         {
@@ -239,9 +240,39 @@ public class WorkView : UIBasePanel
         }
 
         MissionAPI.Broadcast(new MissionMessage(MissionEventType.Work));
-        CommonTipView.Show(
-            $"完成{workConfig.Name}，获得<color=#D5FF00>{coinReward}</color>模拟币和" +
-            $"<color=#00FFFA>{workExperience}</color>经验");
+        if (coinReward > 0)
+        {
+            if (simulationCoinDisplayStart.HasValue)
+            {
+                MainMenuView mainMenuView = UIManager.GetInstance()
+                    .GetOpeningPanel(GlobalDefine.MainMenuView) as MainMenuView;
+                if (mainMenuView != null)
+                {
+                    mainMenuView.SetSimulationCoinDisplay(simulationCoinDisplayStart.Value);
+                }
+            }
+
+            UIManager.GetInstance().QueueRewardPanel(new OpenUIParam
+            {
+                data = new List<CommonRewardItemData>
+                {
+                    new CommonRewardItemData
+                    {
+                        itemId = BasePropertyId.SimulationCoin,
+                        itemCount = coinReward
+                    }
+                },
+                rewardsAlreadyGranted = true,
+                simulationCoinDisplayStart = simulationCoinDisplayStart
+            });
+        }
+
+        if (workExperience > 0)
+        {
+            CommonTipView.Show(
+                $"完成{workConfig.Name}，获得<color=#00FFFA>{workExperience}</color>经验");
+        }
+
         GameManager.Audio.Play(AudioDefine.SFXWork);
     }
 

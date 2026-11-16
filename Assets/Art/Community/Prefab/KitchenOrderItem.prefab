@@ -258,7 +258,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 11a18dde4c21ea443af46090a2765a04, type: 3}
+    m_Font: {fileID: 12800000, guid: 758f5dc2ab51bd34aa63d35e03da6d55, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
@@ -458,7 +458,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 11a18dde4c21ea443af46090a2765a04, type: 3}
+    m_Font: {fileID: 12800000, guid: 758f5dc2ab51bd34aa63d35e03da6d55, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
@@ -659,7 +659,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 11a18dde4c21ea443af46090a2765a04, type: 3}
+    m_Font: {fileID: 12800000, guid: 758f5dc2ab51bd34aa63d35e03da6d55, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -754,7 +754,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 11a18dde4c21ea443af46090a2765a04, type: 3}
+    m_Font: {fileID: 12800000, guid: 758f5dc2ab51bd34aa63d35e03da6d55, type: 3}
     m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
@@ -985,8 +985,8 @@ MonoBehaviour:
   _imgFood: {fileID: 3182820216533800889}
   _btnComplete: {fileID: 8619315957140040229}
   _btnCompleteNowFood: {fileID: 4256645822486132479}
-  _goOrder: {fileID: 1130640889589287453}
   _goCompleteNowFood: {fileID: 3348647877414544184}
+  _goOrder: {fileID: 1130640889589287453}
   _goCompleted: {fileID: 9175073805142808925}
   _transRewards: {fileID: 2880465948732586140}
 --- !u!114 &8785730505070413077

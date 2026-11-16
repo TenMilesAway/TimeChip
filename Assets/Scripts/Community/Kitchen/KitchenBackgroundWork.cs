@@ -22,6 +22,12 @@ public static class KitchenBackgroundWork
 
     public static float CookingElapsedSeconds => Runner != null ? Runner.CookingElapsedSeconds : 0f;
 
+    public static bool IsDishSpoilInProgress => Runner != null && Runner.IsDishSpoilInProgress;
+
+    public static float DishSpoilElapsedSeconds => Runner != null ? Runner.DishSpoilElapsedSeconds : 0f;
+
+    public static float DishSpoilDurationSeconds => KitchenDishFreshnessRules.SpoilDelaySeconds;
+
     private static KitchenBackgroundWorkRunner Runner => KitchenBackgroundWorkRunner.EnsureInstance();
 
     public static void NotifyChanged()
@@ -47,7 +53,10 @@ public static class KitchenBackgroundWork
 
     public static bool TryStartCooking(cfg.Kitchen recipe, List<int> cookMaterialInputs)
     {
-        if (recipe == null || cookMaterialInputs == null || IsCookingInProgress)
+        if (recipe == null ||
+            cookMaterialInputs == null ||
+            cookMaterialInputs.Count < KitchenCookRecipeCatalog.MinCookMaterialCount ||
+            IsCookingInProgress)
         {
             return false;
         }
@@ -58,6 +67,24 @@ public static class KitchenBackgroundWork
         }
 
         Runner.StartCooking(recipe, cookMaterialInputs);
+        return true;
+    }
+
+    public static bool TryStartMishmashCooking(List<int> cookMaterialInputs)
+    {
+        if (cookMaterialInputs == null ||
+            cookMaterialInputs.Count < KitchenCookRecipeCatalog.MinCookMaterialCount ||
+            IsCookingInProgress)
+        {
+            return false;
+        }
+
+        if (Workstation.HearthDishItemId > 0)
+        {
+            return false;
+        }
+
+        Runner.StartMishmashCooking(cookMaterialInputs);
         return true;
     }
 
@@ -103,11 +130,14 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
     private Coroutine _cutCoroutine;
     private Coroutine _cookCoroutine;
     private Coroutine _dishSpoilCoroutine;
+    private int _cookOutputOverrideItemId;
 
     public bool IsCuttingInProgress { get; private set; }
     public bool IsCookingInProgress { get; private set; }
     public float CuttingElapsedSeconds { get; private set; }
     public float CookingElapsedSeconds { get; private set; }
+    public bool IsDishSpoilInProgress { get; private set; }
+    public float DishSpoilElapsedSeconds { get; private set; }
 
     public static KitchenBackgroundWorkRunner EnsureInstance()
     {
@@ -133,7 +163,16 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
     {
         StopCooking();
         CookingElapsedSeconds = 0f;
+        _cookOutputOverrideItemId = 0;
         _cookCoroutine = StartCoroutine(RunCookingRoutine(recipe, cookMaterialInputs));
+    }
+
+    public void StartMishmashCooking(List<int> cookMaterialInputs)
+    {
+        StopCooking();
+        CookingElapsedSeconds = 0f;
+        _cookOutputOverrideItemId = KitchenCookRecipeCatalog.MishmashDishItemId;
+        _cookCoroutine = StartCoroutine(RunCookingRoutine(null, cookMaterialInputs));
     }
 
     public void StopCutting()
@@ -158,6 +197,7 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
 
         IsCookingInProgress = false;
         CookingElapsedSeconds = 0f;
+        _cookOutputOverrideItemId = 0;
     }
 
     private IEnumerator RunCuttingRoutine(cfg.Kitchen recipe)
@@ -203,11 +243,21 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
         }
 
         KitchenWorkstationState state = KitchenBackgroundWork.Workstation;
-        PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
-        int outputItemId = KitchenRecipeResolver.ResolveOutputItemId(
-            recipe,
-            cookMaterialInputs,
-            $"Kitchen.Cook.{playerInfoManager.CurrentAge}.{playerInfoManager.CurrentMonth}.{recipe.Id}");
+        int outputItemId;
+        if (_cookOutputOverrideItemId > 0)
+        {
+            outputItemId = _cookOutputOverrideItemId;
+        }
+        else
+        {
+            PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+            outputItemId = KitchenRecipeResolver.ResolveOutputItemId(
+                recipe,
+                cookMaterialInputs,
+                $"Kitchen.Cook.{playerInfoManager.CurrentAge}.{playerInfoManager.CurrentMonth}.{recipe.Id}");
+        }
+
+        _cookOutputOverrideItemId = 0;
 
         for (int i = 0; i < state.HearthMatSlotItemIds.Length; i++)
         {
@@ -242,22 +292,32 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
             StopCoroutine(_dishSpoilCoroutine);
             _dishSpoilCoroutine = null;
         }
+
+        IsDishSpoilInProgress = false;
+        DishSpoilElapsedSeconds = 0f;
     }
 
     private IEnumerator RunDishSpoilRoutine()
     {
-        float elapsed = 0f;
-        while (elapsed < KitchenDishFreshnessRules.SpoilDelaySeconds)
+        IsDishSpoilInProgress = true;
+        DishSpoilElapsedSeconds = 0f;
+        KitchenBackgroundWork.RaiseChanged();
+
+        while (DishSpoilElapsedSeconds < KitchenDishFreshnessRules.SpoilDelaySeconds)
         {
             KitchenWorkstationState state = KitchenBackgroundWork.Workstation;
             int dishId = state.HearthDishItemId;
             if (dishId <= 0 || !KitchenDishFreshnessRules.CanSpoilOnHearth(dishId))
             {
+                IsDishSpoilInProgress = false;
+                DishSpoilElapsedSeconds = 0f;
                 _dishSpoilCoroutine = null;
+                KitchenBackgroundWork.RaiseChanged();
                 yield break;
             }
 
-            elapsed += Time.deltaTime;
+            DishSpoilElapsedSeconds += Time.deltaTime;
+            KitchenBackgroundWork.RaiseChanged();
             yield return null;
         }
 
@@ -265,9 +325,11 @@ public sealed class KitchenBackgroundWorkRunner : MonoBehaviour
         if (KitchenDishFreshnessRules.CanSpoilOnHearth(ws.HearthDishItemId))
         {
             ws.HearthDishItemId = KitchenDishFreshnessRules.StaleDishItemId;
-            KitchenBackgroundWork.RaiseChanged();
         }
 
+        IsDishSpoilInProgress = false;
+        DishSpoilElapsedSeconds = 0f;
         _dishSpoilCoroutine = null;
+        KitchenBackgroundWork.RaiseChanged();
     }
 }

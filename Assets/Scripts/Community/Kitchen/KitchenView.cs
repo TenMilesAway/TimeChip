@@ -1,10 +1,19 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class KitchenView : UIBasePanel
 {
     private const float MatIconScaleDivisor = 10000f;
+    private const string HearthProgressCookingText = "烹饪中...";
+    private const string HearthProgressSpoilWarningText = "快糊了!!!";
+    private static readonly Color HearthProgressSpoilColor = new Color(0.92f, 0.12f, 0.1f, 1f);
+    private static readonly Color HearthProgressSpoilColorBright = new Color(1f, 0.32f, 0.18f, 1f);
+    private const float HearthSpoilWarningScalePeakMultiplier = 1.2f;
+    private const float HearthSpoilWarningPulseUpDuration = 0.11f;
+    private const float HearthSpoilWarningPulseDownDuration = 0.09f;
+    private const float HearthSpoilWarningPulseHoldDuration = 0.05f;
     public const int HearthMaterialSlotCount = KitchenBackgroundWork.HearthMaterialSlotCount;
     [Header("上方订单")]
     [SerializeField] private KitchenOrderItem[] _orders;
@@ -16,6 +25,7 @@ public class KitchenView : UIBasePanel
     [SerializeField] private Button _btnMenu;
     [SerializeField] private Slider _sliderCutting;
     [SerializeField] private Slider _sliderHearth;
+    [SerializeField] private Text _txtHearthProgress;
     [SerializeField] private GameObject _txtCutting;
     [SerializeField] private GameObject _txtHearth;
     [SerializeField] private GameObject _inventoryView;
@@ -73,12 +83,20 @@ public class KitchenView : UIBasePanel
     private int _hearthRefreshVersion;
     private bool _isHearthViewVisible;
     private int _hearthIconLoadVersion;
+    private Color _hearthProgressDefaultColor = Color.white;
+    private Vector3 _hearthProgressDefaultScale = Vector3.one;
+    private bool _hearthSpoilWarningUiActive;
 
     private KitchenWorkstationState Workstation => KitchenBackgroundWork.Workstation;
 
     private bool IsCuttingInProgress => KitchenBackgroundWork.IsCuttingInProgress;
 
     private bool IsCookingInProgress => KitchenBackgroundWork.IsCookingInProgress;
+
+    private bool IsHearthDishSpoilInProgress => KitchenBackgroundWork.IsDishSpoilInProgress;
+
+    private bool ShouldShowHearthProgress =>
+        IsCookingInProgress || IsHearthDishSpoilInProgress;
 
     private void Awake()
     {
@@ -157,6 +175,8 @@ public class KitchenView : UIBasePanel
                 orderItem.Bind(index, OnDeliverKitchenOrder);
             }
         }
+
+        CacheHearthProgressVisualDefaults();
     }
 
     protected override void ShowHandle()
@@ -210,6 +230,8 @@ public class KitchenView : UIBasePanel
         {
             _btnBack.onClick.RemoveListener(OnClickBack);
         }
+
+        StopHearthSpoilWarningAnimation();
 
         if (_btnInventory != null)
         {
@@ -392,6 +414,12 @@ public class KitchenView : UIBasePanel
             SyncCookingProgressVisual();
             SetHearthBoardInteractable(false);
         }
+        else if (IsHearthDishSpoilInProgress)
+        {
+            SetCookingProgressVisible(true);
+            SyncCookingProgressVisual();
+            SetHearthBoardInteractable(true);
+        }
         else
         {
             SetCookingProgressVisible(false);
@@ -418,7 +446,7 @@ public class KitchenView : UIBasePanel
             ResetCuttingProgressVisual();
         }
 
-        if (IsCookingInProgress)
+        if (ShouldShowHearthProgress)
         {
             SetCookingProgressVisible(true);
             SyncCookingProgressVisual();
@@ -511,6 +539,12 @@ public class KitchenView : UIBasePanel
                 SyncCookingProgressVisual();
                 SetHearthBoardInteractable(false);
             }
+            else if (IsHearthDishSpoilInProgress)
+            {
+                SetCookingProgressVisible(true);
+                SyncCookingProgressVisual();
+                SetHearthBoardInteractable(true);
+            }
             else
             {
                 SetCookingProgressVisible(false);
@@ -520,7 +554,7 @@ public class KitchenView : UIBasePanel
             RefreshHearthSlotsVisual();
             RefreshHearthInventory();
         }
-        else if (IsCookingInProgress)
+        else if (ShouldShowHearthProgress)
         {
             SetCookingProgressVisible(true);
             SyncCookingProgressVisual();
@@ -593,21 +627,40 @@ public class KitchenView : UIBasePanel
         {
             _txtHearth.SetActive(visible);
         }
+
+        if (!visible)
+        {
+            ApplyHearthProgressStyle(spoilWarning: false);
+        }
     }
 
     private void ResetCookingProgressVisual()
     {
-        ApplyCookingProgressVisual(0f);
+        ApplyCookingProgressVisual(0f, string.Empty);
     }
 
     private void SyncCookingProgressVisual()
     {
-        float progress = Mathf.Clamp01(
-            KitchenBackgroundWork.CookingElapsedSeconds / KitchenBackgroundWork.CookDurationSeconds);
-        ApplyCookingProgressVisual(progress);
+        if (IsCookingInProgress)
+        {
+            float progress = Mathf.Clamp01(
+                KitchenBackgroundWork.CookingElapsedSeconds / KitchenBackgroundWork.CookDurationSeconds);
+            ApplyCookingProgressVisual(progress, HearthProgressCookingText);
+            return;
+        }
+
+        if (IsHearthDishSpoilInProgress)
+        {
+            float progress = Mathf.Clamp01(
+                KitchenBackgroundWork.DishSpoilElapsedSeconds / KitchenBackgroundWork.DishSpoilDurationSeconds);
+            ApplyCookingProgressVisual(progress, HearthProgressSpoilWarningText);
+            return;
+        }
+
+        ResetCookingProgressVisual();
     }
 
-    private void ApplyCookingProgressVisual(float progress)
+    private void ApplyCookingProgressVisual(float progress, string statusText)
     {
         progress = Mathf.Clamp01(progress);
         if (_imgHearthProgress != null)
@@ -619,6 +672,91 @@ public class KitchenView : UIBasePanel
         {
             _sliderHearth.value = progress;
         }
+
+        if (_txtHearthProgress != null)
+        {
+            _txtHearthProgress.text = statusText ?? string.Empty;
+            ApplyHearthProgressStyle(statusText == HearthProgressSpoilWarningText);
+        }
+    }
+
+    private void CacheHearthProgressVisualDefaults()
+    {
+        if (_txtHearthProgress == null)
+        {
+            return;
+        }
+
+        _hearthProgressDefaultColor = _txtHearthProgress.color;
+        _hearthProgressDefaultScale = _txtHearthProgress.rectTransform.localScale;
+    }
+
+    private void ApplyHearthProgressStyle(bool spoilWarning)
+    {
+        if (_txtHearthProgress == null)
+        {
+            return;
+        }
+
+        if (spoilWarning)
+        {
+            if (_hearthSpoilWarningUiActive)
+            {
+                return;
+            }
+
+            _hearthSpoilWarningUiActive = true;
+            _txtHearthProgress.color = HearthProgressSpoilColor;
+            StartHearthSpoilWarningAnimation();
+            return;
+        }
+
+        if (!_hearthSpoilWarningUiActive)
+        {
+            _txtHearthProgress.color = _hearthProgressDefaultColor;
+            return;
+        }
+
+        StopHearthSpoilWarningAnimation();
+    }
+
+    private void StartHearthSpoilWarningAnimation()
+    {
+        if (_txtHearthProgress == null)
+        {
+            return;
+        }
+
+        DOTween.Kill(_txtHearthProgress);
+        RectTransform progressRect = _txtHearthProgress.rectTransform;
+        progressRect.localScale = _hearthProgressDefaultScale;
+
+        DOTween.Sequence()
+            .Append(progressRect
+                .DOScale(_hearthProgressDefaultScale * HearthSpoilWarningScalePeakMultiplier,
+                    HearthSpoilWarningPulseUpDuration)
+                .SetEase(Ease.OutBack))
+            .Join(_txtHearthProgress.DOColor(HearthProgressSpoilColorBright, HearthSpoilWarningPulseUpDuration))
+            .Append(progressRect
+                .DOScale(_hearthProgressDefaultScale, HearthSpoilWarningPulseDownDuration)
+                .SetEase(Ease.InQuad))
+            .Join(_txtHearthProgress.DOColor(HearthProgressSpoilColor, HearthSpoilWarningPulseDownDuration))
+            .AppendInterval(HearthSpoilWarningPulseHoldDuration)
+            .SetLoops(-1, LoopType.Restart)
+            .SetTarget(_txtHearthProgress);
+    }
+
+    private void StopHearthSpoilWarningAnimation()
+    {
+        _hearthSpoilWarningUiActive = false;
+        if (_txtHearthProgress == null)
+        {
+            return;
+        }
+
+        DOTween.Kill(_txtHearthProgress);
+        _txtHearthProgress.color = _hearthProgressDefaultColor;
+        _txtHearthProgress.rectTransform.localScale = _hearthProgressDefaultScale;
     }
 
     private void OnClickFridgePreviousPage()
@@ -1341,16 +1479,31 @@ public class KitchenView : UIBasePanel
             return;
         }
 
-        if (!KitchenCookRecipeCatalog.TryMatchCookRecipe(
+        if (!KitchenCookRecipeCatalog.TryCollectPlacedCookMaterials(
                 Workstation.HearthMatSlotItemIds,
-                out cfg.Kitchen recipe,
                 out List<int> cookMaterialInputs))
         {
-            CommonTipView.Show("当前材料无法匹配任一菜谱");
+            CommonTipView.Show("请先在灶台放入材料");
             return;
         }
 
-        if (!KitchenBackgroundWork.TryStartCooking(recipe, cookMaterialInputs))
+        if (cookMaterialInputs.Count < KitchenCookRecipeCatalog.MinCookMaterialCount)
+        {
+            CommonTipView.Show("烹饪至少需要放入 2 个材料");
+            return;
+        }
+
+        if (KitchenCookRecipeCatalog.TryMatchCookRecipe(
+                Workstation.HearthMatSlotItemIds,
+                out cfg.Kitchen recipe,
+                out List<int> matchedCookMaterials))
+        {
+            if (!KitchenBackgroundWork.TryStartCooking(recipe, matchedCookMaterials))
+            {
+                return;
+            }
+        }
+        else if (!KitchenBackgroundWork.TryStartMishmashCooking(cookMaterialInputs))
         {
             return;
         }
