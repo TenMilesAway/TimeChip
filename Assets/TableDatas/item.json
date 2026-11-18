@@ -870,6 +870,21 @@
     "replace": 0
   },
   {
+    "id": 4029,
+    "name": "餐厅金钥匙",
+    "level": 4,
+    "inventoryType": 1,
+    "type": "餐厅",
+    "category": 4,
+    "desc": "这把钥匙可以解锁属于你的餐厅",
+    "icon": "Assets/Art/Common/SpriteAtlasIcon.spriteatlasv2[restaurant_key_icon_128]",
+    "canUse": 0,
+    "noBatchUse": 0,
+    "rewardScale": 4000,
+    "useEffect": "",
+    "replace": 0
+  },
+  {
     "id": 5000,
     "name": "野生狗奶",
     "level": 1,

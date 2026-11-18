@@ -369,7 +369,14 @@ public class Launcher : SingletonMono<Launcher>
 
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
-            param: new OpenUIParam { data = true },
+            param: new OpenUIParam
+            {
+                data = new SettingViewOpenParam
+                {
+                    ShowBackButton = true,
+                    ShowVoluntaryEndButton = false
+                }
+            },
             action: CompleteMenuPanelTransition);
     }
 

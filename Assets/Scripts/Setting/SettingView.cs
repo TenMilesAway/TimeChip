@@ -13,24 +13,32 @@ public class SettingView : UIBasePanel
     [SerializeField] private Button _btnOver;
 
     private bool _closingForVoluntaryEnd;
+    private bool _showBackButton;
+    private bool _showVoluntaryEndButton;
 
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
 
-        bool isShowBackButton = param != null && param.data is bool showBack && showBack;
+        ResolveOpenParam(param, out _showBackButton, out _showVoluntaryEndButton);
 
-        if (isShowBackButton)
+        if (_showBackButton)
         {
             _btnBack.gameObject.SetActive(true);
             _btnBack.onClick.AddListener(OnBackButtonClicked);
+        }
+        else
+        {
+            _btnBack.gameObject.SetActive(false);
+        }
 
+        if (_showVoluntaryEndButton)
+        {
             _btnOver.gameObject.SetActive(true);
             _btnOver.onClick.AddListener(OnOverButtonClicked);
         }
         else
         {
-            _btnBack.gameObject.SetActive(false);
             _btnOver.gameObject.SetActive(false);
         }
 
@@ -54,8 +62,15 @@ public class SettingView : UIBasePanel
         _sliderMusic.onValueChanged.RemoveListener(OnMusicVolumeChanged);
         _sliderSFX.onValueChanged.RemoveListener(OnSFXVolumeChanged);
         _toggleVibra.onValueChanged.RemoveListener(OnVibrationChanged);
-        _btnBack.onClick.RemoveListener(OnBackButtonClicked);
-        _btnOver.onClick.RemoveListener(OnOverButtonClicked);
+        if (_showBackButton)
+        {
+            _btnBack.onClick.RemoveListener(OnBackButtonClicked);
+        }
+
+        if (_showVoluntaryEndButton)
+        {
+            _btnOver.onClick.RemoveListener(OnOverButtonClicked);
+        }
 
         if (!_closingForVoluntaryEnd && Launcher.Instance != null)
         {
@@ -66,6 +81,27 @@ public class SettingView : UIBasePanel
     public override string GetPanelName()
     {
         return GlobalDefine.SettingView;
+    }
+
+    private static void ResolveOpenParam(
+        OpenUIParam param,
+        out bool showBackButton,
+        out bool showVoluntaryEndButton)
+    {
+        showBackButton = false;
+        showVoluntaryEndButton = false;
+        if (param?.data is SettingViewOpenParam openParam)
+        {
+            showBackButton = openParam.ShowBackButton;
+            showVoluntaryEndButton = openParam.ShowVoluntaryEndButton;
+            return;
+        }
+
+        if (param?.data is bool legacyShowInGamePanel && legacyShowInGamePanel)
+        {
+            showBackButton = true;
+            showVoluntaryEndButton = true;
+        }
     }
 
     private void RefreshControls()
@@ -104,7 +140,13 @@ public class SettingView : UIBasePanel
             return;
         }
 
-        Launcher.Instance.SaveAndReturnToMainInterface();
+        if (_showVoluntaryEndButton)
+        {
+            Launcher.Instance.SaveAndReturnToMainInterface();
+            return;
+        }
+
+        UIManager.GetInstance().ClosePanel(GetPanelName());
     }
 
     private void OnOverButtonClicked()

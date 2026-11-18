@@ -278,7 +278,14 @@ public class MainMenuView : UIBasePanel
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.SettingView,
-            param: new OpenUIParam { data = true });
+            param: new OpenUIParam
+            {
+                data = new SettingViewOpenParam
+                {
+                    ShowBackButton = true,
+                    ShowVoluntaryEndButton = true
+                }
+            });
     }
 
     private void OpenKitchenView()
