@@ -33,6 +33,8 @@ public class WorkView : UIBasePanel
     private readonly List<cfg.Work> _filteredWorks = new List<cfg.Work>();
     private readonly List<UnityAction> _tagClickHandlers = new List<UnityAction>();
 
+    private static int s_rememberedWorkTypeIndex;
+
     private int _selectedWorkTypeIndex;
     private int _currentPage = 1;
     private bool _isUiReady;
@@ -64,7 +66,7 @@ public class WorkView : UIBasePanel
         base.InitHandle(param);
         if (_isUiReady)
         {
-            SelectWorkType(0);
+            SelectWorkType(GetRememberedWorkTypeIndex());
         }
     }
 
@@ -98,6 +100,11 @@ public class WorkView : UIBasePanel
         base.OnDestroy();
     }
 
+    private static int GetRememberedWorkTypeIndex()
+    {
+        return Mathf.Clamp(s_rememberedWorkTypeIndex, 0, WorkTypes.Length - 1);
+    }
+
     private void SelectWorkType(int workTypeIndex)
     {
         if (workTypeIndex < 0 || workTypeIndex >= WorkTypes.Length)
@@ -106,6 +113,7 @@ public class WorkView : UIBasePanel
         }
 
         _selectedWorkTypeIndex = workTypeIndex;
+        s_rememberedWorkTypeIndex = workTypeIndex;
         _currentPage = 1;
         _filteredWorks.Clear();
 

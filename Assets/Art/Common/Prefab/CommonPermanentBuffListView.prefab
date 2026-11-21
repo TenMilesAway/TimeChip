@@ -66,6 +66,7 @@ MonoBehaviour:
   _txtTitle: {fileID: 3994484098788173035}
   _entryParent: {fileID: 5975712449222288467}
   _btnClose: {fileID: 0}
+  _entryTextTemplate: {fileID: 0}
 --- !u!223 &440430265036360654
 Canvas:
   m_ObjectHideFlags: 0
@@ -510,7 +511,7 @@ MonoBehaviour:
   m_Spacing: 20
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0

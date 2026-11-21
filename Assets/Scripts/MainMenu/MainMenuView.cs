@@ -32,6 +32,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private GameObject _goLoad;
     [SerializeField] private GameObject _goBottom;
     [SerializeField] private GameObject _goInventory;
+    [SerializeField] private GameObject _goRes;
     [SerializeField] private GameObject _goRedPointCurrentMission;
     [SerializeField] private GameObject _goRedPointMissionButton;
 
@@ -319,6 +320,11 @@ public class MainMenuView : UIBasePanel
         if (_goInventory != null)
         {
             _goInventory.SetActive(visible);
+        }
+
+        if (_goRes != null)
+        {
+            _goRes.SetActive(visible);
         }
     }
 

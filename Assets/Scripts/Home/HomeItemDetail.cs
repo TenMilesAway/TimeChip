@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -94,8 +95,14 @@ public class HomeItemDetail : UIBasePanel
             return;
         }
 
-        int fullPrice = GetPurchaseCost(applyFurnitureDiscountCoupon: false);
-        int discountedPrice = GetPurchaseCost(applyFurnitureDiscountCoupon: true);
+        List<int> linePrices = GetPurchaseLinePrices();
+        int fullPrice = SumLinePrices(linePrices);
+        int ownedCoupons = playerInfoManager.GetItemCount(FurnitureDiscountCouponItemId);
+        int couponsToUse = Mathf.Min(ownedCoupons, linePrices.Count);
+        int discountedPrice = CalculateCostWithFurnitureCoupons(linePrices, couponsToUse);
+        string couponConsumeHint = couponsToUse > 0
+            ? $"，将消耗<color=#00FFFA>家具折扣券</color> ×{couponsToUse}"
+            : string.Empty;
         UIManager.GetInstance().OpenPanel(
             GlobalDefine.CommonChoosePanel,
             UILayer.System,
@@ -103,7 +110,7 @@ public class HomeItemDetail : UIBasePanel
             {
                 data = new CommonChooseData(
                     "使用家具折扣券",
-                    $"是否使用<color=#00FFFA>家具折扣券</color>?本次购买花费 {discountedPrice} 模拟币 (原价 {fullPrice})",
+                    $"是否使用<color=#00FFFA>家具折扣券</color>?本次购买花费 {discountedPrice} 模拟币 (原价 {fullPrice}){couponConsumeHint}",
                     () =>
                     {
                         UIManager.GetInstance().ClosePanel(GlobalDefine.CommonChoosePanel);
@@ -126,8 +133,17 @@ public class HomeItemDetail : UIBasePanel
             return;
         }
 
-        int purchaseCost = GetPurchaseCost(applyFurnitureDiscountCoupon: useFurnitureDiscountCoupon);
         PlayerInfoManager playerInfoManager = PlayerInfoManager.GetInstance();
+        List<int> linePrices = GetPurchaseLinePrices();
+        int couponsToUse = 0;
+        if (useFurnitureDiscountCoupon)
+        {
+            couponsToUse = Mathf.Min(
+                playerInfoManager.GetItemCount(FurnitureDiscountCouponItemId),
+                linePrices.Count);
+        }
+
+        int purchaseCost = CalculateCostWithFurnitureCoupons(linePrices, couponsToUse);
         if (!playerInfoManager.TrySpendSimulationCoins(purchaseCost))
         {
             CommonTipView.Show(
@@ -135,8 +151,8 @@ public class HomeItemDetail : UIBasePanel
             return;
         }
 
-        if (useFurnitureDiscountCoupon &&
-            !playerInfoManager.TryConsumeItem(FurnitureDiscountCouponItemId))
+        if (couponsToUse > 0 &&
+            !playerInfoManager.TryConsumeItem(FurnitureDiscountCouponItemId, couponsToUse))
         {
             CommonTipView.Show("家具折扣券不足，购买已取消");
             playerInfoManager.AddSimulationCoins(purchaseCost);
@@ -165,10 +181,10 @@ public class HomeItemDetail : UIBasePanel
         _purchaseButton.interactable = false;
         OnClose();
 
-        if (useFurnitureDiscountCoupon)
+        if (couponsToUse > 0)
         {
             CommonTipView.Show(
-                $"购买成功，获得家具: <color=#00FFFA>{suffix}</color>，失去<color=#00FFFA>家具折扣券</color> ×1");
+                $"购买成功，获得家具: <color=#00FFFA>{suffix}</color>，失去<color=#00FFFA>家具折扣券</color> ×{couponsToUse}");
         }
         else
         {
@@ -205,15 +221,73 @@ public class HomeItemDetail : UIBasePanel
     /// </summary>
     private int GetPurchaseCost(bool applyFurnitureDiscountCoupon = false)
     {
-        int basePrice = _homeConfig.Price +
-            (_prerequisiteConfig == null ? 0 : _prerequisiteConfig.Price);
-        int price = BuffSystem.GetInstance().CalculateShopPrice(basePrice);
+        List<int> linePrices = GetPurchaseLinePrices();
         if (!applyFurnitureDiscountCoupon)
         {
-            return price;
+            return SumLinePrices(linePrices);
         }
 
-        return Mathf.Max(0, Mathf.CeilToInt(price * FurnitureDiscountMultiplier));
+        int ownedCoupons = PlayerInfoManager.GetInstance().GetItemCount(FurnitureDiscountCouponItemId);
+        int couponsToUse = Mathf.Min(ownedCoupons, linePrices.Count);
+        return CalculateCostWithFurnitureCoupons(linePrices, couponsToUse);
+    }
+
+    private List<int> GetPurchaseLinePrices()
+    {
+        List<int> linePrices = new List<int>(2);
+        BuffSystem buffSystem = BuffSystem.GetInstance();
+        linePrices.Add(buffSystem.CalculateShopPrice(_homeConfig.Price));
+        if (_prerequisiteConfig != null)
+        {
+            linePrices.Add(buffSystem.CalculateShopPrice(_prerequisiteConfig.Price));
+        }
+
+        return linePrices;
+    }
+
+    private static int SumLinePrices(IReadOnlyList<int> linePrices)
+    {
+        int total = 0;
+        for (int i = 0; i < linePrices.Count; i++)
+        {
+            total += linePrices[i];
+        }
+
+        return total;
+    }
+
+    /// <summary>按件打折：券不足时优先对单价最高的家具使用折扣券（8 折）。</summary>
+    private static int CalculateCostWithFurnitureCoupons(IReadOnlyList<int> linePrices, int couponCount)
+    {
+        if (linePrices == null || linePrices.Count == 0)
+        {
+            return 0;
+        }
+
+        if (couponCount <= 0)
+        {
+            return SumLinePrices(linePrices);
+        }
+
+        List<int> pricesByDescending = new List<int>(linePrices);
+        pricesByDescending.Sort((left, right) => right.CompareTo(left));
+
+        int couponsToApply = Mathf.Min(couponCount, pricesByDescending.Count);
+        int total = 0;
+        for (int i = 0; i < pricesByDescending.Count; i++)
+        {
+            int linePrice = pricesByDescending[i];
+            if (i < couponsToApply)
+            {
+                total += Mathf.Max(0, Mathf.CeilToInt(linePrice * FurnitureDiscountMultiplier));
+            }
+            else
+            {
+                total += linePrice;
+            }
+        }
+
+        return total;
     }
 
     /// <summary>

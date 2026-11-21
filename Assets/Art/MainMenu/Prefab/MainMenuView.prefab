@@ -1274,6 +1274,7 @@ MonoBehaviour:
   _goLoad: {fileID: 1885304055932669627}
   _goBottom: {fileID: 1463995235120349186}
   _goInventory: {fileID: 1352079754783472908}
+  _goRes: {fileID: 3466800124095514116}
   _goRedPointCurrentMission: {fileID: 61264325405662479}
   _goRedPointMissionButton: {fileID: 1678388676908903729}
   _btnMove: {fileID: 6180922762400374061}
