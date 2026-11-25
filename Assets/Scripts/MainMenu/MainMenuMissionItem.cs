@@ -41,7 +41,8 @@ public class MainMenuMissionItem : MonoBehaviour
 
         EnsureGoButton();
         _txtTitle.text = missionConfig.Name;
-        _txtDes.text = missionConfig.Desc;
+        string missionDescription = MissionAPI.ResolveMissionDescription(missionConfig, mission.id);
+        _txtDes.text = missionDescription;
         if (MissionAPI.TryGetMissionTarget(
                 mission.id,
                 out int targetItemId,
@@ -54,7 +55,7 @@ public class MainMenuMissionItem : MonoBehaviour
             if (targetItem != null)
             {
                 _txtDes.text = string.Format(
-                    missionConfig.Desc,
+                    missionDescription,
                     targetItem.Name,
                     targetItemCount);
             }

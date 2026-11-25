@@ -167,6 +167,8 @@ namespace DS.Utilities
                 DialogueType = node.DialogueType,
                 Speaker = node.Speaker,
                 SpeakerExpressionPath = node.SpeakerExpressionPath,
+                BindSelectTarget = node.BindSelectTarget,
+                SelectTargetIndex = node.SelectTargetIndex,
                 Reward = node.Reward,
                 Position = node.GetPosition().position
             };
@@ -198,6 +200,8 @@ namespace DS.Utilities
                 node.DialogueType,
                 node.Speaker,
                 node.SpeakerExpressionPath,
+                node.BindSelectTarget,
+                node.SelectTargetIndex,
                 node.Reward,
                 node.IsStartingNode()
             );
@@ -333,6 +337,8 @@ namespace DS.Utilities
                 node.Text = nodeData.Text;
                 node.Speaker = nodeData.Speaker;
                 node.SpeakerExpressionPath = nodeData.SpeakerExpressionPath;
+                node.BindSelectTarget = nodeData.BindSelectTarget;
+                node.SelectTargetIndex = nodeData.BindSelectTarget ? nodeData.SelectTargetIndex : -1;
                 node.Reward = nodeData.Reward;
 
                 node.Draw();

@@ -5,23 +5,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using DS.Enumerations;
 
+public sealed class MissionDialogueChoiceOptionData
+{
+    public string text;
+    public int selectTargetIndex = -1;
+}
+
 public sealed class MissionDialogueLineData
 {
     public DSDialogueSpeaker speaker;
     public string expressionPath;
     public string text;
     public List<CommonRewardItemData> rewards;
+    public List<MissionDialogueChoiceOptionData> choices;
 }
 
 public sealed class MissionDialogueViewData
 {
     public string title;
     public List<MissionDialogueLineData> lines;
+    public System.Func<int, List<MissionDialogueLineData>> onSelectChoice;
+    public System.Action<int> onApplySelectTarget;
     public System.Action onCompleted;
 }
 
 public class DialogueView : UIBasePanel
 {
+    private const int MaxChoiceCount = 3;
     private const string MeAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_me]";
     private const string GirlfriendAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_girlfriend]";
     private const string DaughterAvatarPath = "Assets/Art/Role/SpriteAtlas.spriteatlasv2[role_daughter]";
@@ -37,9 +47,14 @@ public class DialogueView : UIBasePanel
 
     [SerializeField] private Text _txtName;
     [SerializeField] private Text _txtDialogue;
+    [SerializeField] private Text[] _txtChoose;                      // 选项文本, 最多 3 个
     [SerializeField] private Image _imgAvatar;
     [SerializeField] private Button _btnShowOrNext;
-    [SerializeField] private Button _btnSkip;        // 跳过对话
+    [SerializeField] private Button _btnSkip;                        // 跳过对话
+    [SerializeField] private Button[] _btnChooes;                    // 选项按钮, 最多 3 个
+    [SerializeField] private GameObject _goDialogueChooseGroup;      // 对话选项组
+    [SerializeField] private GameObject[] _goDialogueChooseNeedHide; // 对话选项组出现时需要隐藏的物体
+    [SerializeField] private GameObject[] _goChooes;                 // 选项, 最多 3 个
     [SerializeField, Min(0.01f)] private float _typewriterSecondsPerChar = 0.05f;
 
     private MissionDialogueViewData _viewData;
@@ -49,7 +64,9 @@ public class DialogueView : UIBasePanel
     private bool _isTyping;
     private bool _isWaitingForRewardPanel;
     private bool _isSkipping;
+    private bool _isSkippingToNextChoice;
     private bool _isCompleting;
+    private bool _isShowingChoices;
     private string _currentLineText;
 
     private void Awake()
@@ -64,6 +81,9 @@ public class DialogueView : UIBasePanel
         {
             _btnSkip.onClick.AddListener(SkipDialogue);
         }
+
+        BindChoiceButtons();
+        SetDialogueChooseVisible(false);
     }
 
     protected override void InitHandle(OpenUIParam param)
@@ -96,6 +116,7 @@ public class DialogueView : UIBasePanel
             _btnSkip.interactable = true;
         }
 
+        SetDialogueChooseVisible(false);
         ShowCurrentLine();
     }
 
@@ -130,6 +151,11 @@ public class DialogueView : UIBasePanel
             return;
         }
 
+        if (_isShowingChoices)
+        {
+            return;
+        }
+
         if (_isTyping)
         {
             CompleteCurrentTypewriterLine();
@@ -139,6 +165,12 @@ public class DialogueView : UIBasePanel
         if (HasCurrentLineRewards())
         {
             OpenCurrentLineRewardPanel();
+            return;
+        }
+
+        if (HasCurrentLineChoices())
+        {
+            ShowDialogueChoices();
             return;
         }
 
@@ -160,8 +192,10 @@ public class DialogueView : UIBasePanel
     private void SkipDialogue()
     {
         if (_isSkipping ||
+            _isSkippingToNextChoice ||
             _isCompleting ||
             _isWaitingForRewardPanel ||
+            _isShowingChoices ||
             _viewData?.lines == null ||
             _currentIndex < 0 ||
             _currentIndex >= _viewData.lines.Count)
@@ -170,8 +204,54 @@ public class DialogueView : UIBasePanel
         }
 
         GameManager.Audio.Play(AudioDefine.SFXClick);
-        _isSkipping = true;
         StopTypewriter();
+
+        int nextChoiceLineIndex = FindNextChoiceLineIndex(_currentIndex);
+        if (nextChoiceLineIndex >= 0)
+        {
+            SkipToChoiceLine(nextChoiceLineIndex);
+            return;
+        }
+
+        SkipToDialogueEnd();
+    }
+
+    private void SkipToChoiceLine(int choiceLineIndex)
+    {
+        if (choiceLineIndex == _currentIndex)
+        {
+            PresentChoiceLineAfterSkip();
+            return;
+        }
+
+        List<CommonRewardItemData> skippedRewards =
+            CollectRewardsInRange(_currentIndex, choiceLineIndex - 1);
+        _currentIndex = choiceLineIndex;
+        if (skippedRewards.Count > 0)
+        {
+            OpenSkipToChoiceRewardPanel(skippedRewards);
+            return;
+        }
+
+        PresentChoiceLineAfterSkip();
+    }
+
+    private void PresentChoiceLineAfterSkip()
+    {
+        CompleteCurrentTypewriterLine();
+        ShowCurrentLine(instant: true);
+        if (HasCurrentLineRewards())
+        {
+            OpenCurrentLineRewardPanel();
+            return;
+        }
+
+        ShowDialogueChoices();
+    }
+
+    private void SkipToDialogueEnd()
+    {
+        _isSkipping = true;
         if (_btnShowOrNext != null)
         {
             _btnShowOrNext.interactable = false;
@@ -192,10 +272,50 @@ public class DialogueView : UIBasePanel
         OpenSkippedDialogueRewardPanel(rewards);
     }
 
+    private int FindNextChoiceLineIndex(int startIndex)
+    {
+        if (_viewData?.lines == null)
+        {
+            return -1;
+        }
+
+        for (int i = startIndex; i < _viewData.lines.Count; i++)
+        {
+            if (LineHasChoices(_viewData.lines[i]))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static bool LineHasChoices(MissionDialogueLineData lineData)
+    {
+        return lineData?.choices != null && lineData.choices.Count > 0;
+    }
+
     private List<CommonRewardItemData> CollectRemainingRewards()
     {
         List<CommonRewardItemData> rewards = new List<CommonRewardItemData>();
-        for (int i = _currentIndex; i < _viewData.lines.Count; i++)
+        if (_viewData?.lines == null)
+        {
+            return rewards;
+        }
+
+        return CollectRewardsInRange(_currentIndex, _viewData.lines.Count - 1);
+    }
+
+    private List<CommonRewardItemData> CollectRewardsInRange(int fromInclusive, int toInclusive)
+    {
+        List<CommonRewardItemData> rewards = new List<CommonRewardItemData>();
+        if (_viewData?.lines == null || fromInclusive > toInclusive)
+        {
+            return rewards;
+        }
+
+        toInclusive = Mathf.Min(toInclusive, _viewData.lines.Count - 1);
+        for (int i = fromInclusive; i <= toInclusive; i++)
         {
             List<CommonRewardItemData> lineRewards = _viewData.lines[i]?.rewards;
             if (lineRewards == null || lineRewards.Count == 0)
@@ -207,6 +327,52 @@ public class DialogueView : UIBasePanel
         }
 
         return rewards;
+    }
+
+    private async void OpenSkipToChoiceRewardPanel(List<CommonRewardItemData> rewards)
+    {
+        _isSkippingToNextChoice = true;
+        _isWaitingForRewardPanel = true;
+        if (_btnShowOrNext != null)
+        {
+            _btnShowOrNext.interactable = false;
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.interactable = false;
+        }
+
+        UIBasePanel rewardPanel = await UIManager.GetInstance().EnqueueRewardPanel(
+            new OpenUIParam
+            {
+                data = rewards,
+                callback = OnSkipToChoiceRewardsCompleted
+            });
+        if (rewardPanel == null)
+        {
+            _isSkippingToNextChoice = false;
+            _isWaitingForRewardPanel = false;
+            if (_btnShowOrNext != null)
+            {
+                _btnShowOrNext.interactable = true;
+            }
+
+            if (_btnSkip != null)
+            {
+                _btnSkip.interactable = true;
+            }
+
+            Debug.LogError("[对话系统] 跳过至选项奖励面板打开失败。", this);
+            PresentChoiceLineAfterSkip();
+        }
+    }
+
+    private void OnSkipToChoiceRewardsCompleted()
+    {
+        _isSkippingToNextChoice = false;
+        _isWaitingForRewardPanel = false;
+        PresentChoiceLineAfterSkip();
     }
 
     private async void OpenSkippedDialogueRewardPanel(
@@ -242,7 +408,7 @@ public class DialogueView : UIBasePanel
         CompleteDialogue();
     }
 
-    private void ShowCurrentLine()
+    private void ShowCurrentLine(bool instant = false)
     {
         if (_txtDialogue == null || _viewData == null || _viewData.lines == null)
         {
@@ -251,7 +417,15 @@ public class DialogueView : UIBasePanel
 
         MissionDialogueLineData lineData = _viewData.lines[_currentIndex];
         _currentLineText = lineData?.text ?? string.Empty;
-        PlayTypewriter(_currentLineText);
+        if (instant)
+        {
+            StopTypewriter();
+            _txtDialogue.text = _currentLineText;
+        }
+        else
+        {
+            PlayTypewriter(_currentLineText);
+        }
 
         if (_txtName != null)
         {
@@ -292,6 +466,12 @@ public class DialogueView : UIBasePanel
     private void OnCurrentLineRewardsCompleted()
     {
         _isWaitingForRewardPanel = false;
+        if (HasCurrentLineChoices())
+        {
+            ShowDialogueChoices();
+            return;
+        }
+
         AdvanceToNextLine();
     }
 
@@ -303,6 +483,7 @@ public class DialogueView : UIBasePanel
         }
 
         _isCompleting = true;
+        SetDialogueChooseVisible(false);
         StopTypewriter();
         System.Action onCompleted = _viewData?.onCompleted;
         UIManager.GetInstance().ClosePanel(GetPanelName());
@@ -636,5 +817,161 @@ public class DialogueView : UIBasePanel
         return string.IsNullOrEmpty(spriteName)
             ? expressionPath
             : $"{RoleSpriteAtlasPath}[{spriteName}]";
+    }
+
+    private void BindChoiceButtons()
+    {
+        if (_btnChooes == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _btnChooes.Length; i++)
+        {
+            int choiceIndex = i;
+            if (_btnChooes[i] == null)
+            {
+                continue;
+            }
+
+            _btnChooes[i].onClick.AddListener(() => OnDialogueChoiceSelected(choiceIndex));
+        }
+    }
+
+    private void OnDialogueChoiceSelected(int choiceIndex)
+    {
+        if (!_isShowingChoices ||
+            _viewData == null ||
+            _viewData.onSelectChoice == null)
+        {
+            return;
+        }
+
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        if (_viewData?.lines != null &&
+            _currentIndex >= 0 &&
+            _currentIndex < _viewData.lines.Count)
+        {
+            List<MissionDialogueChoiceOptionData> choiceOptions =
+                _viewData.lines[_currentIndex].choices;
+            if (choiceOptions != null &&
+                choiceIndex >= 0 &&
+                choiceIndex < choiceOptions.Count &&
+                choiceOptions[choiceIndex].selectTargetIndex >= 0)
+            {
+                _viewData.onApplySelectTarget?.Invoke(
+                    choiceOptions[choiceIndex].selectTargetIndex);
+            }
+        }
+
+        List<MissionDialogueLineData> nextLines = _viewData.onSelectChoice.Invoke(choiceIndex);
+        SetDialogueChooseVisible(false);
+
+        if (nextLines == null || nextLines.Count == 0)
+        {
+            CompleteDialogue();
+            return;
+        }
+
+        _viewData.lines.AddRange(nextLines);
+        AdvanceToNextLine();
+    }
+
+    private bool HasCurrentLineChoices()
+    {
+        if (_viewData?.lines == null ||
+            _currentIndex < 0 ||
+            _currentIndex >= _viewData.lines.Count)
+        {
+            return false;
+        }
+
+        return LineHasChoices(_viewData.lines[_currentIndex]);
+    }
+
+    private void ShowDialogueChoices()
+    {
+        List<MissionDialogueChoiceOptionData> choices = _viewData.lines[_currentIndex].choices;
+        if (choices == null || choices.Count == 0)
+        {
+            AdvanceToNextLine();
+            return;
+        }
+
+        int choiceCount = Mathf.Min(choices.Count, MaxChoiceCount);
+        for (int i = 0; i < MaxChoiceCount; i++)
+        {
+            bool isVisible = i < choiceCount;
+            if (_goChooes != null && i < _goChooes.Length && _goChooes[i] != null)
+            {
+                _goChooes[i].SetActive(isVisible);
+            }
+
+            if (!isVisible)
+            {
+                continue;
+            }
+
+            if (_txtChoose != null && i < _txtChoose.Length && _txtChoose[i] != null)
+            {
+                _txtChoose[i].text = choices[i].text ?? string.Empty;
+            }
+
+            if (_btnChooes != null && i < _btnChooes.Length && _btnChooes[i] != null)
+            {
+                _btnChooes[i].interactable = true;
+            }
+        }
+
+        SetDialogueChooseVisible(true);
+        _isShowingChoices = true;
+
+        if (_btnShowOrNext != null)
+        {
+            _btnShowOrNext.interactable = false;
+        }
+
+        if (_btnSkip != null)
+        {
+            _btnSkip.interactable = false;
+        }
+    }
+
+    private void SetDialogueChooseVisible(bool isVisible)
+    {
+        _isShowingChoices = isVisible;
+
+        if (_goDialogueChooseGroup != null)
+        {
+            _goDialogueChooseGroup.SetActive(isVisible);
+        }
+
+        if (_goDialogueChooseNeedHide != null)
+        {
+            for (int i = 0; i < _goDialogueChooseNeedHide.Length; i++)
+            {
+                if (_goDialogueChooseNeedHide[i] != null)
+                {
+                    _goDialogueChooseNeedHide[i].SetActive(!isVisible);
+                }
+            }
+        }
+
+        if (!isVisible &&
+            _btnShowOrNext != null &&
+            !_isCompleting &&
+            !_isSkipping)
+        {
+            _btnShowOrNext.interactable = true;
+        }
+
+        if (!isVisible &&
+            _btnSkip != null &&
+            !_isCompleting &&
+            !_isSkipping &&
+            !_isWaitingForRewardPanel)
+        {
+            _btnSkip.interactable = true;
+        }
     }
 }

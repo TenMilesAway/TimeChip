@@ -17,6 +17,8 @@ namespace DS.Data.Save
         [field: SerializeField] public DSDialogueType DialogueType { get; set; }
         [field: SerializeField] public DSDialogueSpeaker Speaker { get; set; }
         [field: SerializeField] public string SpeakerExpressionPath { get; set; }
+        [field: SerializeField] public bool BindSelectTarget { get; set; }
+        [field: SerializeField] public int SelectTargetIndex { get; set; } = -1;
         [field: SerializeField] public string Reward { get; set; }
         [field: SerializeField] public Vector2 Position { get; set; }
     }

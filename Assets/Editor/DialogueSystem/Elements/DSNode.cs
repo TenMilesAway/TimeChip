@@ -25,6 +25,8 @@ namespace DS.Elements
         public DSDialogueType DialogueType { get; set; }
         public DSDialogueSpeaker Speaker { get; set; }
         public string SpeakerExpressionPath { get; set; }
+        public bool BindSelectTarget { get; set; }
+        public int SelectTargetIndex { get; set; } = -1;
         public string Reward { get; set; }
         public DSGroup Group { get; set; }
 
@@ -48,6 +50,8 @@ namespace DS.Elements
             Text = "Dialogue text.";
             Speaker = DSDialogueSpeaker.Me;
             SpeakerExpressionPath = GetDefaultExpressionPath(Speaker);
+            BindSelectTarget = false;
+            SelectTargetIndex = -1;
             Reward = string.Empty;
 
             SetPosition(new Rect(position, Vector2.zero));
@@ -144,7 +148,8 @@ namespace DS.Elements
             rewardTextField.tooltip = "格式：itemID,num;itemID,num，例如：1001,2;1002,1。模拟币 101 的数量为负数时扣除相应模拟币。";
             customDataContainer.Add(rewardTextField);
 
-            if (DialogueType == DSDialogueType.SingleChoice)
+            if (DialogueType == DSDialogueType.SingleChoice ||
+                DialogueType == DSDialogueType.MultipleChoice)
             {
                 List<string> currentExpressionReferences = GetExpressionReferences(Speaker);
                 SpeakerExpressionPath = ResolveExpressionPath(
@@ -216,6 +221,25 @@ namespace DS.Elements
                 });
                 customDataContainer.Add(speakerField);
                 customDataContainer.Add(expressionField);
+
+                IntegerField selectTargetField = new IntegerField("SelectTarget")
+                {
+                    value = BindSelectTarget ? SelectTargetIndex : -1
+                };
+                selectTargetField.tooltip = "选中通向本节点的选项时，写入 select 任务的分支索引。-1 表示不绑定。";
+                selectTargetField.RegisterValueChangedCallback(callback =>
+                {
+                    if (callback.newValue < 0)
+                    {
+                        BindSelectTarget = false;
+                        SelectTargetIndex = -1;
+                        return;
+                    }
+
+                    BindSelectTarget = true;
+                    SelectTargetIndex = callback.newValue;
+                });
+                customDataContainer.Add(selectTargetField);
             }
 
             extensionContainer.Add(customDataContainer);

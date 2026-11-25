@@ -192,6 +192,10 @@ public sealed class PlayerInfoData
     /// <summary>玩家已经完成的任务 ID</summary>
     public List<string> completedMissionIds = new List<string>();
 
+    /// <summary>已完成 select 任务的选项索引（用于 missionSelect: 条件）</summary>
+    public List<PlayerMissionSelectOutcome> completedMissionSelectOutcomes =
+        new List<PlayerMissionSelectOutcome>();
+
     /// <summary>熊大山便利店对话是否已播放</summary>
     public bool bearConvenienceDialoguePlayed;
 
@@ -455,6 +459,23 @@ public sealed class PlayerMissionData
 
     /// <summary>随机道具收集任务固定后的目标数量</summary>
     public int targetItemCount;
+
+    /// <summary>select 任务是否在等待对话选项确定目标</summary>
+    public bool awaitingSelectTarget;
+
+    /// <summary>select 任务玩家选中的 selectTarget 分段索引</summary>
+    public int selectTargetIndex = -1;
+
+    /// <summary>select 任务确定后的目标文本（段内 ; 分隔）</summary>
+    public string resolvedSelectTarget = string.Empty;
+}
+
+/// <summary>已完成任务所记录的 select 分支索引</summary>
+[Serializable]
+public sealed class PlayerMissionSelectOutcome
+{
+    public string missionId = string.Empty;
+    public int selectTargetIndex = -1;
 }
 
 /// <summary>
@@ -1497,6 +1518,66 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             _data != null &&
             _data.completedMissionIds != null &&
             _data.completedMissionIds.Contains(missionId.ToString());
+    }
+
+    /// <summary>读取已完成任务的 select 分支索引；未记录时返回 false。</summary>
+    public bool TryGetCompletedMissionSelectIndex(string missionId, out int selectTargetIndex)
+    {
+        selectTargetIndex = -1;
+        if (_data?.completedMissionSelectOutcomes == null || string.IsNullOrEmpty(missionId))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _data.completedMissionSelectOutcomes.Count; i++)
+        {
+            PlayerMissionSelectOutcome outcome = _data.completedMissionSelectOutcomes[i];
+            if (outcome == null || outcome.missionId != missionId)
+            {
+                continue;
+            }
+
+            selectTargetIndex = outcome.selectTargetIndex;
+            return selectTargetIndex >= 0;
+        }
+
+        return false;
+    }
+
+    /// <summary>任务完成时记录 select 分支（重复写入会更新索引）。</summary>
+    public void RecordCompletedMissionSelectOutcome(string missionId, int selectTargetIndex)
+    {
+        if (_data == null ||
+            string.IsNullOrEmpty(missionId) ||
+            selectTargetIndex < 0)
+        {
+            return;
+        }
+
+        if (_data.completedMissionSelectOutcomes == null)
+        {
+            _data.completedMissionSelectOutcomes = new List<PlayerMissionSelectOutcome>();
+        }
+
+        for (int i = 0; i < _data.completedMissionSelectOutcomes.Count; i++)
+        {
+            PlayerMissionSelectOutcome outcome = _data.completedMissionSelectOutcomes[i];
+            if (outcome == null || outcome.missionId != missionId)
+            {
+                continue;
+            }
+
+            outcome.selectTargetIndex = selectTargetIndex;
+            NotifyPlayerInfoChanged();
+            return;
+        }
+
+        _data.completedMissionSelectOutcomes.Add(new PlayerMissionSelectOutcome
+        {
+            missionId = missionId,
+            selectTargetIndex = selectTargetIndex
+        });
+        NotifyPlayerInfoChanged();
     }
 
     public bool HasPlayedBearConvenienceDialogue
@@ -3264,6 +3345,8 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             activeBuffs = CreateActiveBuffCopy(source.activeBuffs),
             activeMissions = CreateMissionCopy(source.activeMissions),
             completedMissionIds = CreateMissionIdCopy(source.completedMissionIds),
+            completedMissionSelectOutcomes =
+                CreateMissionSelectOutcomeCopy(source.completedMissionSelectOutcomes),
             randomMissionOfferGenerated = source.randomMissionOfferGenerated,
             hasRandomMissionOffer = source.hasRandomMissionOffer,
             randomMissionOfferId = source.randomMissionOfferId,
@@ -3304,6 +3387,33 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 : new List<int>(source.augustLanternRiddleAnswerStates),
             augustLanternCompletionRewardGranted = source.augustLanternCompletionRewardGranted
         };
+    }
+
+    private static List<PlayerMissionSelectOutcome> CreateMissionSelectOutcomeCopy(
+        List<PlayerMissionSelectOutcome> source)
+    {
+        List<PlayerMissionSelectOutcome> copy = new List<PlayerMissionSelectOutcome>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerMissionSelectOutcome outcome = source[i];
+            if (outcome == null || string.IsNullOrEmpty(outcome.missionId))
+            {
+                continue;
+            }
+
+            copy.Add(new PlayerMissionSelectOutcome
+            {
+                missionId = outcome.missionId,
+                selectTargetIndex = outcome.selectTargetIndex
+            });
+        }
+
+        return copy;
     }
 
     /// <summary>创建背包数据的深拷贝, 避免快照被外部修改</summary>
@@ -3514,7 +3624,10 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 deadlineAge = mission.deadlineAge,
                 deadlineMonth = mission.deadlineMonth,
                 targetItemId = mission.targetItemId,
-                targetItemCount = mission.targetItemCount
+                targetItemCount = mission.targetItemCount,
+                awaitingSelectTarget = mission.awaitingSelectTarget,
+                selectTargetIndex = mission.selectTargetIndex,
+                resolvedSelectTarget = mission.resolvedSelectTarget ?? string.Empty
             });
         }
 

@@ -25,7 +25,12 @@ public static class MissionAPI
 
     private const string CollectTargetType = "collect";
     private const string SubmitTargetType = "submit";
+    private const string SelectTargetType = "select";
+    /// <summary>主界面测试按钮手动开启，不参与自动接取。</summary>
+    private const int DaughterBranchTestMissionId = 10000;
     private const string UnlockedHomeIdRangeCountPrefix = "unlockedHomeIdRangeCount:";
+    private const string MissionCompletedConditionPrefix = "mission:";
+    private const string MissionSelectConditionPrefix = "missionSelect:";
 
     private static PlayerInfoManager _playerInfoManager;
     private static bool _isInitialized;
@@ -90,6 +95,113 @@ public static class MissionAPI
         BroadcastSimulationCoinBalance(force: true);
         SynchronizeAdvanceTurnMissions();
         CheckDeadlines();
+    }
+
+    /// <summary>按配置 ID 开启任务（调试或脚本入口）。</summary>
+    public static bool TryStartMissionById(int missionId, bool playStartDialogue = true)
+    {
+        if (!_isInitialized ||
+            !TryGetMissionConfig(missionId.ToString(), out cfg.Mission missionConfig))
+        {
+            return false;
+        }
+
+        string missionIdText = missionId.ToString();
+        if (MissionManager.GetMission(missionIdText) != null)
+        {
+            return false;
+        }
+
+        if (IsSelectTargetType(missionConfig) &&
+            MissionTimings.TryGetValue(missionIdText, out PlayerMissionData pendingData) &&
+            pendingData.awaitingSelectTarget)
+        {
+            return false;
+        }
+
+        StartMission(missionConfig, playStartDialogue);
+        return IsSelectTargetType(missionConfig)
+            ? MissionTimings.ContainsKey(missionIdText)
+            : MissionManager.GetMission(missionIdText) != null;
+    }
+
+    /// <summary>对话选项绑定 select 任务时，根据索引确定任务目标。</summary>
+    public static bool TryApplyMissionSelectTarget(string missionId, int selectTargetIndex)
+    {
+        if (!_isInitialized ||
+            string.IsNullOrEmpty(missionId) ||
+            selectTargetIndex < 0 ||
+            !MissionTimings.TryGetValue(missionId, out PlayerMissionData missionData) ||
+            !missionData.awaitingSelectTarget ||
+            !TryGetMissionConfig(missionId, out cfg.Mission missionConfig) ||
+            !IsSelectTargetType(missionConfig))
+        {
+            return false;
+        }
+
+        if (!TryGetSelectTargetSegment(
+                missionConfig.SelectTarget,
+                selectTargetIndex,
+                out string resolvedTarget))
+        {
+            Debug.LogError(
+                $"[任务系统] select 任务目标索引无效: [{missionId}], index=[{selectTargetIndex}]");
+            return false;
+        }
+
+        missionData.awaitingSelectTarget = false;
+        missionData.selectTargetIndex = selectTargetIndex;
+        missionData.resolvedSelectTarget = resolvedTarget;
+        if (!TryParseItemTarget(
+                resolvedTarget.Contains(";")
+                    ? resolvedTarget.Split(';')[0]
+                    : resolvedTarget,
+                out int targetItemId,
+                out int targetItemCount))
+        {
+            Debug.LogError(
+                $"[任务系统] select 任务目标解析失败: [{missionId}], [{resolvedTarget}]");
+            missionData.awaitingSelectTarget = true;
+            return false;
+        }
+
+        missionData.targetItemId = targetItemId;
+        missionData.targetItemCount = targetItemCount;
+        _isSynchronizingMissions = true;
+        try
+        {
+            _playerInfoManager.RecordCompletedMissionSelectOutcome(
+                missionId,
+                selectTargetIndex);
+        }
+        finally
+        {
+            _isSynchronizingMissions = false;
+        }
+
+        if (!MissionProtoManager.GetInstance().TryCreateMissionProto(
+                missionConfig,
+                missionData.targetItemId,
+                missionData.targetItemCount,
+                resolvedTarget,
+                out MissionPrototype<MissionMessage> missionProto))
+        {
+            missionData.awaitingSelectTarget = true;
+            return false;
+        }
+
+        MissionTimings[missionId] = missionData;
+        if (!MissionManager.StartMission(missionProto))
+        {
+            missionData.awaitingSelectTarget = true;
+            return false;
+        }
+
+        SaveMissions();
+        SynchronizeSubmitMissionProgresses();
+        BroadcastSimulationCoinBalance(force: true);
+        SynchronizeAdvanceTurnMissions();
+        return true;
     }
 
     /// <summary>广播游戏任务消息</summary>
@@ -230,6 +342,11 @@ public static class MissionAPI
         string targetType = string.IsNullOrWhiteSpace(missionConfig.TargetType)
             ? CollectTargetType
             : missionConfig.TargetType.Trim();
+        if (string.Equals(targetType, SelectTargetType, StringComparison.OrdinalIgnoreCase))
+        {
+            targetType = CollectTargetType;
+        }
+
         if (string.Equals(targetType, CollectTargetType, StringComparison.OrdinalIgnoreCase))
         {
             return true;
@@ -268,9 +385,23 @@ public static class MissionAPI
         {
             PlayerMissionData data = missionData[i];
             if (data == null || string.IsNullOrEmpty(data.missionId) ||
-                !TryGetMissionConfig(data.missionId, out cfg.Mission missionConfig) ||
-                !MissionProtoManager.GetInstance().TryCreateMissionProto(
-                    missionConfig, data.targetItemId, data.targetItemCount,
+                !TryGetMissionConfig(data.missionId, out cfg.Mission missionConfig))
+            {
+                continue;
+            }
+
+            if (data.awaitingSelectTarget)
+            {
+                MissionTimings[data.missionId] = CreateMissionData(missionConfig, data);
+                continue;
+            }
+
+            string resolvedItemTarget = data.resolvedSelectTarget ?? string.Empty;
+            if (!MissionProtoManager.GetInstance().TryCreateMissionProto(
+                    missionConfig,
+                    data.targetItemId,
+                    data.targetItemCount,
+                    resolvedItemTarget,
                     out MissionPrototype<MissionMessage> missionProto))
             {
                 continue;
@@ -326,7 +457,8 @@ public static class MissionAPI
             for (int i = 0; i < configs.Count; i++)
             {
                 cfg.Mission missionConfig = configs[i];
-                if (missionConfig.Id == DragonBoatPromotionMissionId)
+                if (missionConfig.Id == DragonBoatPromotionMissionId ||
+                    missionConfig.Id == DaughterBranchTestMissionId)
                 {
                     continue;
                 }
@@ -410,116 +542,140 @@ public static class MissionAPI
             return allowInitialMissions;
         }
 
-        string[] conditions = condition.Split(';');
-        for (int i = 0; i < conditions.Length; i++)
+        string[] conditionGroups = condition.Split(';');
+        for (int i = 0; i < conditionGroups.Length; i++)
         {
-            string itemCondition = conditions[i].Trim();
-            if (itemCondition.StartsWith("currentMonth:"))
+            if (IsConditionGroupMet(conditionGroups[i], missionConfig, playerData))
             {
-                if (int.TryParse(itemCondition.Substring(13), out int requiredMonth) &&
-                    requiredMonth >= 1 &&
-                    requiredMonth <= 12 &&
-                    _playerInfoManager.CurrentMonth == requiredMonth)
-                {
-                    return true;
-                }
-
-                continue;
+                return true;
             }
-
-            if (itemCondition.StartsWith("date:") || itemCondition.StartsWith("force:"))
-            {
-                int separatorIndex = itemCondition.IndexOf(':');
-                if (TryParseYearMonth(
-                        itemCondition.Substring(separatorIndex + 1),
-                        out int age,
-                        out int month) &&
-                    IsAtOrAfter(_playerInfoManager.CurrentAge, _playerInfoManager.CurrentMonth, age, month))
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (itemCondition.StartsWith("mission:"))
-            {
-                string requiredMissionId = itemCondition.Substring(8);
-                if (_playerInfoManager.GetSnapshot().completedMissionIds.Contains(requiredMissionId))
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (itemCondition.StartsWith("healthBelow:"))
-            {
-                if (int.TryParse(itemCondition.Substring(12), out int health) &&
-                    _playerInfoManager.Health <= health)
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (itemCondition.StartsWith("satisfactionAtLeast:"))
-            {
-                if (float.TryParse(
-                        itemCondition.Substring(20),
-                        out float requiredSatisfaction) &&
-                    _playerInfoManager.Satisfaction >= requiredSatisfaction)
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (itemCondition.StartsWith(UnlockedHomeIdRangeCountPrefix))
-            {
-                if (TryParseUnlockedHomeIdRangeCount(
-                        itemCondition.Substring(UnlockedHomeIdRangeCountPrefix.Length),
-                        out int minimumHomeId,
-                        out int maximumHomeId,
-                        out int requiredCount) &&
-                    HasAtLeastUnlockedHomesInRange(
-                        playerData.unlockedHomeIds,
-                        minimumHomeId,
-                        maximumHomeId,
-                        requiredCount))
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (itemCondition == "wheelCoinObtained")
-            {
-                if (_playerInfoManager.HasUnlockedMysteryWheelLottery)
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            if (missionConfig.Message == "Health" &&
-                int.TryParse(itemCondition, out int legacyHealth))
-            {
-                if (_playerInfoManager.Health <= legacyHealth)
-                {
-                    return true;
-                }
-
-                continue;
-            }
-
-            Debug.LogWarning("[任务系统] 不支持的开启条件: " + itemCondition);
         }
 
+        return false;
+    }
+
+    /// <summary>一组条件用 &amp; 连接，全部成立才为真。</summary>
+    private static bool IsConditionGroupMet(
+        string conditionGroup,
+        cfg.Mission missionConfig,
+        PlayerInfoData playerData)
+    {
+        if (string.IsNullOrWhiteSpace(conditionGroup))
+        {
+            return false;
+        }
+
+        string[] clauses = conditionGroup.Split('&');
+        bool hasClause = false;
+        for (int i = 0; i < clauses.Length; i++)
+        {
+            string clause = clauses[i].Trim();
+            if (string.IsNullOrEmpty(clause))
+            {
+                return false;
+            }
+
+            hasClause = true;
+            if (!IsConditionClauseMet(clause, missionConfig, playerData))
+            {
+                return false;
+            }
+        }
+
+        return hasClause;
+    }
+
+    private static bool IsConditionClauseMet(
+        string itemCondition,
+        cfg.Mission missionConfig,
+        PlayerInfoData playerData)
+    {
+        if (itemCondition.StartsWith("currentMonth:"))
+        {
+            return int.TryParse(itemCondition.Substring(13), out int requiredMonth) &&
+                requiredMonth >= 1 &&
+                requiredMonth <= 12 &&
+                _playerInfoManager.CurrentMonth == requiredMonth;
+        }
+
+        if (itemCondition.StartsWith("date:") || itemCondition.StartsWith("force:"))
+        {
+            int separatorIndex = itemCondition.IndexOf(':');
+            return TryParseYearMonth(
+                    itemCondition.Substring(separatorIndex + 1),
+                    out int age,
+                    out int month) &&
+                IsAtOrAfter(_playerInfoManager.CurrentAge, _playerInfoManager.CurrentMonth, age, month);
+        }
+
+        if (itemCondition.StartsWith(
+                MissionSelectConditionPrefix,
+                StringComparison.Ordinal))
+        {
+            string payload = itemCondition.Substring(MissionSelectConditionPrefix.Length);
+            string[] parts = payload.Split(',');
+            string parentMissionId = parts.Length > 0 ? parts[0].Trim() : string.Empty;
+            return parts.Length == 2 &&
+                !string.IsNullOrEmpty(parentMissionId) &&
+                int.TryParse(parts[1].Trim(), out int requiredSelectIndex) &&
+                playerData.completedMissionIds.Contains(parentMissionId) &&
+                _playerInfoManager.TryGetCompletedMissionSelectIndex(
+                    parentMissionId,
+                    out int completedSelectIndex) &&
+                completedSelectIndex == requiredSelectIndex;
+        }
+
+        if (itemCondition.StartsWith(
+                MissionCompletedConditionPrefix,
+                StringComparison.Ordinal))
+        {
+            string requiredMissionId = itemCondition
+                .Substring(MissionCompletedConditionPrefix.Length)
+                .Trim();
+            return int.TryParse(requiredMissionId, out int parsedMissionId) &&
+                playerData.completedMissionIds.Contains(parsedMissionId.ToString());
+        }
+
+        if (itemCondition.StartsWith("healthBelow:"))
+        {
+            return int.TryParse(itemCondition.Substring(12), out int health) &&
+                _playerInfoManager.Health <= health;
+        }
+
+        if (itemCondition.StartsWith("satisfactionAtLeast:"))
+        {
+            return float.TryParse(
+                    itemCondition.Substring(20),
+                    out float requiredSatisfaction) &&
+                _playerInfoManager.Satisfaction >= requiredSatisfaction;
+        }
+
+        if (itemCondition.StartsWith(UnlockedHomeIdRangeCountPrefix))
+        {
+            return TryParseUnlockedHomeIdRangeCount(
+                    itemCondition.Substring(UnlockedHomeIdRangeCountPrefix.Length),
+                    out int minimumHomeId,
+                    out int maximumHomeId,
+                    out int requiredCount) &&
+                HasAtLeastUnlockedHomesInRange(
+                    playerData.unlockedHomeIds,
+                    minimumHomeId,
+                    maximumHomeId,
+                    requiredCount);
+        }
+
+        if (itemCondition == "wheelCoinObtained")
+        {
+            return _playerInfoManager.HasUnlockedMysteryWheelLottery;
+        }
+
+        if (missionConfig.Message == "Health" &&
+            int.TryParse(itemCondition, out int legacyHealth))
+        {
+            return _playerInfoManager.Health <= legacyHealth;
+        }
+
+        Debug.LogWarning("[任务系统] 不支持的开启条件: " + itemCondition);
         return false;
     }
 
@@ -528,6 +684,12 @@ public static class MissionAPI
         if (missionConfig.Id == DragonBoatPromotionMissionId &&
             !_dragonBoatPromotionMayButtonStartAuthorized)
         {
+            return;
+        }
+
+        if (IsSelectTargetType(missionConfig))
+        {
+            StartSelectMission(missionConfig, playStartDialogue);
             return;
         }
 
@@ -573,6 +735,36 @@ public static class MissionAPI
         }
 
         MissionTimings.Remove(missionId);
+    }
+
+    private static void StartSelectMission(cfg.Mission missionConfig, bool playStartDialogue)
+    {
+        string missionId = missionConfig.Id.ToString();
+        if (MissionManager.GetMission(missionId) != null)
+        {
+            return;
+        }
+
+        if (MissionTimings.TryGetValue(missionId, out PlayerMissionData existingData) &&
+            existingData.awaitingSelectTarget)
+        {
+            return;
+        }
+
+        PlayerMissionData missionData = CreateMissionData(missionConfig, null);
+        missionData.awaitingSelectTarget = true;
+        missionData.selectTargetIndex = -1;
+        missionData.resolvedSelectTarget = string.Empty;
+        missionData.targetItemId = 0;
+        missionData.targetItemCount = 0;
+        MissionTimings[missionId] = missionData;
+        SavePendingSelectMissions();
+        Debug.Log("[任务系统] 开启 select 任务(待选项): " + missionConfig.Id + " - " + missionConfig.Name);
+        ShowMissionStartedTip(missionConfig);
+        if (playStartDialogue)
+        {
+            MissionDialogueService.TryPlayStartDialogue(missionConfig);
+        }
     }
 
     private static void ShowMissionStartedTip(cfg.Mission missionConfig)
@@ -969,7 +1161,8 @@ public static class MissionAPI
             SetDeadline(missionConfig.Deadline, data);
         }
 
-        if (missionConfig.Message == "Item" &&
+        if (!IsSelectTargetType(missionConfig) &&
+            missionConfig.Message == "Item" &&
             data.targetItemId <= 0 &&
             !TryParseItemTarget(
                 missionConfig.Target,
@@ -977,6 +1170,13 @@ public static class MissionAPI
                 out data.targetItemCount))
         {
             Debug.LogWarning($"[任务系统] 物品任务目标配置无效: [{missionConfig.Id}], [{missionConfig.Target}]");
+        }
+
+        if (savedData != null)
+        {
+            data.awaitingSelectTarget = savedData.awaitingSelectTarget;
+            data.selectTargetIndex = savedData.selectTargetIndex;
+            data.resolvedSelectTarget = savedData.resolvedSelectTarget ?? string.Empty;
         }
 
         return data;
@@ -1030,6 +1230,8 @@ public static class MissionAPI
             missionData.Add(data);
         }
 
+        AppendPendingSelectMissions(missionData);
+
         _isSynchronizingMissions = true;
         try
         {
@@ -1041,6 +1243,121 @@ public static class MissionAPI
         }
     }
 
+    private static void SavePendingSelectMissions()
+    {
+        List<PlayerMissionData> missionData = new List<PlayerMissionData>();
+        AppendPendingSelectMissions(missionData);
+        if (missionData.Count == 0)
+        {
+            return;
+        }
+
+        List<PlayerMissionData> merged = new List<PlayerMissionData>(
+            _playerInfoManager.GetSnapshot().activeMissions ?? new List<PlayerMissionData>());
+        for (int i = 0; i < missionData.Count; i++)
+        {
+            PlayerMissionData pending = missionData[i];
+            int existingIndex = merged.FindIndex(item => item.missionId == pending.missionId);
+            if (existingIndex >= 0)
+            {
+                merged[existingIndex] = pending;
+            }
+            else
+            {
+                merged.Add(pending);
+            }
+        }
+
+        _isSynchronizingMissions = true;
+        try
+        {
+            _playerInfoManager.SetActiveMissions(merged);
+        }
+        finally
+        {
+            _isSynchronizingMissions = false;
+        }
+    }
+
+    private static void AppendPendingSelectMissions(List<PlayerMissionData> missionData)
+    {
+        foreach (KeyValuePair<string, PlayerMissionData> pair in MissionTimings)
+        {
+            PlayerMissionData timing = pair.Value;
+            if (timing == null ||
+                !timing.awaitingSelectTarget ||
+                MissionManager.GetMission(pair.Key) != null)
+            {
+                continue;
+            }
+
+            if (missionData.Exists(item => item.missionId == timing.missionId))
+            {
+                continue;
+            }
+
+            missionData.Add(CreateMissionDataForSave(timing));
+        }
+    }
+
+    private static bool IsSelectTargetType(cfg.Mission missionConfig)
+    {
+        return missionConfig != null &&
+            string.Equals(
+                missionConfig.TargetType,
+                SelectTargetType,
+                StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// 按 select 分支取任务描述。desc 用分号分段，段序与 selectTarget 索引一致；
+    /// 没有分号或尚未选定分支时使用第一段。
+    /// </summary>
+    public static string ResolveMissionDescription(cfg.Mission missionConfig, string missionId)
+    {
+        if (missionConfig == null || string.IsNullOrEmpty(missionConfig.Desc))
+        {
+            return string.Empty;
+        }
+
+        string[] segments = missionConfig.Desc.Split(';');
+        if (segments.Length <= 1)
+        {
+            return missionConfig.Desc;
+        }
+
+        int segmentIndex = 0;
+        if (TryResolveSelectTargetIndex(missionId, out int selectTargetIndex) &&
+            selectTargetIndex >= 0 &&
+            selectTargetIndex < segments.Length)
+        {
+            segmentIndex = selectTargetIndex;
+        }
+
+        return segments[segmentIndex].Trim();
+    }
+
+    private static bool TryGetSelectTargetSegment(
+        string selectTarget,
+        int index,
+        out string segment)
+    {
+        segment = string.Empty;
+        if (string.IsNullOrWhiteSpace(selectTarget) || index < 0)
+        {
+            return false;
+        }
+
+        string[] parts = selectTarget.Split('&');
+        if (index >= parts.Length)
+        {
+            return false;
+        }
+
+        segment = parts[index].Trim();
+        return !string.IsNullOrEmpty(segment);
+    }
+
     private static void MarkMissionCompleted(string missionId)
     {
         List<string> completedMissionIds = _playerInfoManager.GetSnapshot().completedMissionIds;
@@ -1050,6 +1367,7 @@ public static class MissionAPI
         }
 
         completedMissionIds.Add(missionId);
+        bool restoreMissionSynchronization = !_isSynchronizingMissions;
         _isSynchronizingMissions = true;
         try
         {
@@ -1057,8 +1375,71 @@ public static class MissionAPI
         }
         finally
         {
-            _isSynchronizingMissions = false;
+            if (restoreMissionSynchronization)
+            {
+                _isSynchronizingMissions = false;
+            }
         }
+    }
+
+    private static void RecordMissionSelectOutcomeIfNeeded(string missionId)
+    {
+        if (!_isInitialized ||
+            _playerInfoManager == null ||
+            string.IsNullOrEmpty(missionId) ||
+            !TryResolveSelectTargetIndex(missionId, out int selectTargetIndex))
+        {
+            return;
+        }
+
+        _playerInfoManager.RecordCompletedMissionSelectOutcome(
+            missionId,
+            selectTargetIndex);
+    }
+
+    private static bool TryResolveSelectTargetIndex(string missionId, out int selectTargetIndex)
+    {
+        selectTargetIndex = -1;
+        if (string.IsNullOrEmpty(missionId))
+        {
+            return false;
+        }
+
+        if (MissionTimings.TryGetValue(missionId, out PlayerMissionData timing) &&
+            timing != null &&
+            timing.selectTargetIndex >= 0)
+        {
+            selectTargetIndex = timing.selectTargetIndex;
+            return true;
+        }
+
+        if (_playerInfoManager.TryGetCompletedMissionSelectIndex(missionId, out selectTargetIndex) &&
+            selectTargetIndex >= 0)
+        {
+            return true;
+        }
+
+        List<PlayerMissionData> activeMissions = _playerInfoManager.GetSnapshot().activeMissions;
+        if (activeMissions == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < activeMissions.Count; i++)
+        {
+            PlayerMissionData activeMission = activeMissions[i];
+            if (activeMission == null ||
+                activeMission.missionId != missionId ||
+                activeMission.selectTargetIndex < 0)
+            {
+                continue;
+            }
+
+            selectTargetIndex = activeMission.selectTargetIndex;
+            return true;
+        }
+
+        return false;
     }
 
     private static void ClearRuntimeMissionsWithoutSave()
@@ -1202,7 +1583,13 @@ public static class MissionAPI
             deadlineAge = source.deadlineAge,
             deadlineMonth = source.deadlineMonth,
             targetItemId = source.targetItemId,
-            targetItemCount = source.targetItemCount
+            targetItemCount = source.targetItemCount,
+            awaitingSelectTarget = source.awaitingSelectTarget,
+            selectTargetIndex = source.selectTargetIndex,
+            resolvedSelectTarget = source.resolvedSelectTarget ?? string.Empty,
+            requirementProgress = source.requirementProgress == null
+                ? new List<int>()
+                : new List<int>(source.requirementProgress)
         };
     }
 
@@ -1221,10 +1608,23 @@ public static class MissionAPI
                 TryGetMissionConfig(mission.id, out missionConfig);
             }
 
-            MissionTimings.Remove(mission.id);
             if (isFinished)
             {
-                MarkMissionCompleted(mission.id);
+                _isSynchronizingMissions = true;
+                try
+                {
+                    RecordMissionSelectOutcomeIfNeeded(mission.id);
+                    MissionTimings.Remove(mission.id);
+                    MarkMissionCompleted(mission.id);
+                }
+                finally
+                {
+                    _isSynchronizingMissions = false;
+                }
+            }
+            else
+            {
+                MissionTimings.Remove(mission.id);
             }
 
             SaveMissions();

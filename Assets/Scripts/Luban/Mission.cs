@@ -31,6 +31,7 @@ public sealed partial class Mission : Luban.BeanBase
         Condition = (string)_obj.GetValue("condition");
         Target = (string)_obj.GetValue("target");
         TargetType = (string)_obj.GetValue("targetType");
+        SelectTarget = (string)_obj.GetValue("selectTarget");
         RandomTarget = (string)_obj.GetValue("randomTarget");
         Reward = (string)_obj.GetValue("reward");
         Deadline = (string)_obj.GetValue("deadline");
@@ -54,7 +55,7 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string Name;
     /// <summary>
-    /// 任务描述
+    /// 任务描述；分号分段，段序与 select 分支索引一致
     /// </summary>
     public readonly string Desc;
     /// <summary>
@@ -66,7 +67,7 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly int Icon;
     /// <summary>
-    /// 任务开启条件
+    /// 任务开启条件；分号为或，与号为且。missionSelect:任务Id,索引（父任务已完成且选对分支）
     /// </summary>
     public readonly string Condition;
     /// <summary>
@@ -74,9 +75,13 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string Target;
     /// <summary>
-    /// 任务目标类型（collect 收集，submit 领取时提交）
+    /// 任务目标类型（collect 收集，submit 领取时提交，select 对话选项决定）
     /// </summary>
     public readonly string TargetType;
+    /// <summary>
+    /// select 类型任务目标池（&amp; 分段，; 多条）
+    /// </summary>
+    public readonly string SelectTarget;
     /// <summary>
     /// 任务目标随机池
     /// </summary>
@@ -102,7 +107,7 @@ public sealed partial class Mission : Luban.BeanBase
     /// </summary>
     public readonly string DialogueEnd;
     /// <summary>
-    /// 娓告垙缁撶畻鍙幏寰楃殑鍥炲繂鐐规暟
+    /// 完成后获得的时光点数
     /// </summary>
     public readonly int SettlementMemoryPoint;
 
@@ -125,6 +130,7 @@ public sealed partial class Mission : Luban.BeanBase
         + "condition:" + Condition + ","
         + "target:" + Target + ","
         + "targetType:" + TargetType + ","
+        + "selectTarget:" + SelectTarget + ","
         + "randomTarget:" + RandomTarget + ","
         + "reward:" + Reward + ","
         + "deadline:" + Deadline + ","

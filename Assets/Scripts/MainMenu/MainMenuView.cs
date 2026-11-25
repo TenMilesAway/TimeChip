@@ -12,6 +12,7 @@ public class MainMenuView : UIBasePanel
     private const int HomeTutorialCompleteMissionId = 1003;
     private const int CommunityReportMissionId = 201;
     private const int ClinicConsultationMissionId = 202;
+    private const int DaughterBranchTestMissionId = 10000;
     [SerializeField] private Text _ageText;
     [SerializeField] private Text _monthText;
     [SerializeField] private Text _healthText;
@@ -27,6 +28,7 @@ public class MainMenuView : UIBasePanel
     [SerializeField] private Button _settingButton;
     [SerializeField] private Button _saveButton;
     [SerializeField] private Button _gameTest;
+    [SerializeField] private Button _dialogueTest;
 
     [SerializeField] private Transform _buffParent;
     [SerializeField] private GameObject _goLoad;
@@ -73,6 +75,11 @@ public class MainMenuView : UIBasePanel
         if (_gameTest != null)
         {
             _gameTest.onClick.AddListener(OpenKitchenView);
+        }
+
+        if (_dialogueTest != null)
+        {
+            _dialogueTest.onClick.AddListener(PlayBranchDaughterTestDialogue);
         }
 
         _btnShowMission.onClick.AddListener(ToggleMissions);
@@ -172,6 +179,11 @@ public class MainMenuView : UIBasePanel
         if (_gameTest != null)
         {
             _gameTest.onClick.RemoveListener(OpenKitchenView);
+        }
+
+        if (_dialogueTest != null)
+        {
+            _dialogueTest.onClick.RemoveListener(PlayBranchDaughterTestDialogue);
         }
 
         if (_btnShowMission != null)
@@ -293,6 +305,17 @@ public class MainMenuView : UIBasePanel
     {
         GameManager.Audio.Play(AudioDefine.SFXClick);
         UIManager.GetInstance().OpenPanel(GlobalDefine.KitchenView);
+    }
+
+    private void PlayBranchDaughterTestDialogue()
+    {
+        GameManager.Audio.Play(AudioDefine.SFXClick);
+        if (!MissionAPI.TryStartMissionById(DaughterBranchTestMissionId))
+        {
+            Debug.LogWarning(
+                $"[主界面] 测试任务未能开启: {DaughterBranchTestMissionId}",
+                this);
+        }
     }
 
     private void SaveGame()

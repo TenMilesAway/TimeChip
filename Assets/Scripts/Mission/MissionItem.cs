@@ -23,7 +23,8 @@ public class MissionItem : MonoBehaviour
         _requestVersion++;
         gameObject.SetActive(false);
         _txtTitle.text = missionConfig.Name;
-        _txtDetail.text = missionConfig.Desc;
+        string missionDescription = MissionAPI.ResolveMissionDescription(missionConfig, mission.id);
+        _txtDetail.text = missionDescription;
 
         MissionProgress[] progresses = mission.Progresses;
         int target = progresses.Length > 0
@@ -42,7 +43,7 @@ public class MissionItem : MonoBehaviour
             if (targetItem != null)
             {
                 _txtDetail.text = string.Format(
-                    missionConfig.Desc,
+                    missionDescription,
                     targetItem.Name,
                     targetItemCount);
             }
@@ -50,6 +51,7 @@ public class MissionItem : MonoBehaviour
         else if (missionConfig.Message == "FishCatch")
         {
             if (TryGetFishCatchSummary(
+                    missionDescription,
                     missionConfig,
                     progresses,
                     out string description,
@@ -255,13 +257,14 @@ public class MissionItem : MonoBehaviour
     }
 
     private bool TryGetFishCatchSummary(
+        string missionDescription,
         cfg.Mission missionConfig,
         MissionProgress[] progresses,
         out string description,
         out int current,
         out int target)
     {
-        description = missionConfig.Desc;
+        description = missionDescription;
         current = 0;
         target = 0;
         System.Text.StringBuilder targetText = new System.Text.StringBuilder();
@@ -306,7 +309,7 @@ public class MissionItem : MonoBehaviour
             return false;
         }
 
-        description = string.Format(missionConfig.Desc, targetText, target);
+        description = string.Format(missionDescription, targetText, target);
         return true;
     }
 }

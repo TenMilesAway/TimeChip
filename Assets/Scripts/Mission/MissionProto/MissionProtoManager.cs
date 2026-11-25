@@ -38,6 +38,21 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         int targetItemCount,
         out MissionPrototype<MissionMessage> missionProto)
     {
+        return TryCreateMissionProto(
+            missionConfig,
+            targetItemId,
+            targetItemCount,
+            string.Empty,
+            out missionProto);
+    }
+
+    public bool TryCreateMissionProto(
+        cfg.Mission missionConfig,
+        int targetItemId,
+        int targetItemCount,
+        string resolvedItemTarget,
+        out MissionPrototype<MissionMessage> missionProto)
+    {
         missionProto = null;
         if (missionConfig == null)
         {
@@ -46,12 +61,23 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
 
         bool isItemMission = missionConfig.Message == "Item";
         bool isFishCatchMission = missionConfig.Message == "FishCatch";
+        bool hasResolvedItemTarget = !string.IsNullOrWhiteSpace(resolvedItemTarget);
         int target = 0;
-        if ((!isItemMission && !isFishCatchMission &&
-             !int.TryParse(missionConfig.Target, out target)) ||
-            (isItemMission && (targetItemId <= 0 || targetItemCount <= 0)))
+        if (!isItemMission && !isFishCatchMission && !int.TryParse(missionConfig.Target, out target))
         {
             Debug.LogWarning("[任务系统] 任务目标必须是正整数: " + missionConfig?.Id);
+            return false;
+        }
+
+        if (isItemMission &&
+            !hasResolvedItemTarget &&
+            (targetItemId <= 0 || targetItemCount <= 0) &&
+            !TryCreateItemRequires(
+                missionConfig.Target,
+                true,
+                out MissionRequire<MissionMessage>[] _))
+        {
+            Debug.LogWarning("[任务系统] 物品任务目标配置无效: " + missionConfig?.Id);
             return false;
         }
 
@@ -145,14 +171,45 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
         }
         else if (isItemMission)
         {
-            bool isSubmitTarget = string.Equals(
+            bool trackWhileInProgress = !string.Equals(
                 missionConfig.TargetType,
                 "submit",
                 System.StringComparison.OrdinalIgnoreCase);
-            missionRequire = new MissionRequireItem(
-                targetItemId,
-                targetItemCount,
-                !isSubmitTarget);
+            string itemTargetText = hasResolvedItemTarget
+                ? resolvedItemTarget
+                : missionConfig.Target;
+            if (hasResolvedItemTarget ||
+                (!string.IsNullOrWhiteSpace(itemTargetText) &&
+                 itemTargetText.Contains(";")))
+            {
+                if (!TryCreateItemRequires(
+                        itemTargetText,
+                        trackWhileInProgress,
+                        out missionRequires))
+                {
+                    return false;
+                }
+
+                missionRequire = null;
+            }
+            else if (targetItemId > 0 && targetItemCount > 0)
+            {
+                missionRequire = new MissionRequireItem(
+                    targetItemId,
+                    targetItemCount,
+                    trackWhileInProgress);
+            }
+            else if (!TryCreateItemRequires(
+                         itemTargetText,
+                         trackWhileInProgress,
+                         out missionRequires))
+            {
+                return false;
+            }
+            else
+            {
+                missionRequire = null;
+            }
         }
         else
         {
@@ -215,6 +272,50 @@ public class MissionProtoManager : Singleton<MissionProtoManager>
             }
 
             requires.Add(new MissionRequireFishCatch(fishItemId, targetCount));
+        }
+
+        missionRequires = requires.ToArray();
+        return missionRequires.Length > 0;
+    }
+
+    private static bool TryCreateItemRequires(
+        string targetText,
+        bool trackWhileInProgress,
+        out MissionRequire<MissionMessage>[] missionRequires)
+    {
+        missionRequires = null;
+        if (string.IsNullOrWhiteSpace(targetText))
+        {
+            return false;
+        }
+
+        string[] entries = targetText.Split(';');
+        List<MissionRequire<MissionMessage>> requires =
+            new List<MissionRequire<MissionMessage>>(entries.Length);
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] values = entries[i].Split(',');
+            if (values.Length != 2 ||
+                !int.TryParse(values[0], out int itemId) ||
+                !int.TryParse(values[1], out int targetCount) ||
+                itemId <= 0 ||
+                targetCount <= 0)
+            {
+                Debug.LogWarning($"[任务系统] 道具任务目标配置无效: [{entries[i]}]");
+                return false;
+            }
+
+            cfg.Item item = DataTableMananger.GetInstance()
+                .Tables
+                .ItemTable
+                .GetOrDefault(itemId);
+            if (item == null)
+            {
+                Debug.LogWarning($"[任务系统] 道具任务目标不存在: [{itemId}]");
+                return false;
+            }
+
+            requires.Add(new MissionRequireItem(itemId, targetCount, trackWhileInProgress));
         }
 
         missionRequires = requires.ToArray();

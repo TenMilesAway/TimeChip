@@ -752,10 +752,13 @@ public class CommunityView : UIBasePanel
             .ItemTable
             .GetOrDefault(targetItemId);
         string targetName = targetItem == null ? targetItemId.ToString() : targetItem.Name;
+        string descriptionTemplate = MissionAPI.ResolveMissionDescription(
+            missionConfig,
+            missionConfig.Id.ToString());
         string missionDescription;
         if (missionConfig.Message == "GameStamp")
         {
-            missionDescription = missionConfig.Desc;
+            missionDescription = descriptionTemplate;
         }
         else if (missionConfig.Message == "FishCatch")
         {
@@ -766,14 +769,14 @@ public class CommunityView : UIBasePanel
             }
 
             missionDescription = string.Format(
-                missionConfig.Desc,
+                descriptionTemplate,
                 $"<color=#00FFFA>{targetName}</color>",
                 targetItemCount);
         }
         else
         {
             missionDescription = string.Format(
-                missionConfig.Desc,
+                descriptionTemplate,
                 targetName,
                 targetItemCount);
         }

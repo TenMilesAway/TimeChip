@@ -15,6 +15,10 @@ namespace DS.ScriptableObjects
         [field: SerializeField] public DSDialogueType DialogueType { get; set; }
         [field: SerializeField] public DSDialogueSpeaker Speaker { get; set; }
         [field: SerializeField] public string SpeakerExpressionPath { get; set; }
+        /// <summary>为 true 时，选中通向本节点的选项会写入 select 任务分支索引。</summary>
+        [field: SerializeField] public bool BindSelectTarget { get; set; }
+        /// <summary>select 任务 selectTarget 的 &amp; 分段索引。</summary>
+        [field: SerializeField] public int SelectTargetIndex { get; set; } = -1;
         [field: SerializeField] public string Reward { get; set; }
         [field: SerializeField] public bool IsStartingDialogue { get; set; }
 
@@ -25,6 +29,8 @@ namespace DS.ScriptableObjects
             DSDialogueType dialogueType,
             DSDialogueSpeaker speaker,
             string speakerExpressionPath,
+            bool bindSelectTarget,
+            int selectTargetIndex,
             string reward,
             bool isStartingDialogue)
         {
@@ -34,6 +40,8 @@ namespace DS.ScriptableObjects
             DialogueType = dialogueType;
             Speaker = speaker;
             SpeakerExpressionPath = speakerExpressionPath;
+            BindSelectTarget = bindSelectTarget;
+            SelectTargetIndex = selectTargetIndex;
             Reward = reward;
             IsStartingDialogue = isStartingDialogue;
         }

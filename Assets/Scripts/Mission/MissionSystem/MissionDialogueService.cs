@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DS.Data;
+using DS.Enumerations;
 using DS.ScriptableObjects;
 using UnityEngine;
 
@@ -156,8 +157,9 @@ public static class MissionDialogueService
                 continue;
             }
 
+            DialoguePlaybackContext playbackContext = new DialoguePlaybackContext();
             List<MissionDialogueLineData> lines =
-                BuildDialogueLines(container, groupIndex, out string groupName);
+                BuildDialogueLines(container, groupIndex, playbackContext, out string groupName);
             if (lines.Count == 0)
             {
                 Debug.LogWarning(
@@ -181,6 +183,13 @@ public static class MissionDialogueService
                     {
                         title = groupName,
                         lines = lines,
+                        onSelectChoice = choiceIndex =>
+                            ResolveChoiceLines(playbackContext, choiceIndex),
+                        onApplySelectTarget = request.MissionConfig == null
+                            ? null
+                            : selectTargetIndex => MissionAPI.TryApplyMissionSelectTarget(
+                                request.MissionConfig.Id.ToString(),
+                                selectTargetIndex),
                         onCompleted = () => OnDialogueCompleted(request)
                     }
                 });
@@ -288,19 +297,19 @@ public static class MissionDialogueService
     private static List<MissionDialogueLineData> BuildDialogueLines(
         DSDialogueContainerSO container,
         int groupIndex,
+        DialoguePlaybackContext playbackContext,
         out string groupName)
     {
         groupName = string.Empty;
-        List<MissionDialogueLineData> lines = new List<MissionDialogueLineData>();
         if (container == null || container.DialogueGroups == null || container.DialogueGroups.Count == 0)
         {
-            return lines;
+            return new List<MissionDialogueLineData>();
         }
 
         List<DSDialogueGroupSO> groups = new List<DSDialogueGroupSO>(container.DialogueGroups.Keys);
         if (groupIndex < 0 || groupIndex >= groups.Count)
         {
-            return lines;
+            return new List<MissionDialogueLineData>();
         }
 
         DSDialogueGroupSO group = groups[groupIndex];
@@ -310,7 +319,7 @@ public static class MissionDialogueService
             dialogues == null ||
             dialogues.Count == 0)
         {
-            return lines;
+            return new List<MissionDialogueLineData>();
         }
 
         DSDialogueSO startDialogue = dialogues.Find(item => item != null && item.IsStartingDialogue);
@@ -319,9 +328,44 @@ public static class MissionDialogueService
             startDialogue = dialogues[0];
         }
 
-        HashSet<DSDialogueSO> visited = new HashSet<DSDialogueSO>();
+        return BuildDialogueLineSegment(startDialogue, playbackContext);
+    }
+
+    private static List<MissionDialogueLineData> ResolveChoiceLines(
+        DialoguePlaybackContext playbackContext,
+        int choiceIndex)
+    {
+        if (playbackContext == null)
+        {
+            return new List<MissionDialogueLineData>();
+        }
+
+        DSDialogueSO branchNode = playbackContext.CurrentBranchNode;
+        playbackContext.CurrentBranchNode = null;
+        if (branchNode == null ||
+            branchNode.Choices == null ||
+            choiceIndex < 0 ||
+            choiceIndex >= branchNode.Choices.Count)
+        {
+            return new List<MissionDialogueLineData>();
+        }
+
+        DSDialogueSO nextDialogue = branchNode.Choices[choiceIndex]?.NextDialogue;
+        return BuildDialogueLineSegment(nextDialogue, playbackContext);
+    }
+
+    private static List<MissionDialogueLineData> BuildDialogueLineSegment(
+        DSDialogueSO startDialogue,
+        DialoguePlaybackContext playbackContext)
+    {
+        List<MissionDialogueLineData> lines = new List<MissionDialogueLineData>();
+        if (startDialogue == null || playbackContext == null)
+        {
+            return lines;
+        }
+
         DSDialogueSO current = startDialogue;
-        while (current != null && visited.Add(current))
+        while (current != null && playbackContext.Visited.Add(current))
         {
             if (!DSDialogueRewardParser.TryParse(
                     current.Reward,
@@ -335,15 +379,27 @@ public static class MissionDialogueService
 
             List<CommonRewardItemData> convertedRewards =
                 ConvertRewards(current.DialogueName, rewards);
-            if (!string.IsNullOrEmpty(current.Text) || convertedRewards.Count > 0)
+            List<MissionDialogueChoiceOptionData> choiceOptions =
+                BuildChoiceOptions(current);
+            bool isBranchNode = IsBranchDialogueNode(current);
+            if (!string.IsNullOrEmpty(current.Text) ||
+                convertedRewards.Count > 0 ||
+                (isBranchNode && choiceOptions.Count > 0))
             {
                 lines.Add(new MissionDialogueLineData
                 {
                     speaker = current.Speaker,
                     expressionPath = current.SpeakerExpressionPath,
                     text = current.Text,
-                    rewards = convertedRewards
+                    rewards = convertedRewards,
+                    choices = isBranchNode ? choiceOptions : null
                 });
+            }
+
+            if (isBranchNode)
+            {
+                playbackContext.CurrentBranchNode = current;
+                break;
             }
 
             if (current.Choices == null ||
@@ -357,6 +413,43 @@ public static class MissionDialogueService
         }
 
         return lines;
+    }
+
+    private static bool IsBranchDialogueNode(DSDialogueSO dialogue)
+    {
+        return dialogue != null &&
+            dialogue.DialogueType == DSDialogueType.MultipleChoice &&
+            dialogue.Choices != null &&
+            dialogue.Choices.Count > 0;
+    }
+
+    private static List<MissionDialogueChoiceOptionData> BuildChoiceOptions(DSDialogueSO dialogue)
+    {
+        List<MissionDialogueChoiceOptionData> choiceOptions = new List<MissionDialogueChoiceOptionData>();
+        if (dialogue?.Choices == null)
+        {
+            return choiceOptions;
+        }
+
+        for (int i = 0; i < dialogue.Choices.Count && choiceOptions.Count < 3; i++)
+        {
+            DSDialogueChoiceData choice = dialogue.Choices[i];
+            if (choice == null || string.IsNullOrEmpty(choice.Text))
+            {
+                continue;
+            }
+
+            choiceOptions.Add(new MissionDialogueChoiceOptionData
+            {
+                text = choice.Text,
+                selectTargetIndex = choice.NextDialogue != null &&
+                    choice.NextDialogue.BindSelectTarget
+                    ? choice.NextDialogue.SelectTargetIndex
+                    : -1
+            });
+        }
+
+        return choiceOptions;
     }
 
     private static List<CommonRewardItemData> ConvertRewards(
@@ -384,6 +477,12 @@ public static class MissionDialogueService
         }
 
         return convertedRewards;
+    }
+
+    private sealed class DialoguePlaybackContext
+    {
+        public HashSet<DSDialogueSO> Visited = new HashSet<DSDialogueSO>();
+        public DSDialogueSO CurrentBranchNode;
     }
 
     private sealed class DialogueRequest
