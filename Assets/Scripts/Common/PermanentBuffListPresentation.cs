@@ -18,15 +18,6 @@ public static class PermanentBuffListPresentation
         { "RareLotteryRewardWeightMultiplier", "稀有奖励权重 " },
     };
 
-    private static readonly Dictionary<string, string> UnlockEffectLines = new Dictionary<string, string>
-    {
-        { "UnlockFishing", "解锁钓鱼" },
-        { "UnlockPort", "解锁沿江港口" },
-        { "UnlockMysteryWheelLottery", "解锁神秘转盘" },
-        { "UnlockBoxLottery", "解锁宝箱抽奖" },
-        { "UnlockCardLottery", "解锁卡牌抽奖" },
-    };
-
     private static readonly string[] EffectTypeDisplayOrder =
     {
         "CommunityExperienceMultiplier",
@@ -39,11 +30,6 @@ public static class PermanentBuffListPresentation
         "PositiveEncounterRewardMultiplier",
         "RareLotteryRewardWeightMultiplier",
         "FishCatchProgressMultiplier",
-        "UnlockFishing",
-        "UnlockPort",
-        "UnlockMysteryWheelLottery",
-        "UnlockBoxLottery",
-        "UnlockCardLottery",
     };
 
     public static List<string> BuildStackedDisplayLines(IReadOnlyList<ActiveBuffData> permanentBuffs)
@@ -72,6 +58,11 @@ public static class PermanentBuffListPresentation
             bool hasExtraEffectType = !string.IsNullOrEmpty(buffConfig.ExtraEffectType);
             if (!hasEffectType && !hasExtraEffectType)
             {
+                if (IsUnlockDescription(buffConfig))
+                {
+                    continue;
+                }
+
                 string plainDesc = GetNonEmptyDesc(buffConfig);
                 if (!string.IsNullOrEmpty(plainDesc))
                 {
@@ -81,12 +72,12 @@ public static class PermanentBuffListPresentation
                 continue;
             }
 
-            if (hasEffectType)
+            if (hasEffectType && IsGainEffectType(buffConfig.EffectType))
             {
                 AddStackedValue(stackedValues, buffConfig.EffectType, buffConfig.EffectValue);
             }
 
-            if (hasExtraEffectType)
+            if (hasExtraEffectType && IsGainEffectType(buffConfig.ExtraEffectType))
             {
                 AddStackedValue(stackedValues, buffConfig.ExtraEffectType, buffConfig.ExtraEffectValue);
             }
@@ -114,7 +105,7 @@ public static class PermanentBuffListPresentation
                 continue;
             }
 
-            if (!IsApproximatelyZero(stackedValue) || effectType.StartsWith("Unlock", StringComparison.Ordinal))
+            if (!IsApproximatelyZero(stackedValue))
             {
                 lines.Add(FormatStackedEffectLine(effectType, stackedValue));
             }
@@ -144,7 +135,7 @@ public static class PermanentBuffListPresentation
 
     private static void AddStackedValue(Dictionary<string, float> stackedValues, string effectType, float value)
     {
-        if (string.IsNullOrEmpty(effectType))
+        if (string.IsNullOrEmpty(effectType) || !IsGainEffectType(effectType))
         {
             return;
         }
@@ -161,16 +152,6 @@ public static class PermanentBuffListPresentation
 
     private static string FormatStackedEffectLine(string effectType, float stackedValue)
     {
-        if (effectType.StartsWith("Unlock", StringComparison.Ordinal))
-        {
-            if (UnlockEffectLines.TryGetValue(effectType, out string unlockLine))
-            {
-                return unlockLine;
-            }
-
-            return effectType;
-        }
-
         if (UsesTimesMultiplierDisplay(effectType))
         {
             string prefix = EffectTypeLinePrefixes.TryGetValue(effectType, out string timesPrefix)
@@ -222,5 +203,29 @@ public static class PermanentBuffListPresentation
     private static bool IsApproximatelyZero(float value)
     {
         return Math.Abs(value) < 0.0001f;
+    }
+
+    /// <summary>数值类增益；Unlock 等为功能解锁，不在「增益」列表展示。</summary>
+    private static bool IsGainEffectType(string effectType)
+    {
+        return !string.IsNullOrEmpty(effectType) &&
+            !effectType.StartsWith("Unlock", StringComparison.Ordinal);
+    }
+
+    private static bool IsUnlockDescription(cfg.BuffConfig buffConfig)
+    {
+        if (buffConfig == null)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(buffConfig.Desc) &&
+            buffConfig.Desc.StartsWith("解锁", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return !string.IsNullOrEmpty(buffConfig.Name) &&
+            buffConfig.Name.StartsWith("解锁", StringComparison.Ordinal);
     }
 }

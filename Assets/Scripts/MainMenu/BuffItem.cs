@@ -35,8 +35,13 @@ public class BuffItem : MonoBehaviour
     public void SetPermanentGroupData(IReadOnlyList<ActiveBuffData> permanentBuffs, string resourceTag)
     {
         _presentationVersion++;
+        List<string> gainDisplayLines = permanentBuffs == null
+            ? null
+            : PermanentBuffListPresentation.BuildStackedDisplayLines(permanentBuffs);
         if (permanentBuffs == null ||
             permanentBuffs.Count == 0 ||
+            gainDisplayLines == null ||
+            gainDisplayLines.Count == 0 ||
             !HasValidUiReferences())
         {
             gameObject.SetActive(false);
@@ -62,7 +67,7 @@ public class BuffItem : MonoBehaviour
         }
 
         _txtName.text = "增益";
-        _txtRemain.text = permanentBuffs.Count > 1 ? $"×{permanentBuffs.Count}" : "增益";
+        _txtRemain.text = gainDisplayLines.Count > 1 ? $"×{gainDisplayLines.Count}" : "增益";
         _btnDetail.onClick.RemoveAllListeners();
         _btnDetail.onClick.AddListener(OpenPermanentBuffList);
         SetIconAsync(displayConfig, resourceTag, _presentationVersion);
