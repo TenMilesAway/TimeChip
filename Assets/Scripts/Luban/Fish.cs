@@ -44,6 +44,10 @@ public sealed partial class Fish : Luban.BeanBase
         PauseDurationMinSeconds = (float)_obj.GetValue("pauseDurationMinSeconds");
         PauseDurationMaxSeconds = (float)_obj.GetValue("pauseDurationMaxSeconds");
         FishDegree = (int)_obj.GetValue("fishDegree");
+        BronzeSizeCm = (int)_obj.GetValue("bronzeSizeCm");
+        SilverSizeCm = (int)_obj.GetValue("silverSizeCm");
+        GoldSizeCm = (int)_obj.GetValue("goldSizeCm");
+        PerfectSizeCm = (int)_obj.GetValue("perfectSizeCm");
     }
 
     public static Fish DeserializeFish(JToken _buf)
@@ -135,6 +139,22 @@ public sealed partial class Fish : Luban.BeanBase
     /// 鱼度
     /// </summary>
     public readonly int FishDegree;
+    /// <summary>
+    /// 铜牌尺寸（厘米）
+    /// </summary>
+    public readonly int BronzeSizeCm;
+    /// <summary>
+    /// 银牌尺寸（厘米）
+    /// </summary>
+    public readonly int SilverSizeCm;
+    /// <summary>
+    /// 金牌尺寸（厘米）
+    /// </summary>
+    public readonly int GoldSizeCm;
+    /// <summary>
+    /// 完美尺寸（厘米）
+    /// </summary>
+    public readonly int PerfectSizeCm;
 
 
     public const int __ID__ = 2189944;
@@ -168,6 +188,10 @@ public sealed partial class Fish : Luban.BeanBase
         + "pauseDurationMinSeconds:" + PauseDurationMinSeconds + ","
         + "pauseDurationMaxSeconds:" + PauseDurationMaxSeconds + ","
         + "fishDegree:" + FishDegree + ","
+        + "bronzeSizeCm:" + BronzeSizeCm + ","
+        + "silverSizeCm:" + SilverSizeCm + ","
+        + "goldSizeCm:" + GoldSizeCm + ","
+        + "perfectSizeCm:" + PerfectSizeCm + ","
         + "}";
     }
 }

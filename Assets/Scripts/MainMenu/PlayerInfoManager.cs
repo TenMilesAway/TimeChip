@@ -180,6 +180,9 @@ public sealed class PlayerInfoData
     /// <summary>当前装备的鱼饵道具 ID，零表示未装备</summary>
     public int equippedFishBaitItemId;
 
+    /// <summary>已钓到鱼种的最大尺寸</summary>
+    public List<PlayerFishRecord> fishRecords = new List<PlayerFishRecord>();
+
     /// <summary>玩家已解锁的家具配置 ID 列表</summary>
     public List<int> unlockedHomeIds = new List<int>();
 
@@ -468,6 +471,14 @@ public sealed class PlayerMissionData
 
     /// <summary>select 任务确定后的目标文本（段内 ; 分隔）</summary>
     public string resolvedSelectTarget = string.Empty;
+}
+
+/// <summary>已钓到的一种鱼及其最大尺寸</summary>
+[Serializable]
+public sealed class PlayerFishRecord
+{
+    public int fishId;
+    public int maxLengthCm;
 }
 
 /// <summary>已完成任务所记录的 select 分支索引</summary>
@@ -1502,6 +1513,69 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
 
         _data.hasRandomMissionOffer = false;
         NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>记录钓到的鱼。仅在首次钓到或刷新最大尺寸时写入存档。</summary>
+    public void RecordCaughtFish(int fishId, int lengthCm)
+    {
+        if (_data == null || fishId <= 0 || lengthCm <= 0)
+        {
+            return;
+        }
+
+        if (_data.fishRecords == null)
+        {
+            _data.fishRecords = new List<PlayerFishRecord>();
+        }
+
+        for (int i = 0; i < _data.fishRecords.Count; i++)
+        {
+            PlayerFishRecord record = _data.fishRecords[i];
+            if (record == null || record.fishId != fishId)
+            {
+                continue;
+            }
+
+            if (lengthCm <= record.maxLengthCm)
+            {
+                return;
+            }
+
+            record.maxLengthCm = lengthCm;
+            NotifyPlayerInfoChanged();
+            return;
+        }
+
+        _data.fishRecords.Add(new PlayerFishRecord
+        {
+            fishId = fishId,
+            maxLengthCm = lengthCm
+        });
+        NotifyPlayerInfoChanged();
+    }
+
+    /// <summary>读取某种鱼的最大钓获尺寸。未钓到时返回 false。</summary>
+    public bool TryGetFishRecord(int fishId, out int maxLengthCm)
+    {
+        maxLengthCm = 0;
+        if (_data?.fishRecords == null || fishId <= 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _data.fishRecords.Count; i++)
+        {
+            PlayerFishRecord record = _data.fishRecords[i];
+            if (record == null || record.fishId != fishId || record.maxLengthCm <= 0)
+            {
+                continue;
+            }
+
+            maxLengthCm = record.maxLengthCm;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>更新已完成任务记录。</summary>
@@ -3341,6 +3415,7 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
             fishHookItemIdVersion = source.fishHookItemIdVersion,
             equippedFishHookItemId = source.equippedFishHookItemId,
             equippedFishBaitItemId = source.equippedFishBaitItemId,
+            fishRecords = CreateFishRecordCopy(source.fishRecords),
             unlockedHomeIds = CreateHomeIdCopy(source.unlockedHomeIds),
             activeBuffs = CreateActiveBuffCopy(source.activeBuffs),
             activeMissions = CreateMissionCopy(source.activeMissions),
@@ -3628,6 +3703,32 @@ public class PlayerInfoManager : Singleton<PlayerInfoManager>
                 awaitingSelectTarget = mission.awaitingSelectTarget,
                 selectTargetIndex = mission.selectTargetIndex,
                 resolvedSelectTarget = mission.resolvedSelectTarget ?? string.Empty
+            });
+        }
+
+        return copy;
+    }
+
+    private static List<PlayerFishRecord> CreateFishRecordCopy(List<PlayerFishRecord> source)
+    {
+        List<PlayerFishRecord> copy = new List<PlayerFishRecord>();
+        if (source == null)
+        {
+            return copy;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            PlayerFishRecord record = source[i];
+            if (record == null || record.fishId <= 0)
+            {
+                continue;
+            }
+
+            copy.Add(new PlayerFishRecord
+            {
+                fishId = record.fishId,
+                maxLengthCm = record.maxLengthCm
             });
         }
 

@@ -3,4 +3,5 @@ public class SettingViewOpenParam
 {
     public bool ShowBackButton;
     public bool ShowVoluntaryEndButton;
+    public bool ShowTips;
 }

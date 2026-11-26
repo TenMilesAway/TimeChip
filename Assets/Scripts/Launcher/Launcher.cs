@@ -373,8 +373,9 @@ public class Launcher : SingletonMono<Launcher>
             {
                 data = new SettingViewOpenParam
                 {
-                    ShowBackButton = true,
-                    ShowVoluntaryEndButton = false
+                    ShowBackButton = false,
+                    ShowVoluntaryEndButton = false,
+                    ShowTips = false
                 }
             },
             action: CompleteMenuPanelTransition);

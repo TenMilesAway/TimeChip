@@ -11,16 +11,18 @@ public class SettingView : UIBasePanel
     [SerializeField] private Toggle _toggleVibra;
     [SerializeField] private Button _btnBack;
     [SerializeField] private Button _btnOver;
+    [SerializeField] private GameObject _goTips;
 
     private bool _closingForVoluntaryEnd;
     private bool _showBackButton;
     private bool _showVoluntaryEndButton;
+    private bool _showTips;
 
     protected override void InitHandle(OpenUIParam param)
     {
         base.InitHandle(param);
 
-        ResolveOpenParam(param, out _showBackButton, out _showVoluntaryEndButton);
+        ResolveOpenParam(param, out _showBackButton, out _showVoluntaryEndButton, out _showTips);
 
         if (_showBackButton)
         {
@@ -40,6 +42,11 @@ public class SettingView : UIBasePanel
         else
         {
             _btnOver.gameObject.SetActive(false);
+        }
+
+        if (_goTips != null)
+        {
+            _goTips.SetActive(_showTips);
         }
 
         _sliderMusic.onValueChanged.AddListener(OnMusicVolumeChanged);
@@ -86,14 +93,17 @@ public class SettingView : UIBasePanel
     private static void ResolveOpenParam(
         OpenUIParam param,
         out bool showBackButton,
-        out bool showVoluntaryEndButton)
+        out bool showVoluntaryEndButton,
+        out bool showTips)
     {
         showBackButton = false;
         showVoluntaryEndButton = false;
+        showTips = false;
         if (param?.data is SettingViewOpenParam openParam)
         {
             showBackButton = openParam.ShowBackButton;
             showVoluntaryEndButton = openParam.ShowVoluntaryEndButton;
+            showTips = openParam.ShowTips;
             return;
         }
 
@@ -101,6 +111,7 @@ public class SettingView : UIBasePanel
         {
             showBackButton = true;
             showVoluntaryEndButton = true;
+            showTips = true;
         }
     }
 

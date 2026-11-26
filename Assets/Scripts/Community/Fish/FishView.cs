@@ -33,6 +33,7 @@ public class FishView : UIBasePanel
     private const int FishItemCategory = 6;
     private const int TreasureItemId = 3030;
     private const string FishDegreeEffectType = "FishDegree";
+    private const int CollectItemsPerPage = 6;
 
     [Header("UI")]
     [SerializeField] private Text _txtFishStoreCoin;    // 河边商店: 模拟币数量
@@ -73,6 +74,18 @@ public class FishView : UIBasePanel
     [Header("捕鱼测试")]
     [SerializeField] private bool _enableFishCatchTest;   // 捕鱼测试: 强制选择指定鱼种
     [SerializeField] private int _testFishId;             // 捕鱼测试: 指定鱼种 ID
+
+    [Header("图鉴")]
+    [SerializeField] private Text _txtCollect;            // 已收集文本，格式： "已收集：{0} / {1}"
+    [SerializeField] private Text _txtCollectCurrentPage; // 当前图鉴页
+    [SerializeField] private Text _txtCollectMaxPage;     // 最大图鉴页
+    [SerializeField] private Slider _sliderProgress;      // 已收集进度
+    [SerializeField] private Button _btnCollectLeft;      // 上一页
+    [SerializeField] private Button _btnCollectRight;     // 下一页
+    [SerializeField] private Button _btnCloseCollect;     // 隐藏图鉴界面
+    [SerializeField] private Button _btnShowCollect;      // 展示图鉴界面
+    [SerializeField] private GameObject _goCollect;       // 图鉴界面
+    [SerializeField] private FishCollectItem[] _collectItems; // 图鉴当前页条目，共 6 个
 
     private const string AnimationEmpty = "Empty";   // 空闲动画
     private const string AnimationStart = "Start";   // 开始钓鱼动画
@@ -115,6 +128,7 @@ public class FishView : UIBasePanel
     private int _fishingAttemptIndex;
     private int _activeFishSizeCm;
     private Sprite _initialFishSprite;
+    private int _collectPage = 1;
 
     private void Awake()
     {
@@ -160,6 +174,10 @@ public class FishView : UIBasePanel
         _btnPageHook.onClick.AddListener(OnClickHookPage);
         _btnPageBait.onClick.AddListener(OnClickBaitPage);
         _btnInventory.onClick.AddListener(OnClickInventory);
+        _btnShowCollect.onClick.AddListener(OnClickShowCollect);
+        _btnCloseCollect.onClick.AddListener(OnClickCloseCollect);
+        _btnCollectLeft.onClick.AddListener(OnClickCollectPreviousPage);
+        _btnCollectRight.onClick.AddListener(OnClickCollectNextPage);
     }
 
     protected override void ShowHandle()
@@ -171,6 +189,8 @@ public class FishView : UIBasePanel
         SetStorePage(true);
         _goStore.SetActive(false);
         _goChangePanel.SetActive(false);
+        _goCollect.SetActive(false);
+        _collectPage = 1;
     }
 
     protected override void HideHandle()
@@ -239,8 +259,116 @@ public class FishView : UIBasePanel
             _btnInventory.onClick.RemoveListener(OnClickInventory);
         }
 
+        if (_btnShowCollect != null)
+        {
+            _btnShowCollect.onClick.RemoveListener(OnClickShowCollect);
+        }
+
+        if (_btnCloseCollect != null)
+        {
+            _btnCloseCollect.onClick.RemoveListener(OnClickCloseCollect);
+        }
+
+        if (_btnCollectLeft != null)
+        {
+            _btnCollectLeft.onClick.RemoveListener(OnClickCollectPreviousPage);
+        }
+
+        if (_btnCollectRight != null)
+        {
+            _btnCollectRight.onClick.RemoveListener(OnClickCollectNextPage);
+        }
+
         PlayerInfoManager.GetInstance().PlayerInfoChanged -= RefreshStore;
         base.OnDestroy();
+    }
+
+    private void OnClickShowCollect()
+    {
+        UiButtonAudio.PlayClick();
+        _collectPage = 1;
+        _goCollect.SetActive(true);
+        RefreshCollectPage();
+    }
+
+    private void OnClickCloseCollect()
+    {
+        UiButtonAudio.PlayClick();
+        _goCollect.SetActive(false);
+    }
+
+    private void OnClickCollectPreviousPage()
+    {
+        if (_collectPage <= 1)
+        {
+            return;
+        }
+
+        UiButtonAudio.PlayClick();
+        _collectPage--;
+        RefreshCollectPage();
+    }
+
+    private void OnClickCollectNextPage()
+    {
+        if (_collectPage >= GetCollectPageCount())
+        {
+            return;
+        }
+
+        UiButtonAudio.PlayClick();
+        _collectPage++;
+        RefreshCollectPage();
+    }
+
+    private void RefreshCollectPage()
+    {
+        System.Collections.Generic.IReadOnlyList<cfg.Fish> fishConfigs =
+            DataTableMananger.GetInstance().Tables.FishTable.DataList;
+        int fishCount = fishConfigs == null ? 0 : fishConfigs.Count;
+        int pageCount = GetCollectPageCount();
+        _collectPage = Mathf.Clamp(_collectPage, 1, pageCount);
+        int unlockedCount = 0;
+        PlayerInfoManager playerInfo = PlayerInfoManager.GetInstance();
+        for (int i = 0; i < fishCount; i++)
+        {
+            if (playerInfo.TryGetFishRecord(fishConfigs[i].Id, out _))
+            {
+                unlockedCount++;
+            }
+        }
+
+        _txtCollect.text = $"已收集：{unlockedCount} / {fishCount}";
+        _sliderProgress.minValue = 0f;
+        _sliderProgress.maxValue = Mathf.Max(1, fishCount);
+        _sliderProgress.value = unlockedCount;
+        _txtCollectCurrentPage.text = _collectPage.ToString();
+        _txtCollectMaxPage.text = pageCount.ToString();
+        _btnCollectLeft.interactable = _collectPage > 1;
+        _btnCollectRight.interactable = _collectPage < pageCount;
+
+        int startIndex = (_collectPage - 1) * CollectItemsPerPage;
+        for (int i = 0; i < _collectItems.Length; i++)
+        {
+            int fishIndex = startIndex + i;
+            if (fishIndex >= fishCount)
+            {
+                _collectItems[i].SetData(null, false, 0);
+                continue;
+            }
+
+            cfg.Fish fishConfig = fishConfigs[fishIndex];
+            bool unlocked = playerInfo.TryGetFishRecord(fishConfig.Id, out int maxLengthCm);
+            _collectItems[i].SetData(fishConfig, unlocked, maxLengthCm);
+        }
+    }
+
+    private int GetCollectPageCount()
+    {
+        System.Collections.Generic.IReadOnlyList<cfg.Fish> fishConfigs =
+            DataTableMananger.GetInstance().Tables.FishTable.DataList;
+        int fishCount = fishConfigs == null ? 0 : fishConfigs.Count;
+        return Mathf.Max(1, Mathf.CeilToInt(fishCount / (float)CollectItemsPerPage));
     }
 
     private void Update()
@@ -1112,6 +1240,7 @@ public class FishView : UIBasePanel
             .SetLoops(2, LoopType.Yoyo)
             .SetTarget(_imgFishProgress.transform);
         GameManager.Audio.Play(AudioDefine.SFXGetReward);
+        PlayerInfoManager.GetInstance().RecordCaughtFish(caughtFish.Id, fishSizeCm);
         MissionAPI.Broadcast(new MissionMessage(
             MissionEventType.FishCatch,
             1,
@@ -1400,6 +1529,16 @@ public class FishView : UIBasePanel
             _btnPageHook != null &&
             _btnPageBait != null &&
             _btnInventory != null &&
+            _txtCollect != null &&
+            _sliderProgress != null &&
+            _txtCollectCurrentPage != null &&
+            _txtCollectMaxPage != null &&
+            _btnCollectLeft != null &&
+            _btnCollectRight != null &&
+            _btnCloseCollect != null &&
+            _btnShowCollect != null &&
+            _goCollect != null &&
+            HasValidCollectItems() &&
             _animatorFishRod != null &&
             _goFishCatch != null &&
             _goEquipedBait != null &&
@@ -1420,6 +1559,24 @@ public class FishView : UIBasePanel
 
         Debug.LogError("FishView 存在未绑定的 UI 引用", this);
         return false;
+    }
+
+    private bool HasValidCollectItems()
+    {
+        if (_collectItems == null || _collectItems.Length != CollectItemsPerPage)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < _collectItems.Length; i++)
+        {
+            if (_collectItems[i] == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool HasValidStoreItems(FishStoreItem[] items, int expectedCount)

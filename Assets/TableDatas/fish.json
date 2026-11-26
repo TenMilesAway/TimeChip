@@ -20,7 +20,11 @@
     "pauseProbability": 0.05,
     "pauseDurationMinSeconds": 0.15,
     "pauseDurationMaxSeconds": 0.35,
-    "fishDegree": 0
+    "fishDegree": 0,
+    "bronzeSizeCm": 11,
+    "silverSizeCm": 14,
+    "goldSizeCm": 17,
+    "perfectSizeCm": 20
   },
   {
     "id": 6001,
@@ -43,7 +47,11 @@
     "pauseProbability": 0.2,
     "pauseDurationMinSeconds": 0.25,
     "pauseDurationMaxSeconds": 0.55,
-    "fishDegree": 0
+    "fishDegree": 0,
+    "bronzeSizeCm": 14,
+    "silverSizeCm": 17,
+    "goldSizeCm": 21,
+    "perfectSizeCm": 24
   },
   {
     "id": 6002,
@@ -66,7 +74,11 @@
     "pauseProbability": 0.05,
     "pauseDurationMinSeconds": 0.15,
     "pauseDurationMaxSeconds": 0.3,
-    "fishDegree": 0
+    "fishDegree": 0,
+    "bronzeSizeCm": 8,
+    "silverSizeCm": 10,
+    "goldSizeCm": 13,
+    "perfectSizeCm": 15
   },
   {
     "id": 6003,
@@ -89,7 +101,11 @@
     "pauseProbability": 0.1,
     "pauseDurationMinSeconds": 0.1,
     "pauseDurationMaxSeconds": 0.25,
-    "fishDegree": 1
+    "fishDegree": 1,
+    "bronzeSizeCm": 23,
+    "silverSizeCm": 28,
+    "goldSizeCm": 32,
+    "perfectSizeCm": 37
   },
   {
     "id": 6004,
@@ -112,7 +128,11 @@
     "pauseProbability": 0.2,
     "pauseDurationMinSeconds": 0.3,
     "pauseDurationMaxSeconds": 0.5,
-    "fishDegree": 1
+    "fishDegree": 1,
+    "bronzeSizeCm": 19,
+    "silverSizeCm": 24,
+    "goldSizeCm": 28,
+    "perfectSizeCm": 32
   },
   {
     "id": 6005,
@@ -135,7 +155,11 @@
     "pauseProbability": 0.2,
     "pauseDurationMinSeconds": 0.1,
     "pauseDurationMaxSeconds": 0.25,
-    "fishDegree": 1
+    "fishDegree": 1,
+    "bronzeSizeCm": 29,
+    "silverSizeCm": 35,
+    "goldSizeCm": 42,
+    "perfectSizeCm": 48
   },
   {
     "id": 6006,
@@ -158,7 +182,11 @@
     "pauseProbability": 0.1,
     "pauseDurationMinSeconds": 0.15,
     "pauseDurationMaxSeconds": 0.3,
-    "fishDegree": 2
+    "fishDegree": 2,
+    "bronzeSizeCm": 25,
+    "silverSizeCm": 30,
+    "goldSizeCm": 35,
+    "perfectSizeCm": 40
   },
   {
     "id": 6007,
@@ -181,7 +209,11 @@
     "pauseProbability": 0.1,
     "pauseDurationMinSeconds": 0.15,
     "pauseDurationMaxSeconds": 0.4,
-    "fishDegree": 2
+    "fishDegree": 2,
+    "bronzeSizeCm": 28,
+    "silverSizeCm": 31,
+    "goldSizeCm": 33,
+    "perfectSizeCm": 36
   },
   {
     "id": 6008,
@@ -204,7 +236,11 @@
     "pauseProbability": 0.2,
     "pauseDurationMinSeconds": 0.45,
     "pauseDurationMaxSeconds": 0.9,
-    "fishDegree": 2
+    "fishDegree": 2,
+    "bronzeSizeCm": 65,
+    "silverSizeCm": 68,
+    "goldSizeCm": 72,
+    "perfectSizeCm": 75
   },
   {
     "id": 6009,
@@ -227,7 +263,11 @@
     "pauseProbability": 0.1,
     "pauseDurationMinSeconds": 0.2,
     "pauseDurationMaxSeconds": 0.45,
-    "fishDegree": 3
+    "fishDegree": 3,
+    "bronzeSizeCm": 26,
+    "silverSizeCm": 29,
+    "goldSizeCm": 33,
+    "perfectSizeCm": 36
   },
   {
     "id": 6010,
@@ -250,7 +290,11 @@
     "pauseProbability": 0.4,
     "pauseDurationMinSeconds": 0.1,
     "pauseDurationMaxSeconds": 0.2,
-    "fishDegree": 3
+    "fishDegree": 3,
+    "bronzeSizeCm": 43,
+    "silverSizeCm": 50,
+    "goldSizeCm": 57,
+    "perfectSizeCm": 64
   },
   {
     "id": 6011,
@@ -273,6 +317,10 @@
     "pauseProbability": 0.2,
     "pauseDurationMinSeconds": 0.2,
     "pauseDurationMaxSeconds": 0.25,
-    "fishDegree": 4
+    "fishDegree": 4,
+    "bronzeSizeCm": 105,
+    "silverSizeCm": 110,
+    "goldSizeCm": 115,
+    "perfectSizeCm": 120
   }
 ]

@@ -296,7 +296,8 @@ public class MainMenuView : UIBasePanel
                 data = new SettingViewOpenParam
                 {
                     ShowBackButton = true,
-                    ShowVoluntaryEndButton = true
+                    ShowVoluntaryEndButton = true,
+                    ShowTips = true
                 }
             });
     }
